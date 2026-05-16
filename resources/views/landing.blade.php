@@ -283,16 +283,13 @@
                             </div>
                             <span class="chart-badge">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
-                                Chart.js
+                                Multi Axis Chart
                             </span>
                         </div>
 
                         <div class="chart-canvas-wrap">
                             <canvas id="landingMainChart"></canvas>
-                            <div class="chart-fallback" id="chartFallback" hidden>
-                                <span></span><span></span><span></span><span></span><span></span><span></span>
-                            </div>
-                        </div>
+</div>
 
                         <div class="chart-summary">
                             <div>
@@ -381,3 +378,4 @@
     </button>
 </div>
 @endsection
+

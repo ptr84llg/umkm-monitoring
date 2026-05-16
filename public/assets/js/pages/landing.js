@@ -14,7 +14,6 @@
         const summaryTwo = document.getElementById('chartSummaryTwo');
         const summaryThree = document.getElementById('chartSummaryThree');
         const mainCanvas = document.getElementById('landingMainChart');
-        const fallback = document.getElementById('chartFallback');
         const canvasMenu = document.querySelector('[data-menu-canvas]');
         const menuOpen = document.querySelector('[data-menu-open]');
         const menuCloseItems = document.querySelectorAll('[data-menu-close], [data-menu-link]');
@@ -24,34 +23,40 @@
 
         const chartModes = {
             kinerja: {
-                title: 'Tren Perkembangan UMKM',
-                subtitle: 'Ringkasan data dalam periode pemantauan',
+                title: 'Kinerja dan Pertumbuhan UMKM',
+                subtitle: 'Perbandingan jumlah UMKM aktif dan estimasi pertumbuhan kinerja bulanan',
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
-                primary: [38, 52, 48, 64, 79, 86, 72],
-                secondary: [28, 35, 33, 48, 61, 67, 58],
-                summaryOne: 'Wilayah, bidang usaha, periode',
-                summaryTwo: 'Grafik tren dan indikator utama',
-                summaryThree: 'Perkembangan aktivitas UMKM'
+                unitLabel: 'UMKM aktif',
+                percentLabel: 'Pertumbuhan kinerja (%)',
+                unitData: [118, 126, 133, 141, 152, 164, 173],
+                percentData: [3.2, 4.1, 3.8, 5.2, 6.4, 7.1, 6.7],
+                summaryOne: 'UMKM aktif, periode, bidang usaha',
+                summaryTwo: 'Multi-axis: jumlah dan persentase',
+                summaryThree: 'Kinerja usaha dan pertumbuhan'
             },
             wilayah: {
-                title: 'Sebaran UMKM per Wilayah',
-                subtitle: 'Perbandingan konsentrasi UMKM pada area pantauan',
-                labels: ['Utara', 'Timur', 'Selatan', 'Barat', 'Tengah'],
-                primary: [42, 68, 55, 47, 76],
-                secondary: [22, 36, 28, 24, 42],
-                summaryOne: 'Kecamatan, kelurahan, kategori usaha',
-                summaryTwo: 'Grafik perbandingan wilayah',
-                summaryThree: 'Konsentrasi dan persebaran UMKM'
+                title: 'Sebaran dan Konsentrasi Wilayah',
+                subtitle: 'Perbandingan jumlah UMKM dan rasio konsentrasi pada wilayah pantauan',
+                labels: ['Barat I', 'Barat II', 'Timur I', 'Timur II', 'Selatan I', 'Selatan II', 'Utara I', 'Utara II'],
+                unitLabel: 'Jumlah UMKM',
+                percentLabel: 'Konsentrasi wilayah (%)',
+                unitData: [92, 118, 146, 132, 104, 96, 88, 122],
+                percentData: [9.5, 12.1, 15.2, 13.6, 10.7, 9.9, 8.7, 12.8],
+                summaryOne: 'Kecamatan, kategori usaha, lokasi',
+                summaryTwo: 'Multi-axis: jumlah dan konsentrasi',
+                summaryThree: 'Persebaran UMKM per wilayah'
             },
             legalitas: {
-                title: 'Ringkasan Legalitas Usaha',
-                subtitle: 'Gambaran kelengkapan legalitas UMKM',
-                labels: ['Tercatat', 'Lengkap', 'Proses', 'Perlu Update'],
-                primary: [84, 72, 38, 26],
-                secondary: [56, 48, 24, 18],
-                summaryOne: 'Status legalitas dan pembaruan data',
-                summaryTwo: 'Grafik komposisi status',
-                summaryThree: 'Kelengkapan informasi legalitas'
+                title: 'Legalitas dan Pembaruan Data',
+                subtitle: 'Perbandingan jumlah UMKM berlegalitas dan rasio kelengkapan data',
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                unitLabel: 'UMKM berlegalitas',
+                percentLabel: 'Kelengkapan data (%)',
+                unitData: [68, 74, 82, 91, 104, 116, 128],
+                percentData: [48, 52, 57, 62, 68, 73, 78],
+                summaryOne: 'NIB, izin usaha, pembaruan profil',
+                summaryTwo: 'Multi-axis: legalitas dan kelengkapan',
+                summaryThree: 'Kesiapan data untuk monitoring'
             }
         };
 
@@ -100,10 +105,7 @@
 
         if (toTop) {
             toTop.addEventListener('click', function () {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
 
@@ -137,7 +139,7 @@
             ticking = false;
         }
 
-        window.addEventListener('scroll', () => {
+        window.addEventListener('scroll', function () {
             if (!ticking) {
                 window.requestAnimationFrame(updateParallax);
                 ticking = true;
@@ -179,7 +181,7 @@
         if (tiltCard) {
             const boardWindow = tiltCard.querySelector('.board-window');
 
-            tiltCard.addEventListener('mousemove', (event) => {
+            tiltCard.addEventListener('mousemove', function (event) {
                 if (!boardWindow) {
                     return;
                 }
@@ -193,7 +195,7 @@
                 boardWindow.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
 
-            tiltCard.addEventListener('mouseleave', () => {
+            tiltCard.addEventListener('mouseleave', function () {
                 if (boardWindow) {
                     boardWindow.style.transform = 'rotateX(0deg) rotateY(0deg)';
                 }
@@ -207,7 +209,7 @@
             return gradient;
         }
 
-        function baseChartOptions() {
+        function chartOptions() {
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -219,6 +221,7 @@
                     intersect: false,
                     mode: 'index'
                 },
+                stacked: false,
                 plugins: {
                     legend: {
                         display: true,
@@ -229,6 +232,7 @@
                             boxWidth: 8,
                             boxHeight: 8,
                             color: '#475569',
+                            padding: 18,
                             font: {
                                 family: 'Manrope',
                                 weight: '700'
@@ -246,8 +250,7 @@
                         bodyFont: {
                             family: 'Manrope',
                             weight: '700'
-                        },
-                        displayColors: false
+                        }
                     }
                 },
                 scales: {
@@ -264,14 +267,54 @@
                         }
                     },
                     y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
                         beginAtZero: true,
-                        suggestedMax: 100,
                         grid: {
                             color: 'rgba(16, 33, 61, .07)',
                             drawBorder: false
                         },
                         ticks: {
-                            color: '#64748b',
+                            color: '#0f7665',
+                            font: {
+                                family: 'Manrope',
+                                weight: '800'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah UMKM',
+                            color: '#0f7665',
+                            font: {
+                                family: 'Manrope',
+                                weight: '800'
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        suggestedMax: 100,
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            color: '#f0a84a',
+                            callback: function (value) {
+                                return value + '%';
+                            },
+                            font: {
+                                family: 'Manrope',
+                                weight: '800'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Persentase',
+                            color: '#f0a84a',
                             font: {
                                 family: 'Manrope',
                                 weight: '800'
@@ -280,12 +323,6 @@
                     }
                 }
             };
-        }
-
-        function showFallback() {
-            if (fallback) {
-                fallback.hidden = false;
-            }
         }
 
         function renderMainChart(mode) {
@@ -312,12 +349,7 @@
             }
 
             if (!window.Chart || !mainCanvas) {
-                showFallback();
                 return;
-            }
-
-            if (fallback) {
-                fallback.hidden = true;
             }
 
             const ctx = mainCanvas.getContext('2d');
@@ -327,58 +359,69 @@
             }
 
             mainChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: data.labels,
                     datasets: [
                         {
-                            type: 'bar',
-                            label: 'Jumlah UMKM',
-                            data: data.primary,
-                            borderRadius: 16,
-                            borderSkipped: false,
+                            label: data.unitLabel,
+                            data: data.unitData,
+                            yAxisID: 'y',
+                            borderColor: '#0f7665',
                             backgroundColor: function (context) {
                                 const chart = context.chart;
                                 const area = chart.chartArea;
 
                                 if (!area) {
-                                    return 'rgba(15, 118, 101, .82)';
+                                    return 'rgba(15, 118, 101, .16)';
                                 }
 
                                 return makeGradient(
                                     chart.ctx,
                                     area,
-                                    'rgba(15, 118, 101, .92)',
-                                    'rgba(128, 202, 189, .35)'
+                                    'rgba(15, 118, 101, .24)',
+                                    'rgba(15, 118, 101, .02)'
                                 );
-                            }
+                            },
+                            fill: true,
+                            tension: .42,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#0f7665',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2
                         },
                         {
-                            type: 'line',
-                            label: 'Pembanding',
-                            data: data.secondary,
+                            label: data.percentLabel,
+                            data: data.percentData,
+                            yAxisID: 'y1',
                             borderColor: '#f0a84a',
-                            backgroundColor: 'rgba(240, 168, 74, .18)',
-                            borderWidth: 3,
+                            backgroundColor: 'rgba(240, 168, 74, .16)',
+                            fill: false,
                             tension: .42,
-                            fill: true,
+                            borderWidth: 3,
+                            borderDash: [8, 6],
                             pointRadius: 4,
-                            pointHoverRadius: 6,
+                            pointHoverRadius: 7,
                             pointBackgroundColor: '#f0a84a',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2
                         }
                     ]
                 },
-                options: baseChartOptions()
+                options: chartOptions()
             });
         }
 
-        tabs.forEach((tab) => {
-            tab.addEventListener('click', () => {
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
                 const mode = tab.dataset.chartMode || 'kinerja';
 
-                tabs.forEach((item) => item.classList.remove('active'));
+                tabs.forEach(function (item) {
+                    item.classList.remove('active');
+                });
+
                 tab.classList.add('active');
                 renderMainChart(mode);
             });
