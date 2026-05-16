@@ -3487,3 +3487,154 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Content-2 Fix END */
+
+/* Batch Landing-Hero-1 START */
+
+/*
+ * Hero refinement:
+ * - Deskripsi menegaskan Visual Analitik Interaktif.
+ * - Card wilayah aktif dibuat 2 baris: info wilayah + tombol aksi.
+ * - Area kiri dan kanan dibuat lebih sejajar.
+ */
+
+.hero-shell .row {
+    align-items: center !important;
+}
+
+.hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hero-board {
+    display: grid;
+    align-content: center;
+    width: min(100%, 560px);
+    margin-left: auto;
+}
+
+.board-source-stacked {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .68rem;
+    align-items: stretch;
+    width: min(100%, 460px);
+    margin: 0 0 .82rem auto !important;
+    border-radius: 24px !important;
+    padding: .78rem !important;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .13), transparent 34%),
+        rgba(255, 255, 255, .92) !important;
+    box-shadow: 0 18px 42px rgba(16, 33, 61, .08) !important;
+}
+
+.board-source-info {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+        "icon kicker"
+        "icon value";
+    gap: .08rem .58rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.board-source-info::before {
+    content: "";
+    grid-area: icon;
+    width: 34px;
+    height: 34px;
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at 50% 42%, #ffffff 0 16%, transparent 17%),
+        linear-gradient(135deg, var(--landing-brand), var(--landing-brand-dark));
+    box-shadow: 0 12px 24px rgba(15, 118, 101, .18);
+}
+
+.board-source-kicker {
+    grid-area: kicker;
+    display: block;
+    color: var(--landing-muted);
+    font-size: .73rem;
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+}
+
+.board-source-info strong {
+    grid-area: value;
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--landing-ink);
+    font-size: .98rem;
+    font-weight: 950;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.board-source-stacked .board-region-button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 18px !important;
+    font-size: .86rem;
+}
+
+@media (min-width: 992px) {
+    .hero-shell {
+        padding-top: clamp(2.2rem, 4vw, 4rem);
+        padding-bottom: clamp(2.2rem, 4vw, 4rem);
+    }
+
+    .hero-copy {
+        min-height: 560px;
+    }
+
+    .hero-board {
+        min-height: 560px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .hero-board {
+        width: 100%;
+        margin-inline: auto;
+    }
+
+    .board-source-stacked {
+        width: 100%;
+        margin-inline: auto !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .board-source-stacked {
+        border-radius: 22px !important;
+        padding: .72rem !important;
+        gap: .6rem;
+    }
+
+    .board-source-info {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .board-source-info::before {
+        width: 32px;
+        height: 32px;
+        border-radius: 13px;
+    }
+
+    .board-source-info strong {
+        font-size: .94rem;
+    }
+
+    .board-source-stacked .board-region-button {
+        min-height: 46px;
+        border-radius: 17px !important;
+    }
+}
+
+/* Batch Landing-Hero-1 END */

@@ -262,8 +262,8 @@
                                 <h1>Monitoring UMKM berbasis Data</h1>
                                 <p>
                                     Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
-                                    aktivitas UMKM dalam tampilan dashboard yang mudah dibaca untuk membantu pemantauan
-                                    program dan pengambilan keputusan.
+                                    aktivitas UMKM dalam tampilan Visual Analitik Interaktif yang mudah dibaca untuk
+                                    membantu pemantauan program dan pengambilan keputusan.
                                 </p>
 
                                 <div class="hero-actions">
@@ -281,11 +281,12 @@
 
                         <div class="col-lg-6">
                             <div class="hero-board reveal reveal-delay-1" data-tilt-card>
-                                <div class="board-source board-source-with-action" data-public-region-current>
-                                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M12 2.75c-3.45 0-6.25 2.8-6.25 6.25 0 4.5 6.25 12.25 6.25 12.25S18.25 13.5 18.25 9c0-3.45-2.8-6.25-6.25-6.25Zm0 8.6a2.35 2.35 0 1 1 0-4.7 2.35 2.35 0 0 1 0 4.7Z"/>
-                                    </svg>
-                                    <span data-public-region-source>Sumber data: Kota Lubuklinggau</span>
+                                <div class="board-source board-source-with-action board-source-stacked" data-public-region-current>
+                                    <div class="board-source-info">
+                                        <span class="board-source-kicker">Wilayah aktif</span>
+                                        <strong data-public-region-source>Kota Lubuklinggau</strong>
+                                    </div>
+
                                     <button type="button" class="board-region-button" data-region-modal-open>
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
                                             <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
