@@ -1199,3 +1199,274 @@ body.is-canvas-open {
 .preview-progress .progress-fill-74 {
     width: 74%;
 }
+
+html:not([data-location-gate="granted"]) [data-location-gated] {
+    display: none !important;
+}
+
+.location-gate-shell {
+    position: fixed;
+    top: 88px;
+    left: 0;
+    right: 0;
+    z-index: 68;
+    pointer-events: none;
+}
+
+.location-gate-shell[hidden] {
+    display: none !important;
+}
+
+.location-gate-card {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    width: min(760px, 100%);
+    margin: 0 auto;
+    border: 1px solid rgba(240, 168, 74, .24);
+    border-radius: 24px;
+    padding: .9rem 1rem;
+    color: #7a4b07;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .18), transparent 28%),
+        rgba(255, 255, 255, .94);
+    box-shadow: 0 18px 48px rgba(16, 33, 61, .12);
+    backdrop-filter: blur(16px);
+    pointer-events: auto;
+}
+
+.location-gate-card.is-granted {
+    border-color: rgba(15, 118, 101, .18);
+    color: #084c42;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(15, 118, 101, .12), transparent 28%),
+        rgba(255, 255, 255, .94);
+}
+
+.location-gate-card.is-blocked,
+.location-gate-card.is-unsupported {
+    border-color: rgba(220, 38, 38, .18);
+    color: #7f1d1d;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(220, 38, 38, .10), transparent 28%),
+        rgba(255, 255, 255, .94);
+}
+
+.location-gate-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    color: currentColor;
+    background: rgba(240, 168, 74, .14);
+    flex: 0 0 42px;
+}
+
+.location-gate-card.is-granted .location-gate-icon {
+    background: rgba(15, 118, 101, .10);
+}
+
+.location-gate-card.is-blocked .location-gate-icon,
+.location-gate-card.is-unsupported .location-gate-icon {
+    background: rgba(220, 38, 38, .08);
+}
+
+.location-gate-icon svg,
+.location-gate-retry svg {
+    width: 19px;
+    height: 19px;
+    fill: currentColor;
+}
+
+.location-gate-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.location-gate-copy strong,
+.location-gate-copy p {
+    display: block;
+}
+
+.location-gate-copy strong {
+    color: inherit;
+    font-weight: 850;
+    line-height: 1.25;
+}
+
+.location-gate-copy p {
+    margin: .18rem 0 0;
+    color: #64748b;
+    line-height: 1.45;
+    font-weight: 650;
+}
+
+.location-gate-retry {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    border: 1px solid rgba(16, 33, 61, .10);
+    border-radius: 999px;
+    padding: .65rem .9rem;
+    color: var(--landing-ink);
+    background: #ffffff;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+}
+
+.location-gate-retry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(15, 118, 101, .20);
+    background: rgba(15, 118, 101, .06);
+}
+
+html[data-location-gate="checking"] .location-gate-retry {
+    opacity: .65;
+    pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+    .location-gate-shell {
+        top: 112px;
+        padding: 0 .85rem;
+    }
+
+    .location-gate-card {
+        align-items: flex-start;
+        border-radius: 20px;
+    }
+
+    .location-gate-retry {
+        width: 100%;
+        margin-top: .25rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .location-gate-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+    }
+
+    .location-gate-retry {
+        grid-column: 1 / -1;
+    }
+}
+
+.location-gate-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .6rem;
+    flex: 0 0 auto;
+}
+
+.location-gate-guide-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    border: 1px solid rgba(16, 33, 61, .10);
+    border-radius: 999px;
+    padding: .65rem .9rem;
+    color: var(--landing-ink);
+    background: rgba(255, 255, 255, .86);
+    font-weight: 800;
+    white-space: nowrap;
+    transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+}
+
+.location-gate-guide-toggle:hover {
+    transform: translateY(-2px);
+    border-color: rgba(15, 118, 101, .20);
+    background: rgba(15, 118, 101, .06);
+}
+
+.location-gate-guide-toggle svg {
+    width: 19px;
+    height: 19px;
+    fill: currentColor;
+}
+
+.location-gate-permission {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    width: fit-content;
+    margin-top: .55rem;
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 999px;
+    padding: .35rem .58rem;
+    color: #526176;
+    background: rgba(255, 255, 255, .72);
+    font-size: .82rem;
+    font-weight: 750;
+}
+
+.location-gate-guide {
+    margin-top: .75rem;
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 18px;
+    padding: .9rem 1rem;
+    color: #10213d;
+    background: rgba(255, 255, 255, .80);
+}
+
+.location-gate-guide strong {
+    display: block;
+    font-weight: 850;
+}
+
+.location-gate-guide ol {
+    margin: .55rem 0 0;
+    padding-left: 1.15rem;
+    color: #64748b;
+    line-height: 1.55;
+    font-weight: 650;
+}
+
+.location-gate-guide li + li {
+    margin-top: .25rem;
+}
+
+.location-gate-card.is-denied {
+    border-color: rgba(220, 38, 38, .18);
+    color: #7f1d1d;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(220, 38, 38, .10), transparent 28%),
+        rgba(255, 255, 255, .94);
+}
+
+.location-gate-card.is-denied .location-gate-icon {
+    background: rgba(220, 38, 38, .08);
+}
+
+.location-gate-card.is-prompt {
+    border-color: rgba(240, 168, 74, .24);
+    color: #7a4b07;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .18), transparent 28%),
+        rgba(255, 255, 255, .94);
+}
+
+@media (max-width: 991.98px) {
+    .location-gate-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .location-gate-actions {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .location-gate-guide-toggle,
+    .location-gate-retry {
+        width: 100%;
+    }
+}

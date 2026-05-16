@@ -94,7 +94,7 @@
                     <strong>Akses</strong>
                 </div>
 
-                <a href="{{ route('login') }}">
+                <a href="{{ route('login') }}" data-location-gated data-location-gated-key="footer-login">
                     <span class="footer-link-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/>
@@ -136,3 +136,4 @@
         </div>
     </div>
 </footer>
+

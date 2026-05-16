@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="landing-nav-actions">
-                    <a class="btn btn-light landing-login-btn" href="{{ route('login') }}">
+                    <a class="btn btn-light landing-login-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
                         <span>Masuk</span>
                     </a>
@@ -56,6 +56,56 @@
             </nav>
         </div>
     </header>
+
+    <div class="location-gate-shell" data-location-gate-notice hidden>
+        <div class="container">
+            <div class="location-gate-card">
+                <span class="location-gate-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
+                    </svg>
+                </span>
+
+                <div class="location-gate-copy">
+                    <strong data-location-gate-title>Memeriksa akses lokasi</strong>
+                    <p data-location-gate-message>
+                        Sistem sedang memeriksa status lokasi untuk membuka akses masuk.
+                    </p>
+
+                    <div class="location-gate-permission" data-location-permission-state hidden>
+                        Status izin lokasi: <strong data-location-permission-label>memeriksa</strong>
+                    </div>
+
+                    <div class="location-gate-guide" data-location-guide hidden>
+                        <strong>Cara mengaktifkan ulang izin lokasi</strong>
+                        <ol>
+                            <li>Klik ikon kunci, ikon informasi, atau ikon pengaturan di sebelah kiri alamat website.</li>
+                            <li>Pilih <strong>Site settings</strong> atau <strong>Setelan situs</strong>.</li>
+                            <li>Cari bagian <strong>Location</strong> atau <strong>Lokasi</strong>.</li>
+                            <li>Ubah menjadi <strong>Allow</strong>, <strong>Izinkan</strong>, atau <strong>Ask</strong>.</li>
+                            <li>Refresh halaman, lalu klik <strong>Cek ulang lokasi</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="location-gate-actions">
+                    <button type="button" class="location-gate-guide-toggle" data-location-guide-toggle>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M11 18h2v-2h-2v2Zm1-16a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm0-14a3.25 3.25 0 0 0-3.25 3.25h2A1.25 1.25 0 1 1 12 10.5c-1.5 0-2.75 1.25-2.75 2.75V14h2v-.75c0-.4.35-.75.75-.75a3.25 3.25 0 0 0 0-6.5Z"/>
+                        </svg>
+                        <span>Cara mengaktifkan izin</span>
+                    </button>
+
+                    <button type="button" class="location-gate-retry" data-location-retry>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.45 5.1h-2.2A6 6 0 1 1 12 6c1.66 0 3.14 4.22 1.78L13 11h8V3l-3.35 3.35Z"/>
+                        </svg>
+                        <span>Cek ulang lokasi</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="mobile-canvas" data-menu-canvas aria-hidden="true">
         <div class="mobile-canvas-backdrop" data-menu-close></div>
@@ -87,7 +137,7 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
                     <span>Mulai</span>
                 </a>
-                <a href="{{ route('login') }}" class="mobile-login-link">
+                <a href="{{ route('login') }}" class="mobile-login-link" data-location-gated data-location-gated-key="mobile-login">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
                     <span>Masuk Sistem</span>
                 </a>
@@ -115,7 +165,7 @@
                                 </p>
 
                                 <div class="hero-actions">
-                                    <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}">
+                                    <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="hero-login">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
                                         <span>Masuk ke Sistem</span>
                                     </a>
@@ -365,7 +415,7 @@
                         </p>
                     </div>
 
-                    <a class="btn btn-light btn-lg cta-button" href="{{ route('login') }}">
+                    <a class="btn btn-light btn-lg cta-button" href="{{ route('login') }}" data-location-gated data-location-gated-key="cta-login">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
                         <span>Masuk ke Sistem</span>
                     </a>
@@ -379,6 +429,8 @@
     </button>
 </div>
 @endsection
+
+
 
 
 

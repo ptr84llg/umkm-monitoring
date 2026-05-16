@@ -431,3 +431,330 @@
     });
 })();
 
+/**
+ * Batch 2B-Fix1 Location Permission Status & Reset Guide
+ */
+(function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const UMKM = window.UMKM || {};
+        const notice = document.querySelector('[data-location-gate-notice]');
+        const noticeCard = notice ? notice.querySelector('.location-gate-card') : null;
+        const title = document.querySelector('[data-location-gate-title]');
+        const message = document.querySelector('[data-location-gate-message]');
+        const retryButton = document.querySelector('[data-location-retry]');
+        const guideToggle = document.querySelector('[data-location-guide-toggle]');
+        const guide = document.querySelector('[data-location-guide]');
+        const permissionBox = document.querySelector('[data-location-permission-state]');
+        const permissionLabel = document.querySelector('[data-location-permission-label]');
+        const gatedLinks = document.querySelectorAll('[data-location-gated]');
+
+        const state = {
+            status: 'booting',
+            permission: 'unknown',
+            checkedAt: null,
+            lastResult: null
+        };
+
+        function setPermissionLabel(permissionState) {
+            state.permission = permissionState || 'unknown';
+
+            if (permissionBox) {
+                permissionBox.hidden = false;
+            }
+
+            if (permissionLabel) {
+                permissionLabel.textContent = state.permission;
+            }
+        }
+
+        function setGuideVisible(visible) {
+            if (!guide) {
+                return;
+            }
+
+            guide.hidden = !visible;
+        }
+
+        function setNotice(status, titleText, messageText, visible, permissionState) {
+            document.documentElement.setAttribute('data-location-gate', status);
+
+            if (noticeCard) {
+                noticeCard.classList.remove('is-checking', 'is-granted', 'is-blocked', 'is-unsupported', 'is-denied', 'is-prompt');
+                noticeCard.classList.add(`is-${status}`);
+            }
+
+            if (title) {
+                title.textContent = titleText;
+            }
+
+            if (message) {
+                message.textContent = messageText;
+            }
+
+            if (permissionState) {
+                setPermissionLabel(permissionState);
+            }
+
+            if (notice) {
+                notice.hidden = !visible;
+            }
+        }
+
+        function updateState(status, result, permissionState) {
+            state.status = status;
+            state.permission = permissionState || state.permission || 'unknown';
+            state.checkedAt = new Date().toISOString();
+            state.lastResult = result || null;
+
+            document.dispatchEvent(new CustomEvent('umkm:location-gate:updated', {
+                detail: Object.assign({}, state)
+            }));
+
+            if (UMKM.log) {
+                UMKM.log(status === 'granted' ? 'info' : 'warn', 'location gate updated', state);
+            }
+        }
+
+        async function getPermissionStatus() {
+            if (!UMKM.location || typeof UMKM.location.permissionStatus !== 'function') {
+                return {
+                    supported: false,
+                    permissionSupported: false,
+                    state: 'unsupported',
+                    message: 'Modul lokasi belum tersedia.'
+                };
+            }
+
+            return await UMKM.location.permissionStatus();
+        }
+
+        function showDenied(permission) {
+            setNotice(
+                'denied',
+                'Izin lokasi diblokir oleh browser',
+                'Website tidak dapat memunculkan ulang permintaan lokasi karena izin sudah diblokir. Ubah izin lokasi dari pengaturan situs pada browser, lalu refresh halaman.',
+                true,
+                permission && permission.state ? permission.state : 'denied'
+            );
+
+            setGuideVisible(true);
+            updateState('denied', null, 'denied');
+        }
+
+        function showUnsupported(permission) {
+            setNotice(
+                'unsupported',
+                'Validasi lokasi belum dapat digunakan',
+                'Browser atau perangkat belum mendukung pemeriksaan izin lokasi yang dibutuhkan untuk membuka akses masuk sistem.',
+                true,
+                permission && permission.state ? permission.state : 'unsupported'
+            );
+
+            setGuideVisible(false);
+            updateState('unsupported', null, permission && permission.state ? permission.state : 'unsupported');
+        }
+
+        function blockByResult(result) {
+            const permission = result && result.permission ? result.permission : null;
+            const locationState = result && result.state ? result.state : {};
+            const lastError = locationState.lastError || {};
+            const permissionState = permission && permission.state ? permission.state : locationState.permission || 'unknown';
+            const type = lastError.type || locationState.status || 'blocked';
+
+            if (permissionState === 'denied' || type === 'permission_denied_browser') {
+                showDenied(permission || {
+                    state: 'denied'
+                });
+                return;
+            }
+
+            if (permissionState === 'unsupported' || type === 'unsupported') {
+                showUnsupported(permission || {
+                    state: 'unsupported'
+                });
+                return;
+            }
+
+            if (type === 'permission_denied') {
+                setNotice(
+                    'blocked',
+                    'Lokasi belum aktif',
+                    'Aktifkan izin lokasi pada browser untuk membuka tombol masuk ke sistem.',
+                    true,
+                    permissionState
+                );
+                setGuideVisible(true);
+                updateState('blocked', result, permissionState);
+                return;
+            }
+
+            if (type === 'timeout') {
+                setNotice(
+                    'blocked',
+                    'Pemeriksaan lokasi terlalu lama',
+                    'Pastikan layanan lokasi aktif, lalu klik cek ulang lokasi.',
+                    true,
+                    permissionState
+                );
+                setGuideVisible(false);
+                updateState('blocked', result, permissionState);
+                return;
+            }
+
+            setNotice(
+                'blocked',
+                'Lokasi belum dapat diverifikasi',
+                'Akses masuk sistem dibuka setelah lokasi berhasil diperiksa.',
+                true,
+                permissionState
+            );
+            setGuideVisible(false);
+            updateState('blocked', result, permissionState);
+        }
+
+        async function checkLocationGate() {
+            if (!UMKM.location || typeof UMKM.location.check !== 'function') {
+                showUnsupported({
+                    state: 'unsupported'
+                });
+                return false;
+            }
+
+            const permission = await getPermissionStatus();
+
+            setPermissionLabel(permission.state || 'unknown');
+
+            if (permission.state === 'denied') {
+                showDenied(permission);
+                return false;
+            }
+
+            if (permission.state === 'unsupported') {
+                showUnsupported(permission);
+                return false;
+            }
+
+            if (permission.state === 'prompt') {
+                setNotice(
+                    'prompt',
+                    'Izin lokasi diperlukan',
+                    'Klik Izinkan pada permintaan lokasi browser agar tombol masuk ke sistem dapat ditampilkan.',
+                    true,
+                    'prompt'
+                );
+                setGuideVisible(false);
+                updateState('prompt', null, 'prompt');
+            } else {
+                setNotice(
+                    'checking',
+                    'Memeriksa status lokasi',
+                    'Mohon tunggu, sistem sedang memastikan lokasi aktif sebelum membuka akses masuk.',
+                    true,
+                    permission.state || 'unknown'
+                );
+                setGuideVisible(false);
+                updateState('checking', null, permission.state || 'unknown');
+            }
+
+            const result = await UMKM.location.check({
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+
+            if (result && result.ok) {
+                setNotice(
+                    'granted',
+                    'Lokasi aktif',
+                    'Akses masuk sistem sudah dibuka.',
+                    false,
+                    'granted'
+                );
+                setGuideVisible(false);
+                updateState('granted', result, 'granted');
+                return true;
+            }
+
+            blockByResult(result);
+            return false;
+        }
+
+        gatedLinks.forEach(function (link) {
+            link.addEventListener('click', async function (event) {
+                const href = link.getAttribute('href');
+
+                if (!href || href === '#') {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const allowed = await checkLocationGate();
+
+                if (allowed) {
+                    window.location.assign(href);
+                }
+            });
+        });
+
+        if (retryButton) {
+            retryButton.addEventListener('click', function () {
+                checkLocationGate();
+            });
+        }
+
+        if (guideToggle) {
+            guideToggle.addEventListener('click', function () {
+                if (!guide) {
+                    return;
+                }
+
+                guide.hidden = !guide.hidden;
+            });
+        }
+
+        if (UMKM.location && typeof UMKM.location.watchPermission === 'function') {
+            UMKM.location.watchPermission(function (permission) {
+                setPermissionLabel(permission.state || 'unknown');
+
+                if (permission.state === 'granted') {
+                    checkLocationGate();
+                    return;
+                }
+
+                if (permission.state === 'denied') {
+                    showDenied(permission);
+                    return;
+                }
+
+                if (permission.state === 'prompt') {
+                    setNotice(
+                        'prompt',
+                        'Izin lokasi diperlukan',
+                        'Klik cek ulang lokasi, lalu pilih Izinkan pada permintaan lokasi browser.',
+                        true,
+                        'prompt'
+                    );
+                    setGuideVisible(false);
+                    updateState('prompt', null, 'prompt');
+                }
+            });
+        }
+
+        window.setTimeout(function () {
+            checkLocationGate();
+        }, 450);
+
+        if (UMKM.register) {
+            UMKM.register('locationGate', {
+                check: checkLocationGate,
+                state: function () {
+                    return Object.assign({}, state);
+                },
+                permission: getPermissionStatus
+            });
+        }
+    });
+})();
