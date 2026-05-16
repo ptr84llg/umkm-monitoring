@@ -3638,3 +3638,113 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Hero-1 END */
+
+/* Batch Landing-Hero-1 Fix START */
+
+/*
+ * Fix hero layout:
+ * - Area kiri dan kanan mulai sejajar dari atas.
+ * - Card Wilayah Aktif dibuat selebar card UMKM Dashboard.
+ * - Paragraf non-judul dibuat justify.
+ */
+
+.umkm-landing p,
+.umkm-landing .location-guide-step p,
+.umkm-landing .location-guide-head p,
+.umkm-landing .location-gate-copy p,
+.umkm-landing .landing-region-modal-head p,
+.umkm-landing .dashboard-panel p,
+.umkm-landing .summary-copy p,
+.umkm-landing .cta-panel p,
+.umkm-landing #mainChartSubtitle {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.hero-shell .row {
+    align-items: flex-start !important;
+}
+
+.hero-copy {
+    justify-content: flex-start !important;
+    min-height: 0 !important;
+    padding-top: clamp(.65rem, 1.2vw, 1rem);
+}
+
+.hero-board {
+    align-content: flex-start !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    min-height: 0 !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    padding-top: 0 !important;
+}
+
+.hero-board .board-window {
+    width: 100% !important;
+}
+
+.board-source-stacked {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 .82rem 0 !important;
+}
+
+.board-source-info strong[data-public-region-source]::before {
+    content: "Sumber data: ";
+}
+
+.board-source-info strong[data-public-region-source] {
+    white-space: normal !important;
+    text-overflow: clip !important;
+    overflow: visible !important;
+}
+
+@media (min-width: 992px) {
+    .hero-shell {
+        padding-top: clamp(2.2rem, 4vw, 3.4rem) !important;
+        padding-bottom: clamp(2.2rem, 4vw, 3.4rem) !important;
+    }
+
+    .hero-copy,
+    .hero-board {
+        min-height: 0 !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .hero-copy {
+        padding-top: 0;
+    }
+
+    .hero-board {
+        max-width: 100% !important;
+        margin-inline: auto !important;
+    }
+
+    .board-source-stacked {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-landing p,
+    .umkm-landing .location-guide-step p,
+    .umkm-landing .location-guide-head p,
+    .umkm-landing .location-gate-copy p,
+    .umkm-landing .landing-region-modal-head p,
+    .umkm-landing .dashboard-panel p,
+    .umkm-landing .summary-copy p,
+    .umkm-landing .cta-panel p,
+    .umkm-landing #mainChartSubtitle {
+        text-align: left;
+    }
+
+    .board-source-info strong[data-public-region-source]::before {
+        display: inline;
+    }
+}
+
+/* Batch Landing-Hero-1 Fix END */
