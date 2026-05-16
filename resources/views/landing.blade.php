@@ -27,19 +27,72 @@
                     </span>
                 </a>
 
-                <div class="landing-menu">
-                    <a href="#dashboard">Dashboard</a>
-                    <a href="#modul">Modul</a>
-                    <a href="#ringkasan">Ringkasan</a>
+                <div class="landing-menu" aria-label="Menu utama">
+                    <a href="#dashboard">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#ringkasan">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                        <span>Ringkasan</span>
+                    </a>
                 </div>
 
                 <div class="landing-nav-actions">
-                    <a class="btn btn-light landing-login-btn" href="{{ route('login') }}">Masuk</a>
-                    <a class="btn btn-success landing-main-btn" href="#dashboard">Jelajahi</a>
+                    <a class="btn btn-light landing-login-btn" href="{{ route('login') }}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                        <span>Masuk</span>
+                    </a>
+                    <a class="btn btn-success landing-main-btn" href="#dashboard">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
+                        <span>Jelajahi</span>
+                    </a>
+
+                    <button type="button" class="landing-menu-button" data-menu-open aria-label="Buka menu">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>
+                    </button>
                 </div>
             </nav>
         </div>
     </header>
+
+    <div class="mobile-canvas" data-menu-canvas aria-hidden="true">
+        <div class="mobile-canvas-backdrop" data-menu-close></div>
+        <aside class="mobile-canvas-panel">
+            <div class="mobile-canvas-head">
+                <div class="landing-brand">
+                    <span class="landing-brand-mark">MU</span>
+                    <span class="landing-brand-text">
+                        <strong>UMKM Monitoring</strong>
+                        <small>Sistem Informasi UMKM</small>
+                    </span>
+                </div>
+
+                <button type="button" class="canvas-close" data-menu-close aria-label="Tutup menu">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z"/></svg>
+                </button>
+            </div>
+
+            <div class="mobile-canvas-menu">
+                <a href="#dashboard" data-menu-link>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#ringkasan" data-menu-link>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                    <span>Ringkasan</span>
+                </a>
+                <a href="#cta" data-menu-link>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                    <span>Mulai</span>
+                </a>
+                <a href="{{ route('login') }}" class="mobile-login-link">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                    <span>Masuk Sistem</span>
+                </a>
+            </div>
+        </aside>
+    </div>
 
     <main>
         <section class="hero-section">
@@ -48,7 +101,11 @@
                     <div class="row align-items-center g-5">
                         <div class="col-lg-6">
                             <div class="hero-copy reveal">
-                                <span class="landing-pill">Sistem informasi untuk ekosistem UMKM</span>
+                                <span class="landing-pill">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                                    <span>Sistem informasi untuk ekosistem UMKM</span>
+                                </span>
+
                                 <h1>UMKM Monitoring berbasis Data</h1>
                                 <p>
                                     Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
@@ -58,10 +115,12 @@
 
                                 <div class="hero-actions">
                                     <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}">
-                                        Masuk ke Sistem
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                                        <span>Masuk ke Sistem</span>
                                     </a>
                                     <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
-                                        Lihat Dashboard
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                                        <span>Lihat Dashboard</span>
                                     </a>
                                 </div>
                             </div>
@@ -102,15 +161,41 @@
                                         </div>
                                     </div>
 
-                                    <div class="board-chart-wrap">
-                                        <canvas id="heroMiniChart"></canvas>
-                                        <div class="hero-chart-fallback" id="heroChartFallback" hidden>
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
+                                    <div class="board-preview-grid">
+                                        <div class="preview-map-card">
+                                            <div class="preview-card-title">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
+                                                <strong>Sebaran Wilayah</strong>
+                                            </div>
+                                            <div class="mini-map">
+                                                <span class="map-area area-1"></span>
+                                                <span class="map-area area-2"></span>
+                                                <span class="map-area area-3"></span>
+                                                <span class="mini-pin pin-a"></span>
+                                                <span class="mini-pin pin-b"></span>
+                                                <span class="mini-pin pin-c"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="preview-list-card">
+                                            <div class="preview-card-title">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
+                                                <strong>Indikator</strong>
+                                            </div>
+                                            <div class="preview-progress">
+                                                <div>
+                                                    <span>Perdagangan</span>
+                                                    <b style="width: 82%"></b>
+                                                </div>
+                                                <div>
+                                                    <span>Jasa</span>
+                                                    <b style="width: 64%"></b>
+                                                </div>
+                                                <div>
+                                                    <span>Kuliner</span>
+                                                    <b style="width: 74%"></b>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -118,7 +203,7 @@
                                         <div>
                                             <span class="status-icon">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18.5v-13Zm4 2.25a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5H8Zm0 4a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5H8Zm0 4a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5H8Z"/>
+                                                    <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
                                                 </svg>
                                             </span>
                                             <strong>Data usaha</strong>
@@ -127,7 +212,7 @@
                                         <div>
                                             <span class="status-icon gold">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path d="M12 2.5 3.5 6.25v11.5L12 21.5l8.5-3.75V6.25L12 2.5Zm0 2.2 5.5 2.43L12 9.55 6.5 7.13 12 4.7Zm-6.5 4.1 5.5 2.43v7.36l-5.5-2.43V8.8Zm7.5 9.79v-7.36l5.5-2.43v7.36L13 18.59Z"/>
+                                                    <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/>
                                                 </svg>
                                             </span>
                                             <strong>Wilayah</strong>
@@ -139,22 +224,6 @@
                         </div>
                     </div>
 
-                    <div class="hero-marquee" aria-label="Ruang lingkup sistem">
-                        <div class="marquee-track">
-                            <span>Data UMKM</span>
-                            <span>Dashboard</span>
-                            <span>Peta Sebaran</span>
-                            <span>Indikator Kinerja</span>
-                            <span>Laporan Ringkas</span>
-                            <span>Umpan Balik</span>
-                            <span>Data UMKM</span>
-                            <span>Dashboard</span>
-                            <span>Peta Sebaran</span>
-                            <span>Indikator Kinerja</span>
-                            <span>Laporan Ringkas</span>
-                            <span>Umpan Balik</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -164,7 +233,10 @@
                 <div class="dashboard-panel reveal">
                     <div class="dashboard-panel-head">
                         <div>
-                            <span class="landing-pill">Dashboard interaktif</span>
+                            <span class="landing-pill">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                                <span>Dashboard interaktif</span>
+                            </span>
                             <h2>Informasi UMKM tampil dalam visual yang lebih hidup</h2>
                             <p>
                                 Dashboard membantu membaca kondisi UMKM berdasarkan indikator utama, bidang usaha,
@@ -189,9 +261,18 @@
                     </div>
 
                     <div class="dashboard-tabs" role="tablist" aria-label="Pilihan grafik dashboard">
-                        <button type="button" class="dashboard-tab active" data-chart-mode="kinerja">Kinerja</button>
-                        <button type="button" class="dashboard-tab" data-chart-mode="wilayah">Wilayah</button>
-                        <button type="button" class="dashboard-tab" data-chart-mode="legalitas">Legalitas</button>
+                        <button type="button" class="dashboard-tab active" data-chart-mode="kinerja">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
+                            <span>Kinerja</span>
+                        </button>
+                        <button type="button" class="dashboard-tab" data-chart-mode="wilayah">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
+                            <span>Wilayah</span>
+                        </button>
+                        <button type="button" class="dashboard-tab" data-chart-mode="legalitas">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.75h9.25L20 7.5v13.75H6A2 2 0 0 1 4 19.25V4.75a2 2 0 0 1 2-2Zm8 1.75v4h4l-4-4ZM8 12h8v1.75H8V12Zm0 4h8v1.75H8V16Z"/></svg>
+                            <span>Legalitas</span>
+                        </button>
                     </div>
 
                     <div class="chart-card">
@@ -200,7 +281,10 @@
                                 <strong id="mainChartTitle">Tren Perkembangan UMKM</strong>
                                 <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
                             </div>
-                            <span class="chart-badge">Chart.js</span>
+                            <span class="chart-badge">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
+                                Chart.js
+                            </span>
                         </div>
 
                         <div class="chart-canvas-wrap">
@@ -229,66 +313,14 @@
             </div>
         </section>
 
-        <section id="modul" class="module-section">
-            <div class="container">
-                <div class="section-heading reveal">
-                    <span class="landing-pill">Modul sistem</span>
-                    <h2>Ruang kerja untuk mengelola dan memantau data UMKM</h2>
-                    <p>
-                        Modul disusun agar pengelolaan data, pembacaan indikator, dan penyajian informasi
-                        dapat dilakukan dalam alur yang lebih tertata.
-                    </p>
-                </div>
-
-                <div class="module-grid">
-                    <article class="module-card reveal">
-                        <span class="module-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
-                            </svg>
-                        </span>
-                        <h3>Data UMKM</h3>
-                        <p>Profil usaha, pemilik, legalitas, produk, bidang usaha, lokasi, dan status data.</p>
-                    </article>
-
-                    <article class="module-card reveal reveal-delay-1">
-                        <span class="module-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
-                            </svg>
-                        </span>
-                        <h3>Dashboard</h3>
-                        <p>Indikator, grafik, komposisi data, dan ringkasan yang mudah dibaca.</p>
-                    </article>
-
-                    <article class="module-card reveal reveal-delay-2">
-                        <span class="module-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
-                            </svg>
-                        </span>
-                        <h3>Peta Sebaran</h3>
-                        <p>Visualisasi lokasi untuk membaca persebaran dan konsentrasi UMKM.</p>
-                    </article>
-
-                    <article class="module-card reveal reveal-delay-3">
-                        <span class="module-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M6 2.75h9.25L20 7.5v13.75H6A2 2 0 0 1 4 19.25V4.75a2 2 0 0 1 2-2Zm8 1.75v4h4l-4-4ZM8 12h8v1.75H8V12Zm0 4h8v1.75H8V16Z"/>
-                            </svg>
-                        </span>
-                        <h3>Laporan</h3>
-                        <p>Ringkasan informasi untuk monitoring, evaluasi, dan tindak lanjut.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
         <section id="ringkasan" class="summary-section">
             <div class="container">
                 <div class="summary-shell reveal">
                     <div class="summary-copy">
-                        <span class="landing-pill">Ringkasan sistem</span>
+                        <span class="landing-pill">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                            <span>Ringkasan sistem</span>
+                        </span>
                         <h2>Data tersusun, visual lebih jelas, keputusan lebih terarah</h2>
                         <p>
                             UMKM Monitoring menyatukan pengelolaan data dan visualisasi agar informasi usaha
@@ -298,15 +330,21 @@
 
                     <div class="summary-list">
                         <div>
-                            <strong>01</strong>
+                            <strong>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/></svg>
+                            </strong>
                             <span>Data usaha dikelola dalam struktur yang rapi.</span>
                         </div>
                         <div>
-                            <strong>02</strong>
+                            <strong>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
+                            </strong>
                             <span>Informasi ditampilkan dalam dashboard visual.</span>
                         </div>
                         <div>
-                            <strong>03</strong>
+                            <strong>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                            </strong>
                             <span>Ringkasan membantu monitoring dan evaluasi.</span>
                         </div>
                     </div>
@@ -318,7 +356,10 @@
             <div class="container">
                 <div class="cta-panel reveal">
                     <div>
-                        <span class="landing-pill">UMKM Monitoring</span>
+                        <span class="landing-pill">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                            <span>UMKM Monitoring</span>
+                        </span>
                         <h2>Kelola data UMKM dalam dashboard</h2>
                         <p>
                             Masuk ke sistem untuk mengakses dashboard, modul pengelolaan data,
@@ -327,11 +368,16 @@
                     </div>
 
                     <a class="btn btn-light btn-lg cta-button" href="{{ route('login') }}">
-                        Masuk ke Sistem
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                        <span>Masuk ke Sistem</span>
                     </a>
                 </div>
             </div>
         </section>
     </main>
+
+    <button type="button" class="to-top-button" data-to-top aria-label="Kembali ke atas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 7-1.4 1.4L13 7.8V20h-2V7.8l-4.6 4.6L5 11l7-7Z"/></svg>
+    </button>
 </div>
 @endsection

@@ -14,12 +14,13 @@
         const summaryTwo = document.getElementById('chartSummaryTwo');
         const summaryThree = document.getElementById('chartSummaryThree');
         const mainCanvas = document.getElementById('landingMainChart');
-        const heroCanvas = document.getElementById('heroMiniChart');
         const fallback = document.getElementById('chartFallback');
-        const heroFallback = document.getElementById('heroChartFallback');
+        const canvasMenu = document.querySelector('[data-menu-canvas]');
+        const menuOpen = document.querySelector('[data-menu-open]');
+        const menuCloseItems = document.querySelectorAll('[data-menu-close], [data-menu-link]');
+        const toTop = document.querySelector('[data-to-top]');
 
         let mainChart = null;
-        let heroChart = null;
 
         const chartModes = {
             kinerja: {
@@ -60,10 +61,51 @@
             }
 
             header.classList.toggle('is-scrolled', window.scrollY > 18);
+
+            if (toTop) {
+                toTop.classList.toggle('is-visible', window.scrollY > 420);
+            }
         }
 
         window.addEventListener('scroll', updateHeader, { passive: true });
         updateHeader();
+
+        if (menuOpen && canvasMenu) {
+            menuOpen.addEventListener('click', function () {
+                canvasMenu.classList.add('is-open');
+                canvasMenu.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('is-canvas-open');
+            });
+        }
+
+        function closeCanvasMenu() {
+            if (!canvasMenu) {
+                return;
+            }
+
+            canvasMenu.classList.remove('is-open');
+            canvasMenu.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('is-canvas-open');
+        }
+
+        menuCloseItems.forEach(function (item) {
+            item.addEventListener('click', closeCanvasMenu);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeCanvasMenu();
+            }
+        });
+
+        if (toTop) {
+            toTop.addEventListener('click', function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
 
         if ('IntersectionObserver' in window) {
             const revealObserver = new IntersectionObserver((entries) => {
@@ -169,6 +211,10 @@
             return {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 900,
+                    easing: 'easeOutQuart'
+                },
                 interaction: {
                     intersect: false,
                     mode: 'index'
@@ -239,12 +285,6 @@
         function showFallback() {
             if (fallback) {
                 fallback.hidden = false;
-            }
-        }
-
-        function showHeroFallback() {
-            if (heroFallback) {
-                heroFallback.hidden = false;
             }
         }
 
@@ -334,89 +374,6 @@
             });
         }
 
-        function renderHeroChart() {
-            if (!window.Chart || !heroCanvas) {
-                showHeroFallback();
-                return;
-            }
-
-            const ctx = heroCanvas.getContext('2d');
-
-            if (heroChart) {
-                heroChart.destroy();
-            }
-
-            heroChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                    datasets: [
-                        {
-                            label: 'Aktivitas',
-                            data: [28, 44, 39, 62, 76, 69],
-                            borderColor: '#0f7665',
-                            backgroundColor: function (context) {
-                                const chart = context.chart;
-                                const area = chart.chartArea;
-
-                                if (!area) {
-                                    return 'rgba(15, 118, 101, .12)';
-                                }
-
-                                return makeGradient(
-                                    chart.ctx,
-                                    area,
-                                    'rgba(15, 118, 101, .28)',
-                                    'rgba(15, 118, 101, .02)'
-                                );
-                            },
-                            fill: true,
-                            tension: .44,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: '#0f7665',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2
-                        },
-                        {
-                            label: 'Sebaran',
-                            data: [18, 32, 36, 44, 58, 63],
-                            borderColor: '#f0a84a',
-                            borderDash: [6, 6],
-                            borderWidth: 2,
-                            tension: .44,
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(16, 33, 61, .94)',
-                            padding: 10,
-                            cornerRadius: 12,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: false
-                        },
-                        y: {
-                            display: false,
-                            beginAtZero: true,
-                            suggestedMax: 100
-                        }
-                    }
-                }
-            });
-        }
-
         tabs.forEach((tab) => {
             tab.addEventListener('click', () => {
                 const mode = tab.dataset.chartMode || 'kinerja';
@@ -428,6 +385,5 @@
         });
 
         renderMainChart('kinerja');
-        renderHeroChart();
     });
 })();

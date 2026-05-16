@@ -50,7 +50,6 @@
                 <strong>Navigasi</strong>
                 <a href="{{ url('/') }}">Beranda</a>
                 <a href="{{ url('/#dashboard') }}">Dashboard</a>
-                <a href="{{ url('/#modul') }}">Modul Sistem</a>
                 <a href="{{ url('/#ringkasan') }}">Ringkasan</a>
             </div>
 
