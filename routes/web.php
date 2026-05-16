@@ -1,8 +1,10 @@
 <?php
-use App\Http\Controllers\AdminUtama\AdminUtamaController;use App\Http\Controllers\Api\Public\LandingRegionController;use App\Http\Controllers\Auth\LoginController;use Illuminate\Support\Facades\Route;
-Route::get('/', fn()=>view('landing'));
+use App\Http\Controllers\AdminUtama\AdminUtamaController;
+use App\Http\Controllers\Api\Public\LandingRegionController;
+use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Support\Facades\Route;
+Route::get('/', fn () => view('landing'));
 
-// Batch Landing-Regional-2A START
 Route::prefix('api/public/landing-regions')
     ->middleware([
         'throttle:internal-sensitive',
@@ -18,7 +20,6 @@ Route::prefix('api/public/landing-regions')
         Route::get('/children', [LandingRegionController::class, 'children'])
             ->name('landing.regions.children');
     });
-// Batch Landing-Regional-2A END
 
 Route::middleware('guest')->group(function(){ Route::get('/login',[LoginController::class,'create'])->name('login'); Route::post('/login',[LoginController::class,'store'])->name('login.store'); });
 Route::middleware('auth')->group(function(){
@@ -37,3 +38,4 @@ Route::middleware('auth')->group(function(){
  Route::prefix('admin-dinas')->name('admin-dinas.')->middleware(['role:admin_dinas'])->group(function(){ Route::get('/dashboard',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'dashboard'])->middleware('permission:umkm.read.official')->name('dashboard'); Route::get('/umkm',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'index'])->middleware('permission:umkm.read.official')->name('umkm.index'); Route::get('/umkm/create',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'create'])->middleware('permission:umkm.write.official')->name('umkm.create'); Route::post('/umkm',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'store'])->middleware('permission:umkm.write.official')->name('umkm.store'); Route::get('/umkm/{umkm}',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'show'])->middleware('permission:umkm.read.official')->name('umkm.show'); Route::get('/umkm/{umkm}/edit',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'edit'])->middleware('permission:umkm.write.official')->name('umkm.edit'); Route::put('/umkm/{umkm}',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'update'])->middleware('permission:umkm.write.official')->name('umkm.update'); Route::get('/references',[\App\Http\Controllers\AdminDinas\AdminDinasController::class,'references'])->middleware('permission:umkm.read.official')->name('references'); Route::get('/umkm/{umkm}/location',[\App\Http\Controllers\AdminDinas\LocationController::class,'edit'])->middleware('permission:umkm.read.official')->name('location.edit'); Route::post('/umkm/{umkm}/location/proposal',[\App\Http\Controllers\AdminDinas\LocationController::class,'submitProposal'])->middleware('permission:umkm.submit.update')->name('location.proposal'); Route::get('/proposals',[\App\Http\Controllers\Proposal\UmkmProposalController::class,'indexForAdmin'])->middleware('permission:umkm.review.update')->name('proposals.index'); Route::get('/proposals/{proposal}',[\App\Http\Controllers\Proposal\UmkmProposalController::class,'show'])->middleware('permission:umkm.review.update')->name('proposals.show'); Route::post('/proposals/{proposal}/review',[\App\Http\Controllers\Proposal\UmkmProposalController::class,'review'])->middleware('permission:umkm.review.update')->name('proposals.review'); Route::post('/location-proposals/{proposal}/review',[\App\Http\Controllers\AdminDinas\LocationController::class,'adminValidate'])->middleware('permission:umkm.review.update')->name('location-proposals.review'); });
  Route::get('/smoke/layout-components', fn()=>view('pages.smoke.layout-components'));
 });
+
