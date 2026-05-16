@@ -249,7 +249,6 @@ class LandingRegionController extends Controller
     protected function transform(Region $region): array
     {
         return [
-            'id' => $region->id,
             'code' => $region->code,
             'name' => $region->name,
             'level' => $region->level,
