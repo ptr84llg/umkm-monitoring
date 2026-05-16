@@ -2589,3 +2589,497 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Regional-2B END */
+
+/* Batch Landing-Regional-2C START */
+
+/*
+ * UX final modal wilayah landing:
+ * - Loading state
+ * - Disabled apply saat request berjalan
+ * - Alert lebih jelas
+ * - Responsive modal lebih aman
+ */
+
+.landing-region-modal.is-loading {
+    cursor: progress;
+}
+
+.landing-region-modal.is-loading .landing-region-field .form-select,
+.landing-region-modal.is-loading [data-region-modal-apply] {
+    pointer-events: none;
+}
+
+.landing-region-modal [data-region-modal-apply][disabled],
+.landing-region-modal [data-region-modal-apply].is-disabled {
+    opacity: .72;
+    cursor: not-allowed;
+}
+
+.landing-region-loading {
+    display: none;
+    align-items: center;
+    gap: .55rem;
+    margin: .8rem 0 0;
+    border: 1px solid rgba(15, 118, 101, .12);
+    border-radius: 18px;
+    padding: .72rem .85rem;
+    color: var(--landing-brand-dark);
+    background: rgba(15, 118, 101, .07);
+    font-size: .86rem;
+    font-weight: 800;
+}
+
+.landing-region-modal.is-loading .landing-region-loading {
+    display: inline-flex;
+}
+
+.landing-region-loading::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(15, 118, 101, .20);
+    border-top-color: var(--landing-brand);
+    border-radius: 999px;
+    animation: landing-region-spin .75s linear infinite;
+}
+
+@keyframes landing-region-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.landing-region-alert {
+    position: relative;
+}
+
+.landing-region-alert::before {
+    content: "!";
+    width: 22px;
+    height: 22px;
+    display: inline-grid;
+    place-items: center;
+    margin-right: .45rem;
+    border-radius: 999px;
+    color: #ffffff;
+    background: #dc2626;
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.landing-region-modal-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+}
+
+.landing-region-modal-actions .btn-success[disabled]::before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, .38);
+    border-top-color: #ffffff;
+    border-radius: 999px;
+    animation: landing-region-spin .75s linear infinite;
+}
+
+@media (max-width: 767.98px) {
+    .landing-region-modal {
+        max-height: 86vh;
+    }
+
+    .landing-region-loading {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Batch Landing-Regional-2C END */
+
+/* Batch Landing-Mobile-1 START */
+
+/*
+ * Mobile responsive refinement:
+ * - Pada HP/tablet kecil, tombol Masuk dan Jelajahi di topbar masuk ke hidden menu.
+ * - Topbar dibuat ringkas: logo + menu button.
+ * - Dashboard Interaktif dibuat lebih lega pada lebar 400px.
+ */
+
+@media (max-width: 991.98px) {
+    .umkm-landing {
+        padding-top: 82px;
+    }
+
+    .landing-nav {
+        min-height: 72px;
+        gap: .7rem;
+    }
+
+    .landing-menu {
+        display: none !important;
+    }
+
+    .landing-nav-actions {
+        margin-left: auto;
+        gap: .4rem;
+    }
+
+    .landing-nav-actions > a {
+        display: none !important;
+    }
+
+    .landing-menu-button {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-landing {
+        padding-top: 76px;
+    }
+
+    .landing-nav {
+        min-height: 68px;
+    }
+
+    .landing-brand {
+        min-width: 0;
+        gap: .65rem;
+    }
+
+    .landing-brand-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 15px;
+        flex: 0 0 42px;
+    }
+
+    .landing-brand-text {
+        min-width: 0;
+    }
+
+    .landing-brand-text strong {
+        max-width: 190px;
+        overflow: hidden;
+        font-size: .98rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .landing-brand-text small {
+        max-width: 190px;
+        overflow: hidden;
+        font-size: .78rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .landing-menu-button {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+    }
+
+    .hero-section {
+        padding-top: 24px;
+        padding-bottom: 52px;
+    }
+
+    .dashboard-section,
+    .summary-section,
+    .cta-section {
+        padding: 54px 0;
+    }
+
+    .dashboard-panel {
+        border-radius: 28px;
+        padding: 1rem;
+    }
+
+    .dashboard-panel-head {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: .95rem;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-panel h2,
+    .summary-copy h2,
+    .cta-panel h2 {
+        font-size: clamp(1.55rem, 8vw, 2.1rem);
+        line-height: 1.12;
+    }
+
+    .dashboard-panel p,
+    .summary-copy p,
+    .cta-panel p {
+        margin-top: .7rem;
+        font-size: .92rem;
+        line-height: 1.62;
+    }
+
+    .dashboard-insight {
+        grid-template-columns: 1fr;
+        gap: .55rem;
+    }
+
+    .dashboard-insight div {
+        border-radius: 16px;
+        padding: .72rem;
+    }
+
+    .dashboard-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: .45rem;
+        margin-bottom: .85rem;
+    }
+
+    .dashboard-tab {
+        min-width: 0;
+        border-radius: 16px;
+        padding: .66rem .48rem;
+        font-size: .78rem;
+        line-height: 1.18;
+        text-align: center;
+    }
+
+    .dashboard-tab svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .chart-card {
+        border-radius: 24px;
+        padding: .85rem;
+        box-shadow: 0 16px 48px rgba(16, 33, 61, .08);
+    }
+
+    .chart-head {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: .55rem;
+        align-items: start;
+        margin-bottom: .75rem;
+    }
+
+    .chart-head > div {
+        min-width: 0;
+    }
+
+    .chart-head strong {
+        font-size: 1rem;
+        line-height: 1.22;
+    }
+
+    .chart-head span {
+        margin-top: .22rem;
+        font-size: .78rem;
+        line-height: 1.35;
+    }
+
+    .chart-region-badge,
+    .chart-badge {
+        width: fit-content;
+        max-width: 100%;
+        justify-content: flex-start;
+        border-radius: 999px;
+        padding: .44rem .64rem;
+        font-size: .72rem !important;
+        line-height: 1.15;
+        white-space: normal;
+    }
+
+    .chart-badge svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .chart-canvas-wrap {
+        height: 300px;
+        border-radius: 20px;
+        padding: .55rem;
+    }
+
+    .chart-summary {
+        grid-template-columns: 1fr;
+        gap: .55rem;
+        margin-top: .65rem;
+    }
+
+    .chart-summary div {
+        border-radius: 16px;
+        padding: .72rem;
+    }
+
+    .chart-summary span {
+        font-size: .76rem;
+    }
+
+    .chart-summary strong {
+        font-size: .88rem;
+        line-height: 1.35;
+    }
+}
+
+@media (max-width: 420px) {
+    .landing-brand-text strong,
+    .landing-brand-text small {
+        max-width: 165px;
+    }
+
+    .dashboard-panel {
+        padding: .85rem;
+    }
+
+    .dashboard-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-tab {
+        justify-content: flex-start;
+        border-radius: 18px;
+        padding: .7rem .82rem;
+    }
+
+    .chart-card {
+        padding: .76rem;
+    }
+
+    .chart-canvas-wrap {
+        height: 285px;
+        padding: .45rem;
+    }
+}
+
+/* Batch Landing-Mobile-1 END */
+
+/* Batch Landing-Mobile-1 Fix START */
+
+/*
+ * Fix posisi tombol menu pada topbar mobile.
+ * Target: topbar HP hanya berisi logo di kiri dan tombol menu di kanan.
+ */
+
+@media (max-width: 991.98px) {
+    .landing-header .container {
+        max-width: 100% !important;
+        padding-inline: clamp(.85rem, 4vw, 1.15rem) !important;
+    }
+
+    .landing-nav {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-areas: "brand actions" !important;
+        align-items: center !important;
+        justify-content: stretch !important;
+        column-gap: .75rem !important;
+        row-gap: 0 !important;
+        width: 100% !important;
+        min-height: 72px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .landing-brand {
+        grid-area: brand !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .landing-menu {
+        display: none !important;
+    }
+
+    .landing-nav-actions {
+        grid-area: actions !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        justify-self: end !important;
+        width: auto !important;
+        min-width: 44px !important;
+        margin-left: 0 !important;
+        gap: 0 !important;
+    }
+
+    .landing-nav-actions > a {
+        display: none !important;
+    }
+
+    .landing-menu-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        flex: 0 0 44px !important;
+        margin: 0 !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .landing-nav {
+        min-height: 68px !important;
+        column-gap: .65rem !important;
+    }
+
+    .landing-brand-mark {
+        width: 42px !important;
+        height: 42px !important;
+        flex: 0 0 42px !important;
+    }
+
+    .landing-brand-text strong,
+    .landing-brand-text small {
+        max-width: calc(100vw - 150px) !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .landing-menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        flex-basis: 42px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .landing-header .container {
+        padding-inline: .75rem !important;
+    }
+
+    .landing-brand {
+        gap: .55rem !important;
+    }
+
+    .landing-brand-mark {
+        width: 40px !important;
+        height: 40px !important;
+        flex-basis: 40px !important;
+    }
+
+    .landing-brand-text strong {
+        font-size: .92rem !important;
+    }
+
+    .landing-brand-text small {
+        font-size: .74rem !important;
+    }
+
+    .landing-menu-button {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        flex-basis: 40px !important;
+    }
+}
+
+/* Batch Landing-Mobile-1 Fix END */

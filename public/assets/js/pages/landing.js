@@ -811,19 +811,21 @@
     });
 })();
 
-/* Batch Landing-Regional-2B START */
+/* Batch Landing-Regional-2C START */
 
 /**
- * Landing public-safe region modal.
+ * Landing public-safe region modal final UX.
  * - Memakai UMKM.ajax, bukan fetch langsung.
- * - API hanya public-safe landing region.
- * - Wilayah dikunci Sumatera Selatan → Kota Lubuklinggau.
- * - Data card/chart tetap agregat preview.
+ * - Endpoint public-safe hanya untuk Sumatera Selatan → Kota Lubuklinggau.
+ * - Loading dan error state dijaga di modal.
+ * - Card dan chart tetap preview agregat.
  */
 (function () {
     'use strict';
 
     window.UMKM = window.UMKM || {};
+
+    const UMKM = window.UMKM;
 
     const API = {
         context: '/api/public/landing-regions/context',
@@ -832,10 +834,25 @@
 
     const DEFAULT_CONTEXT = {
         province: { code: '16', name: 'Sumatera Selatan', level: 'province' },
-        city: { code: '16.73', name: 'Kota Lubuklinggau', level: 'city' }
+        city: { code: '16.73', name: 'Kota Lubuklinggau', level: 'city' },
+        options: {
+            district_all: {
+                code: '__ALL_DISTRICTS__',
+                name: 'Semua Kecamatan',
+                level: 'district',
+                is_virtual: true
+            },
+            village_all: {
+                code: '__ALL_VILLAGES__',
+                name: 'Semua Kelurahan',
+                level: 'village',
+                is_virtual: true
+            }
+        }
     };
 
     const state = {
+        loading: false,
         contextLoaded: false,
         context: DEFAULT_CONTEXT,
         districts: [],
@@ -862,7 +879,7 @@
     }
 
     function ajaxReady() {
-        return Boolean(window.UMKM && UMKM.ajax && typeof UMKM.ajax.get === 'function');
+        return Boolean(UMKM.ajax && typeof UMKM.ajax.get === 'function');
     }
 
     function unwrap(result) {
@@ -877,7 +894,7 @@
         return result;
     }
 
-    function ok(result) {
+    function resultOk(result) {
         return Boolean(result && result.ok);
     }
 
@@ -897,12 +914,63 @@
         return Math.abs(value);
     }
 
+    function getModal() {
+        return document.querySelector('[data-region-modal] .landing-region-modal');
+    }
+
+    function setLoading(isLoading, message) {
+        state.loading = Boolean(isLoading);
+
+        const modal = getModal();
+        const applyButton = document.querySelector('[data-region-modal-apply]');
+
+        if (modal) {
+            modal.classList.toggle('is-loading', state.loading);
+
+            let loading = modal.querySelector('[data-region-loading]');
+
+            if (!loading) {
+                loading = document.createElement('div');
+                loading.className = 'landing-region-loading';
+                loading.dataset.regionLoading = 'true';
+                loading.textContent = 'Memuat data wilayah...';
+
+                const form = modal.querySelector('.landing-region-form');
+                if (form) {
+                    form.insertAdjacentElement('afterend', loading);
+                }
+            }
+
+            loading.textContent = message || 'Memuat data wilayah...';
+        }
+
+        if (applyButton) {
+            applyButton.disabled = state.loading;
+            applyButton.classList.toggle('is-disabled', state.loading);
+        }
+    }
+
     function setText(selector, value) {
         const element = document.querySelector(selector);
 
         if (element) {
             element.textContent = value;
         }
+    }
+
+    function setAlert(message) {
+        const alert = document.querySelector('[data-region-modal-alert]');
+
+        if (!alert) {
+            return;
+        }
+
+        alert.hidden = !message;
+        alert.textContent = message || '';
+    }
+
+    function setModalCurrent(text) {
+        setText('[data-region-modal-current]', text || 'Kota Lubuklinggau');
     }
 
     function updateMetric(selector, value) {
@@ -966,21 +1034,13 @@
         }
 
         select.innerHTML = '';
-
-        const all = allOption || {
-            code: '__ALL_DISTRICTS__',
-            name: 'Semua Kecamatan',
-            level: 'district',
-            is_virtual: true
-        };
-
-        select.appendChild(createOption(all));
+        select.appendChild(createOption(allOption || DEFAULT_CONTEXT.options.district_all));
 
         (districts || []).forEach(function (region) {
             select.appendChild(createOption(region));
         });
 
-        select.value = all.code;
+        select.value = (allOption || DEFAULT_CONTEXT.options.district_all).code;
         select.disabled = false;
     }
 
@@ -990,45 +1050,22 @@
         }
 
         select.innerHTML = '';
-
-        const all = allOption || {
-            code: '__ALL_VILLAGES__',
-            name: 'Semua Kelurahan',
-            level: 'village',
-            is_virtual: true
-        };
-
-        select.appendChild(createOption(all));
+        select.appendChild(createOption(allOption || DEFAULT_CONTEXT.options.village_all));
 
         (villages || []).forEach(function (region) {
             select.appendChild(createOption(region));
         });
 
-        select.value = all.code;
+        select.value = (allOption || DEFAULT_CONTEXT.options.village_all).code;
         select.disabled = Boolean(disabled);
     }
 
-    function setAlert(message) {
-        const alert = document.querySelector('[data-region-modal-alert]');
-
-        if (!alert) {
-            return;
-        }
-
-        alert.hidden = !message;
-        alert.textContent = message || '';
-    }
-
-    function setModalCurrent(text) {
-        setText('[data-region-modal-current]', text || 'Kota Lubuklinggau');
-    }
-
-    function modal() {
+    function modalShell() {
         return document.querySelector('[data-region-modal]');
     }
 
     function openModal() {
-        const shell = modal();
+        const shell = modalShell();
 
         if (!shell) {
             return;
@@ -1042,7 +1079,11 @@
     }
 
     function closeModal() {
-        const shell = modal();
+        if (state.loading) {
+            return;
+        }
+
+        const shell = modalShell();
 
         if (!shell) {
             return;
@@ -1057,7 +1098,7 @@
         const result = await UMKM.ajax.get(url);
         const payload = unwrap(result);
 
-        if (!ok(result) || !payload || !payload.data) {
+        if (!resultOk(result) || !payload || !payload.data) {
             throw new Error(payload && payload.message ? payload.message : 'Data wilayah tidak dapat dimuat.');
         }
 
@@ -1075,40 +1116,49 @@
         }
 
         try {
-            setAlert('Memuat wilayah yang diizinkan...');
+            setLoading(true, 'Memuat kecamatan Kota Lubuklinggau...');
+            setAlert('');
 
             const result = await UMKM.ajax.get(API.context);
             const payload = unwrap(result);
 
-            if (!ok(result) || !payload || !payload.data) {
+            if (!resultOk(result) || !payload || !payload.data) {
                 throw new Error(payload && payload.message ? payload.message : 'Konteks wilayah tidak dapat dimuat.');
             }
 
             state.context = {
                 province: payload.data.province || DEFAULT_CONTEXT.province,
                 city: payload.data.city || DEFAULT_CONTEXT.city,
-                options: payload.data.options || {}
+                options: Object.assign({}, DEFAULT_CONTEXT.options, payload.data.options || {})
             };
 
-            const provinceSelect = document.querySelector('[data-landing-region-province]');
-            const citySelect = document.querySelector('[data-landing-region-city]');
-            const districtSelect = document.querySelector('[data-landing-region-district]');
-            const villageSelect = document.querySelector('[data-landing-region-village]');
-
-            fillLockedSelect(provinceSelect, state.context.province);
-            fillLockedSelect(citySelect, state.context.city);
+            fillLockedSelect(document.querySelector('[data-landing-region-province]'), state.context.province);
+            fillLockedSelect(document.querySelector('[data-landing-region-city]'), state.context.city);
 
             const districtData = await loadChildren(state.context.city.code, 'district');
-            state.districts = districtData.regions || [];
 
-            fillDistricts(districtSelect, districtData.all_option, state.districts);
-            fillVillages(villageSelect, state.context.options.village_all, [], true);
+            state.districts = districtData.regions || [];
+            state.villages = [];
+
+            fillDistricts(
+                document.querySelector('[data-landing-region-district]'),
+                districtData.all_option || state.context.options.district_all,
+                state.districts
+            );
+
+            fillVillages(
+                document.querySelector('[data-landing-region-village]'),
+                state.context.options.village_all,
+                [],
+                true
+            );
 
             state.contextLoaded = true;
-            setModalCurrent('Kota Lubuklinggau');
-            setAlert('');
+            setModalCurrent(state.applied.label || 'Kota Lubuklinggau');
         } catch (error) {
             setAlert(error.message || 'Wilayah tidak dapat dimuat.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -1122,21 +1172,30 @@
         if (!district || district.isVirtual) {
             fillVillages(villageSelect, state.context.options?.village_all, [], true);
             setModalCurrent('Kota Lubuklinggau');
+            setAlert('');
             return;
         }
 
         try {
-            setAlert('Memuat desa/kelurahan...');
+            setLoading(true, 'Memuat desa/kelurahan...');
+            setAlert('');
 
             const villageData = await loadChildren(district.code, 'village');
             state.villages = villageData.regions || [];
 
-            fillVillages(villageSelect, villageData.all_option, state.villages, false);
+            fillVillages(
+                villageSelect,
+                villageData.all_option || state.context.options?.village_all,
+                state.villages,
+                false
+            );
+
             setModalCurrent(district.name);
-            setAlert('');
         } catch (error) {
             fillVillages(villageSelect, state.context.options?.village_all, [], true);
             setAlert(error.message || 'Desa/kelurahan tidak dapat dimuat.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -1258,21 +1317,12 @@
         const label = selection.label;
 
         if (mode === 'wilayah') {
-            const source = selection.scope === 'city'
-                ? state.districts
-                : state.villages;
-
+            const source = selection.scope === 'city' ? state.districts : state.villages;
             const labels = source.length
-                ? source.slice(0, 8).map(function (item) { return item.name.replace(/^Lubuk Linggau\s+/i, ''); })
+                ? source.slice(0, 8).map(function (item) {
+                    return String(item.name || '').replace(/^Lubuk Linggau\s+/i, '');
+                })
                 : ['Wilayah A', 'Wilayah B', 'Wilayah C', 'Wilayah D'];
-
-            const unitData = labels.map(function (_, index) {
-                return 18 + ((seed + index * 11) % 56);
-            });
-
-            const percentData = labels.map(function (_, index) {
-                return 8 + ((seed + index * 7) % 18);
-            });
 
             return {
                 title: `Sebaran UMKM ${label}`,
@@ -1280,8 +1330,12 @@
                 labels: labels,
                 unitLabel: 'Jumlah UMKM',
                 percentLabel: 'Konsentrasi (%)',
-                unitData: unitData,
-                percentData: percentData,
+                unitData: labels.map(function (_, index) {
+                    return 18 + ((seed + index * 11) % 56);
+                }),
+                percentData: labels.map(function (_, index) {
+                    return 8 + ((seed + index * 7) % 18);
+                }),
                 summaryOne: selection.scope === 'city' ? 'Kecamatan terpantau' : 'Kelurahan terpantau',
                 summaryTwo: 'Jumlah dan konsentrasi wilayah',
                 summaryThree: `Sebaran ${label}`
@@ -1404,6 +1458,12 @@
             button.addEventListener('click', closeModal);
         });
 
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !state.loading) {
+                closeModal();
+            }
+        });
+
         document.querySelector('[data-landing-region-district]')?.addEventListener('change', onDistrictChanged);
 
         document.querySelector('[data-landing-region-village]')?.addEventListener('change', function () {
@@ -1412,6 +1472,10 @@
         });
 
         document.querySelector('[data-region-modal-apply]')?.addEventListener('click', function () {
+            if (state.loading) {
+                return;
+            }
+
             const selection = getAppliedSelection();
 
             applySelection(selection);
@@ -1432,4 +1496,140 @@
     });
 })();
 
-/* Batch Landing-Regional-2B END */
+/* Batch Landing-Regional-2C END */
+
+/* Batch Landing-Mobile-1 START */
+
+/**
+ * Compact Chart.js pada mobile.
+ * Tujuan: chart dashboard interaktif tetap terbaca pada lebar 400px.
+ */
+(function () {
+    'use strict';
+
+    function ready(callback) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback);
+            return;
+        }
+
+        callback();
+    }
+
+    function getLandingChart() {
+        const canvas = document.getElementById('landingMainChart');
+
+        if (!canvas || !window.Chart || typeof Chart.getChart !== 'function') {
+            return null;
+        }
+
+        return Chart.getChart(canvas);
+    }
+
+    function applyMobileChartMode() {
+        const chart = getLandingChart();
+
+        if (!chart || !chart.options) {
+            return;
+        }
+
+        const compact = window.matchMedia('(max-width: 575.98px)').matches;
+        const veryCompact = window.matchMedia('(max-width: 420px)').matches;
+
+        if (chart.options.plugins && chart.options.plugins.legend) {
+            chart.options.plugins.legend.display = !veryCompact;
+            chart.options.plugins.legend.position = 'bottom';
+
+            if (chart.options.plugins.legend.labels) {
+                chart.options.plugins.legend.labels.padding = compact ? 10 : 18;
+
+                chart.options.plugins.legend.labels.font = Object.assign(
+                    {},
+                    chart.options.plugins.legend.labels.font || {},
+                    {
+                        size: compact ? 10 : 12,
+                        weight: '700'
+                    }
+                );
+            }
+        }
+
+        if (chart.options.scales) {
+            if (chart.options.scales.x && chart.options.scales.x.ticks) {
+                chart.options.scales.x.ticks.autoSkip = true;
+                chart.options.scales.x.ticks.maxTicksLimit = compact ? 4 : 8;
+                chart.options.scales.x.ticks.maxRotation = compact ? 0 : 50;
+                chart.options.scales.x.ticks.minRotation = 0;
+
+                chart.options.scales.x.ticks.font = Object.assign(
+                    {},
+                    chart.options.scales.x.ticks.font || {},
+                    {
+                        size: compact ? 10 : 12,
+                        weight: '700'
+                    }
+                );
+            }
+
+            if (chart.options.scales.y) {
+                if (chart.options.scales.y.title) {
+                    chart.options.scales.y.title.display = !compact;
+                }
+
+                if (chart.options.scales.y.ticks) {
+                    chart.options.scales.y.ticks.maxTicksLimit = compact ? 5 : 8;
+                    chart.options.scales.y.ticks.font = Object.assign(
+                        {},
+                        chart.options.scales.y.ticks.font || {},
+                        {
+                            size: compact ? 10 : 12,
+                            weight: '700'
+                        }
+                    );
+                }
+            }
+
+            if (chart.options.scales.y1) {
+                if (chart.options.scales.y1.title) {
+                    chart.options.scales.y1.title.display = !compact;
+                }
+
+                if (chart.options.scales.y1.ticks) {
+                    chart.options.scales.y1.ticks.maxTicksLimit = compact ? 5 : 8;
+                    chart.options.scales.y1.ticks.font = Object.assign(
+                        {},
+                        chart.options.scales.y1.ticks.font || {},
+                        {
+                            size: compact ? 10 : 12,
+                            weight: '700'
+                        }
+                    );
+                }
+            }
+        }
+
+        chart.update('none');
+    }
+
+    ready(function () {
+        window.setTimeout(applyMobileChartMode, 160);
+        window.setTimeout(applyMobileChartMode, 420);
+
+        document.querySelectorAll('[data-chart-mode]').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                window.setTimeout(applyMobileChartMode, 120);
+            });
+        });
+
+        document.addEventListener('umkm:landing-region:changed', function () {
+            window.setTimeout(applyMobileChartMode, 120);
+        });
+
+        window.addEventListener('resize', function () {
+            window.clearTimeout(window.__landingMobileChartTimer);
+            window.__landingMobileChartTimer = window.setTimeout(applyMobileChartMode, 160);
+        }, { passive: true });
+    });
+})();
+
+/* Batch Landing-Mobile-1 END */
