@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # monitoring-umkm
 
 Fondasi awal proyek Laravel 13 untuk sistem monitoring UMKM berbasis data dan visual analitik interaktif.
@@ -13,3 +14,6 @@ Fondasi awal proyek Laravel 13 untuk sistem monitoring UMKM berbasis data dan vi
 3. Generate app key: `php artisan key:generate`.
 4. Siapkan database lalu jalankan migrasi awal sesuai kebutuhan domain.
 5. Mulai server lokal dengan `php artisan serve` untuk verifikasi bootstrap aplikasi.
+=======
+# umkm-monitoring
+>>>>>>> b2ab8110221be131dc8467be82384b87ecc7ea73
