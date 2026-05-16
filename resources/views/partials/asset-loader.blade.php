@@ -1,6 +1,9 @@
 @php
     $assetProfile = $assetProfile ?? 'full';
 
+    $vendorCss = $vendorCss ?? [];
+    $vendorJs = $vendorJs ?? [];
+
     $coreCssBase = [
         'bootstrap-local.css',
         'umkm-theme.css',
@@ -11,6 +14,7 @@
         'umkm-forms.css',
         'umkm-modals.css',
         'umkm-toast.css',
+        'umkm-footer.css',
     ];
 
     $coreCssModules = [
@@ -47,6 +51,7 @@
             'umkm-theme.css',
             'umkm-ui.css',
             'umkm-buttons.css',
+            'umkm-footer.css',
         ];
 
         $coreJs = [
@@ -75,7 +80,13 @@
     $coreJs = array_values(array_unique($coreJs));
     $pageCss = array_values(array_unique($pageCss));
     $pageJs = array_values(array_unique($pageJs));
+    $vendorCss = array_values(array_unique($vendorCss));
+    $vendorJs = array_values(array_unique($vendorJs));
 @endphp
+
+@foreach($vendorCss as $file)
+    <link rel="stylesheet" href="{{ $file }}">
+@endforeach
 
 @foreach($coreCss as $file)
     <link rel="stylesheet" href="{{ asset('assets/css/core/'.$file) }}">
@@ -83,6 +94,10 @@
 
 @foreach($pageCss as $file)
     <link rel="stylesheet" href="{{ asset('assets/css/pages/'.$file) }}">
+@endforeach
+
+@foreach($vendorJs as $file)
+    <script src="{{ $file }}" defer></script>
 @endforeach
 
 @foreach($coreJs as $file)

@@ -2,131 +2,194 @@
 
 @php
     $assetProfile = 'landing';
+    $vendorCss = [
+        'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css',
+    ];
+    $vendorJs = [
+        'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js',
+    ];
     $pageCss = ['landing.css'];
+    $pageJs = ['landing.js'];
 @endphp
 
-@section('title', 'UMKM Monitoring | Visual Analitik Interaktif')
+@section('title', 'UMKM Monitoring | Sistem Informasi UMKM')
 
 @section('content')
 <div class="umkm-landing">
-    <header class="landing-header">
+    <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
+    <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
+
+    <header class="landing-header" data-landing-header>
         <div class="container">
-            <div class="landing-nav">
+            <nav class="landing-nav" aria-label="Navigasi utama">
                 <a class="landing-brand" href="{{ url('/') }}" aria-label="UMKM Monitoring">
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
                         <strong>UMKM Monitoring</strong>
-                        <small>Visual Analitik Interaktif</small>
+                        <small>Sistem Informasi UMKM</small>
                     </span>
                 </a>
 
+                <div class="landing-menu">
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#modul">Modul</a>
+                    <a href="#ringkasan">Ringkasan</a>
+                </div>
+
                 <div class="landing-nav-actions">
                     <a class="btn btn-light landing-login-btn" href="{{ route('login') }}">Masuk</a>
-                    <a class="btn btn-success landing-main-btn" href="{{ route('login') }}">Buka Dashboard</a>
+                    <a class="btn btn-success landing-main-btn" href="#dashboard">Jelajahi</a>
                 </div>
-            </div>
+            </nav>
         </div>
     </header>
 
     <main>
-        <section class="landing-hero">
+        <section class="hero-section">
             <div class="container">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
-                        <div class="hero-copy-block">
-                            <span class="hero-eyebrow">Sistem informasi berbasis data</span>
-                            <h1 class="hero-title">
-                                Monitoring Kinerja UMKM dengan Visual Analitik Interaktif
-                            </h1>
-                            <p class="hero-description">
-                                Sistem ini dirancang untuk membantu pengelolaan data UMKM, pemantauan kinerja,
-                                pembacaan sebaran wilayah, evaluasi legalitas, survei pengguna, dan validasi ahli
-                                dalam satu ruang kerja yang terukur.
-                            </p>
+                <div class="hero-shell">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6">
+                            <div class="hero-copy reveal">
+                                <span class="landing-pill">Sistem informasi untuk ekosistem UMKM</span>
+                                <h1>UMKM Monitoring berbasis Data</h1>
+                                <p>
+                                    Pantau perkembangan UMKM melalui data usaha yang tersusun, ringkasan indikator,
+                                    visualisasi wilayah, dan dashboard interaktif yang membantu proses monitoring
+                                    serta pengambilan keputusan.
+                                </p>
 
-                            <div class="hero-action-row">
-                                <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}">
-                                    Masuk ke Sistem
-                                </a>
-                                <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#ruang-lingkup">
-                                    Lihat Ruang Lingkup
-                                </a>
+                                <div class="hero-actions">
+                                    <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}">
+                                        Masuk ke Sistem
+                                    </a>
+                                    <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
+                                        Lihat Dashboard
+                                    </a>
+                                </div>
+
+                                <div class="hero-inline">
+                                    <span>Profil UMKM</span>
+                                    <span>Visual Analitik</span>
+                                    <span>Peta Sebaran</span>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="hero-note">
-                                <span class="note-dot"></span>
-                                <span>Data sensitif dikelola melalui akses berbasis peran, audit, dan pembatasan API internal.</span>
+                        <div class="col-lg-6">
+                            <div class="hero-board reveal reveal-delay-1" data-tilt-card>
+                                <div class="board-window">
+                                    <div class="board-top">
+                                        <div class="board-dots">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                        <strong>UMKM Dashboard</strong>
+                                        <small>preview</small>
+                                    </div>
+
+                                    <div class="board-metrics">
+                                        <div>
+                                            <span>UMKM Terdata</span>
+                                            <strong class="count-up" data-count="1248">0</strong>
+                                        </div>
+                                        <div>
+                                            <span>Legalitas</span>
+                                            <strong class="count-up" data-count="842">0</strong>
+                                        </div>
+                                        <div>
+                                            <span>Pembaruan</span>
+                                            <strong class="count-up" data-count="36">0</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="board-chart-wrap">
+                                        <canvas id="heroMiniChart" height="170"></canvas>
+                                    </div>
+
+                                    <div class="board-bottom">
+                                        <div>
+                                            <span class="status-dot"></span>
+                                            <strong>Data usaha</strong>
+                                            <small>terkelola</small>
+                                        </div>
+                                        <div>
+                                            <span class="status-dot gold"></span>
+                                            <strong>Wilayah</strong>
+                                            <small>terpantau</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
-                        <div class="analytics-showcase" aria-label="Pratinjau visual analitik UMKM">
-                            <div class="showcase-header">
-                                <div>
-                                    <span class="showcase-status">Analitik</span>
-                                    <strong>Ringkasan Monitoring</strong>
-                                </div>
-                                <small>Basis data UMKM</small>
+                    <div class="hero-marquee" aria-label="Ruang lingkup sistem">
+                        <div class="marquee-track">
+                            <span>Data UMKM</span>
+                            <span>Dashboard</span>
+                            <span>Peta Sebaran</span>
+                            <span>Indikator Kinerja</span>
+                            <span>Laporan Ringkas</span>
+                            <span>Umpan Balik</span>
+                            <span>Data UMKM</span>
+                            <span>Dashboard</span>
+                            <span>Peta Sebaran</span>
+                            <span>Indikator Kinerja</span>
+                            <span>Laporan Ringkas</span>
+                            <span>Umpan Balik</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="dashboard-section">
+            <div class="container">
+                <div class="dashboard-panel reveal">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-5">
+                            <span class="landing-pill">Dashboard interaktif</span>
+                            <h2>Informasi UMKM tampil dalam visual yang lebih hidup</h2>
+                            <p>
+                                Dashboard membantu membaca kondisi UMKM berdasarkan indikator utama, bidang usaha,
+                                perkembangan data, dan sebaran wilayah dalam tampilan yang lebih ringkas.
+                            </p>
+
+                            <div class="dashboard-tabs" role="tablist" aria-label="Pilihan grafik dashboard">
+                                <button type="button" class="dashboard-tab active" data-chart-mode="kinerja">Kinerja</button>
+                                <button type="button" class="dashboard-tab" data-chart-mode="wilayah">Wilayah</button>
+                                <button type="button" class="dashboard-tab" data-chart-mode="legalitas">Legalitas</button>
                             </div>
+                        </div>
 
-                            <div class="showcase-body">
-                                <div class="metric-grid">
-                                    <div class="metric-card">
-                                        <span>UMKM Terdata</span>
-                                        <strong>1.248</strong>
-                                        <small>contoh ringkasan</small>
+                        <div class="col-lg-7">
+                            <div class="chart-card">
+                                <div class="chart-head">
+                                    <div>
+                                        <strong id="mainChartTitle">Tren Perkembangan UMKM</strong>
+                                        <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
                                     </div>
-                                    <div class="metric-card">
-                                        <span>Legalitas Tercatat</span>
-                                        <strong>842</strong>
-                                        <small>status terisi</small>
-                                    </div>
-                                    <div class="metric-card">
-                                        <span>Perlu Validasi</span>
-                                        <strong>36</strong>
-                                        <small>usulan data</small>
+                                    <span class="chart-badge">Chart.js</span>
+                                </div>
+
+                                <div class="chart-canvas-wrap">
+                                    <canvas id="landingMainChart" height="250"></canvas>
+                                    <div class="chart-fallback" id="chartFallback" hidden>
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
                                     </div>
                                 </div>
 
-                                <div class="showcase-panel-grid">
-                                    <div class="trend-panel">
-                                        <div class="panel-title-row">
-                                            <strong>Tren Kinerja</strong>
-                                            <small>periode monitoring</small>
-                                        </div>
-                                        <div class="bar-visual">
-                                            <span class="bar bar-1"></span>
-                                            <span class="bar bar-2"></span>
-                                            <span class="bar bar-3"></span>
-                                            <span class="bar bar-4"></span>
-                                            <span class="bar bar-5"></span>
-                                            <span class="bar bar-6"></span>
-                                            <span class="bar bar-7"></span>
-                                        </div>
+                                <div class="chart-summary">
+                                    <div>
+                                        <span>Filter</span>
+                                        <strong>Wilayah, bidang usaha, periode</strong>
                                     </div>
-
-                                    <div class="map-summary-panel">
-                                        <div class="panel-title-row">
-                                            <strong>Sebaran Wilayah</strong>
-                                            <small>agregat</small>
-                                        </div>
-                                        <div class="map-visual">
-                                            <span class="map-region region-1"></span>
-                                            <span class="map-region region-2"></span>
-                                            <span class="map-region region-3"></span>
-                                            <span class="map-region region-4"></span>
-                                            <span class="map-pin pin-1"></span>
-                                            <span class="map-pin pin-2"></span>
-                                            <span class="map-pin pin-3"></span>
-                                            <span class="map-pin pin-4"></span>
-                                        </div>
+                                    <div>
+                                        <span>Tampilan</span>
+                                        <strong>Grafik, indikator, dan ringkasan</strong>
                                     </div>
-                                </div>
-
-                                <div class="showcase-footer">
-                                    <span>Filter: wilayah, KBLI, legalitas, periode</span>
-                                    <span>Privasi: agregasi & pembatasan akses</span>
                                 </div>
                             </div>
                         </div>
@@ -135,140 +198,88 @@
             </div>
         </section>
 
-        <section id="ruang-lingkup" class="scope-section">
+        <section id="modul" class="module-section">
             <div class="container">
-                <div class="section-heading">
-                    <span class="section-kicker">Ruang Lingkup Sistem</span>
-                    <h2>Dirancang untuk monitoring, analisis, dan pengambilan keputusan UMKM</h2>
+                <div class="section-heading reveal">
+                    <span class="landing-pill">Modul sistem</span>
+                    <h2>Ruang kerja untuk mengelola dan memantau data UMKM</h2>
                     <p>
-                        Fokus sistem bukan hanya menyimpan data, tetapi mengubah data UMKM menjadi informasi
-                        yang dapat dibaca melalui indikator, grafik, peta, ringkasan, dan status validasi.
+                        Modul disusun agar pengelolaan data, pembacaan indikator, dan penyajian informasi
+                        dapat dilakukan dalam alur yang lebih tertata.
                     </p>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-6 col-xl-3">
-                        <article class="scope-card">
-                            <span class="scope-number">01</span>
-                            <h3>Data UMKM</h3>
-                            <p>Pengelolaan data usaha, pemilik, bidang usaha, legalitas, produk, lokasi, dan status pembaruan.</p>
-                        </article>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <article class="scope-card">
-                            <span class="scope-number">02</span>
-                            <h3>Visual Analitik</h3>
-                            <p>Dashboard indikator, tren kinerja, komposisi KBLI, status legalitas, tabel ringkasan, dan peta agregat.</p>
-                        </article>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <article class="scope-card">
-                            <span class="scope-number">03</span>
-                            <h3>Survei Pengguna</h3>
-                            <p>Instrumen survei mendukung pengumpulan umpan balik pengguna terhadap sistem dan kebutuhan informasi.</p>
-                        </article>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <article class="scope-card">
-                            <span class="scope-number">04</span>
-                            <h3>Validasi Ahli</h3>
-                            <p>Penilaian ahli sistem informasi, visualisasi data, dan keamanan data dikelola melalui instrumen terstruktur.</p>
-                        </article>
-                    </div>
+                <div class="module-grid">
+                    <article class="module-card reveal">
+                        <span>01</span>
+                        <h3>Data UMKM</h3>
+                        <p>Profil usaha, pemilik, legalitas, produk, bidang usaha, lokasi, dan status data.</p>
+                    </article>
+
+                    <article class="module-card reveal reveal-delay-1">
+                        <span>02</span>
+                        <h3>Dashboard</h3>
+                        <p>Indikator, grafik, komposisi data, dan ringkasan yang mudah dibaca.</p>
+                    </article>
+
+                    <article class="module-card reveal reveal-delay-2">
+                        <span>03</span>
+                        <h3>Peta Sebaran</h3>
+                        <p>Visualisasi lokasi untuk membaca persebaran dan konsentrasi UMKM.</p>
+                    </article>
+
+                    <article class="module-card reveal reveal-delay-3">
+                        <span>04</span>
+                        <h3>Laporan</h3>
+                        <p>Ringkasan informasi untuk monitoring, evaluasi, dan tindak lanjut.</p>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <section class="workflow-section">
+        <section id="ringkasan" class="summary-section">
             <div class="container">
-                <div class="workflow-card">
-                    <div class="row g-4 align-items-center">
-                        <div class="col-lg-4">
-                            <span class="section-kicker">Alur Kerja Utama</span>
-                            <h2>Dari data resmi menuju insight yang dapat ditindaklanjuti</h2>
-                            <p>
-                                Setiap informasi diproses melalui tahapan yang menjaga ketertelusuran data,
-                                validasi, dan keamanan akses.
-                            </p>
-                        </div>
-                        <div class="col-lg-8">
-                            <div class="workflow-steps">
-                                <div class="workflow-step">
-                                    <span>1</span>
-                                    <strong>Data Masuk</strong>
-                                    <small>Data resmi, usulan pembaruan, survei, dan validasi ahli.</small>
-                                </div>
-                                <div class="workflow-step">
-                                    <span>2</span>
-                                    <strong>Validasi</strong>
-                                    <small>Pemeriksaan status, kelengkapan, legalitas, lokasi, dan perubahan data.</small>
-                                </div>
-                                <div class="workflow-step">
-                                    <span>3</span>
-                                    <strong>Analitik</strong>
-                                    <small>Data dibaca melalui indikator, grafik, peta, filter, dan ringkasan.</small>
-                                </div>
-                                <div class="workflow-step">
-                                    <span>4</span>
-                                    <strong>Keputusan</strong>
-                                    <small>Informasi digunakan untuk monitoring, pelaporan, dan rekomendasi tindak lanjut.</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="security-section">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-5">
-                        <div class="security-intro">
-                            <span class="section-kicker">Keamanan & Tata Kelola</span>
-                            <h2>Akses sistem dibatasi berdasarkan peran dan kebutuhan data</h2>
-                            <p>
-                                Sistem menempatkan keamanan sebagai fondasi, terutama untuk data UMKM,
-                                koordinat lokasi, ekspor laporan, audit aktivitas, dan API internal.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-lg-7">
-                        <div class="security-grid">
-                            <div class="security-item">
-                                <strong>Role & Permission</strong>
-                                <span>Akses disesuaikan dengan peran pengguna.</span>
-                            </div>
-                            <div class="security-item">
-                                <strong>Audit Log</strong>
-                                <span>Aktivitas penting dicatat untuk ketertelusuran.</span>
-                            </div>
-                            <div class="security-item">
-                                <strong>API Internal</strong>
-                                <span>Request dibatasi melalui origin, referer, fetch metadata, dan rate limit.</span>
-                            </div>
-                            <div class="security-item">
-                                <strong>Ekspor Terkendali</strong>
-                                <span>Laporan sensitif diarahkan melalui kontrol alasan, watermark, dan pembatasan akses.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="landing-cta">
-            <div class="container">
-                <div class="cta-card">
-                    <div>
-                        <span class="section-kicker">Mulai Pemeriksaan Sistem</span>
-                        <h2>Masuk untuk melanjutkan pengujian dashboard dan modul internal</h2>
+                <div class="summary-shell reveal">
+                    <div class="summary-copy">
+                        <span class="landing-pill">Ringkasan sistem</span>
+                        <h2>Data tersusun, visual lebih jelas, keputusan lebih terarah</h2>
                         <p>
-                            Tahap ini masih berupa fondasi awal. Pengujian berikutnya dilakukan bertahap pada route,
-                            layout dashboard, login, role, API internal, dan halaman modul.
+                            UMKM Monitoring menyatukan pengelolaan data dan visualisasi agar informasi usaha
+                            dapat dipantau secara cepat tanpa kehilangan konteks penting.
                         </p>
                     </div>
-                    <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}">
+
+                    <div class="summary-list">
+                        <div>
+                            <strong>01</strong>
+                            <span>Data usaha dikelola dalam struktur yang rapi.</span>
+                        </div>
+                        <div>
+                            <strong>02</strong>
+                            <span>Informasi ditampilkan dalam dashboard visual.</span>
+                        </div>
+                        <div>
+                            <strong>03</strong>
+                            <span>Ringkasan membantu monitoring dan evaluasi.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta-section">
+            <div class="container">
+                <div class="cta-panel reveal">
+                    <div>
+                        <span class="landing-pill">UMKM Monitoring</span>
+                        <h2>Kelola data UMKM dalam dashboard</h2>
+                        <p>
+                            Masuk ke sistem untuk mengakses dashboard, modul pengelolaan data,
+                            peta sebaran, dan ringkasan informasi pendukung keputusan.
+                        </p>
+                    </div>
+
+                    <a class="btn btn-light btn-lg cta-button" href="{{ route('login') }}">
                         Masuk ke Sistem
                     </a>
                 </div>

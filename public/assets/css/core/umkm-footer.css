@@ -1,0 +1,105 @@
+.umkm-public-footer {
+    position: relative;
+    padding: 56px 0 28px;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(15, 118, 101, .10), transparent 28%),
+        linear-gradient(180deg, rgba(246, 250, 249, .65), #ffffff);
+    color: #10213d;
+}
+
+.footer-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+    gap: 2rem;
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 30px;
+    padding: clamp(1.2rem, 2.6vw, 2rem);
+    background: rgba(255, 255, 255, .82);
+    box-shadow: 0 24px 74px rgba(16, 33, 61, .08);
+}
+
+.footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    color: #10213d;
+    text-decoration: none;
+}
+
+.footer-logo:hover {
+    color: #10213d;
+}
+
+.footer-logo span {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    color: #ffffff;
+    background: linear-gradient(145deg, #0f7665, #0a5147);
+    font-weight: 800;
+    box-shadow: 0 14px 28px rgba(15, 118, 101, .20);
+}
+
+.footer-logo strong {
+    font-weight: 850;
+    letter-spacing: -.02em;
+}
+
+.footer-brand p {
+    max-width: 620px;
+    margin: 1rem 0 0;
+    color: #66758a;
+    line-height: 1.75;
+}
+
+.footer-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.footer-links strong,
+.footer-links a {
+    display: block;
+}
+
+.footer-links strong {
+    margin-bottom: .8rem;
+    color: #10213d;
+    font-weight: 850;
+}
+
+.footer-links a {
+    margin-top: .5rem;
+    color: #66758a;
+    text-decoration: none;
+    font-weight: 650;
+    transition: color .2s ease, transform .2s ease;
+}
+
+.footer-links a:hover {
+    color: #0f7665;
+    transform: translateX(3px);
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.2rem;
+    color: #7b8797;
+    font-size: .9rem;
+}
+
+@media (max-width: 767.98px) {
+    .footer-shell,
+    .footer-links {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+    }
+}
