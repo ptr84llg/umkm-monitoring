@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="umkm-client" content="public">
     <meta name="umkm-security-profile" content="{{ $assetProfile ?? 'public' }}">
-    <title>@yield('title', 'UMKM Monitoring')</title>
+    <title>@yield('title', 'Monitoring UMKM | Visual Analitik Interaktif')</title>
     @include('partials.asset-loader')
 </head>
 <body class="layout-public">

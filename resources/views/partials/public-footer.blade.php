@@ -7,8 +7,9 @@
                     <strong>Monitoring UMKM</strong>
                 </a>
                 <p>
-                    Sistem informasi UMKM untuk pengelolaan data, pemantauan perkembangan,
-                    visualisasi sebaran, dan penyajian ringkasan pendukung keputusan.
+                    Monitoring UMKM menyajikan pengelolaan data, pemantauan perkembangan,
+                    visualisasi sebaran, dan ringkasan pendukung keputusan melalui tampilan
+                    Visual Analitik Interaktif.
                 </p>
             </div>
 
@@ -125,14 +126,14 @@
 
                 <p>
                     Tampilan publik ini menyediakan gambaran umum sistem. Akses data dan dashboard internal
-                    dilakukan melalui akun yang terdaftar.
+                    dilakukan melalui akun yang terdaftar agar pemantauan tetap terkontrol dan aman.
                 </p>
             </div>
         </div>
 
         <div class="footer-bottom">
             <span>&copy; {{ date('Y') }} Monitoring UMKM.</span>
-            <span>Sistem Informasi UMKM</span>
+            <span>Visual Analitik Interaktif</span>
         </div>
     </div>
 </footer>

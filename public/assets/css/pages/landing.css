@@ -4374,3 +4374,91 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Footer-Typography-Fix END */
+
+/* Batch Public-Footer-1 START */
+
+/*
+ * Footer aktual berada di partial public-footer.blade.php,
+ * di luar wrapper .umkm-landing.
+ * Karena itu selector harus langsung ke .umkm-public-footer.
+ */
+
+.layout-public .umkm-public-footer .footer-brand-block,
+.layout-public .umkm-public-footer .footer-note {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+
+.layout-public .umkm-public-footer .footer-brand-block p,
+.layout-public .umkm-public-footer .footer-note p {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: left !important;
+    line-height: 1.72 !important;
+}
+
+.layout-public .umkm-public-footer .footer-brand-block .footer-logo,
+.layout-public .umkm-public-footer .footer-column-title,
+.layout-public .umkm-public-footer .footer-feature,
+.layout-public .umkm-public-footer .footer-column a,
+.layout-public .umkm-public-footer .footer-bottom {
+    text-align-last: auto !important;
+}
+
+@media (max-width: 991.98px) {
+    .layout-public .umkm-public-footer .footer-hero,
+    .layout-public .umkm-public-footer .footer-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block,
+    .layout-public .umkm-public-footer .footer-note {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        flex-basis: 100% !important;
+        grid-column: 1 / -1 !important;
+        justify-self: stretch !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block > *,
+    .layout-public .umkm-public-footer .footer-note > * {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block p,
+    .layout-public .umkm-public-footer .footer-note p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-justify: inter-word !important;
+        text-align-last: left !important;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block .footer-logo,
+    .layout-public .umkm-public-footer .footer-note .footer-column-title {
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .layout-public .umkm-public-footer .footer-brand-block p,
+    .layout-public .umkm-public-footer .footer-note p {
+        line-height: 1.68 !important;
+    }
+}
+
+/* Batch Public-Footer-1 END */
