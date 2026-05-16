@@ -432,7 +432,7 @@
 })();
 
 /**
- * Batch 2B-Fix1 Location Permission Status & Reset Guide
+ * Batch 2B-Fix2 Location Gate Modal Overlay & Responsive Bottom Sheet
  */
 (function () {
     'use strict';
@@ -444,6 +444,7 @@
         const title = document.querySelector('[data-location-gate-title]');
         const message = document.querySelector('[data-location-gate-message]');
         const retryButton = document.querySelector('[data-location-retry]');
+        const closeButton = document.querySelector('[data-location-gate-close]');
         const guideToggle = document.querySelector('[data-location-guide-toggle]');
         const guide = document.querySelector('[data-location-guide]');
         const permissionBox = document.querySelector('[data-location-permission-state]');
@@ -454,8 +455,11 @@
             status: 'booting',
             permission: 'unknown',
             checkedAt: null,
-            lastResult: null
+            lastResult: null,
+            dismissed: false
         };
+
+        let dismissedByUser = false;
 
         function setPermissionLabel(permissionState) {
             state.permission = permissionState || 'unknown';
@@ -475,14 +479,22 @@
             }
 
             guide.hidden = !visible;
+
+            if (guideToggle) {
+                const text = guideToggle.querySelector('span');
+
+                if (text) {
+                    text.textContent = visible ? 'Sembunyikan panduan' : 'Cara mengaktifkan izin';
+                }
+            }
         }
 
-        function setNotice(status, titleText, messageText, visible, permissionState) {
+        function setNotice(status, titleText, messageText, visible, permissionState, forceVisible) {
             document.documentElement.setAttribute('data-location-gate', status);
 
             if (noticeCard) {
                 noticeCard.classList.remove('is-checking', 'is-granted', 'is-blocked', 'is-unsupported', 'is-denied', 'is-prompt');
-                noticeCard.classList.add(`is-${status}`);
+                noticeCard.classList.add('is-' + status);
             }
 
             if (title) {
@@ -497,9 +509,13 @@
                 setPermissionLabel(permissionState);
             }
 
+            const shouldShow = Boolean(visible && (forceVisible || !dismissedByUser));
+
             if (notice) {
-                notice.hidden = !visible;
+                notice.hidden = !shouldShow;
             }
+
+            document.body.classList.toggle('is-location-gate-open', shouldShow);
         }
 
         function updateState(status, result, permissionState) {
@@ -517,6 +533,29 @@
             }
         }
 
+        function showGateAgain() {
+            dismissedByUser = false;
+            state.dismissed = false;
+        }
+
+        function closeLocationGate() {
+            dismissedByUser = true;
+            state.dismissed = true;
+
+            if (notice) {
+                notice.hidden = true;
+            }
+
+            document.body.classList.remove('is-location-gate-open');
+
+            document.dispatchEvent(new CustomEvent('umkm:location-gate:dismissed', {
+                detail: Object.assign({}, state)
+            }));
+
+            if (UMKM.log) {
+                UMKM.log('info', 'location gate dismissed by user', state);
+            }
+        }
         async function getPermissionStatus() {
             if (!UMKM.location || typeof UMKM.location.permissionStatus !== 'function') {
                 return {
@@ -534,12 +573,12 @@
             setNotice(
                 'denied',
                 'Izin lokasi diblokir oleh browser',
-                'Website tidak dapat memunculkan ulang permintaan lokasi karena izin sudah diblokir. Ubah izin lokasi dari pengaturan situs pada browser, lalu refresh halaman.',
+                'Website tidak dapat menampilkan ulang permintaan lokasi karena izin sudah diblokir. Ubah izin lokasi dari pengaturan situs pada browser, lalu refresh halaman.',
                 true,
                 permission && permission.state ? permission.state : 'denied'
             );
 
-            setGuideVisible(true);
+            setGuideVisible(false);
             updateState('denied', null, 'denied');
         }
 
@@ -581,11 +620,11 @@
                 setNotice(
                     'blocked',
                     'Lokasi belum aktif',
-                    'Aktifkan izin lokasi pada browser untuk membuka tombol masuk ke sistem.',
+                    'Aktifkan izin lokasi pada browser untuk membuka akses masuk ke sistem.',
                     true,
                     permissionState
                 );
-                setGuideVisible(true);
+                setGuideVisible(false);
                 updateState('blocked', result, permissionState);
                 return;
             }
@@ -640,7 +679,7 @@
                 setNotice(
                     'prompt',
                     'Izin lokasi diperlukan',
-                    'Klik Izinkan pada permintaan lokasi browser agar tombol masuk ke sistem dapat ditampilkan.',
+                    'Pilih Izinkan pada permintaan lokasi browser agar akses masuk ke sistem dapat ditampilkan.',
                     true,
                     'prompt'
                 );
@@ -690,6 +729,7 @@
                 }
 
                 event.preventDefault();
+                showGateAgain();
 
                 const allowed = await checkLocationGate();
 
@@ -701,7 +741,14 @@
 
         if (retryButton) {
             retryButton.addEventListener('click', function () {
+                showGateAgain();
                 checkLocationGate();
+            });
+        }
+
+        if (closeButton) {
+            closeButton.addEventListener('click', function () {
+                closeLocationGate();
             });
         }
 
@@ -711,7 +758,7 @@
                     return;
                 }
 
-                guide.hidden = !guide.hidden;
+                setGuideVisible(Boolean(guide.hidden));
             });
         }
 
@@ -753,8 +800,14 @@
                 state: function () {
                     return Object.assign({}, state);
                 },
+                close: closeLocationGate,
+                open: function () {
+                    showGateAgain();
+                    checkLocationGate();
+                },
                 permission: getPermissionStatus
             });
         }
     });
 })();
+

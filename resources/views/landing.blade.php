@@ -60,6 +60,11 @@
     <div class="location-gate-shell" data-location-gate-notice hidden>
         <div class="container">
             <div class="location-gate-card">
+                <button type="button" class="location-gate-close" data-location-gate-close aria-label="Tutup pemberitahuan lokasi">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z"/>
+                    </svg>
+                </button>
                 <span class="location-gate-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
@@ -77,14 +82,40 @@
                     </div>
 
                     <div class="location-gate-guide" data-location-guide hidden>
-                        <strong>Cara mengaktifkan ulang izin lokasi</strong>
-                        <ol>
-                            <li>Klik ikon kunci, ikon informasi, atau ikon pengaturan di sebelah kiri alamat website.</li>
-                            <li>Pilih <strong>Site settings</strong> atau <strong>Setelan situs</strong>.</li>
-                            <li>Cari bagian <strong>Location</strong> atau <strong>Lokasi</strong>.</li>
-                            <li>Ubah menjadi <strong>Allow</strong>, <strong>Izinkan</strong>, atau <strong>Ask</strong>.</li>
-                            <li>Refresh halaman, lalu klik <strong>Cek ulang lokasi</strong>.</li>
-                        </ol>
+                        <div class="location-guide-head">
+                            <span class="location-guide-head-icon">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M11 18h2v-2h-2v2Zm1-16a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm0-14a3.25 3.25 0 0 0-3.25 3.25h2A1.25 1.25 0 1 1 12 10.5c-1.5 0-2.75 1.25-2.75 2.75V14h2v-.75c0-.4.35-.75.75-.75a3.25 3.25 0 0 0 0-6.5Z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <strong>Cara mengaktifkan ulang izin lokasi</strong>
+                                <p>Ikuti langkah berikut sesuai tampilan browser yang digunakan.</p>
+                            </div>
+                        </div>
+
+                        <div class="location-guide-steps">
+                            <div class="location-guide-step">
+                                <span>01</span>
+                                <p>Klik ikon kunci, ikon informasi, atau ikon pengaturan di sebelah kiri alamat website.</p>
+                            </div>
+                            <div class="location-guide-step">
+                                <span>02</span>
+                                <p>Pilih <strong>Site settings</strong> atau <strong>Setelan situs</strong>.</p>
+                            </div>
+                            <div class="location-guide-step">
+                                <span>03</span>
+                                <p>Cari bagian <strong>Location</strong> atau <strong>Lokasi</strong>.</p>
+                            </div>
+                            <div class="location-guide-step">
+                                <span>04</span>
+                                <p>Ubah menjadi <strong>Allow</strong>, <strong>Izinkan</strong>, atau <strong>Ask</strong>.</p>
+                            </div>
+                            <div class="location-guide-step">
+                                <span>05</span>
+                                <p>Refresh halaman, lalu klik <strong>Cek ulang lokasi</strong>.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -429,6 +460,7 @@
     </button>
 </div>
 @endsection
+
 
 
 
