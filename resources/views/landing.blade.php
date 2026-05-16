@@ -234,11 +234,11 @@
                                             <strong class="count-up" data-count="1248">0</strong>
                                         </div>
                                         <div>
-                                            <span>Legalitas</span>
-                                            <strong class="count-up" data-count="842">0</strong>
+                                            <span>UMKM Aktif</span>
+                                            <strong class="count-up" data-count="1086">0</strong>
                                         </div>
                                         <div>
-                                            <span>Pembaruan</span>
+                                            <span>Perlu Validasi</span>
                                             <strong class="count-up" data-count="36">0</strong>
                                         </div>
                                     </div>
@@ -270,12 +270,12 @@
                                                     <b class="progress-fill-82"></b>
                                                 </div>
                                                 <div>
-                                                    <span>Jasa</span>
-                                                    <b class="progress-fill-64"></b>
-                                                </div>
-                                                <div>
                                                     <span>Kuliner</span>
                                                     <b class="progress-fill-74"></b>
+                                                </div>
+                                                <div>
+                                                    <span>Jasa</span>
+                                                    <b class="progress-fill-64"></b>
                                                 </div>
                                             </div>
                                         </div>
@@ -288,8 +288,8 @@
                                                     <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
                                                 </svg>
                                             </span>
-                                            <strong>Data usaha</strong>
-                                            <small>terkelola</small>
+                                            <strong>Wilayah Terpantau</strong>
+                                            <small>8 Kecamatan</small>
                                         </div>
                                         <div>
                                             <span class="status-icon gold">
@@ -297,8 +297,8 @@
                                                     <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/>
                                                 </svg>
                                             </span>
-                                            <strong>Wilayah</strong>
-                                            <small>terpantau</small>
+                                            <strong>Bidang Dominan</strong>
+                                            <small>Perdagangan</small>
                                         </div>
                                     </div>
                                 </div>
@@ -460,6 +460,7 @@
     </button>
 </div>
 @endsection
+
 
 
 
