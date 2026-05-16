@@ -1,0 +1,3 @@
+@extends('layouts.print-export')
+@section('title','Ekspor Laporan')
+@section('content')<x-umkm.card><form method="POST" action="{{ route('export.generate') }}">@csrf <x-umkm.form-select name="report_type" label="Jenis Laporan"><option value="umkm_ringkas">UMKM Ringkas</option><option value="all">Semua Ringkasan</option></x-umkm.form-select><x-umkm.form-select name="format" label="Format"><option value="json">JSON</option><option value="csv">CSV</option></x-umkm.form-select><x-umkm.form-textarea name="reason" label="Alasan Ekspor"/><button class="btn btn-primary">Ekspor</button></form></x-umkm.card>@endsection

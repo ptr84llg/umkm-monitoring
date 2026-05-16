@@ -1,0 +1,3 @@
+@extends('layouts.dashboard')
+@section('title','Perbaiki Usulan')
+@section('content')<x-umkm.card><p>Catatan perbaikan: {{ $proposal->review_notes ?? '-' }}</p><form method="POST" action="{{ route('pelaku-umkm.proposals.fix.submit',$proposal) }}">@csrf<x-umkm.form-input name="proposed_business_name" label="Nama Usaha Baru" :value="$proposal->new_data['business_name'] ?? ''"/><x-umkm.form-input name="proposed_quality_status" label="Status Kualitas Baru" :value="$proposal->new_data['quality_status'] ?? ''"/><x-umkm.form-textarea name="proposed_notes" label="Catatan Baru" :value="$proposal->new_data['notes'] ?? ''"/><button class="btn btn-primary">Ajukan Ulang</button></form></x-umkm.card>@endsection

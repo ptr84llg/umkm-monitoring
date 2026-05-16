@@ -1,0 +1,3 @@
+@extends('layouts.expert-validation')
+@section('title','Form Validasi Ahli')
+@section('content')<x-umkm.card><h3>{{ $instrument->title }}</h3><form method="POST" action="{{ route('expert.validator.draft',$instrument) }}">@csrf<x-umkm.form-input name="score" label="Skor (0-100)" :value="$assessment->score"/><x-umkm.form-textarea name="notes" label="Catatan" :value="$assessment->notes"/><button class="btn btn-secondary">Simpan Draft</button></form><form method="POST" action="{{ route('expert.validator.submit',$instrument) }}">@csrf<button class="btn btn-primary">Submit Final</button></form></x-umkm.card>@endsection

@@ -1,0 +1,2 @@
+@extends('layouts.auth')
+@section('content')<div class="container py-5"><div class="row justify-content-center"><div class="col-md-4"><h1 class="h4 mb-3">Login Internal</h1><form method="POST" action="{{ route('login.store') }}">@csrf <x-umkm.form-input name="email" label="Email" type="email" /><x-umkm.form-input name="password" label="Password" type="password" /><button class="btn btn-primary w-100" type="submit">Masuk</button></form></div></div></div>@endsection

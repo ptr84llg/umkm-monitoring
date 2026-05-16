@@ -1,0 +1,4 @@
+/* umkm-charts.css - core reusable stylesheet */
+:root { --umkm-primary: #0d6efd; }
+.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
+

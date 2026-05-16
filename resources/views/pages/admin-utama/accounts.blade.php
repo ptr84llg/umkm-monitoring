@@ -1,0 +1,3 @@
+@extends('layouts.dashboard')
+@section('title','Admin Utama - accounts')
+@section('content')<x-umkm.table-card><h2 class="h5 text-capitalize">accounts</h2><x-umkm.loading-state /></x-umkm.table-card>@endsection

@@ -1,0 +1,4 @@
+<?php
+namespace Tests\Feature;
+use App\Http\Middleware\{EnsurePermission,EnsureRole,ValidateFetchMetadata,ValidateInternalOrigin,ValidateInternalReferer};use App\Models\{Umkm,UmkmUpdateSubmission};use App\Policies\UmkmPolicy;use Tests\TestCase;
+class AuthorizationSecurityTest extends TestCase { public function test_security_classes_exist(): void { $this->assertTrue(class_exists(EnsureRole::class)); $this->assertTrue(class_exists(EnsurePermission::class)); $this->assertTrue(class_exists(ValidateInternalOrigin::class)); $this->assertTrue(class_exists(ValidateInternalReferer::class)); $this->assertTrue(class_exists(ValidateFetchMetadata::class)); } public function test_umkm_policy_and_models_exist(): void { $policy=new UmkmPolicy(); $this->assertTrue(method_exists($policy,'view')); $this->assertTrue(class_exists(Umkm::class)); $this->assertTrue(class_exists(UmkmUpdateSubmission::class)); }}

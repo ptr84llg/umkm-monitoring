@@ -1,0 +1,3 @@
+@extends('layouts.dashboard')
+@section('title','Edit UMKM Resmi')
+@section('content')<x-umkm.card><form method="POST" action="{{ route('admin-dinas.umkm.update',$umkm) }}">@csrf @method('PUT')<x-umkm.form-input name="business_name" label="Nama Usaha" :value="$umkm->business_name"/><x-umkm.form-select name="status_data" label="Status Data"><option value="draft">Draft</option><option value="resmi">Resmi</option><option value="diajukan">Diajukan</option></x-umkm.form-select><x-umkm.form-input name="quality_status" label="Status Kualitas" :value="$umkm->quality_status"/><x-umkm.form-textarea name="notes" label="Catatan" :value="$umkm->notes"/><button class="btn btn-primary">Perbarui</button></form></x-umkm.card>@endsection
