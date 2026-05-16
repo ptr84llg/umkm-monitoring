@@ -1633,3 +1633,193 @@
 })();
 
 /* Batch Landing-Mobile-1 END */
+
+/* Batch Landing-Content-1 START */
+
+/**
+ * Penyempurnaan card Monitoring UMKM:
+ * - Data wilayah pada card ditampilkan sebagai angka.
+ * - Indikator menampilkan nominal UMKM dan persentase.
+ * - Mengikuti event dari region modal agar tidak mengganggu logic existing.
+ */
+(function () {
+    'use strict';
+
+    function ready(callback) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback);
+            return;
+        }
+
+        callback();
+    }
+
+    function formatNumber(value) {
+        return Number(value || 0).toLocaleString('id-ID');
+    }
+
+    function cleanName(value) {
+        return String(value || '')
+            .replace(/^Kecamatan\s+/i, '')
+            .replace(/^Kelurahan\s+/i, '')
+            .replace(/^Desa\s+/i, '')
+            .trim();
+    }
+
+    function getOptions(selector) {
+        const select = document.querySelector(selector);
+
+        if (!select) {
+            return [];
+        }
+
+        return Array.from(select.options)
+            .filter(function (option) {
+                return option.value
+                    && option.dataset.virtual !== '1'
+                    && !option.value.startsWith('__');
+            })
+            .map(function (option) {
+                return {
+                    code: option.value,
+                    name: cleanName(option.dataset.regionName || option.textContent || option.value)
+                };
+            })
+            .filter(function (item) {
+                return item.name;
+            });
+    }
+
+    function pickAreaNames(selection) {
+        if (selection && selection.scope === 'village') {
+            return [
+                { name: cleanName(selection.village?.name || selection.label || 'Wilayah terpilih') }
+            ];
+        }
+
+        if (selection && selection.scope === 'district') {
+            const villages = getOptions('[data-landing-region-village]');
+
+            if (villages.length) {
+                return villages.slice(0, 3);
+            }
+
+            return [
+                { name: cleanName(selection.district?.name || selection.label || 'Kecamatan terpilih') }
+            ];
+        }
+
+        const districts = getOptions('[data-landing-region-district]');
+
+        if (districts.length) {
+            return districts.slice(0, 3);
+        }
+
+        return [
+            { name: 'Lubuk Linggau Timur II' },
+            { name: 'Lubuk Linggau Utara II' },
+            { name: 'Lubuk Linggau Barat II' }
+        ];
+    }
+
+    function indicatorCount(total, percent, index) {
+        const basePercent = Math.max(1, Math.min(100, Number(percent || 0)));
+        const value = Math.round(Number(total || 0) * (basePercent / 100));
+
+        return Math.max(index === 0 ? 1 : 0, value);
+    }
+
+    function renderIndicatorDetails(preview) {
+        const container = document.querySelector('[data-public-field-list]');
+
+        if (!container || !preview || !Array.isArray(preview.fields)) {
+            return;
+        }
+
+        container.innerHTML = '';
+
+        preview.fields.forEach(function (field, index) {
+            const percent = Math.max(1, Math.min(100, Math.round(Number(field.percent || 0))));
+            const count = field.count || indicatorCount(preview.total, percent, index);
+
+            const row = document.createElement('div');
+            const label = document.createElement('span');
+            const bar = document.createElement('b');
+
+            label.innerHTML = '<strong>' + field.name + '</strong> <small>(' + formatNumber(count) + ' UMKM - ' + percent + '%)</small>';
+            bar.style.width = Math.max(24, Math.min(95, percent)) + '%';
+
+            row.appendChild(label);
+            row.appendChild(bar);
+            container.appendChild(row);
+        });
+    }
+
+    function renderAreaStats(selection, preview) {
+        const container = document.querySelector('[data-public-area-list]');
+
+        if (!container || !preview || !Array.isArray(preview.fields)) {
+            return;
+        }
+
+        const areaNames = pickAreaNames(selection);
+        const distributions = areaNames.length === 1 ? [1] : [0.42, 0.34, 0.24];
+
+        container.innerHTML = '';
+
+        areaNames.slice(0, 3).forEach(function (area, index) {
+            const field = preview.fields[index % preview.fields.length] || preview.fields[0];
+            const percent = Math.max(1, Math.min(100, Math.round(Number(field.percent || 0))));
+            const count = Math.max(1, Math.round(Number(preview.total || 0) * (distributions[index] || 0.2)));
+
+            const row = document.createElement('div');
+            const name = document.createElement('span');
+            const value = document.createElement('strong');
+            const sector = document.createElement('small');
+
+            name.textContent = area.name;
+            value.textContent = formatNumber(count) + ' UMKM';
+            sector.textContent = field.name + ' ' + percent + '%';
+
+            row.appendChild(name);
+            row.appendChild(value);
+            row.appendChild(sector);
+            container.appendChild(row);
+        });
+    }
+
+    function applyCardDetails(selection, preview) {
+        renderIndicatorDetails(preview);
+        renderAreaStats(selection, preview);
+    }
+
+    ready(function () {
+        document.addEventListener('umkm:landing-region:changed', function (event) {
+            const detail = event.detail || {};
+
+            applyCardDetails(detail.selection, detail.preview);
+        });
+
+        window.setTimeout(function () {
+            const totalElement = document.querySelector('[data-public-metric="total"]');
+            const total = totalElement ? Number(totalElement.dataset.count || totalElement.textContent.replace(/\D/g, '') || 1248) : 1248;
+
+            applyCardDetails(
+                {
+                    scope: 'city',
+                    label: 'Kota Lubuklinggau'
+                },
+                {
+                    total: total,
+                    fields: [
+                        { name: 'Perdagangan', percent: 42 },
+                        { name: 'Kuliner', percent: 35 },
+                        { name: 'Jasa', percent: 23 }
+                    ]
+                }
+            );
+        }, 260);
+    });
+})();
+
+/* Batch Landing-Content-1 END */

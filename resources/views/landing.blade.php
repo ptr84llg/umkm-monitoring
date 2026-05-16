@@ -10,7 +10,7 @@
     $pageJs = ['landing.js'];
 @endphp
 
-@section('title', 'UMKM Monitoring | Sistem Informasi UMKM')
+@section('title', 'Monitoring UMKM | Sistem Informasi UMKM')
 
 @section('content')
 <div class="umkm-landing">
@@ -20,10 +20,10 @@
     <header class="landing-header" data-landing-header>
         <div class="container">
             <nav class="landing-nav" aria-label="Navigasi utama">
-                <a class="landing-brand" href="{{ url('/') }}" aria-label="UMKM Monitoring">
+                <a class="landing-brand" href="{{ url('/') }}" aria-label="Monitoring UMKM">
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
-                        <strong>UMKM Monitoring</strong>
+                        <strong>Monitoring UMKM</strong>
                         <small>Sistem Informasi UMKM</small>
                     </span>
                 </a>
@@ -216,7 +216,7 @@
                 <div class="landing-brand">
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
-                        <strong>UMKM Monitoring</strong>
+                        <strong>Monitoring UMKM</strong>
                         <small>Sistem Informasi UMKM</small>
                     </span>
                 </div>
@@ -259,7 +259,7 @@
                                     <span>Sistem informasi untuk ekosistem UMKM</span>
                                 </span>
 
-                                <h1>UMKM Monitoring berbasis Data</h1>
+                                <h1>Monitoring UMKM berbasis Data</h1>
                                 <p>
                                     Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
                                     aktivitas UMKM dalam tampilan dashboard yang mudah dibaca untuk membantu pemantauan
@@ -324,15 +324,24 @@
                                         <div class="preview-map-card">
                                             <div class="preview-card-title">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
-                                                <strong>Sebaran Wilayah</strong>
+                                                <strong>Data Wilayah</strong>
                                             </div>
-                                            <div class="mini-map">
-                                                <span class="map-area area-1"></span>
-                                                <span class="map-area area-2"></span>
-                                                <span class="map-area area-3"></span>
-                                                <span class="mini-pin pin-a"></span>
-                                                <span class="mini-pin pin-b"></span>
-                                                <span class="mini-pin pin-c"></span>
+                                            <div class="preview-region-stats" data-public-area-list>
+                                                <div>
+                                                    <span>Lubuk Linggau Timur II</span>
+                                                    <strong>312 UMKM</strong>
+                                                    <small>Perdagangan 42%</small>
+                                                </div>
+                                                <div>
+                                                    <span>Lubuk Linggau Utara II</span>
+                                                    <strong>286 UMKM</strong>
+                                                    <small>Kuliner 35%</small>
+                                                </div>
+                                                <div>
+                                                    <span>Lubuk Linggau Barat II</span>
+                                                    <strong>214 UMKM</strong>
+                                                    <small>Jasa 23%</small>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -480,7 +489,7 @@
                         </span>
                         <h2>Data tersusun, visual lebih jelas, keputusan lebih terarah</h2>
                         <p>
-                            UMKM Monitoring menyatukan pengelolaan data dan visualisasi agar informasi usaha
+                            Monitoring UMKM menyatukan pengelolaan data dan visualisasi agar informasi usaha
                             dapat dipantau secara cepat tanpa kehilangan konteks penting.
                         </p>
                     </div>
@@ -515,7 +524,7 @@
                     <div>
                         <span class="landing-pill">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
-                            <span>UMKM Monitoring</span>
+                            <span>Monitoring UMKM</span>
                         </span>
                         <h2>Kelola data UMKM dalam dashboard</h2>
                         <p>

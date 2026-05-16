@@ -3083,3 +3083,143 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Mobile-1 Fix END */
+
+/* Batch Landing-Content-1 START */
+
+/*
+ * Penyempurnaan landing:
+ * - Rename UI Monitoring UMKM.
+ * - Tombol Pilih Wilayah dibuat lebih terlihat sebagai tombol aksi.
+ * - Card Data Wilayah menampilkan angka wilayah, bukan mini-map visual.
+ * - Indikator menampilkan nama, nominal UMKM, dan persentase.
+ */
+
+.board-region-button {
+    position: relative;
+    isolation: isolate;
+    border: 0 !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--landing-brand), var(--landing-brand-dark)) !important;
+    box-shadow:
+        0 14px 32px rgba(15, 118, 101, .28),
+        0 0 0 4px rgba(15, 118, 101, .10) !important;
+}
+
+.board-region-button::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(15, 118, 101, .22), rgba(240, 168, 74, .24));
+    opacity: .9;
+}
+
+.board-region-button:hover {
+    color: #ffffff !important;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+        0 18px 40px rgba(15, 118, 101, .34),
+        0 0 0 5px rgba(15, 118, 101, .13) !important;
+}
+
+.board-region-button svg {
+    color: #ffffff !important;
+    fill: currentColor !important;
+}
+
+.preview-region-stats {
+    display: grid;
+    gap: .62rem;
+}
+
+.preview-region-stats div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "name value"
+        "sector value";
+    gap: .12rem .65rem;
+    align-items: center;
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 16px;
+    padding: .72rem .78rem;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .12), transparent 34%),
+        rgba(255, 255, 255, .82);
+}
+
+.preview-region-stats span {
+    grid-area: name;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--landing-ink);
+    font-size: .82rem;
+    font-weight: 900;
+    line-height: 1.22;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preview-region-stats strong {
+    grid-area: value;
+    color: var(--landing-brand-dark);
+    font-size: .95rem;
+    font-weight: 950;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.preview-region-stats small {
+    grid-area: sector;
+    color: var(--landing-muted);
+    font-size: .76rem;
+    font-weight: 760;
+    line-height: 1.25;
+}
+
+.preview-progress div {
+    gap: .38rem;
+}
+
+.preview-progress span {
+    display: block;
+    color: var(--landing-muted);
+    font-size: .78rem;
+    font-weight: 850;
+    line-height: 1.28;
+}
+
+.preview-progress span strong {
+    color: var(--landing-ink);
+    font-weight: 900;
+}
+
+.preview-progress span small {
+    color: var(--landing-muted);
+    font-size: .72rem;
+    font-weight: 760;
+}
+
+@media (max-width: 575.98px) {
+    .board-region-button {
+        min-height: 44px;
+        padding: .62rem .8rem;
+        font-size: .82rem;
+    }
+
+    .preview-region-stats div {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "name"
+            "value"
+            "sector";
+        gap: .24rem;
+    }
+
+    .preview-region-stats strong {
+        font-size: 1.05rem;
+    }
+}
+
+/* Batch Landing-Content-1 END */
