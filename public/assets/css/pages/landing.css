@@ -1991,3 +1991,290 @@ html[data-location-gate="granted"] .location-gate-shell {
     }
 }
 
+/* Batch 2B-Fix4 Location Gate Mobile Tablet Refinement START */
+
+/*
+ * Tujuan:
+ * - Memperbaiki tampilan modal location gate pada tablet dan HP.
+ * - Menjaga tablet tetap tampil sebagai modal elegan.
+ * - Menjaga HP sebagai bottom sheet yang proporsional.
+ * - Mencegah tombol aksi berubah menjadi lingkaran besar.
+ * - Tidak mengubah logika location gate.
+ */
+
+.location-gate-guide-toggle,
+.location-gate-retry {
+    aspect-ratio: auto !important;
+}
+
+@media (max-width: 1199.98px) {
+    .location-gate-shell {
+        padding: clamp(1rem, 2vw, 1.5rem) !important;
+    }
+
+    .location-gate-shell .container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .location-gate-card {
+        width: min(640px, calc(100vw - 2rem)) !important;
+        max-height: min(76vh, 680px) !important;
+        display: grid !important;
+        grid-template-columns: 54px minmax(0, 1fr) !important;
+        align-items: start !important;
+        gap: 1rem !important;
+        border-radius: 28px !important;
+        overflow-y: auto !important;
+    }
+
+    .location-gate-actions {
+        grid-column: 1 / -1 !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+        gap: .7rem !important;
+        width: 100% !important;
+        margin-top: .35rem !important;
+    }
+
+    .location-gate-guide-toggle,
+    .location-gate-retry {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        min-height: 48px !important;
+        max-height: none !important;
+        flex: none !important;
+        border-radius: 16px !important;
+        padding: .72rem .95rem !important;
+        font-size: .92rem !important;
+        line-height: 1.25 !important;
+        white-space: normal !important;
+        text-align: center !important;
+    }
+
+    .location-gate-guide-toggle svg,
+    .location-gate-retry svg {
+        width: 18px !important;
+        height: 18px !important;
+        flex: 0 0 18px !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .location-gate-shell {
+        place-items: center !important;
+        padding: 1.25rem !important;
+    }
+
+    .location-gate-card {
+        width: min(600px, calc(100vw - 2.5rem)) !important;
+        max-height: min(74vh, 640px) !important;
+        border-radius: 28px !important;
+        padding: 1.15rem !important;
+        box-shadow: 0 28px 84px rgba(16, 33, 61, .28) !important;
+    }
+
+    .location-gate-copy {
+        padding-right: 2.65rem !important;
+    }
+
+    .location-gate-guide {
+        max-height: 34vh !important;
+        overflow-y: auto !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .location-gate-shell {
+        place-items: end center !important;
+        padding: 0 !important;
+    }
+
+    .location-gate-shell .container {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        place-items: end center !important;
+    }
+
+    .location-gate-card {
+        width: 100% !important;
+        max-height: min(80vh, 620px) !important;
+        display: grid !important;
+        grid-template-columns: 46px minmax(0, 1fr) !important;
+        gap: .75rem !important;
+        border-right: 0 !important;
+        border-bottom: 0 !important;
+        border-left: 0 !important;
+        border-radius: 24px 24px 0 0 !important;
+        padding: .95rem .9rem calc(.95rem + env(safe-area-inset-bottom)) !important;
+        overflow-y: auto !important;
+        box-shadow: 0 -24px 70px rgba(16, 33, 61, .28) !important;
+    }
+
+    .location-gate-icon {
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        flex-basis: 46px !important;
+        border-radius: 16px !important;
+    }
+
+    .location-gate-icon svg {
+        width: 22px !important;
+        height: 22px !important;
+    }
+
+    .location-gate-close {
+        top: .72rem !important;
+        right: .72rem !important;
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    .location-gate-copy {
+        min-width: 0 !important;
+        padding-right: 2.45rem !important;
+    }
+
+    .location-gate-copy strong[data-location-gate-title] {
+        font-size: 1.08rem !important;
+        line-height: 1.18 !important;
+        letter-spacing: -.015em !important;
+    }
+
+    .location-gate-copy p[data-location-gate-message] {
+        max-width: none !important;
+        margin-top: .35rem !important;
+        font-size: .88rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .location-gate-permission {
+        max-width: 100% !important;
+        flex-wrap: wrap !important;
+        margin-top: .58rem !important;
+        font-size: .76rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .location-gate-actions {
+        grid-column: 1 / -1 !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: .55rem !important;
+        width: 100% !important;
+        margin-top: .15rem !important;
+    }
+
+    .location-gate-guide-toggle,
+    .location-gate-retry {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 46px !important;
+        height: auto !important;
+        border-radius: 15px !important;
+        padding: .72rem .85rem !important;
+        font-size: .9rem !important;
+        line-height: 1.25 !important;
+        white-space: normal !important;
+    }
+
+    .location-gate-guide {
+        grid-column: 1 / -1 !important;
+        max-height: 32vh !important;
+        overflow-y: auto !important;
+        margin-top: .15rem !important;
+        border-radius: 18px !important;
+        padding: .78rem !important;
+    }
+
+    .location-guide-head {
+        display: grid !important;
+        grid-template-columns: 38px minmax(0, 1fr) !important;
+        align-items: start !important;
+        gap: .6rem !important;
+        margin-bottom: .7rem !important;
+    }
+
+    .location-guide-head-icon {
+        width: 38px !important;
+        height: 38px !important;
+        flex-basis: 38px !important;
+        border-radius: 14px !important;
+    }
+
+    .location-guide-head p {
+        font-size: .84rem !important;
+        line-height: 1.42 !important;
+    }
+
+    .location-guide-steps {
+        gap: .5rem !important;
+    }
+
+    .location-guide-step {
+        grid-template-columns: 30px minmax(0, 1fr) !important;
+        gap: .58rem !important;
+        border-radius: 14px !important;
+        padding: .68rem !important;
+    }
+
+    .location-guide-step span {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 11px !important;
+        font-size: .7rem !important;
+    }
+
+    .location-guide-step p {
+        font-size: .84rem !important;
+        line-height: 1.45 !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .location-gate-card {
+        grid-template-columns: 42px minmax(0, 1fr) !important;
+        gap: .7rem !important;
+    }
+
+    .location-gate-icon {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        flex-basis: 42px !important;
+    }
+
+    .location-gate-copy {
+        padding-right: 2.25rem !important;
+    }
+
+    .location-gate-actions,
+    .location-gate-guide {
+        grid-column: 1 / -1 !important;
+    }
+
+    .location-gate-copy strong[data-location-gate-title] {
+        font-size: 1.02rem !important;
+    }
+
+    .location-gate-copy p[data-location-gate-message] {
+        font-size: .84rem !important;
+    }
+}
+
+@media (max-height: 640px) and (max-width: 767.98px) {
+    .location-gate-card {
+        max-height: 84vh !important;
+    }
+
+    .location-gate-guide {
+        max-height: 28vh !important;
+    }
+}
+
+/* Batch 2B-Fix4 Location Gate Mobile Tablet Refinement END */
