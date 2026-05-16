@@ -1,0 +1,22 @@
+ Volume in drive C is Windows-SSD
+ Volume Serial Number is 6883-C6EA
+
+ Directory of C:\laragon\www\umkm-monitoring\public\assets\css\core
+
+16/05/2026  16:13    <DIR>          .
+16/05/2026  16:05    <DIR>          ..
+16/05/2026  16:13             3.493 bootstrap-local.css
+16/05/2026  15:56               336 umkm-badges.css
+16/05/2026  15:56               337 umkm-buttons.css
+16/05/2026  15:56               335 umkm-cards.css
+16/05/2026  15:56               336 umkm-charts.css
+16/05/2026  15:56               340 umkm-datatables.css
+16/05/2026  15:56               335 umkm-forms.css
+16/05/2026  15:56               333 umkm-map.css
+16/05/2026  15:56               336 umkm-modals.css
+16/05/2026  15:56               336 umkm-tables.css
+16/05/2026  15:56               335 umkm-theme.css
+16/05/2026  15:56               335 umkm-toast.css
+16/05/2026  15:56               332 umkm-ui.css
+              13 File(s)          7.519 bytes
+               2 Dir(s)   4.980.776.960 bytes free

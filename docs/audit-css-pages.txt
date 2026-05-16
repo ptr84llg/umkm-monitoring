@@ -1,0 +1,10 @@
+ Volume in drive C is Windows-SSD
+ Volume Serial Number is 6883-C6EA
+
+ Directory of C:\laragon\www\umkm-monitoring\public\assets\css\pages
+
+16/05/2026  16:05    <DIR>          .
+16/05/2026  16:05    <DIR>          ..
+16/05/2026  16:05             1.825 landing.css
+               1 File(s)          1.825 bytes
+               2 Dir(s)   4.980.772.864 bytes free

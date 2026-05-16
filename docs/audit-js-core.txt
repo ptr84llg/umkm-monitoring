@@ -1,0 +1,20 @@
+ Volume in drive C is Windows-SSD
+ Volume Serial Number is 6883-C6EA
+
+ Directory of C:\laragon\www\umkm-monitoring\public\assets\js\core
+
+16/05/2026  16:13    <DIR>          .
+16/05/2026  15:56    <DIR>          ..
+16/05/2026  16:13                44 bootstrap-local.js
+16/05/2026  15:56                78 umkm-ajax.js
+16/05/2026  15:56                80 umkm-charts.js
+16/05/2026  15:56                81 umkm-confirm.js
+16/05/2026  15:56                84 umkm-datatables.js
+16/05/2026  15:56                79 umkm-forms.js
+16/05/2026  15:56             1.321 umkm-map.js
+16/05/2026  15:56                79 umkm-modal.js
+16/05/2026  15:56                79 umkm-toast.js
+16/05/2026  15:56                76 umkm-ui.js
+16/05/2026  15:56                80 umkm-wizard.js
+              11 File(s)          2.081 bytes
+               2 Dir(s)   4.980.731.904 bytes free
