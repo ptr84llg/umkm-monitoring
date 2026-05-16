@@ -234,7 +234,7 @@
                             color: '#475569',
                             padding: 18,
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '700'
                             }
                         }
@@ -244,11 +244,11 @@
                         padding: 12,
                         cornerRadius: 12,
                         titleFont: {
-                            family: 'Manrope',
+                            family: 'Segoe UI',
                             weight: '800'
                         },
                         bodyFont: {
-                            family: 'Manrope',
+                            family: 'Segoe UI',
                             weight: '700'
                         }
                     }
@@ -261,7 +261,7 @@
                         ticks: {
                             color: '#64748b',
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '800'
                             }
                         }
@@ -278,7 +278,7 @@
                         ticks: {
                             color: '#0f7665',
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '800'
                             }
                         },
@@ -287,7 +287,7 @@
                             text: 'Jumlah UMKM',
                             color: '#0f7665',
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '800'
                             }
                         }
@@ -307,7 +307,7 @@
                                 return value + '%';
                             },
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '800'
                             }
                         },
@@ -316,7 +316,7 @@
                             text: 'Persentase',
                             color: '#f0a84a',
                             font: {
-                                family: 'Manrope',
+                                family: 'Segoe UI',
                                 weight: '800'
                             }
                         }
@@ -430,3 +430,4 @@
         renderMainChart('kinerja');
     });
 })();
+

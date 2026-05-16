@@ -2,6 +2,7 @@
 
 @php
     $assetProfile = 'landing';
+    $assetModules = ['location', 'session'];
     $vendorJs = [
         asset('assets/vendor/chartjs/chart.umd.min.js'),
     ];
@@ -185,15 +186,15 @@
                                             <div class="preview-progress">
                                                 <div>
                                                     <span>Perdagangan</span>
-                                                    <b style="width: 82%"></b>
+                                                    <b class="progress-fill-82"></b>
                                                 </div>
                                                 <div>
                                                     <span>Jasa</span>
-                                                    <b style="width: 64%"></b>
+                                                    <b class="progress-fill-64"></b>
                                                 </div>
                                                 <div>
                                                     <span>Kuliner</span>
-                                                    <b style="width: 74%"></b>
+                                                    <b class="progress-fill-74"></b>
                                                 </div>
                                             </div>
                                         </div>
@@ -378,4 +379,6 @@
     </button>
 </div>
 @endsection
+
+
 
