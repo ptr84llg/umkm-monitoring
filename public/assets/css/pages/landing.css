@@ -1810,31 +1810,6 @@ body.is-location-gate-open {
     overflow: hidden;
 }
 
-.location-gate-card {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(15, 118, 101, .42) rgba(16, 33, 61, .06);
-}
-
-.location-gate-card::-webkit-scrollbar {
-    width: 9px;
-}
-
-.location-gate-card::-webkit-scrollbar-track {
-    margin: 24px 0;
-    border-radius: 999px;
-    background: rgba(16, 33, 61, .06);
-}
-
-.location-gate-card::-webkit-scrollbar-thumb {
-    border: 2px solid rgba(255, 255, 255, .78);
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(15, 118, 101, .72), rgba(15, 118, 101, .36));
-}
-
-.location-gate-card::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(15, 118, 101, .88), rgba(15, 118, 101, .48));
-}
-
 .location-gate-close {
     position: absolute;
     top: .95rem;
@@ -2015,3 +1990,4 @@ html[data-location-gate="granted"] .location-gate-shell {
         grid-template-columns: 1fr;
     }
 }
+

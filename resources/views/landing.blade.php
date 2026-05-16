@@ -59,7 +59,7 @@
 
     <div class="location-gate-shell" data-location-gate-notice hidden>
         <div class="container">
-            <div class="location-gate-card">
+            <div class="location-gate-card umkm-scrollbar-modal">
                 <button type="button" class="location-gate-close" data-location-gate-close aria-label="Tutup pemberitahuan lokasi">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z"/>
@@ -460,6 +460,7 @@
     </button>
 </div>
 @endsection
+
 
 
 

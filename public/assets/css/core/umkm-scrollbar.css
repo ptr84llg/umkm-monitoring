@@ -1,0 +1,196 @@
+/*
+|--------------------------------------------------------------------------
+| UMKM Monitoring Core Scrollbar
+|--------------------------------------------------------------------------
+| Standar scrollbar global dan utility scrollbar untuk modal, panel,
+| drawer, table wrapper, log, dan komponen scrollable lainnya.
+*/
+
+:root {
+    --umkm-scrollbar-size: 10px;
+    --umkm-scrollbar-size-sm: 7px;
+    --umkm-scrollbar-track: rgba(16, 33, 61, .055);
+    --umkm-scrollbar-track-strong: rgba(16, 33, 61, .085);
+    --umkm-scrollbar-thumb: rgba(15, 118, 101, .48);
+    --umkm-scrollbar-thumb-hover: rgba(15, 118, 101, .72);
+    --umkm-scrollbar-thumb-soft: rgba(15, 118, 101, .34);
+    --umkm-scrollbar-thumb-gold: rgba(240, 168, 74, .54);
+}
+
+/* Global page/browser scrollbar */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--umkm-scrollbar-thumb) var(--umkm-scrollbar-track);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: var(--umkm-scrollbar-size);
+    height: var(--umkm-scrollbar-size);
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background:
+        linear-gradient(180deg, rgba(246, 251, 250, .96), rgba(238, 247, 246, .96));
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(246, 251, 250, .92);
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, var(--umkm-scrollbar-thumb-hover), var(--umkm-scrollbar-thumb));
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .88), rgba(15, 118, 101, .58));
+}
+
+/* General reusable scrollbar */
+.umkm-scrollbar,
+.umkm-scrollbar-soft,
+.umkm-scrollbar-modal {
+    scrollbar-width: thin;
+    scrollbar-color: var(--umkm-scrollbar-thumb) var(--umkm-scrollbar-track);
+}
+
+.umkm-scrollbar::-webkit-scrollbar,
+.umkm-scrollbar-soft::-webkit-scrollbar,
+.umkm-scrollbar-modal::-webkit-scrollbar {
+    width: var(--umkm-scrollbar-size);
+    height: var(--umkm-scrollbar-size);
+}
+
+.umkm-scrollbar::-webkit-scrollbar-track,
+.umkm-scrollbar-soft::-webkit-scrollbar-track,
+.umkm-scrollbar-modal::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: var(--umkm-scrollbar-track);
+}
+
+.umkm-scrollbar::-webkit-scrollbar-thumb,
+.umkm-scrollbar-soft::-webkit-scrollbar-thumb,
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(255, 255, 255, .78);
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, var(--umkm-scrollbar-thumb-hover), var(--umkm-scrollbar-thumb));
+}
+
+.umkm-scrollbar::-webkit-scrollbar-thumb:hover,
+.umkm-scrollbar-soft::-webkit-scrollbar-thumb:hover,
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .88), rgba(15, 118, 101, .58));
+}
+
+/* Softer scrollbar for cards, small panels, and light sections */
+.umkm-scrollbar-soft {
+    scrollbar-color: var(--umkm-scrollbar-thumb-soft) transparent;
+}
+
+.umkm-scrollbar-soft::-webkit-scrollbar {
+    width: var(--umkm-scrollbar-size-sm);
+    height: var(--umkm-scrollbar-size-sm);
+}
+
+.umkm-scrollbar-soft::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.umkm-scrollbar-soft::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(255, 255, 255, .72);
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .46), rgba(15, 118, 101, .28));
+}
+
+/* Modal, drawer, bottom sheet, and security dialog scrollbar */
+.umkm-scrollbar-modal {
+    scrollbar-color: var(--umkm-scrollbar-thumb) var(--umkm-scrollbar-track-strong);
+}
+
+.umkm-scrollbar-modal::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+.umkm-scrollbar-modal::-webkit-scrollbar-track {
+    margin: 24px 0;
+    border-radius: 999px;
+    background: var(--umkm-scrollbar-track-strong);
+}
+
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(255, 255, 255, .78);
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .72), rgba(15, 118, 101, .36));
+}
+
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .88), rgba(15, 118, 101, .48));
+}
+
+/* Hidden scrollbar, only for cases where scrolling remains accessible */
+.umkm-scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.umkm-scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+}
+
+/* Useful default targets without forcing every component to add a class */
+.modal-dialog-scrollable .modal-body,
+.offcanvas-body,
+.dropdown-menu,
+.table-responsive,
+.mobile-canvas-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--umkm-scrollbar-thumb-soft) transparent;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar,
+.offcanvas-body::-webkit-scrollbar,
+.dropdown-menu::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar,
+.mobile-canvas-panel::-webkit-scrollbar {
+    width: var(--umkm-scrollbar-size-sm);
+    height: var(--umkm-scrollbar-size-sm);
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track,
+.offcanvas-body::-webkit-scrollbar-track,
+.dropdown-menu::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track,
+.mobile-canvas-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb,
+.offcanvas-body::-webkit-scrollbar-thumb,
+.dropdown-menu::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb,
+.mobile-canvas-panel::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(255, 255, 255, .72);
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, rgba(15, 118, 101, .46), rgba(15, 118, 101, .28));
+}
+
+@media (max-width: 767.98px) {
+    :root {
+        --umkm-scrollbar-size: 8px;
+        --umkm-scrollbar-size-sm: 6px;
+    }
+
+    .umkm-scrollbar-modal::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+}
