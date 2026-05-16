@@ -1423,7 +1423,7 @@
 
         state.applied = selection;
 
-        setText('[data-public-region-source]', `Sumber data: ${selection.label}`);
+        setText('[data-public-region-source]', `${selection.label}`);
         setText('[data-public-chart-region]', selection.label);
         setText('[data-region-modal-current]', selection.label);
         setText('[data-public-watched-label]', preview.watched);
@@ -1823,3 +1823,56 @@
 })();
 
 /* Batch Landing-Content-1 END */
+
+/* Batch Landing-Final-Clean-1 START */
+
+/**
+ * One-shot cleanup label wilayah aktif.
+ * Tanpa MutationObserver agar tidak freeze.
+ */
+(function () {
+    'use strict';
+
+    function clean(value) {
+        return String(value || '').replace(/Sumber\s+data\s*:\s*/gi, '').trim();
+    }
+
+    function sanitize() {
+        var el = document.querySelector('[data-public-region-source]');
+
+        if (!el) {
+            return;
+        }
+
+        var cleaned = clean(el.textContent || 'Kota Lubuklinggau');
+
+        if (el.textContent !== cleaned) {
+            el.textContent = cleaned;
+        }
+    }
+
+    function boot() {
+        sanitize();
+
+        window.setTimeout(sanitize, 150);
+        window.setTimeout(sanitize, 500);
+
+        document.addEventListener('umkm:landing-region:changed', function (event) {
+            var detail = event.detail || {};
+            var selection = detail.selection || {};
+            var el = document.querySelector('[data-public-region-source]');
+
+            if (el && selection.label) {
+                el.textContent = clean(selection.label);
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();
+
+/* Batch Landing-Final-Clean-1 END */

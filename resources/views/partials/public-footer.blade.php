@@ -2,9 +2,9 @@
     <div class="container">
         <div class="footer-hero">
             <div class="footer-brand-block">
-                <a class="footer-logo" href="{{ url('/') }}" aria-label="UMKM Monitoring">
+                <a class="footer-logo" href="{{ url('/') }}" aria-label="Monitoring UMKM">
                     <span>MU</span>
-                    <strong>UMKM Monitoring</strong>
+                    <strong>Monitoring UMKM</strong>
                 </a>
                 <p>
                     Sistem informasi UMKM untuk pengelolaan data, pemantauan perkembangan,
@@ -131,7 +131,7 @@
         </div>
 
         <div class="footer-bottom">
-            <span>&copy; {{ date('Y') }} UMKM Monitoring.</span>
+            <span>&copy; {{ date('Y') }} Monitoring UMKM.</span>
             <span>Sistem Informasi UMKM</span>
         </div>
     </div>

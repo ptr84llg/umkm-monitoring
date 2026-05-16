@@ -3919,3 +3919,458 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Typography-1 END */
+
+/* Batch Landing-Typography-1 Fix START */
+
+/*
+ * Final lock:
+ * - Tidak ada lagi prefix "Sumber data:" di card Wilayah Aktif.
+ * - Paragraf/deskripsi naratif dibuat justify.
+ * - Pada < 992px, judul dan subjudul dibuat center.
+ * - Area teks mobile dibuat full width agar sejajar dengan card di bawahnya.
+ */
+
+/* Paksa pseudo-element lama tidak muncul */
+.board-source-info strong[data-public-region-source]::before,
+.board-source-info strong[data-public-region-source]::after {
+    content: "" !important;
+    display: none !important;
+}
+
+.board-source-info strong[data-public-region-source] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+
+/* Justify untuk teks naratif/deskriptif */
+.umkm-landing p,
+.umkm-landing main p,
+.umkm-landing footer p,
+.umkm-landing .hero-copy p,
+.umkm-landing .dashboard-panel-head p,
+.umkm-landing .chart-head span#mainChartSubtitle,
+.umkm-landing .summary-copy p,
+.umkm-landing .summary-list span,
+.umkm-landing .cta-panel p,
+.umkm-landing .footer-brand p,
+.umkm-landing .footer-copy p,
+.umkm-landing .footer-card p,
+.umkm-landing .footer-card span,
+.umkm-landing .footer-card small,
+.umkm-landing .mobile-canvas-panel p,
+.umkm-landing .mobile-canvas-card p,
+.umkm-landing .landing-region-modal-head p,
+.umkm-landing .location-gate-copy p,
+.umkm-landing .location-guide-head p,
+.umkm-landing .location-guide-step p {
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: left !important;
+}
+
+/* Elemen non-paragraf yang tidak boleh dipaksa justify */
+.umkm-landing h1,
+.umkm-landing h2,
+.umkm-landing h3,
+.umkm-landing h4,
+.umkm-landing h5,
+.umkm-landing h6,
+.umkm-landing button,
+.umkm-landing .btn,
+.umkm-landing .landing-pill,
+.umkm-landing .dashboard-tab,
+.umkm-landing .chart-region-badge,
+.umkm-landing .board-region-button,
+.umkm-landing .board-metrics span,
+.umkm-landing .board-metrics strong,
+.umkm-landing .preview-card-title strong,
+.umkm-landing .preview-region-stats span,
+.umkm-landing .preview-region-stats strong,
+.umkm-landing .preview-region-stats small,
+.umkm-landing .preview-progress span,
+.umkm-landing .indicator-name,
+.umkm-landing .indicator-meta,
+.umkm-landing .board-bottom strong,
+.umkm-landing .board-bottom small,
+.umkm-landing .chart-summary span,
+.umkm-landing .chart-summary strong,
+.umkm-landing .footer-nav a,
+.umkm-landing .mobile-menu-link {
+    text-align: left !important;
+    text-align-last: auto !important;
+}
+
+/* Full-width area teks agar tidak lebih sempit dari card di bawahnya */
+.hero-copy,
+.dashboard-panel-head > div,
+.summary-copy,
+.cta-panel > div,
+.footer-brand,
+.footer-copy,
+.footer-card,
+.footer-card > div,
+.mobile-canvas-panel,
+.mobile-canvas-card,
+.location-gate-copy,
+.location-guide-head,
+.landing-region-modal-head {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Mobile/tablet kecil */
+@media (max-width: 991.98px) {
+    .hero-copy,
+    .dashboard-panel-head > div,
+    .summary-copy,
+    .cta-panel > div,
+    .footer-brand,
+    .footer-copy,
+    .footer-card,
+    .mobile-canvas-panel,
+    .mobile-canvas-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: auto !important;
+    }
+
+    .hero-copy h1,
+    .dashboard-panel h2,
+    .summary-copy h2,
+    .cta-panel h2,
+    .footer-brand strong,
+    .footer-copy strong,
+    .mobile-canvas-panel strong,
+    .mobile-canvas-card strong,
+    .landing-region-modal-head strong,
+    .location-gate-copy h2,
+    .location-guide-head h3 {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        text-align-last: center !important;
+    }
+
+    .hero-copy p,
+    .dashboard-panel-head p,
+    .summary-copy p,
+    .cta-panel p,
+    .footer-brand p,
+    .footer-copy p,
+    .footer-card p,
+    .footer-card span,
+    .footer-card small,
+    .mobile-canvas-panel p,
+    .mobile-canvas-card p,
+    .landing-region-modal-head p,
+    .location-gate-copy p,
+    .location-guide-head p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-align-last: left !important;
+    }
+
+    .hero-copy .landing-pill,
+    .dashboard-panel-head .landing-pill,
+    .summary-copy .landing-pill,
+    .cta-panel .landing-pill {
+        margin-inline: auto !important;
+    }
+
+    .hero-actions,
+    .cta-panel {
+        width: 100% !important;
+    }
+}
+
+/* Mobile sempit */
+@media (max-width: 575.98px) {
+    .hero-copy,
+    .dashboard-panel-head > div,
+    .summary-copy,
+    .cta-panel > div {
+        padding-inline: 0 !important;
+    }
+
+    .hero-copy h1,
+    .dashboard-panel h2,
+    .summary-copy h2,
+    .cta-panel h2 {
+        text-align: center !important;
+        text-align-last: center !important;
+    }
+
+    .hero-copy p,
+    .dashboard-panel-head p,
+    .summary-copy p,
+    .cta-panel p,
+    .footer-brand p,
+    .footer-copy p,
+    .footer-card p,
+    .footer-card span,
+    .footer-card small {
+        text-align: justify !important;
+        text-align-last: left !important;
+    }
+}
+
+/* Batch Landing-Typography-1 Fix END */
+
+/* Batch Landing-Final-Clean-1 START */
+
+/*
+ * Final landing cleanup:
+ * - Wilayah aktif tanpa prefix "Sumber data:".
+ * - Footer dan semua paragraf naratif justify.
+ * - Mobile/tablet: judul/subjudul center, area teks full width.
+ * - Console debug dimatikan dari core JS, bukan dari CSS.
+ */
+
+/* Wilayah aktif */
+.board-source-info strong[data-public-region-source]::before,
+.board-source-info strong[data-public-region-source]::after {
+    content: "" !important;
+    display: none !important;
+}
+
+.board-source-info strong[data-public-region-source] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+}
+
+/* Full-width text containers */
+.umkm-landing .hero-copy,
+.umkm-landing .dashboard-panel-head > div,
+.umkm-landing .summary-copy,
+.umkm-landing .cta-panel > div,
+.umkm-landing footer,
+.umkm-landing footer > *,
+.umkm-landing [class*="footer"],
+.umkm-landing [class*="footer"] > *,
+.umkm-landing .mobile-canvas-panel,
+.umkm-landing .mobile-canvas-card,
+.umkm-landing .landing-region-modal-head,
+.umkm-landing .location-gate-copy,
+.umkm-landing .location-guide-head {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Semua teks naratif/paragraf */
+.umkm-landing p,
+.umkm-landing main p,
+.umkm-landing section p,
+.umkm-landing footer p,
+.umkm-landing [class*="footer"] p,
+.umkm-landing [class*="footer"] .footer-description,
+.umkm-landing [class*="footer"] .footer-desc,
+.umkm-landing [class*="footer"] .footer-text,
+.umkm-landing [class*="footer"] .footer-copy,
+.umkm-landing [class*="footer"] .footer-about,
+.umkm-landing [class*="footer"] .footer-intro,
+.umkm-landing .hero-copy p,
+.umkm-landing .dashboard-panel-head p,
+.umkm-landing .summary-copy p,
+.umkm-landing .cta-panel p,
+.umkm-landing .mobile-canvas-panel p,
+.umkm-landing .mobile-canvas-card p,
+.umkm-landing .landing-region-modal-head p,
+.umkm-landing .location-gate-copy p,
+.umkm-landing .location-guide-head p,
+.umkm-landing .location-guide-step p,
+.umkm-landing #mainChartSubtitle {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: left !important;
+}
+
+/* Footer sering memakai span/small sebagai deskripsi */
+.umkm-landing footer span:not(.landing-brand-mark):not(.status-icon):not(.icon),
+.umkm-landing footer small,
+.umkm-landing [class*="footer"] span:not(.landing-brand-mark):not(.status-icon):not(.icon),
+.umkm-landing [class*="footer"] small {
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: left !important;
+}
+
+/* Elemen pendek/aksi tidak dipaksa justify */
+.umkm-landing h1,
+.umkm-landing h2,
+.umkm-landing h3,
+.umkm-landing h4,
+.umkm-landing h5,
+.umkm-landing h6,
+.umkm-landing button,
+.umkm-landing .btn,
+.umkm-landing nav a,
+.umkm-landing .landing-pill,
+.umkm-landing .dashboard-tab,
+.umkm-landing .chart-region-badge,
+.umkm-landing .board-region-button,
+.umkm-landing .board-source-kicker,
+.umkm-landing .board-metrics span,
+.umkm-landing .board-metrics strong,
+.umkm-landing .preview-card-title strong,
+.umkm-landing .preview-region-stats span,
+.umkm-landing .preview-region-stats strong,
+.umkm-landing .preview-region-stats small,
+.umkm-landing .preview-progress span,
+.umkm-landing .indicator-name,
+.umkm-landing .indicator-meta,
+.umkm-landing .board-bottom strong,
+.umkm-landing .board-bottom small,
+.umkm-landing .chart-summary span,
+.umkm-landing .chart-summary strong,
+.umkm-landing .footer-nav a,
+.umkm-landing .mobile-menu-link,
+.umkm-landing .mobile-canvas-menu a,
+.umkm-landing footer a {
+    text-align-last: auto !important;
+}
+
+/* Mobile/tablet */
+@media (max-width: 991.98px) {
+    .umkm-landing .hero-copy,
+    .umkm-landing .dashboard-panel-head > div,
+    .umkm-landing .summary-copy,
+    .umkm-landing .cta-panel > div,
+    .umkm-landing [class*="footer"],
+    .umkm-landing .mobile-canvas-panel,
+    .umkm-landing .mobile-canvas-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: auto !important;
+    }
+
+    .umkm-landing .hero-copy h1,
+    .umkm-landing .dashboard-panel h2,
+    .umkm-landing .summary-copy h2,
+    .umkm-landing .cta-panel h2,
+    .umkm-landing [class*="footer"] h2,
+    .umkm-landing [class*="footer"] h3,
+    .umkm-landing [class*="footer"] strong,
+    .umkm-landing .mobile-canvas-panel strong,
+    .umkm-landing .mobile-canvas-card strong,
+    .umkm-landing .landing-region-modal-head strong,
+    .umkm-landing .location-gate-copy h2,
+    .umkm-landing .location-guide-head h3 {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        text-align-last: center !important;
+    }
+
+    .umkm-landing .hero-copy p,
+    .umkm-landing .dashboard-panel-head p,
+    .umkm-landing .summary-copy p,
+    .umkm-landing .cta-panel p,
+    .umkm-landing [class*="footer"] p,
+    .umkm-landing .mobile-canvas-panel p,
+    .umkm-landing .mobile-canvas-card p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-align-last: left !important;
+    }
+
+    .umkm-landing .hero-copy .landing-pill,
+    .umkm-landing .dashboard-panel-head .landing-pill,
+    .umkm-landing .summary-copy .landing-pill,
+    .umkm-landing .cta-panel .landing-pill {
+        margin-inline: auto !important;
+    }
+}
+
+/* Batch Landing-Final-Clean-1 END */
+
+/* Batch Landing-Footer-Typography-Fix START */
+
+/*
+ * Fix spesifik footer:
+ * - .footer-note p wajib justify.
+ * - .footer-brand-block p wajib justify.
+ * - .footer-brand-block pada mobile/tablet wajib full width.
+ */
+
+.umkm-landing .footer-note,
+.umkm-landing .footer-note p,
+.umkm-landing .footer-brand-block,
+.umkm-landing .footer-brand-block p {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.umkm-landing .footer-note p,
+.umkm-landing .footer-brand-block p {
+    display: block !important;
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: left !important;
+    line-height: 1.72;
+}
+
+@media (max-width: 991.98px) {
+    .umkm-landing .footer-brand-block,
+    .umkm-landing .footer-brand-block > *,
+    .umkm-landing .footer-note,
+    .umkm-landing .footer-note > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        padding-inline: 0 !important;
+    }
+
+    .umkm-landing .footer-brand-block strong,
+    .umkm-landing .footer-brand-block h2,
+    .umkm-landing .footer-brand-block h3,
+    .umkm-landing .footer-note strong,
+    .umkm-landing .footer-note h2,
+    .umkm-landing .footer-note h3 {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        text-align-last: center !important;
+    }
+
+    .umkm-landing .footer-brand-block p,
+    .umkm-landing .footer-note p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-justify: inter-word !important;
+        text-align-last: left !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-landing .footer-brand-block,
+    .umkm-landing .footer-note {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .umkm-landing .footer-brand-block p,
+    .umkm-landing .footer-note p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-align-last: left !important;
+        line-height: 1.68;
+    }
+}
+
+/* Batch Landing-Footer-Typography-Fix END */

@@ -11,11 +11,11 @@
     UMKM.events = UMKM.events || {};
 
     UMKM.config = Object.assign({
-        appName: 'UMKM Monitoring',
+        appName: 'Monitoring UMKM',
         client: document.querySelector('meta[name="umkm-client"]')?.getAttribute('content') || 'web',
         profile: document.querySelector('meta[name="umkm-security-profile"]')?.getAttribute('content') || 'default',
         isLocal: ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname),
-        debug: ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+        debug: window.UMKM_DEBUG === true || document.querySelector('meta[name="umkm-debug"]')?.getAttribute('content') === 'true'
     }, UMKM.config || {});
 
     UMKM.events.emit = function (name, detail) {
@@ -53,13 +53,14 @@
             return;
         }
 
+        const method = typeof console[level || 'log'] === 'function' ? level || 'log' : 'log';
         const tag = '%c[UMKM]';
         const style = 'background:#0f7665;color:#fff;border-radius:6px;padding:2px 6px;font-weight:700;';
 
         if (data !== undefined) {
-            console[level || 'log'](tag, style, message, data);
+            console[method](tag, style, message, data);
         } else {
-            console[level || 'log'](tag, style, message);
+            console[method](tag, style, message);
         }
     };
 

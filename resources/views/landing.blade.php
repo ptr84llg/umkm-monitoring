@@ -418,7 +418,7 @@
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
                                 </svg>
-                                <span>Visual Interaktif</span>
+                                <span>Visual Analitik Interaktif</span>
                             </div>
                             <div>
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 3.5 6.8 12 11l8.5-4.2L12 2.5Zm0 10.7L5.2 9.85 3.5 10.7 12 15l8.5-4.3-1.7-.85L12 13.2Zm0 4L5.2 13.85l-1.7.85L12 19l8.5-4.3-1.7-.85L12 17.2Z"/></svg><span>Berbasis Data dan Wilayah</span>
@@ -481,7 +481,7 @@
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
                             <span>Ringkasan sistem</span>
                         </span>
-                        <h2>Data tersusun, Visual Interaktif, Keputusan mudah terarah</h2>
+                        <h2>Data tersusun, Visual Analitik Interaktif, Keputusan mudah terarah</h2>
                         <p>
                             Monitoring UMKM menyatukan pengelolaan data dan visualisasi agar informasi usaha
                             dapat dipantau secara cepat tanpa kehilangan konteks penting.
