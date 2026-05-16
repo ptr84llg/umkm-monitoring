@@ -3,6 +3,9 @@
 
     $vendorCss = $vendorCss ?? [];
     $vendorJs = $vendorJs ?? [];
+    $pageCss = $pageCss ?? [];
+    $pageJs = $pageJs ?? [];
+    $assetModules = $assetModules ?? [];
 
     $coreCssBase = [
         'bootstrap-local.css',
@@ -49,15 +52,11 @@
         'charts' => 'umkm-charts.js',
     ];
 
-    $pageCss = $pageCss ?? [];
-    $pageJs = $pageJs ?? [];
-    $assetModules = $assetModules ?? [];
-
     if ($assetProfile === 'landing') {
         $coreCss = [
             'bootstrap-local.css',
             'umkm-theme.css',
-        'umkm-scrollbar.css',
+            'umkm-scrollbar.css',
             'umkm-ui.css',
             'umkm-buttons.css',
             'umkm-footer.css',
@@ -119,4 +118,3 @@
 @foreach($pageJs as $file)
     <script src="{{ asset('assets/js/pages/'.$file) }}" defer></script>
 @endforeach
-
