@@ -1,6 +1,25 @@
 <?php
-use App\Http\Controllers\AdminUtama\AdminUtamaController;use App\Http\Controllers\Auth\LoginController;use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminUtama\AdminUtamaController;use App\Http\Controllers\Api\Public\LandingRegionController;use App\Http\Controllers\Auth\LoginController;use Illuminate\Support\Facades\Route;
 Route::get('/', fn()=>view('landing'));
+
+// Batch Landing-Regional-2A START
+Route::prefix('api/public/landing-regions')
+    ->middleware([
+        'throttle:internal-sensitive',
+        'validate.internal.origin',
+        'validate.internal.referer',
+        'validate.fetch.metadata',
+        'log.internal.api',
+    ])
+    ->group(function () {
+        Route::get('/context', [LandingRegionController::class, 'context'])
+            ->name('landing.regions.context');
+
+        Route::get('/children', [LandingRegionController::class, 'children'])
+            ->name('landing.regions.children');
+    });
+// Batch Landing-Regional-2A END
+
 Route::middleware('guest')->group(function(){ Route::get('/login',[LoginController::class,'create'])->name('login'); Route::post('/login',[LoginController::class,'store'])->name('login.store'); });
 Route::middleware('auth')->group(function(){
  Route::post('/logout',[LoginController::class,'destroy'])->name('logout');
