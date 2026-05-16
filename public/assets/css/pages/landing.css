@@ -2278,3 +2278,157 @@ html[data-location-gate="granted"] .location-gate-shell {
 }
 
 /* Batch 2B-Fix4 Location Gate Mobile Tablet Refinement END */
+
+/* Batch Landing-Regional-1 START */
+
+/*
+ * Public multi-wilayah preview.
+ * Data pada landing bersifat agregat/preview, bukan API internal dan bukan data sensitif.
+ */
+
+.landing-region-selector {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, .42fr);
+    gap: .85rem;
+    align-items: center;
+    max-width: 780px;
+    margin-top: 1.15rem;
+    border: 1px solid rgba(15, 118, 101, .14);
+    border-radius: 26px;
+    padding: .9rem;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .12), transparent 28%),
+        rgba(255, 255, 255, .76);
+    box-shadow: 0 18px 46px rgba(16, 33, 61, .08);
+    backdrop-filter: blur(14px);
+}
+
+.landing-region-copy span,
+.landing-region-copy strong,
+.landing-region-copy small,
+.landing-region-control label {
+    display: block;
+}
+
+.landing-region-copy span,
+.landing-region-control label {
+    color: var(--landing-brand-dark);
+    font-size: .78rem;
+    line-height: 1.2;
+    font-weight: 850;
+}
+
+.landing-region-copy strong {
+    margin-top: .18rem;
+    color: var(--landing-ink);
+    font-size: 1.05rem;
+    line-height: 1.25;
+    font-weight: 900;
+}
+
+.landing-region-copy small {
+    margin-top: .28rem;
+    color: var(--landing-muted);
+    line-height: 1.45;
+    font-weight: 650;
+}
+
+.landing-region-control {
+    display: grid;
+    gap: .42rem;
+}
+
+.landing-region-control .form-select {
+    min-height: 46px;
+    border: 1px solid rgba(16, 33, 61, .12);
+    border-radius: 16px;
+    color: var(--landing-ink);
+    background-color: #ffffff;
+    font-weight: 800;
+    box-shadow: none;
+}
+
+.landing-region-control .form-select:focus {
+    border-color: rgba(15, 118, 101, .38);
+    box-shadow: 0 0 0 .18rem rgba(15, 118, 101, .10);
+}
+
+.chart-region-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    border: 1px solid rgba(15, 118, 101, .14);
+    border-radius: 999px;
+    padding: .52rem .78rem;
+    color: var(--landing-brand-dark);
+    background: rgba(15, 118, 101, .08);
+    font-size: .78rem;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.preview-progress b.progress-fill-50 { width: 50%; }
+.preview-progress b.progress-fill-51 { width: 51%; }
+.preview-progress b.progress-fill-52 { width: 52%; }
+.preview-progress b.progress-fill-53 { width: 53%; }
+.preview-progress b.progress-fill-54 { width: 54%; }
+.preview-progress b.progress-fill-55 { width: 55%; }
+.preview-progress b.progress-fill-56 { width: 56%; }
+.preview-progress b.progress-fill-57 { width: 57%; }
+.preview-progress b.progress-fill-58 { width: 58%; }
+.preview-progress b.progress-fill-59 { width: 59%; }
+.preview-progress b.progress-fill-60 { width: 60%; }
+.preview-progress b.progress-fill-61 { width: 61%; }
+.preview-progress b.progress-fill-62 { width: 62%; }
+.preview-progress b.progress-fill-63 { width: 63%; }
+.preview-progress b.progress-fill-64 { width: 64%; }
+.preview-progress b.progress-fill-65 { width: 65%; }
+.preview-progress b.progress-fill-66 { width: 66%; }
+.preview-progress b.progress-fill-67 { width: 67%; }
+.preview-progress b.progress-fill-68 { width: 68%; }
+.preview-progress b.progress-fill-69 { width: 69%; }
+.preview-progress b.progress-fill-70 { width: 70%; }
+.preview-progress b.progress-fill-71 { width: 71%; }
+.preview-progress b.progress-fill-72 { width: 72%; }
+.preview-progress b.progress-fill-73 { width: 73%; }
+.preview-progress b.progress-fill-74 { width: 74%; }
+.preview-progress b.progress-fill-75 { width: 75%; }
+.preview-progress b.progress-fill-76 { width: 76%; }
+.preview-progress b.progress-fill-77 { width: 77%; }
+.preview-progress b.progress-fill-78 { width: 78%; }
+.preview-progress b.progress-fill-79 { width: 79%; }
+.preview-progress b.progress-fill-80 { width: 80%; }
+.preview-progress b.progress-fill-81 { width: 81%; }
+.preview-progress b.progress-fill-82 { width: 82%; }
+.preview-progress b.progress-fill-83 { width: 83%; }
+.preview-progress b.progress-fill-84 { width: 84%; }
+.preview-progress b.progress-fill-85 { width: 85%; }
+.preview-progress b.progress-fill-86 { width: 86%; }
+.preview-progress b.progress-fill-87 { width: 87%; }
+.preview-progress b.progress-fill-88 { width: 88%; }
+.preview-progress b.progress-fill-89 { width: 89%; }
+.preview-progress b.progress-fill-90 { width: 90%; }
+
+@media (max-width: 991.98px) {
+    .landing-region-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-region-badge {
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .landing-region-selector {
+        border-radius: 22px;
+        padding: .82rem;
+    }
+
+    .landing-region-control .form-select {
+        min-height: 48px;
+    }
+}
+
+/* Batch Landing-Regional-1 END */

@@ -129,7 +129,7 @@
 
                     <button type="button" class="location-gate-retry" data-location-retry>
                         <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.45 5.1h-2.2A6 6 0 1 1 12 6c1.66 0 3.14 4.22 1.78L13 11h8V3l-3.35 3.35Z"/>
+                            <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.45 5.1h-2.2A6 6 0 1 1 12 6c1.66 0 3.14 .69 4.22 1.78L13 11h8V3l-3.35 3.35Z"/>
                         </svg>
                         <span>Cek ulang lokasi</span>
                     </button>
@@ -205,6 +205,30 @@
                                         <span>Lihat Dashboard</span>
                                     </a>
                                 </div>
+                                {{-- Batch Landing-Regional-1 START --}}
+                                <div class="landing-region-selector" data-public-region-selector>
+                                    <div class="landing-region-copy">
+                                        <span>Konteks wilayah preview</span>
+                                        <strong data-public-region-label>Kota Lubuklinggau</strong>
+                                        <small>Data pada landing bersifat agregat/preview dan tidak menampilkan data sensitif.</small>
+                                    </div>
+
+                                    <div class="landing-region-control">
+                                        <label for="publicRegionSelect">Pilih wilayah</label>
+                                        <select id="publicRegionSelect" class="form-select" data-public-region-select>
+                                            <option value="lubuklinggau">Kota Lubuklinggau</option>
+                                            <option value="timur1">Lubuk Linggau Timur I</option>
+                                            <option value="barat1">Lubuk Linggau Barat I</option>
+                                            <option value="selatan1">Lubuk Linggau Selatan I</option>
+                                            <option value="utara1">Lubuk Linggau Utara I</option>
+                                            <option value="timur2">Lubuk Linggau Timur II</option>
+                                            <option value="barat2">Lubuk Linggau Barat II</option>
+                                            <option value="selatan2">Lubuk Linggau Selatan II</option>
+                                            <option value="utara2">Lubuk Linggau Utara II</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- Batch Landing-Regional-1 END --}}
                             </div>
                         </div>
 
@@ -214,7 +238,7 @@
                                     <svg viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="M12 2.75c-3.45 0-6.25 2.8-6.25 6.25 0 4.5 6.25 12.25 6.25 12.25S18.25 13.5 18.25 9c0-3.45-2.8-6.25-6.25-6.25Zm0 8.6a2.35 2.35 0 1 1 0-4.7 2.35 2.35 0 0 1 0 4.7Z"/>
                                     </svg>
-                                    <span>Sumber data: Kota Lubuklinggau</span>
+                                    <span data-public-region-source>Sumber data: Kota Lubuklinggau</span>
                                 </div>
 
                                 <div class="board-window">
@@ -231,15 +255,15 @@
                                     <div class="board-metrics">
                                         <div>
                                             <span>UMKM Terdata</span>
-                                            <strong class="count-up" data-count="1248">0</strong>
+                                            <strong class="count-up" data-count="1248" data-public-metric="total">0</strong>
                                         </div>
                                         <div>
                                             <span>UMKM Aktif</span>
-                                            <strong class="count-up" data-count="1086">0</strong>
+                                            <strong class="count-up" data-count="1086" data-public-metric="active">0</strong>
                                         </div>
                                         <div>
                                             <span>Perlu Validasi</span>
-                                            <strong class="count-up" data-count="36">0</strong>
+                                            <strong class="count-up" data-count="36" data-public-metric="validation">0</strong>
                                         </div>
                                     </div>
 
@@ -264,7 +288,7 @@
                                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
                                                 <strong>Indikator</strong>
                                             </div>
-                                            <div class="preview-progress">
+                                            <div class="preview-progress" data-public-field-list>
                                                 <div>
                                                     <span>Perdagangan</span>
                                                     <b class="progress-fill-82"></b>
@@ -289,7 +313,7 @@
                                                 </svg>
                                             </span>
                                             <strong>Wilayah Terpantau</strong>
-                                            <small>8 Kecamatan</small>
+                                            <small data-public-watched-label>8 Kecamatan</small>
                                         </div>
                                         <div>
                                             <span class="status-icon gold">
@@ -298,7 +322,7 @@
                                                 </svg>
                                             </span>
                                             <strong>Bidang Dominan</strong>
-                                            <small>Perdagangan</small>
+                                            <small data-public-dominant-label>Perdagangan</small>
                                         </div>
                                     </div>
                                 </div>
@@ -363,6 +387,7 @@
                                 <strong id="mainChartTitle">Tren Perkembangan UMKM</strong>
                                 <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
                             </div>
+                            <span class="chart-region-badge" data-public-chart-region>Kota Lubuklinggau</span>
                             <span class="chart-badge">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
                                 Multi Axis Chart

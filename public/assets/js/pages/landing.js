@@ -811,3 +811,708 @@
     });
 })();
 
+/* Batch Landing-Regional-1 START */
+
+/**
+ * Public multi-wilayah preview.
+ * Catatan:
+ * - Tidak memakai API internal.
+ * - Tidak membuka data sensitif.
+ * - Hanya mengubah preview agregat pada landing page.
+ */
+(function () {
+    'use strict';
+
+    const previewRegions = {
+        lubuklinggau: {
+            name: 'Kota Lubuklinggau',
+            source: 'Sumber data: Kota Lubuklinggau',
+            level: 'Kota/Kabupaten',
+            total: 1248,
+            active: 1086,
+            validation: 36,
+            watched: '8 Kecamatan',
+            dominant: 'Perdagangan',
+            legality: 68,
+            completeness: 74,
+            fields: [
+                { name: 'Perdagangan', percent: 82 },
+                { name: 'Kuliner', percent: 74 },
+                { name: 'Jasa', percent: 64 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja dan Pertumbuhan UMKM Kota Lubuklinggau',
+                    subtitle: 'Preview agregat perkembangan UMKM aktif pada wilayah kota',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan kinerja (%)',
+                    unitData: [118, 126, 133, 141, 152, 164, 173],
+                    percentData: [3.2, 4.1, 3.8, 5.2, 6.4, 7.1, 6.7],
+                    summaryOne: 'Kota Lubuklinggau, bidang usaha, periode',
+                    summaryTwo: 'Jumlah UMKM dan persentase pertumbuhan',
+                    summaryThree: 'Monitoring kinerja wilayah kota'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM per Kecamatan',
+                    subtitle: 'Preview konsentrasi UMKM pada kecamatan di Kota Lubuklinggau',
+                    labels: ['Barat I', 'Barat II', 'Timur I', 'Timur II', 'Selatan I', 'Selatan II', 'Utara I', 'Utara II'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi wilayah (%)',
+                    unitData: [92, 118, 146, 132, 104, 96, 88, 122],
+                    percentData: [9.5, 12.1, 15.2, 13.6, 10.7, 9.9, 8.7, 12.8],
+                    summaryOne: 'Ranking kecamatan',
+                    summaryTwo: 'Jumlah dan konsentrasi wilayah',
+                    summaryThree: 'Sebaran UMKM tingkat kota'
+                },
+                legalitas: {
+                    title: 'Legalitas dan Kelengkapan Data Kota Lubuklinggau',
+                    subtitle: 'Preview rasio legalitas dan kelengkapan data UMKM',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan data (%)',
+                    unitData: [68, 74, 82, 91, 104, 116, 128],
+                    percentData: [48, 52, 57, 62, 68, 73, 78],
+                    summaryOne: 'Legalitas, profil, lokasi',
+                    summaryTwo: 'Jumlah dan rasio kelengkapan',
+                    summaryThree: 'Kesiapan data monitoring'
+                }
+            }
+        },
+        timur1: {
+            name: 'Lubuk Linggau Timur I',
+            source: 'Sumber data: Lubuk Linggau Timur I',
+            level: 'Kecamatan',
+            total: 186,
+            active: 163,
+            validation: 5,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Kuliner',
+            legality: 71,
+            completeness: 76,
+            fields: [
+                { name: 'Kuliner', percent: 84 },
+                { name: 'Perdagangan', percent: 78 },
+                { name: 'Jasa', percent: 61 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Timur I',
+                    subtitle: 'Preview perkembangan UMKM aktif pada tingkat kecamatan',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [132, 137, 142, 148, 153, 159, 163],
+                    percentData: [2.4, 3.1, 3.5, 4.2, 4.8, 5.2, 5.6],
+                    summaryOne: 'Timur I, kelurahan, bidang usaha',
+                    summaryTwo: 'Jumlah aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Timur I',
+                    subtitle: 'Preview distribusi UMKM pada wilayah turunan kecamatan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D', 'Kel. E'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [34, 42, 29, 31, 27],
+                    percentData: [18.2, 22.6, 15.6, 16.7, 14.5],
+                    summaryOne: 'Wilayah turunan kecamatan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran tingkat kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Timur I',
+                    subtitle: 'Preview status legalitas dan kelengkapan data kecamatan',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [76, 82, 89, 96, 103, 111, 118],
+                    percentData: [52, 56, 60, 64, 68, 72, 76],
+                    summaryOne: 'NIB, profil, lokasi',
+                    summaryTwo: 'Legalitas dan kelengkapan',
+                    summaryThree: 'Kesiapan data kecamatan'
+                }
+            }
+        },
+        barat1: {
+            name: 'Lubuk Linggau Barat I',
+            source: 'Sumber data: Lubuk Linggau Barat I',
+            level: 'Kecamatan',
+            total: 142,
+            active: 124,
+            validation: 4,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Perdagangan',
+            legality: 66,
+            completeness: 72,
+            fields: [
+                { name: 'Perdagangan', percent: 81 },
+                { name: 'Jasa', percent: 68 },
+                { name: 'Kuliner', percent: 62 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Barat I',
+                    subtitle: 'Preview perkembangan aktivitas UMKM pada wilayah barat',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [94, 99, 105, 111, 116, 121, 124],
+                    percentData: [2.1, 2.7, 3.4, 3.8, 4.1, 4.6, 4.9],
+                    summaryOne: 'Barat I, bidang usaha, periode',
+                    summaryTwo: 'Aktivitas dan pertumbuhan',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Barat I',
+                    subtitle: 'Preview konsentrasi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [32, 28, 36, 28],
+                    percentData: [22.5, 19.7, 25.3, 19.7],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Barat I',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [48, 54, 59, 65, 72, 78, 84],
+                    percentData: [45, 49, 54, 58, 62, 68, 72],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        selatan1: {
+            name: 'Lubuk Linggau Selatan I',
+            source: 'Sumber data: Lubuk Linggau Selatan I',
+            level: 'Kecamatan',
+            total: 128,
+            active: 109,
+            validation: 6,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Jasa',
+            legality: 62,
+            completeness: 70,
+            fields: [
+                { name: 'Jasa', percent: 75 },
+                { name: 'Perdagangan', percent: 69 },
+                { name: 'Kuliner', percent: 58 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Selatan I',
+                    subtitle: 'Preview perkembangan aktivitas UMKM wilayah selatan',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [86, 91, 95, 98, 102, 106, 109],
+                    percentData: [1.9, 2.4, 2.9, 3.3, 3.8, 4.2, 4.5],
+                    summaryOne: 'Selatan I, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Selatan I',
+                    subtitle: 'Preview distribusi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [24, 31, 29, 25],
+                    percentData: [18.8, 24.2, 22.7, 19.5],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Selatan I',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [41, 46, 51, 57, 62, 67, 72],
+                    percentData: [42, 47, 51, 56, 61, 66, 70],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        utara1: {
+            name: 'Lubuk Linggau Utara I',
+            source: 'Sumber data: Lubuk Linggau Utara I',
+            level: 'Kecamatan',
+            total: 116,
+            active: 98,
+            validation: 5,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Perdagangan',
+            legality: 60,
+            completeness: 68,
+            fields: [
+                { name: 'Perdagangan', percent: 76 },
+                { name: 'Jasa', percent: 64 },
+                { name: 'Kuliner', percent: 57 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Utara I',
+                    subtitle: 'Preview perkembangan UMKM aktif wilayah utara',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [78, 82, 85, 89, 92, 95, 98],
+                    percentData: [1.8, 2.2, 2.7, 3.1, 3.5, 3.9, 4.2],
+                    summaryOne: 'Utara I, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Utara I',
+                    subtitle: 'Preview distribusi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [36, 31, 31],
+                    percentData: [31.0, 26.7, 26.7],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Utara I',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [35, 39, 44, 48, 54, 59, 64],
+                    percentData: [40, 44, 49, 54, 59, 64, 68],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        timur2: {
+            name: 'Lubuk Linggau Timur II',
+            source: 'Sumber data: Lubuk Linggau Timur II',
+            level: 'Kecamatan',
+            total: 174,
+            active: 153,
+            validation: 4,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Perdagangan',
+            legality: 73,
+            completeness: 78,
+            fields: [
+                { name: 'Perdagangan', percent: 87 },
+                { name: 'Kuliner', percent: 79 },
+                { name: 'Jasa', percent: 66 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Timur II',
+                    subtitle: 'Preview perkembangan UMKM aktif pada wilayah timur',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [121, 127, 133, 139, 145, 149, 153],
+                    percentData: [2.8, 3.3, 3.9, 4.5, 5.0, 5.4, 5.7],
+                    summaryOne: 'Timur II, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Timur II',
+                    subtitle: 'Preview konsentrasi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D', 'Kel. E'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [39, 34, 28, 31, 21],
+                    percentData: [22.4, 19.5, 16.1, 17.8, 12.1],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Timur II',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [81, 88, 96, 104, 112, 119, 127],
+                    percentData: [55, 59, 64, 68, 72, 75, 78],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        barat2: {
+            name: 'Lubuk Linggau Barat II',
+            source: 'Sumber data: Lubuk Linggau Barat II',
+            level: 'Kecamatan',
+            total: 158,
+            active: 137,
+            validation: 3,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Kuliner',
+            legality: 69,
+            completeness: 75,
+            fields: [
+                { name: 'Kuliner', percent: 83 },
+                { name: 'Perdagangan', percent: 77 },
+                { name: 'Jasa', percent: 63 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Barat II',
+                    subtitle: 'Preview perkembangan UMKM aktif wilayah barat',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [104, 110, 116, 123, 128, 133, 137],
+                    percentData: [2.3, 2.9, 3.5, 4.1, 4.5, 4.9, 5.1],
+                    summaryOne: 'Barat II, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Barat II',
+                    subtitle: 'Preview konsentrasi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [42, 31, 35, 29],
+                    percentData: [26.6, 19.6, 22.2, 18.4],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Barat II',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [62, 68, 74, 81, 88, 95, 101],
+                    percentData: [50, 55, 60, 64, 69, 72, 75],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        selatan2: {
+            name: 'Lubuk Linggau Selatan II',
+            source: 'Sumber data: Lubuk Linggau Selatan II',
+            level: 'Kecamatan',
+            total: 132,
+            active: 113,
+            validation: 5,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Perdagangan',
+            legality: 64,
+            completeness: 71,
+            fields: [
+                { name: 'Perdagangan', percent: 79 },
+                { name: 'Kuliner', percent: 67 },
+                { name: 'Jasa', percent: 60 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Selatan II',
+                    subtitle: 'Preview perkembangan UMKM aktif wilayah selatan',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [89, 94, 98, 102, 106, 110, 113],
+                    percentData: [2.0, 2.5, 2.9, 3.3, 3.7, 4.0, 4.3],
+                    summaryOne: 'Selatan II, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Selatan II',
+                    subtitle: 'Preview konsentrasi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [29, 33, 27, 24],
+                    percentData: [22.0, 25.0, 20.5, 18.2],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Selatan II',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [45, 51, 56, 61, 67, 72, 77],
+                    percentData: [43, 48, 53, 58, 63, 67, 71],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        },
+        utara2: {
+            name: 'Lubuk Linggau Utara II',
+            source: 'Sumber data: Lubuk Linggau Utara II',
+            level: 'Kecamatan',
+            total: 212,
+            active: 189,
+            validation: 4,
+            watched: 'Kelurahan terpantau',
+            dominant: 'Perdagangan',
+            legality: 76,
+            completeness: 80,
+            fields: [
+                { name: 'Perdagangan', percent: 88 },
+                { name: 'Jasa', percent: 72 },
+                { name: 'Kuliner', percent: 65 }
+            ],
+            charts: {
+                kinerja: {
+                    title: 'Kinerja UMKM Lubuk Linggau Utara II',
+                    subtitle: 'Preview perkembangan UMKM aktif pada wilayah utara',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM aktif',
+                    percentLabel: 'Pertumbuhan (%)',
+                    unitData: [154, 161, 167, 174, 181, 186, 189],
+                    percentData: [3.0, 3.6, 4.1, 4.8, 5.3, 5.8, 6.1],
+                    summaryOne: 'Utara II, bidang usaha',
+                    summaryTwo: 'Aktif dan tren',
+                    summaryThree: 'Kinerja kecamatan'
+                },
+                wilayah: {
+                    title: 'Sebaran UMKM Lubuk Linggau Utara II',
+                    subtitle: 'Preview konsentrasi UMKM pada wilayah turunan',
+                    labels: ['Kel. A', 'Kel. B', 'Kel. C', 'Kel. D', 'Kel. E'],
+                    unitLabel: 'Jumlah UMKM',
+                    percentLabel: 'Konsentrasi (%)',
+                    unitData: [46, 39, 35, 37, 32],
+                    percentData: [21.7, 18.4, 16.5, 17.5, 15.1],
+                    summaryOne: 'Wilayah turunan',
+                    summaryTwo: 'Jumlah dan konsentrasi',
+                    summaryThree: 'Sebaran kecamatan'
+                },
+                legalitas: {
+                    title: 'Legalitas UMKM Lubuk Linggau Utara II',
+                    subtitle: 'Preview legalitas dan kelengkapan data',
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    unitLabel: 'UMKM berlegalitas',
+                    percentLabel: 'Kelengkapan (%)',
+                    unitData: [98, 106, 114, 123, 132, 141, 149],
+                    percentData: [58, 62, 66, 70, 74, 77, 80],
+                    summaryOne: 'Legalitas dan profil',
+                    summaryTwo: 'Rasio kelengkapan',
+                    summaryThree: 'Kesiapan data'
+                }
+            }
+        }
+    };
+
+    function onReady(callback) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback);
+            return;
+        }
+
+        callback();
+    }
+
+    function formatNumber(value) {
+        return Number(value || 0).toLocaleString('id-ID');
+    }
+
+    function currentMode() {
+        const activeTab = document.querySelector('[data-chart-mode].active');
+
+        return activeTab ? activeTab.dataset.chartMode || 'kinerja' : 'kinerja';
+    }
+
+    function setText(selector, value) {
+        const element = document.querySelector(selector);
+
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+    function updateMetric(selector, value) {
+        const element = document.querySelector(selector);
+
+        if (!element) {
+            return;
+        }
+
+        element.dataset.count = String(value);
+        element.textContent = formatNumber(value);
+    }
+
+    function renderFields(region) {
+        const container = document.querySelector('[data-public-field-list]');
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = '';
+
+        region.fields.forEach(function (field) {
+            const row = document.createElement('div');
+            const label = document.createElement('span');
+            const bar = document.createElement('b');
+
+            label.textContent = field.name;
+            bar.className = 'progress-fill-' + Math.max(50, Math.min(90, Number(field.percent || 50)));
+
+            row.appendChild(label);
+            row.appendChild(bar);
+            container.appendChild(row);
+        });
+    }
+
+    function updateChart(region, mode) {
+        const canvas = document.getElementById('landingMainChart');
+
+        if (!window.Chart || !canvas || !region.charts || !region.charts[mode]) {
+            return;
+        }
+
+        const data = region.charts[mode];
+        const chart = typeof Chart.getChart === 'function' ? Chart.getChart(canvas) : null;
+
+        setText('#mainChartTitle', data.title);
+        setText('#mainChartSubtitle', data.subtitle);
+        setText('#chartSummaryOne', data.summaryOne);
+        setText('#chartSummaryTwo', data.summaryTwo);
+        setText('#chartSummaryThree', data.summaryThree);
+        setText('[data-public-chart-region]', region.name);
+
+        const chartData = {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: data.unitLabel,
+                    data: data.unitData,
+                    yAxisID: 'y',
+                    borderColor: '#0f7665',
+                    backgroundColor: 'rgba(15, 118, 101, .16)',
+                    fill: true,
+                    tension: .42,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#0f7665',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                },
+                {
+                    label: data.percentLabel,
+                    data: data.percentData,
+                    yAxisID: 'y1',
+                    borderColor: '#f0a84a',
+                    backgroundColor: 'rgba(240, 168, 74, .16)',
+                    fill: false,
+                    tension: .42,
+                    borderWidth: 3,
+                    borderDash: [8, 6],
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#f0a84a',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }
+            ]
+        };
+
+        if (chart) {
+            chart.data = chartData;
+
+            if (chart.options && chart.options.scales && chart.options.scales.y && chart.options.scales.y.title) {
+                chart.options.scales.y.title.text = data.unitLabel;
+            }
+
+            if (chart.options && chart.options.scales && chart.options.scales.y1 && chart.options.scales.y1.title) {
+                chart.options.scales.y1.title.text = data.percentLabel;
+            }
+
+            chart.update();
+        }
+    }
+
+    function applyRegion(key) {
+        const region = previewRegions[key] || previewRegions.lubuklinggau;
+        const mode = currentMode();
+
+        setText('[data-public-region-label]', region.name);
+        setText('[data-public-region-source]', region.source);
+        setText('[data-public-watched-label]', region.watched);
+        setText('[data-public-dominant-label]', region.dominant);
+
+        updateMetric('[data-public-metric="total"]', region.total);
+        updateMetric('[data-public-metric="active"]', region.active);
+        updateMetric('[data-public-metric="validation"]', region.validation);
+
+        renderFields(region);
+        updateChart(region, mode);
+
+        document.dispatchEvent(new CustomEvent('umkm:landing-region:changed', {
+            detail: {
+                key: key,
+                region: {
+                    name: region.name,
+                    level: region.level,
+                    total: region.total,
+                    active: region.active,
+                    validation: region.validation,
+                    legality: region.legality,
+                    completeness: region.completeness
+                }
+            }
+        }));
+
+        if (window.UMKM && UMKM.log) {
+            UMKM.log('info', 'landing regional preview changed', {
+                key: key,
+                name: region.name
+            });
+        }
+    }
+
+    onReady(function () {
+        const selector = document.querySelector('[data-public-region-select]');
+
+        if (!selector) {
+            return;
+        }
+
+        selector.addEventListener('change', function () {
+            applyRegion(selector.value || 'lubuklinggau');
+        });
+
+        document.querySelectorAll('[data-chart-mode]').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                window.setTimeout(function () {
+                    applyRegion(selector.value || 'lubuklinggau');
+                }, 0);
+            });
+        });
+
+        window.setTimeout(function () {
+            applyRegion(selector.value || 'lubuklinggau');
+        }, 80);
+    });
+})();
+
+/* Batch Landing-Regional-1 END */
