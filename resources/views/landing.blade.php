@@ -138,7 +138,78 @@
         </div>
     </div>
 
-    <div class="mobile-canvas" data-menu-canvas aria-hidden="true">
+    
+    {{-- Batch Landing-Regional-2B MODAL FIX START --}}
+    <div class="landing-region-modal-shell" data-region-modal hidden>
+        <div class="landing-region-modal-backdrop" data-region-modal-close></div>
+
+        <section class="landing-region-modal" role="dialog" aria-modal="true" aria-labelledby="landingRegionModalTitle">
+            <button type="button" class="landing-region-modal-close" data-region-modal-close aria-label="Tutup pilihan wilayah">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z"/>
+                </svg>
+            </button>
+
+            <div class="landing-region-modal-head">
+                <span class="region-modal-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
+                    </svg>
+                </span>
+                <div>
+                    <strong id="landingRegionModalTitle">Pilih Wilayah Preview</strong>
+                    <p>
+                        Wilayah pada landing dikunci untuk Sumatera Selatan dan Kota Lubuklinggau.
+                        Data yang tampil bersifat agregat/preview dan tidak menampilkan data sensitif.
+                    </p>
+                </div>
+            </div>
+
+            <div class="landing-region-alert" data-region-modal-alert hidden></div>
+
+            <div class="landing-region-form">
+                <div class="landing-region-field">
+                    <label for="landingProvinceSelect">Provinsi</label>
+                    <select id="landingProvinceSelect" class="form-select" data-landing-region-province disabled>
+                        <option value="16">Sumatera Selatan</option>
+                    </select>
+                </div>
+
+                <div class="landing-region-field">
+                    <label for="landingCitySelect">Kabupaten/Kota</label>
+                    <select id="landingCitySelect" class="form-select" data-landing-region-city disabled>
+                        <option value="16.73">Kota Lubuklinggau</option>
+                    </select>
+                </div>
+
+                <div class="landing-region-field">
+                    <label for="landingDistrictSelect">Kecamatan</label>
+                    <select id="landingDistrictSelect" class="form-select" data-landing-region-district>
+                        <option value="">Memuat kecamatan...</option>
+                    </select>
+                </div>
+
+                <div class="landing-region-field">
+                    <label for="landingVillageSelect">Desa/Kelurahan</label>
+                    <select id="landingVillageSelect" class="form-select" data-landing-region-village>
+                        <option value="__ALL_VILLAGES__">Semua Kelurahan</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="landing-region-current">
+                <span>Konteks saat ini</span>
+                <strong data-region-modal-current>Kota Lubuklinggau</strong>
+            </div>
+
+            <div class="landing-region-modal-actions">
+                <button type="button" class="btn btn-light" data-region-modal-close>Batal</button>
+                <button type="button" class="btn btn-success" data-region-modal-apply>Terapkan Wilayah</button>
+            </div>
+        </section>
+    </div>
+    {{-- Batch Landing-Regional-2B MODAL FIX END --}}
+<div class="mobile-canvas" data-menu-canvas aria-hidden="true">
         <div class="mobile-canvas-backdrop" data-menu-close></div>
         <aside class="mobile-canvas-panel">
             <div class="mobile-canvas-head">
