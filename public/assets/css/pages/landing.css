@@ -3223,3 +3223,113 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Content-1 END */
+
+/* Batch Landing-Content-2 START */
+
+/*
+ * Penyempurnaan keterbacaan:
+ * - Label indikator tidak tumpang tindih.
+ * - Detail nominal/persentase dibuat sebagai badge kecil.
+ * - Chart head hanya menampilkan label lokasi terpilih.
+ * - Ikon Data Wilayah dan Berbasis Data/Wilayah tidak memakai ikon pin lokasi.
+ */
+
+.preview-progress {
+    gap: .74rem;
+}
+
+.preview-progress div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .42rem;
+}
+
+.preview-progress span {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    width: 100%;
+    min-width: 0;
+    color: var(--landing-muted);
+    line-height: 1.25;
+}
+
+.preview-progress span .indicator-name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--landing-ink);
+    font-size: .82rem;
+    font-weight: 900;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preview-progress span .indicator-meta {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 58%;
+    border: 1px solid rgba(15, 118, 101, .12);
+    border-radius: 999px;
+    padding: .18rem .46rem;
+    color: var(--landing-brand-dark);
+    background: rgba(15, 118, 101, .075);
+    font-size: .68rem;
+    font-weight: 850;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.preview-progress b {
+    display: block;
+    height: .56rem;
+    border-radius: 999px;
+}
+
+.chart-head {
+    align-items: center;
+}
+
+.chart-region-badge {
+    max-width: 100%;
+    color: var(--landing-brand-dark) !important;
+    border-color: rgba(15, 118, 101, .18) !important;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .16), transparent 34%),
+        rgba(15, 118, 101, .08) !important;
+    box-shadow: 0 10px 24px rgba(16, 33, 61, .055);
+}
+
+.dashboard-insight div svg,
+.preview-card-title svg {
+    color: var(--landing-brand);
+    fill: currentColor;
+}
+
+@media (max-width: 575.98px) {
+    .preview-progress span {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: .28rem;
+        align-items: start;
+    }
+
+    .preview-progress span .indicator-name {
+        white-space: normal;
+        line-height: 1.18;
+    }
+
+    .preview-progress span .indicator-meta {
+        width: fit-content;
+        max-width: 100%;
+        font-size: .66rem;
+    }
+
+    .chart-region-badge {
+        width: fit-content !important;
+    }
+}
+
+/* Batch Landing-Content-2 END */

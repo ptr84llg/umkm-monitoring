@@ -1746,7 +1746,7 @@
             const label = document.createElement('span');
             const bar = document.createElement('b');
 
-            label.innerHTML = '<strong>' + field.name + '</strong> <small>(' + formatNumber(count) + ' UMKM - ' + percent + '%)</small>';
+            label.innerHTML = '<span class="indicator-name">' + field.name + '</span><span class="indicator-meta">' + formatNumber(count) + ' UMKM • ' + percent + '%</span>';
             bar.style.width = Math.max(24, Math.min(95, percent)) + '%';
 
             row.appendChild(label);

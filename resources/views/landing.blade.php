@@ -10,7 +10,7 @@
     $pageJs = ['landing.js'];
 @endphp
 
-@section('title', 'Monitoring UMKM | Sistem Informasi UMKM')
+@section('title', 'Monitoring UMKM | Visual Analitik Interaktif')
 
 @section('content')
 <div class="umkm-landing">
@@ -24,7 +24,7 @@
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
                         <strong>Monitoring UMKM</strong>
-                        <small>Sistem Informasi UMKM</small>
+                        <small>Visual Analitik Interaktif</small>
                     </span>
                 </a>
 
@@ -217,7 +217,7 @@
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
                         <strong>Monitoring UMKM</strong>
-                        <small>Sistem Informasi UMKM</small>
+                        <small>Visual Analitik Interaktif</small>
                     </span>
                 </div>
 
@@ -323,7 +323,7 @@
                                     <div class="board-preview-grid">
                                         <div class="preview-map-card">
                                             <div class="preview-card-title">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5v-13Zm3 1v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v2h3v-2H7Zm5 0v2h5v-2h-5Z"/></svg>
                                                 <strong>Data Wilayah</strong>
                                             </div>
                                             <div class="preview-region-stats" data-public-area-list>
@@ -417,13 +417,10 @@
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
                                 </svg>
-                                <span>Visual dinamis</span>
+                                <span>Visual Interaktif</span>
                             </div>
                             <div>
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
-                                </svg>
-                                <span>Berbasis wilayah</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 3.5 6.8 12 11l8.5-4.2L12 2.5Zm0 10.7L5.2 9.85 3.5 10.7 12 15l8.5-4.3-1.7-.85L12 13.2Zm0 4L5.2 13.85l-1.7.85L12 19l8.5-4.3-1.7-.85L12 17.2Z"/></svg><span>Berbasis Data dan Wilayah</span>
                             </div>
                         </div>
                     </div>
@@ -450,10 +447,6 @@
                                 <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
                             </div>
                             <span class="chart-region-badge" data-public-chart-region>Kota Lubuklinggau</span>
-                            <span class="chart-badge">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
-                                Multi Axis Chart
-                            </span>
                         </div>
 
                         <div class="chart-canvas-wrap">
@@ -487,7 +480,7 @@
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
                             <span>Ringkasan sistem</span>
                         </span>
-                        <h2>Data tersusun, visual lebih jelas, keputusan lebih terarah</h2>
+                        <h2>Data tersusun, Visual Interaktif, Keputusan mudah terarah</h2>
                         <p>
                             Monitoring UMKM menyatukan pengelolaan data dan visualisasi agar informasi usaha
                             dapat dipantau secara cepat tanpa kehilangan konteks penting.
