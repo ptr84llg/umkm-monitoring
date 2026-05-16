@@ -25,6 +25,14 @@
     z-index: 1;
 }
 
+.umkm-public-footer svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex: 0 0 auto;
+}
+
 .footer-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
@@ -101,7 +109,6 @@
 .footer-icon svg {
     width: 22px;
     height: 22px;
-    fill: currentColor;
 }
 
 .footer-feature strong,
@@ -131,32 +138,78 @@
     border: 1px solid rgba(16, 33, 61, .08);
     border-radius: 24px;
     padding: 1.2rem;
-    background: rgba(255, 255, 255, .78);
+    background: rgba(255, 255, 255, .80);
     box-shadow: 0 14px 38px rgba(16, 33, 61, .055);
 }
 
-.footer-column strong,
-.footer-column a {
-    display: block;
+.footer-column-title {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: .9rem;
 }
 
-.footer-column strong {
-    margin-bottom: .75rem;
+.footer-column-icon {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    color: #0f7665;
+    background: rgba(15, 118, 101, .10);
+}
+
+.footer-column-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.footer-column-title strong {
     color: #10213d;
     font-weight: 850;
 }
 
 .footer-column a {
-    margin-top: .5rem;
+    display: flex;
+    align-items: center;
+    gap: .68rem;
+    margin-top: .62rem;
+    border: 1px solid rgba(16, 33, 61, .07);
+    border-radius: 16px;
+    padding: .68rem .75rem;
     color: #66758a;
+    background: rgba(255, 255, 255, .72);
     text-decoration: none;
-    font-weight: 700;
-    transition: color .2s ease, transform .2s ease;
+    font-weight: 750;
+    line-height: 1.25;
+    transition: color .2s ease, transform .2s ease, background-color .2s ease, border-color .2s ease;
 }
 
 .footer-column a:hover {
     color: #0f7665;
     transform: translateX(3px);
+    border-color: rgba(15, 118, 101, .18);
+    background: rgba(15, 118, 101, .07);
+}
+
+.footer-link-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    color: #0f7665;
+    background: rgba(15, 118, 101, .10);
+    flex: 0 0 34px;
+}
+
+.footer-link-icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.footer-column a span:last-child {
+    min-width: 0;
 }
 
 .footer-note p {

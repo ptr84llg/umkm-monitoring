@@ -57,21 +57,29 @@
                 </div>
 
                 <a href="{{ url('/') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3Z"/>
-                    </svg>
+                    <span class="footer-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3Z"/>
+                        </svg>
+                    </span>
                     <span>Beranda</span>
                 </a>
+
                 <a href="{{ url('/#dashboard') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
-                    </svg>
+                    <span class="footer-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
+                        </svg>
+                    </span>
                     <span>Dashboard</span>
                 </a>
+
                 <a href="{{ url('/#ringkasan') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/>
-                    </svg>
+                    <span class="footer-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/>
+                        </svg>
+                    </span>
                     <span>Ringkasan</span>
                 </a>
             </div>
@@ -87,15 +95,20 @@
                 </div>
 
                 <a href="{{ route('login') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/>
-                    </svg>
+                    <span class="footer-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/>
+                        </svg>
+                    </span>
                     <span>Masuk Sistem</span>
                 </a>
+
                 <a href="{{ url('/#cta') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/>
-                    </svg>
+                    <span class="footer-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/>
+                        </svg>
+                    </span>
                     <span>Mulai Penggunaan</span>
                 </a>
             </div>
