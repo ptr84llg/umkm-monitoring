@@ -3748,3 +3748,174 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Hero-1 Fix END */
+
+/* Batch Landing-Typography-1 START */
+
+/*
+ * Final typography and active region refinement:
+ * - Card Wilayah Aktif tidak lagi menampilkan prefix "Sumber data:".
+ * - Paragraf naratif dibuat justify.
+ * - Pada mobile/tablet kecil, judul dan subjudul section dibuat center.
+ * - Area teks dibuat full width agar sejajar dengan card/konten di bawahnya.
+ * - Footer branding dikonsistenkan melalui blade.
+ */
+
+/* Hapus prefix otomatis "Sumber data:" dari batch sebelumnya */
+.board-source-info strong[data-public-region-source]::before {
+    content: "" !important;
+    display: none !important;
+}
+
+.board-source-info strong[data-public-region-source] {
+    color: var(--landing-ink);
+    font-weight: 950;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Paragraf naratif */
+.umkm-landing p,
+.umkm-landing main section p,
+.umkm-landing footer p,
+.umkm-landing .hero-copy p,
+.umkm-landing .dashboard-panel p,
+.umkm-landing .summary-copy p,
+.umkm-landing .cta-panel p,
+.umkm-landing .landing-region-modal-head p,
+.umkm-landing .location-gate-copy p,
+.umkm-landing .location-guide-head p,
+.umkm-landing .location-guide-step p,
+.umkm-landing .mobile-canvas-panel p,
+.umkm-landing .chart-head span#mainChartSubtitle {
+    text-align: justify !important;
+    text-justify: inter-word;
+    text-align-last: left;
+}
+
+/* Deskripsi pendek di card bawah tetap rapi dan tidak dipaksa center */
+.summary-list span,
+.dashboard-insight span,
+.footer-card span,
+.footer-card small,
+.board-bottom small,
+.preview-region-stats small,
+.preview-progress span {
+    text-align: left;
+}
+
+/* Card wilayah aktif lebih bersih */
+.board-source-kicker {
+    letter-spacing: .04em;
+}
+
+.board-source-stacked {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.board-source-info {
+    width: 100%;
+    min-width: 0;
+}
+
+.board-source-info strong {
+    max-width: 100%;
+}
+
+/* Mobile/tablet kecil: judul dan subjudul section dibuat center */
+@media (max-width: 991.98px) {
+    .hero-copy,
+    .dashboard-panel-head > div,
+    .summary-copy,
+    .cta-panel > div,
+    .footer-brand,
+    .footer-copy,
+    .footer-intro,
+    .landing-region-modal-head,
+    .location-gate-copy,
+    .location-guide-head {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .hero-copy h1,
+    .dashboard-panel h2,
+    .summary-copy h2,
+    .cta-panel h2,
+    .footer-brand strong,
+    .footer-copy strong,
+    .landing-region-modal-head strong,
+    .location-gate-copy h2,
+    .location-guide-head h3 {
+        text-align: center !important;
+        width: 100%;
+    }
+
+    .hero-copy .landing-pill,
+    .dashboard-panel-head .landing-pill,
+    .summary-copy .landing-pill,
+    .cta-panel .landing-pill {
+        margin-inline: auto;
+    }
+
+    .hero-copy p,
+    .dashboard-panel p,
+    .summary-copy p,
+    .cta-panel p,
+    .landing-region-modal-head p,
+    .location-gate-copy p,
+    .location-guide-head p {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: justify !important;
+        text-align-last: left;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .dashboard-insight {
+        width: 100%;
+    }
+
+    .dashboard-insight div {
+        width: 100%;
+    }
+}
+
+/* Mobile sangat kecil: heading tetap center, paragraf tetap lebar penuh */
+@media (max-width: 575.98px) {
+    .hero-copy h1,
+    .dashboard-panel h2,
+    .summary-copy h2,
+    .cta-panel h2 {
+        text-align: center !important;
+    }
+
+    .hero-copy p,
+    .dashboard-panel p,
+    .summary-copy p,
+    .cta-panel p {
+        text-align: justify !important;
+        text-align-last: left;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .hero-actions {
+        width: 100%;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .board-source-stacked {
+        width: 100% !important;
+    }
+}
+
+/* Batch Landing-Typography-1 END */
