@@ -3333,3 +3333,157 @@ body.is-region-modal-open {
 }
 
 /* Batch Landing-Content-2 END */
+
+/* Batch Landing-Content-2 Fix START */
+
+/*
+ * Fix keterbacaan Data Wilayah dan Indikator pada card UMKM Dashboard.
+ * Keduanya tetap menampilkan maksimal 3 data tertinggi.
+ */
+
+.preview-region-stats {
+    display: grid;
+    gap: .58rem;
+}
+
+.preview-region-stats div {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+        "name"
+        "value"
+        "sector" !important;
+    gap: .28rem !important;
+    align-items: start !important;
+    min-width: 0;
+    border-radius: 16px;
+    padding: .68rem .72rem;
+}
+
+.preview-region-stats span {
+    grid-area: name;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--landing-ink);
+    font-size: .78rem;
+    font-weight: 900;
+    line-height: 1.22;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preview-region-stats strong {
+    grid-area: value;
+    width: 100%;
+    color: var(--landing-brand-dark);
+    font-size: 1.02rem;
+    font-weight: 950;
+    line-height: 1.12;
+    white-space: nowrap;
+}
+
+.preview-region-stats small {
+    grid-area: sector;
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: .2rem .46rem;
+    color: var(--landing-muted);
+    background: rgba(16, 33, 61, .045);
+    font-size: .68rem;
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.preview-progress {
+    display: grid;
+    gap: .68rem;
+}
+
+.preview-progress div {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: .4rem !important;
+    min-width: 0;
+}
+
+.preview-progress span {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: .26rem !important;
+    width: 100%;
+    min-width: 0;
+    align-items: start !important;
+}
+
+.preview-progress span .indicator-name {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--landing-ink);
+    font-size: .8rem;
+    font-weight: 900;
+    line-height: 1.22;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preview-progress span .indicator-meta {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid rgba(15, 118, 101, .12);
+    border-radius: 999px;
+    padding: .2rem .46rem;
+    color: var(--landing-brand-dark);
+    background: rgba(15, 118, 101, .075);
+    font-size: .66rem;
+    font-weight: 850;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.preview-progress b {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: .55rem;
+    overflow: hidden;
+    border-radius: 999px;
+}
+
+.preview-list-card,
+.preview-map-card {
+    min-width: 0;
+}
+
+@media (max-width: 1199.98px) {
+    .preview-region-stats strong {
+        font-size: .96rem;
+    }
+
+    .preview-progress span .indicator-meta {
+        font-size: .64rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .preview-region-stats div,
+    .preview-progress div {
+        padding-inline: .68rem;
+    }
+
+    .preview-region-stats span,
+    .preview-progress span .indicator-name {
+        white-space: normal;
+    }
+
+    .preview-region-stats strong {
+        font-size: 1rem;
+    }
+}
+
+/* Batch Landing-Content-2 Fix END */
