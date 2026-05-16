@@ -1,0 +1,53 @@
+.umkm-security-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    border: 1px solid rgba(15, 118, 101, .16);
+    border-radius: 18px;
+    padding: .85rem 1rem;
+    color: #0f5132;
+    background: rgba(15, 118, 101, .08);
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+.umkm-security-notice.is-warning {
+    border-color: rgba(240, 168, 74, .24);
+    color: #7a4b07;
+    background: rgba(240, 168, 74, .12);
+}
+
+.umkm-security-notice.is-danger {
+    border-color: rgba(220, 38, 38, .18);
+    color: #7f1d1d;
+    background: rgba(220, 38, 38, .08);
+}
+
+.umkm-security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    border: 1px solid rgba(15, 118, 101, .14);
+    border-radius: 999px;
+    padding: .42rem .7rem;
+    color: #084c42;
+    background: rgba(15, 118, 101, .08);
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.umkm-security-badge.is-checking {
+    color: #7a4b07;
+    background: rgba(240, 168, 74, .12);
+    border-color: rgba(240, 168, 74, .24);
+}
+
+.umkm-security-badge.is-blocked {
+    color: #7f1d1d;
+    background: rgba(220, 38, 38, .08);
+    border-color: rgba(220, 38, 38, .18);
+}
+
+.umkm-hidden-by-security {
+    display: none !important;
+}

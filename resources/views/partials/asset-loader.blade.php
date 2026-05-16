@@ -15,6 +15,7 @@
         'umkm-modals.css',
         'umkm-toast.css',
         'umkm-footer.css',
+        'umkm-security.css',
     ];
 
     $coreCssModules = [
@@ -22,12 +23,14 @@
         'datatables' => 'umkm-datatables.css',
         'map' => 'umkm-map.css',
         'charts' => 'umkm-charts.css',
+        'security' => 'umkm-security.css',
     ];
 
     $coreJsBase = [
         'bootstrap-local.js',
         'umkm-ui.js',
         'umkm-ajax.js',
+        'umkm-security.js',
         'umkm-modal.js',
         'umkm-confirm.js',
         'umkm-toast.js',
@@ -35,6 +38,10 @@
     ];
 
     $coreJsModules = [
+        'ajax' => 'umkm-ajax.js',
+        'security' => 'umkm-security.js',
+        'location' => 'umkm-location.js',
+        'session' => 'umkm-session.js',
         'datatables' => 'umkm-datatables.js',
         'wizard' => 'umkm-wizard.js',
         'map' => 'umkm-map.js',
@@ -52,11 +59,14 @@
             'umkm-ui.css',
             'umkm-buttons.css',
             'umkm-footer.css',
+            'umkm-security.css',
         ];
 
         $coreJs = [
             'bootstrap-local.js',
             'umkm-ui.js',
+            'umkm-ajax.js',
+            'umkm-security.js',
         ];
     } elseif ($assetProfile === 'base') {
         $coreCss = $coreCssBase;
