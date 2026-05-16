@@ -2,11 +2,8 @@
 
 @php
     $assetProfile = 'landing';
-    $vendorCss = [
-        'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css',
-    ];
     $vendorJs = [
-        'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js',
+        asset('assets/vendor/chartjs/chart.umd.min.js'),
     ];
     $pageCss = ['landing.css'];
     $pageJs = ['landing.js'];
@@ -54,9 +51,9 @@
                                 <span class="landing-pill">Sistem informasi untuk ekosistem UMKM</span>
                                 <h1>UMKM Monitoring berbasis Data</h1>
                                 <p>
-                                    Pantau perkembangan UMKM melalui data usaha yang tersusun, ringkasan indikator,
-                                    visualisasi wilayah, dan dashboard interaktif yang membantu proses monitoring
-                                    serta pengambilan keputusan.
+                                    Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
+                                    aktivitas UMKM dalam tampilan dashboard yang mudah dibaca untuk membantu pemantauan
+                                    program dan pengambilan keputusan.
                                 </p>
 
                                 <div class="hero-actions">
@@ -67,17 +64,18 @@
                                         Lihat Dashboard
                                     </a>
                                 </div>
-
-                                <div class="hero-inline">
-                                    <span>Profil UMKM</span>
-                                    <span>Visual Analitik</span>
-                                    <span>Peta Sebaran</span>
-                                </div>
                             </div>
                         </div>
 
                         <div class="col-lg-6">
                             <div class="hero-board reveal reveal-delay-1" data-tilt-card>
+                                <div class="board-source">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 2.75c-3.45 0-6.25 2.8-6.25 6.25 0 4.5 6.25 12.25 6.25 12.25S18.25 13.5 18.25 9c0-3.45-2.8-6.25-6.25-6.25Zm0 8.6a2.35 2.35 0 1 1 0-4.7 2.35 2.35 0 0 1 0 4.7Z"/>
+                                    </svg>
+                                    <span>Sumber data: Kota Lubuklinggau</span>
+                                </div>
+
                                 <div class="board-window">
                                     <div class="board-top">
                                         <div class="board-dots">
@@ -105,17 +103,33 @@
                                     </div>
 
                                     <div class="board-chart-wrap">
-                                        <canvas id="heroMiniChart" height="170"></canvas>
+                                        <canvas id="heroMiniChart"></canvas>
+                                        <div class="hero-chart-fallback" id="heroChartFallback" hidden>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
                                     </div>
 
                                     <div class="board-bottom">
                                         <div>
-                                            <span class="status-dot"></span>
+                                            <span class="status-icon">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18.5v-13Zm4 2.25a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5H8Zm0 4a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5H8Zm0 4a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5H8Z"/>
+                                                </svg>
+                                            </span>
                                             <strong>Data usaha</strong>
                                             <small>terkelola</small>
                                         </div>
                                         <div>
-                                            <span class="status-dot gold"></span>
+                                            <span class="status-icon gold">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 2.5 3.5 6.25v11.5L12 21.5l8.5-3.75V6.25L12 2.5Zm0 2.2 5.5 2.43L12 9.55 6.5 7.13 12 4.7Zm-6.5 4.1 5.5 2.43v7.36l-5.5-2.43V8.8Zm7.5 9.79v-7.36l5.5-2.43v7.36L13 18.59Z"/>
+                                                </svg>
+                                            </span>
                                             <strong>Wilayah</strong>
                                             <small>terpantau</small>
                                         </div>
@@ -148,49 +162,66 @@
         <section id="dashboard" class="dashboard-section">
             <div class="container">
                 <div class="dashboard-panel reveal">
-                    <div class="row g-4 align-items-center">
-                        <div class="col-lg-5">
+                    <div class="dashboard-panel-head">
+                        <div>
                             <span class="landing-pill">Dashboard interaktif</span>
                             <h2>Informasi UMKM tampil dalam visual yang lebih hidup</h2>
                             <p>
                                 Dashboard membantu membaca kondisi UMKM berdasarkan indikator utama, bidang usaha,
                                 perkembangan data, dan sebaran wilayah dalam tampilan yang lebih ringkas.
                             </p>
+                        </div>
 
-                            <div class="dashboard-tabs" role="tablist" aria-label="Pilihan grafik dashboard">
-                                <button type="button" class="dashboard-tab active" data-chart-mode="kinerja">Kinerja</button>
-                                <button type="button" class="dashboard-tab" data-chart-mode="wilayah">Wilayah</button>
-                                <button type="button" class="dashboard-tab" data-chart-mode="legalitas">Legalitas</button>
+                        <div class="dashboard-insight">
+                            <div>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
+                                </svg>
+                                <span>Visual dinamis</span>
+                            </div>
+                            <div>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
+                                </svg>
+                                <span>Berbasis wilayah</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-tabs" role="tablist" aria-label="Pilihan grafik dashboard">
+                        <button type="button" class="dashboard-tab active" data-chart-mode="kinerja">Kinerja</button>
+                        <button type="button" class="dashboard-tab" data-chart-mode="wilayah">Wilayah</button>
+                        <button type="button" class="dashboard-tab" data-chart-mode="legalitas">Legalitas</button>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-head">
+                            <div>
+                                <strong id="mainChartTitle">Tren Perkembangan UMKM</strong>
+                                <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
+                            </div>
+                            <span class="chart-badge">Chart.js</span>
+                        </div>
+
+                        <div class="chart-canvas-wrap">
+                            <canvas id="landingMainChart"></canvas>
+                            <div class="chart-fallback" id="chartFallback" hidden>
+                                <span></span><span></span><span></span><span></span><span></span><span></span>
                             </div>
                         </div>
 
-                        <div class="col-lg-7">
-                            <div class="chart-card">
-                                <div class="chart-head">
-                                    <div>
-                                        <strong id="mainChartTitle">Tren Perkembangan UMKM</strong>
-                                        <span id="mainChartSubtitle">Ringkasan data dalam periode pemantauan</span>
-                                    </div>
-                                    <span class="chart-badge">Chart.js</span>
-                                </div>
-
-                                <div class="chart-canvas-wrap">
-                                    <canvas id="landingMainChart" height="250"></canvas>
-                                    <div class="chart-fallback" id="chartFallback" hidden>
-                                        <span></span><span></span><span></span><span></span><span></span><span></span>
-                                    </div>
-                                </div>
-
-                                <div class="chart-summary">
-                                    <div>
-                                        <span>Filter</span>
-                                        <strong>Wilayah, bidang usaha, periode</strong>
-                                    </div>
-                                    <div>
-                                        <span>Tampilan</span>
-                                        <strong>Grafik, indikator, dan ringkasan</strong>
-                                    </div>
-                                </div>
+                        <div class="chart-summary">
+                            <div>
+                                <span>Filter</span>
+                                <strong id="chartSummaryOne">Wilayah, bidang usaha, periode</strong>
+                            </div>
+                            <div>
+                                <span>Tampilan</span>
+                                <strong id="chartSummaryTwo">Grafik, indikator, dan ringkasan</strong>
+                            </div>
+                            <div>
+                                <span>Fokus</span>
+                                <strong id="chartSummaryThree">Perkembangan UMKM</strong>
                             </div>
                         </div>
                     </div>
@@ -211,25 +242,41 @@
 
                 <div class="module-grid">
                     <article class="module-card reveal">
-                        <span>01</span>
+                        <span class="module-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
+                            </svg>
+                        </span>
                         <h3>Data UMKM</h3>
                         <p>Profil usaha, pemilik, legalitas, produk, bidang usaha, lokasi, dan status data.</p>
                     </article>
 
                     <article class="module-card reveal reveal-delay-1">
-                        <span>02</span>
+                        <span class="module-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
+                            </svg>
+                        </span>
                         <h3>Dashboard</h3>
                         <p>Indikator, grafik, komposisi data, dan ringkasan yang mudah dibaca.</p>
                     </article>
 
                     <article class="module-card reveal reveal-delay-2">
-                        <span>03</span>
+                        <span class="module-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
+                            </svg>
+                        </span>
                         <h3>Peta Sebaran</h3>
                         <p>Visualisasi lokasi untuk membaca persebaran dan konsentrasi UMKM.</p>
                     </article>
 
                     <article class="module-card reveal reveal-delay-3">
-                        <span>04</span>
+                        <span class="module-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6 2.75h9.25L20 7.5v13.75H6A2 2 0 0 1 4 19.25V4.75a2 2 0 0 1 2-2Zm8 1.75v4h4l-4-4ZM8 12h8v1.75H8V12Zm0 4h8v1.75H8V16Z"/>
+                            </svg>
+                        </span>
                         <h3>Laporan</h3>
                         <p>Ringkasan informasi untuk monitoring, evaluasi, dan tindak lanjut.</p>
                     </article>

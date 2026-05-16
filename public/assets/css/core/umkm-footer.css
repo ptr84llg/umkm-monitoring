@@ -1,21 +1,41 @@
 .umkm-public-footer {
     position: relative;
-    padding: 56px 0 28px;
+    padding: 72px 0 30px;
+    overflow: hidden;
     background:
-        radial-gradient(circle at 12% 0%, rgba(15, 118, 101, .10), transparent 28%),
-        linear-gradient(180deg, rgba(246, 250, 249, .65), #ffffff);
+        radial-gradient(circle at 8% 0%, rgba(15, 118, 101, .18), transparent 28%),
+        radial-gradient(circle at 92% 8%, rgba(240, 168, 74, .18), transparent 26%),
+        linear-gradient(180deg, #f0f8f6 0%, #ffffff 100%);
     color: #10213d;
 }
 
-.footer-shell {
+.umkm-public-footer::before {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    right: -260px;
+    top: -260px;
+    border-radius: 999px;
+    background: rgba(15, 118, 101, .10);
+}
+
+.umkm-public-footer .container {
+    position: relative;
+    z-index: 1;
+}
+
+.footer-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+    gap: 1.2rem;
     border: 1px solid rgba(16, 33, 61, .08);
-    border-radius: 30px;
-    padding: clamp(1.2rem, 2.6vw, 2rem);
-    background: rgba(255, 255, 255, .82);
-    box-shadow: 0 24px 74px rgba(16, 33, 61, .08);
+    border-radius: 34px;
+    padding: clamp(1.35rem, 3vw, 2.2rem);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .14), transparent 28%),
+        rgba(255, 255, 255, .84);
+    box-shadow: 0 30px 88px rgba(16, 33, 61, .10);
 }
 
 .footer-logo {
@@ -31,15 +51,15 @@
 }
 
 .footer-logo span {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     display: grid;
     place-items: center;
-    border-radius: 15px;
+    border-radius: 16px;
     color: #ffffff;
-    background: linear-gradient(145deg, #0f7665, #0a5147);
-    font-weight: 800;
-    box-shadow: 0 14px 28px rgba(15, 118, 101, .20);
+    background: linear-gradient(145deg, #0f7665, #084c42);
+    font-weight: 850;
+    box-shadow: 0 16px 32px rgba(15, 118, 101, .22);
 }
 
 .footer-logo strong {
@@ -47,41 +67,102 @@
     letter-spacing: -.02em;
 }
 
-.footer-brand p {
+.footer-brand-block p {
     max-width: 620px;
     margin: 1rem 0 0;
     color: #66758a;
     line-height: 1.75;
 }
 
-.footer-links {
+.footer-feature-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
 }
 
-.footer-links strong,
-.footer-links a {
+.footer-feature {
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 24px;
+    padding: 1rem;
+    background: #ffffff;
+    box-shadow: 0 16px 42px rgba(16, 33, 61, .06);
+}
+
+.footer-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    color: #0f7665;
+    background: rgba(15, 118, 101, .10);
+}
+
+.footer-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+.footer-feature strong,
+.footer-feature small {
     display: block;
 }
 
-.footer-links strong {
-    margin-bottom: .8rem;
+.footer-feature strong {
+    margin-top: .75rem;
+    font-weight: 850;
+}
+
+.footer-feature small {
+    margin-top: .25rem;
+    color: #66758a;
+    line-height: 1.45;
+}
+
+.footer-shell {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.footer-column {
+    border: 1px solid rgba(16, 33, 61, .08);
+    border-radius: 24px;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 14px 38px rgba(16, 33, 61, .055);
+}
+
+.footer-column strong,
+.footer-column a {
+    display: block;
+}
+
+.footer-column strong {
+    margin-bottom: .75rem;
     color: #10213d;
     font-weight: 850;
 }
 
-.footer-links a {
+.footer-column a {
     margin-top: .5rem;
     color: #66758a;
     text-decoration: none;
-    font-weight: 650;
+    font-weight: 700;
     transition: color .2s ease, transform .2s ease;
 }
 
-.footer-links a:hover {
+.footer-column a:hover {
     color: #0f7665;
     transform: translateX(3px);
+}
+
+.footer-note p {
+    margin: .5rem 0 0;
+    color: #66758a;
+    line-height: 1.65;
 }
 
 .footer-bottom {
@@ -93,9 +174,15 @@
     font-size: .9rem;
 }
 
+@media (max-width: 991.98px) {
+    .footer-hero {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 767.98px) {
-    .footer-shell,
-    .footer-links {
+    .footer-feature-grid,
+    .footer-shell {
         grid-template-columns: 1fr;
     }
 
