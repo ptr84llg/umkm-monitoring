@@ -320,7 +320,7 @@
 
                                     <div class="landing-public-note">
                                         <strong>Catatan:</strong>
-                                        <span>Angka dan grafik pada merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.</span>
+                                        <span>Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.</span>
                                     </div>
 
                                     <div class="board-preview-grid">
@@ -367,19 +367,20 @@
                                                     <b class="progress-fill-64"></b>
                                                 </div>
                                             </div>
-                                        </div>
+										</div>
 
-                                    <div class="landing-empty-state" data-public-empty-state hidden>
-                                        <span class="landing-empty-icon">
-                                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                <path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
-                                            </svg>
-                                        </span>
-                                        <div>
-                                            <strong data-public-empty-title>Data wilayah belum tersedia</strong>
-                                            <p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
-                                        </div>
-                                    </div></div>
+										<div class="landing-empty-state" data-public-empty-state hidden>
+											<span class="landing-empty-icon">
+												<svg viewBox="0 0 24 24" aria-hidden="true">
+													<path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
+												</svg>
+											</span>
+											<div>
+												<strong data-public-empty-title>Data wilayah belum tersedia</strong>
+												<p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
+											</div>
+										</div>
+                                    </div>
 									
 									<div class="board-bottom">
                                         <div>
@@ -400,8 +401,6 @@
                                             <strong>Bidang Dominan</strong>
                                             <small data-public-dominant-label>Perdagangan</small>
                                         </div>
-                                    </div>
-									
                                     </div>
 
                                     
@@ -560,6 +559,7 @@
     </button>
 </div>
 @endsection
+
 
 
 
