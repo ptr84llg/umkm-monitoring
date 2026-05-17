@@ -60,6 +60,7 @@ class LandingPreviewController extends Controller
                     ],
                     'preview' => $preview,
                     'chart' => $chart,
+                    'fragments' => $this->makeFragments($preview, $label),
                 ],
             ])
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -211,6 +212,24 @@ class LandingPreviewController extends Controller
         ];
     }
 
+    private function makeFragments(array $preview, string $label): array
+    {
+        return [
+            'metrics' => view('partials.public.landing.fragments.metrics', [
+                'preview' => $preview,
+            ])->render(),
+            'indicators' => view('partials.public.landing.fragments.indicators', [
+                'preview' => $preview,
+            ])->render(),
+            'areas' => view('partials.public.landing.fragments.areas', [
+                'preview' => $preview,
+            ])->render(),
+            'empty_state' => view('partials.public.landing.fragments.empty-state', [
+                'preview' => $preview,
+                'label' => $label,
+            ])->render(),
+        ];
+    }
     private function makeAreaStats(string $label, int $total, array $fields, int $seed): array
     {
         $baseName = trim(str_replace(['Kecamatan ', 'Kelurahan ', 'Desa '], '', $label));

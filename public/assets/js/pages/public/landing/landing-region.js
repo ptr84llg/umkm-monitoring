@@ -480,6 +480,36 @@
         }
     };
 
+    function replaceHtml(selector, html) {
+        const element = Landing.qs(selector);
+
+        if (!element || typeof html !== 'string') {
+            return;
+        }
+
+        element.innerHTML = html;
+    }
+
+    function replaceMetricsFromFragment(html) {
+        if (typeof html !== 'string' || html.trim() === '') {
+            return false;
+        }
+
+        const template = document.createElement('template');
+        template.innerHTML = html.trim();
+
+        ['total', 'active', 'validation'].forEach(function (key) {
+            const source = template.content.querySelector('[data-public-metric="' + key + '"]');
+            const target = Landing.qs('[data-public-metric="' + key + '"]');
+
+            if (source && target) {
+                target.dataset.count = source.dataset.count || '0';
+                target.textContent = source.textContent || '0';
+            }
+        });
+
+        return true;
+    }
     function updateMetric(selector, value) {
         const element = Landing.qs(selector);
 
@@ -649,14 +679,37 @@
         Landing.setText(S.regionModalCurrent, label);
         Landing.setText(S.publicWatchedLabel, preview.watched || 'Belum tersedia');
         Landing.setText(S.publicDominantLabel, preview.dominant || 'Belum tersedia');
-        togglePreviewEmptyState(preview, label);
 
-        updateMetric('[data-public-metric="total"]', preview.total || 0);
-        updateMetric('[data-public-metric="active"]', preview.active || 0);
-        updateMetric('[data-public-metric="validation"]', preview.validation || 0);
+        const fragments = response?.fragments || {};
 
-        renderIndicatorDetails(preview);
-        renderAreaStats(safeSelection, preview);
+        if (!replaceMetricsFromFragment(fragments.metrics || '')) {
+            updateMetric('[data-public-metric="total"]', preview.total || 0);
+            updateMetric('[data-public-metric="active"]', preview.active || 0);
+            updateMetric('[data-public-metric="validation"]', preview.validation || 0);
+        }
+
+        if (typeof fragments.indicators === 'string') {
+            replaceHtml(S.publicFieldList, fragments.indicators);
+        } else {
+            renderIndicatorDetails(preview);
+        }
+
+        if (typeof fragments.areas === 'string') {
+            replaceHtml(S.publicAreaList, fragments.areas);
+        } else {
+            renderAreaStats(safeSelection, preview);
+        }
+
+        if (typeof fragments.empty_state === 'string') {
+            const emptyState = Landing.qs(S.publicEmptyState);
+
+            if (emptyState) {
+                emptyState.hidden = !Boolean(preview && preview.empty);
+                emptyState.innerHTML = fragments.empty_state;
+            }
+        } else {
+            togglePreviewEmptyState(preview, label);
+        }
 
         if (Landing.renderChart) {
             Landing.renderChart(safeSelection, response);
