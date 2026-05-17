@@ -10,7 +10,6 @@
 
 @php
     $safeId = preg_replace('/[^A-Za-z0-9\-_]/', '', $id) ?: 'umkmReadinessLoader';
-    $linesId = $safeId.'_lines';
 
     $defaultLines = [
         [
@@ -30,13 +29,18 @@
     ];
 
     $readinessLines = is_array($lines) && count($lines) > 0 ? $lines : $defaultLines;
+
+    $readinessJson = json_encode(
+        $readinessLines,
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT
+    );
 @endphp
 
 <div
     id="{{ $safeId }}"
     class="umkm-readiness-loader"
     data-umkm-readiness-loader
-    data-umkm-readiness-lines="{{ $linesId }}"
+    data-umkm-readiness-lines-json="{{ e($readinessJson) }}"
     data-umkm-readiness-auto-hide="{{ $autoHide ? 'true' : 'false' }}"
     data-umkm-readiness-hide-delay="{{ (int) $hideDelay }}"
     role="status"
@@ -68,7 +72,3 @@
         <p class="umkm-readiness-foot">{{ $footnote }}</p>
     </section>
 </div>
-
-<script type="application/json" id="{{ $linesId }}">
-{!! json_encode($readinessLines, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
-</script>

@@ -2,7 +2,7 @@
 
 @php
     $assetProfile = 'landing';
-    $assetModules = ['location', 'session'];
+    $assetModules = ['location', 'session', 'readiness'];
     $vendorJs = [
         asset('assets/vendor/chartjs/chart.umd.min.js'),
     ];
@@ -13,6 +13,85 @@
 @section('title', 'Monitoring UMKM | Visual Analitik Interaktif')
 
 @section('content')
+<x-umkm.readiness-loader
+    id="landingReadinessLoader"
+    title="Menyiapkan Preview UMKM"
+    subtitle="Sistem sedang memeriksa kesiapan struktur landing, core, keamanan, lokasi, dan visual preview publik."
+    :hide-delay="420"
+    :lines="[
+        [
+            'key' => 'landing-structure',
+            'label' => 'Struktur landing',
+            'description' => 'Memeriksa struktur utama halaman landing.',
+            'check' => 'selector',
+            'selector' => '.umkm-landing',
+            'required' => true,
+        ],
+        [
+            'key' => 'core-system',
+            'label' => 'Core sistem',
+            'description' => 'Memeriksa kesiapan core UI sistem.',
+            'check' => 'core',
+            'required' => true,
+        ],
+        [
+            'key' => 'ajax-core',
+            'label' => 'AJAX internal',
+            'description' => 'Memeriksa kesiapan request internal satu pintu.',
+            'check' => 'module',
+            'module' => 'ajax',
+            'required' => true,
+        ],
+        [
+            'key' => 'security-core',
+            'label' => 'Modul keamanan',
+            'description' => 'Memeriksa kesiapan metadata dan pengamanan request publik.',
+            'check' => 'module',
+            'module' => 'security',
+            'required' => true,
+        ],
+        [
+            'key' => 'location-module',
+            'label' => 'Modul lokasi',
+            'description' => 'Memeriksa kesiapan location gate untuk akses masuk sistem.',
+            'check' => 'module',
+            'module' => 'location',
+            'required' => false,
+        ],
+        [
+            'key' => 'session-module',
+            'label' => 'Modul sesi',
+            'description' => 'Memeriksa kesiapan monitoring sesi publik.',
+            'check' => 'module',
+            'module' => 'session',
+            'required' => false,
+        ],
+        [
+            'key' => 'chart-preview',
+            'label' => 'Preview grafik',
+            'description' => 'Memeriksa ketersediaan Chart.js untuk visual preview publik.',
+            'check' => 'global',
+            'global' => 'Chart',
+            'required' => false,
+        ],
+        [
+            'key' => 'region-preview',
+            'label' => 'Preview wilayah',
+            'description' => 'Memeriksa elemen pilihan wilayah preview.',
+            'check' => 'selector',
+            'selector' => '[data-region-modal]',
+            'required' => false,
+        ],
+        [
+            'key' => 'landing-interaction',
+            'label' => 'Interaksi landing',
+            'description' => 'Memeriksa elemen navigasi dan interaksi landing.',
+            'check' => 'selector',
+            'selector' => '[data-landing-header]',
+            'required' => true,
+        ],
+    ]"
+/>
 <div class="umkm-landing">
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
@@ -559,6 +638,8 @@
     </button>
 </div>
 @endsection
+
+
 
 
 

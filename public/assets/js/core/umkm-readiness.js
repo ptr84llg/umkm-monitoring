@@ -50,6 +50,26 @@
     }
 
     function parseLines(loader) {
+        const attributeJson = loader.getAttribute('data-umkm-readiness-lines-json');
+
+        if (attributeJson) {
+            try {
+                const parsed = JSON.parse(attributeJson);
+
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [
+                    {
+                        key: 'readiness-config',
+                        label: 'Konfigurasi readiness',
+                        description: 'Konfigurasi readiness tidak dapat dibaca dari atribut halaman.',
+                        check: 'manual',
+                        status: 'failed'
+                    }
+                ];
+            }
+        }
+
         const scriptId = loader.getAttribute('data-umkm-readiness-lines');
         const script = scriptId ? document.getElementById(scriptId) : null;
 
@@ -380,3 +400,4 @@
 
     ready(runAll);
 })();
+
