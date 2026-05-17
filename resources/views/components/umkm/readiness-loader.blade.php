@@ -33,14 +33,16 @@
     $readinessJson = json_encode(
         $readinessLines,
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT
-    );
+    ) ?: '[]';
+
+    $readinessPayload = base64_encode($readinessJson);
 @endphp
 
 <div
     id="{{ $safeId }}"
     class="umkm-readiness-loader"
     data-umkm-readiness-loader
-    data-umkm-readiness-lines-json="{{ e($readinessJson) }}"
+    data-umkm-readiness-lines-base64="{{ $readinessPayload }}"
     data-umkm-readiness-auto-hide="{{ $autoHide ? 'true' : 'false' }}"
     data-umkm-readiness-hide-delay="{{ (int) $hideDelay }}"
     role="status"

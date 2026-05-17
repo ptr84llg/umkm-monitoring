@@ -49,7 +49,46 @@
         return FINAL_STATUSES.includes(status);
     }
 
+    function decodeBase64Utf8(value) {
+        if (!value) {
+            return '';
+        }
+
+        const binary = window.atob(value);
+
+        if (window.TextDecoder) {
+            const bytes = Uint8Array.from(binary, function (char) {
+                return char.charCodeAt(0);
+            });
+
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        return decodeURIComponent(escape(binary));
+    }
+
     function parseLines(loader) {
+        const attributeBase64 = loader.getAttribute('data-umkm-readiness-lines-base64');
+
+        if (attributeBase64) {
+            try {
+                const decoded = decodeBase64Utf8(attributeBase64);
+                const parsed = JSON.parse(decoded || '[]');
+
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [
+                    {
+                        key: 'readiness-config',
+                        label: 'Konfigurasi readiness',
+                        description: 'Konfigurasi readiness tidak dapat dibaca dari payload halaman.',
+                        check: 'manual',
+                        status: 'failed'
+                    }
+                ];
+            }
+        }
+
         const attributeJson = loader.getAttribute('data-umkm-readiness-lines-json');
 
         if (attributeJson) {
@@ -400,4 +439,5 @@
 
     ready(runAll);
 })();
+
 
