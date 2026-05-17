@@ -7,6 +7,14 @@
     $pageJs = $pageJs ?? [];
     $assetModules = $assetModules ?? [];
 
+    $vendorLocalCss = [
+        'bootstrap/5.3.8/css/bootstrap.min.css',
+    ];
+
+    $vendorLocalJs = [
+        'bootstrap/5.3.8/js/bootstrap.bundle.min.js',
+    ];
+
     $coreThemeCss = [
         'themes/umkm-theme-blue.css',
         'themes/umkm-theme-green.css',
@@ -18,7 +26,6 @@
     ];
 
     $coreCssBase = array_merge([
-        'bootstrap-local.css',
         'umkm-theme.css',
     ], $coreThemeCss, [
         'umkm-bootstrap-bridge.css',
@@ -45,7 +52,6 @@
     ];
 
     $coreJsBase = [
-        'bootstrap-local.js',
         'umkm-ui.js',
         'umkm-ajax.js',
         'umkm-security.js',
@@ -96,7 +102,6 @@
 
     if ($assetProfile === 'landing') {
         $coreCss = array_merge([
-            'bootstrap-local.css',
             'umkm-theme.css',
         ], $coreThemeCss, [
             'umkm-bootstrap-bridge.css',
@@ -108,7 +113,6 @@
         ]);
 
         $coreJs = [
-            'bootstrap-local.js',
             'umkm-ui.js',
             'umkm-ajax.js',
             'umkm-security.js',
@@ -131,6 +135,8 @@
         }
     }
 
+    $vendorLocalCss = array_values(array_unique($vendorLocalCss));
+    $vendorLocalJs = array_values(array_unique($vendorLocalJs));
     $coreCss = array_values(array_unique($coreCss));
     $coreJs = array_values(array_unique($coreJs));
     $pageCss = array_values(array_unique($pageCss));
@@ -143,6 +149,10 @@
     <link rel="stylesheet" href="{{ $file }}">
 @endforeach
 
+@foreach($vendorLocalCss as $file)
+    <link rel="stylesheet" href="{{ asset('assets/vendor/'.$file) }}">
+@endforeach
+
 @foreach($coreCss as $file)
     <link rel="stylesheet" href="{{ asset('assets/css/core/'.$file) }}">
 @endforeach
@@ -153,6 +163,10 @@
 
 @foreach($vendorJs as $file)
     <script src="{{ $file }}" defer></script>
+@endforeach
+
+@foreach($vendorLocalJs as $file)
+    <script src="{{ asset('assets/vendor/'.$file) }}" defer></script>
 @endforeach
 
 @foreach($coreJs as $file)
