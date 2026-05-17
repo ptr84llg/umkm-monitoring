@@ -30,7 +30,7 @@
     'data-region-mode' => $mode,
 ]) }}>
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable landing-region-dialog">
-        <section class="modal-content landing-region-modal">
+        <section class="modal-content landing-region-modal" data-region-panel>
             <div class="modal-header landing-region-modal-head">
                 <span class="region-modal-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -45,18 +45,20 @@
 
                 <button type="button"
                         class="btn-close landing-region-modal-close"
+                        data-region-close
                         data-region-modal-close
                         aria-label="Tutup pilihan wilayah"></button>
             </div>
 
             <div class="modal-body landing-region-modal-body">
-                <div class="alert landing-region-alert" role="alert" data-region-modal-alert hidden></div>
+                <div class="alert landing-region-alert" role="alert" data-region-alert data-region-modal-alert hidden></div>
 
                 <div class="row g-3 landing-region-form">
                     <div class="col-12 col-md-6 landing-region-field">
                         <label for="landingProvinceSelect" class="form-label">Provinsi</label>
                         <select id="landingProvinceSelect"
                                 class="form-select"
+                                data-region-province
                                 data-landing-region-province
                                 @if($provinceDisabled) disabled @endif>
                             <option value="{{ $provinceCode }}">{{ $provinceName }}</option>
@@ -67,6 +69,7 @@
                         <label for="landingCitySelect" class="form-label">Kabupaten/Kota</label>
                         <select id="landingCitySelect"
                                 class="form-select"
+                                data-region-city
                                 data-landing-region-city
                                 @if($cityDisabled) disabled @endif>
                             <option value="{{ $cityCode }}">{{ $cityName }}</option>
@@ -75,14 +78,14 @@
 
                     <div class="col-12 col-md-6 landing-region-field">
                         <label for="landingDistrictSelect" class="form-label">Kecamatan</label>
-                        <select id="landingDistrictSelect" class="form-select" data-landing-region-district>
+                        <select id="landingDistrictSelect" class="form-select" data-region-district data-landing-region-district>
                             <option value="">Memuat kecamatan...</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6 landing-region-field">
                         <label for="landingVillageSelect" class="form-label">Desa/Kelurahan</label>
-                        <select id="landingVillageSelect" class="form-select" data-landing-region-village>
+                        <select id="landingVillageSelect" class="form-select" data-region-village data-landing-region-village>
                             <option value="__ALL_VILLAGES__">Semua Kelurahan</option>
                         </select>
                     </div>
@@ -91,7 +94,7 @@
                 <div class="card border-0 landing-region-current">
                     <div class="card-body">
                         <span>Konteks saat ini</span>
-                        <strong data-region-modal-current>{{ $currentLabel }}</strong>
+                        <strong data-region-current data-region-modal-current>{{ $currentLabel }}</strong>
                     </div>
                 </div>
             </div>
@@ -99,10 +102,12 @@
             <div class="modal-footer landing-region-modal-actions">
                 <button type="button"
                         class="btn btn-outline-secondary"
+                        data-region-close
                         data-region-modal-close>{{ $cancelLabel }}</button>
 
                 <button type="button"
                         class="btn btn-primary"
+                        data-region-apply
                         data-region-modal-apply>{{ $applyLabel }}</button>
             </div>
         </section>

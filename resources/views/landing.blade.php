@@ -281,7 +281,7 @@
                                                     <strong data-public-region-source>Kota Lubuklinggau</strong>
                                                 </div>
 
-                                                <button type="button" class="btn btn-primary board-region-button" data-region-modal-open>
+                                                <button type="button" class="btn btn-primary board-region-button" data-region-open data-region-modal-open>
                                                     <svg viewBox="0 0 24 24" aria-hidden="true">
                                                         <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
                                                     </svg>
