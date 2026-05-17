@@ -234,6 +234,7 @@ class LandingRegionController extends Controller
                 'level' => Region::LEVEL_DISTRICT,
                 'parent_code' => $this->cityCode(),
                 'is_virtual' => true,
+                'has_public_umkm_data' => null,
             ];
         }
 
@@ -258,6 +259,7 @@ class LandingRegionController extends Controller
             'district_code' => $region->district_code,
             'village_code' => $region->village_code,
             'is_virtual' => false,
+            'has_public_umkm_data' => null,
         ];
     }
 
@@ -290,3 +292,4 @@ class LandingRegionController extends Controller
         return $response;
     }
 }
+

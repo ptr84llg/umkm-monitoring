@@ -28,6 +28,9 @@
         publicDominantLabel: '[data-public-dominant-label]',
         publicFieldList: '[data-public-field-list]',
         publicAreaList: '[data-public-area-list]',
+        publicEmptyState: '[data-public-empty-state]',
+        publicEmptyTitle: '[data-public-empty-title]',
+        publicEmptyMessage: '[data-public-empty-message]',
         regionModalShell: '[data-region-modal]',
         regionModalPanel: '[data-region-modal] .landing-region-modal',
         regionModalOpen: '[data-region-modal-open]',
@@ -90,6 +93,7 @@
         village: null,
         districtAll: true,
         villageAll: true,
+        hasPublicUmkmData: null,
         label: 'Kota Lubuklinggau',
         scope: 'city'
     };
@@ -578,6 +582,21 @@
         const seed = hash((selection.village?.code || selection.district?.code || selection.city?.code || '16.73') + mode);
         const label = cleanRegionLabel(selection.label || 'Kota Lubuklinggau');
 
+        if (preview && preview.empty) {
+            return {
+                title: 'Data UMKM ' + label + ' belum tersedia',
+                subtitle: 'Belum ada data agregat publik untuk wilayah yang dipilih',
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                unitLabel: 'Jumlah UMKM',
+                percentLabel: 'Persentase (%)',
+                unitData: [0, 0, 0, 0, 0, 0, 0],
+                percentData: [0, 0, 0, 0, 0, 0, 0],
+                summaryOne: 'Wilayah tanpa data agregat',
+                summaryTwo: 'Grafik belum tersedia',
+                summaryThree: 'Pilih wilayah lain'
+            };
+        }
+
         if (mode === 'wilayah') {
             const source = selection.scope === 'city' ? regionState.districts : regionState.villages;
             const labels = source.length
@@ -844,6 +863,9 @@
         option.dataset.regionName = region.name || '';
         option.dataset.regionLevel = region.level || '';
         option.dataset.virtual = region.is_virtual ? '1' : '0';
+        option.dataset.hasPublicUmkmData = region.has_public_umkm_data === false
+            ? '0'
+            : (region.has_public_umkm_data === true ? '1' : 'unknown');
 
         return option;
     }
@@ -902,7 +924,10 @@
             code: option.value,
             name: option.dataset.regionName || option.textContent || option.value,
             level: option.dataset.regionLevel || '',
-            isVirtual: option.dataset.virtual === '1'
+            isVirtual: option.dataset.virtual === '1',
+            hasPublicUmkmData: option.dataset.hasPublicUmkmData === '0'
+                ? false
+                : (option.dataset.hasPublicUmkmData === '1' ? true : null)
         };
     }
 
@@ -1116,6 +1141,9 @@
             village: villageAll ? null : village,
             districtAll: districtAll,
             villageAll: villageAll,
+            hasPublicUmkmData: !districtAll && !villageAll
+                ? village.hasPublicUmkmData
+                : (!districtAll ? district.hasPublicUmkmData : null),
             label: cleanRegionLabel(label),
             scope: scope
         };
@@ -1124,6 +1152,19 @@
     function buildPreview(selection) {
         const key = selection.village?.code || selection.district?.code || selection.city?.code || '16.73';
         const seed = hash(key + selection.scope);
+
+        if (selection.hasPublicUmkmData === false) {
+            return {
+                empty: true,
+                total: 0,
+                active: 0,
+                validation: 0,
+                watched: 'Belum tersedia',
+                dominant: 'Belum tersedia',
+                fields: [],
+                message: 'Belum ada data agregat UMKM untuk wilayah ini.'
+            };
+        }
 
         if (selection.scope === 'city') {
             return {
@@ -1198,6 +1239,21 @@
         }
 
         container.innerHTML = '';
+
+        if (preview.empty || !preview.fields.length) {
+            const empty = document.createElement('div');
+            const title = document.createElement('strong');
+            const message = document.createElement('small');
+
+            empty.className = 'preview-empty-inline';
+            title.textContent = 'Indikator belum tersedia';
+            message.textContent = 'Data bidang usaha akan tampil setelah terdapat data UMKM pada wilayah ini.';
+
+            empty.appendChild(title);
+            empty.appendChild(message);
+            container.appendChild(empty);
+            return;
+        }
 
         preview.fields.slice(0, 3).forEach(function (field, index) {
             const percent = Math.max(1, Math.min(100, Math.round(Number(field.percent || 0))));
@@ -1292,10 +1348,25 @@
             return;
         }
 
+        container.innerHTML = '';
+
+        if (preview.empty || !preview.fields.length) {
+            const empty = document.createElement('div');
+            const title = document.createElement('strong');
+            const message = document.createElement('small');
+
+            empty.className = 'preview-empty-inline';
+            title.textContent = 'Data wilayah belum tersedia';
+            message.textContent = 'Belum ada ringkasan UMKM publik untuk wilayah yang dipilih.';
+
+            empty.appendChild(title);
+            empty.appendChild(message);
+            container.appendChild(empty);
+            return;
+        }
+
         const areaNames = pickAreaNames(selection);
         const distributions = areaNames.length === 1 ? [1] : [0.42, 0.34, 0.24];
-
-        container.innerHTML = '';
 
         areaNames.slice(0, 3).forEach(function (area, index) {
             const field = preview.fields[index % preview.fields.length] || preview.fields[0];
@@ -1318,6 +1389,26 @@
         });
     }
 
+    function togglePreviewEmptyState(preview, label) {
+        const emptyState = qs(SELECTORS.publicEmptyState);
+        const emptyTitle = qs(SELECTORS.publicEmptyTitle);
+        const emptyMessage = qs(SELECTORS.publicEmptyMessage);
+        const isEmpty = Boolean(preview && preview.empty);
+
+        if (emptyState) {
+            emptyState.hidden = !isEmpty;
+        }
+
+        if (emptyTitle) {
+            emptyTitle.textContent = 'Data UMKM ' + cleanRegionLabel(label || 'wilayah ini') + ' belum tersedia';
+        }
+
+        if (emptyMessage) {
+            emptyMessage.textContent = preview && preview.message
+                ? preview.message + ' Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.'
+                : 'Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.';
+        }
+    }
     function applyRegionSelection(selection) {
         const safeSelection = Object.assign({}, DEFAULT_SELECTION, selection || {});
         const preview = buildPreview(safeSelection);
@@ -1331,6 +1422,7 @@
         setText(SELECTORS.regionModalCurrent, label);
         setText(SELECTORS.publicWatchedLabel, preview.watched);
         setText(SELECTORS.publicDominantLabel, preview.dominant);
+        togglePreviewEmptyState(preview, label);
 
         updateMetric('[data-public-metric="total"]', preview.total);
         updateMetric('[data-public-metric="active"]', preview.active);
@@ -1794,3 +1886,5 @@
 
     ready(boot);
 })();
+
+
