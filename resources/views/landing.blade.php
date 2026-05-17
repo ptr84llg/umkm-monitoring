@@ -96,10 +96,10 @@
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
 
-    <header class="landing-header" data-landing-header>
+    <header class="landing-header navbar navbar-expand-xl fixed-top" data-landing-header>
         <div class="container">
-            <nav class="landing-nav" aria-label="Navigasi utama">
-                <a class="landing-brand" href="{{ url('/') }}" aria-label="Monitoring UMKM">
+            <div class="d-flex align-items-center justify-content-between w-100 gap-3">
+                <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="Monitoring UMKM">
                     <span class="landing-brand-mark">MU</span>
                     <span class="landing-brand-text">
                         <strong>Monitoring UMKM</strong>
@@ -107,32 +107,33 @@
                     </span>
                 </a>
 
-                <div class="landing-menu" aria-label="Menu utama">
-                    <a href="#dashboard">
+                <nav class="landing-menu d-none d-xl-flex align-items-center gap-2" aria-label="Menu utama">
+                    <a class="btn btn-light btn-sm landing-menu-link" href="#dashboard">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
                         <span>Preview Dashboard</span>
                     </a>
-                    <a href="#ringkasan">
+                    <a class="btn btn-light btn-sm landing-menu-link" href="#ringkasan">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
                         <span>Ringkasan</span>
                     </a>
-                </div>
+                </nav>
 
-                <div class="landing-nav-actions">
-                    <a class="btn btn-light landing-login-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
+                <div class="landing-nav-actions d-flex align-items-center gap-2">
+                    <a class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
                         <span>Masuk</span>
                     </a>
-                    <a class="btn btn-success landing-main-btn" href="#dashboard">
+
+                    <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
                         <span>Jelajahi</span>
                     </a>
 
-                    <button type="button" class="landing-menu-button" data-menu-open aria-label="Buka menu">
+                    <button type="button" class="btn btn-light btn-sm landing-menu-button d-inline-flex d-xl-none" data-menu-open aria-label="Buka menu">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>
                     </button>
                 </div>
-            </nav>
+            </div>
         </div>
     </header>
 
