@@ -1,0 +1,209 @@
+/*
+|--------------------------------------------------------------------------
+| UMKM Bootstrap Bridge
+|--------------------------------------------------------------------------
+| File ini menjembatani Bootstrap dengan theme UMKM.
+| Bootstrap tetap menjadi pondasi grid, form, card, button, modal,
+| dropdown, collapse, dan responsive utility.
+|--------------------------------------------------------------------------
+*/
+
+:root {
+    --bs-body-font-family: var(--umkm-font);
+    --bs-body-color: var(--umkm-ink);
+    --bs-body-bg: var(--umkm-bg);
+    --bs-primary: var(--umkm-primary);
+    --bs-primary-rgb: var(--umkm-primary-rgb);
+    --bs-secondary: var(--umkm-secondary);
+    --bs-secondary-rgb: var(--umkm-secondary-rgb);
+    --bs-success: var(--umkm-success);
+    --bs-success-rgb: var(--umkm-success-rgb);
+    --bs-info: var(--umkm-info);
+    --bs-info-rgb: var(--umkm-info-rgb);
+    --bs-warning: var(--umkm-warning);
+    --bs-warning-rgb: var(--umkm-warning-rgb);
+    --bs-danger: var(--umkm-danger);
+    --bs-danger-rgb: var(--umkm-danger-rgb);
+    --bs-border-color: var(--umkm-line);
+    --bs-border-radius: var(--umkm-radius-md);
+    --bs-border-radius-sm: var(--umkm-radius-sm);
+    --bs-border-radius-lg: var(--umkm-radius-lg);
+    --bs-link-color: var(--umkm-primary);
+    --bs-link-hover-color: var(--umkm-primary-dark);
+    --bs-focus-ring-color: rgba(var(--umkm-primary-rgb), .18);
+}
+
+.btn {
+    --bs-btn-border-radius: var(--umkm-radius-pill);
+    --bs-btn-font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .48rem;
+}
+
+.btn-primary {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: var(--umkm-primary);
+    --bs-btn-border-color: var(--umkm-primary);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--umkm-primary-dark);
+    --bs-btn-hover-border-color: var(--umkm-primary-dark);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: var(--umkm-primary-dark);
+    --bs-btn-active-border-color: var(--umkm-primary-dark);
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: var(--umkm-primary);
+    --bs-btn-disabled-border-color: var(--umkm-primary);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--umkm-primary-dark);
+    --bs-btn-border-color: rgba(var(--umkm-primary-rgb), .28);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--umkm-primary);
+    --bs-btn-hover-border-color: var(--umkm-primary);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: var(--umkm-primary-dark);
+    --bs-btn-active-border-color: var(--umkm-primary-dark);
+}
+
+.btn-light {
+    --bs-btn-color: var(--umkm-ink);
+    --bs-btn-bg: rgba(255, 255, 255, .82);
+    --bs-btn-border-color: rgba(16, 33, 61, .08);
+    --bs-btn-hover-color: var(--umkm-primary-dark);
+    --bs-btn-hover-bg: rgba(var(--umkm-primary-rgb), .08);
+    --bs-btn-hover-border-color: rgba(var(--umkm-primary-rgb), .18);
+}
+
+.card {
+    --bs-card-border-color: var(--umkm-line-soft);
+    --bs-card-border-radius: var(--umkm-radius-xl);
+    --bs-card-cap-bg: rgba(255, 255, 255, .72);
+    color: var(--umkm-ink);
+}
+
+.form-label {
+    color: var(--umkm-ink);
+    font-weight: 800;
+}
+
+.form-control,
+.form-select {
+    border-color: rgba(16, 33, 61, .12);
+    border-radius: var(--umkm-radius-md);
+    color: var(--umkm-ink);
+    font-weight: 600;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: rgba(var(--umkm-primary-rgb), .55);
+    box-shadow: var(--umkm-focus-ring);
+}
+
+.form-control::placeholder {
+    color: rgba(100, 116, 139, .78);
+}
+
+.input-group-text {
+    border-color: rgba(16, 33, 61, .12);
+    border-radius: var(--umkm-radius-md);
+    color: var(--umkm-muted-strong);
+    background: rgba(16, 33, 61, .035);
+}
+
+.invalid-feedback,
+.valid-feedback {
+    font-weight: 700;
+}
+
+.badge {
+    --bs-badge-border-radius: var(--umkm-radius-pill);
+    font-weight: 800;
+}
+
+.alert {
+    --bs-alert-border-radius: var(--umkm-radius-lg);
+    border-color: transparent;
+}
+
+.alert-primary {
+    --bs-alert-color: var(--umkm-primary-dark);
+    --bs-alert-bg: var(--umkm-primary-soft);
+    --bs-alert-border-color: rgba(var(--umkm-primary-rgb), .16);
+}
+
+.alert-warning {
+    --bs-alert-color: var(--umkm-warning-dark);
+    --bs-alert-bg: var(--umkm-warning-soft);
+    --bs-alert-border-color: rgba(var(--umkm-warning-rgb), .18);
+}
+
+.alert-danger {
+    --bs-alert-color: var(--umkm-danger-dark);
+    --bs-alert-bg: var(--umkm-danger-soft);
+    --bs-alert-border-color: rgba(var(--umkm-danger-rgb), .18);
+}
+
+.alert-success {
+    --bs-alert-color: var(--umkm-success-dark);
+    --bs-alert-bg: var(--umkm-success-soft);
+    --bs-alert-border-color: rgba(var(--umkm-success-rgb), .18);
+}
+
+.dropdown-menu {
+    --bs-dropdown-border-color: var(--umkm-line-soft);
+    --bs-dropdown-border-radius: var(--umkm-radius-lg);
+    --bs-dropdown-link-active-bg: var(--umkm-primary);
+    box-shadow: var(--umkm-shadow-sm);
+}
+
+.modal-content {
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: var(--umkm-radius-xl);
+    box-shadow: var(--umkm-shadow-lg);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--umkm-line-soft);
+}
+
+.toast {
+    --bs-toast-border-radius: var(--umkm-radius-lg);
+    --bs-toast-border-color: var(--umkm-line-soft);
+    box-shadow: var(--umkm-shadow-sm);
+}
+
+.offcanvas {
+    --bs-offcanvas-border-color: var(--umkm-line-soft);
+}
+
+.table {
+    --bs-table-color: var(--umkm-ink);
+    --bs-table-border-color: var(--umkm-line-soft);
+}
+
+.table > :not(caption) > * > * {
+    vertical-align: middle;
+}
+
+.pagination {
+    --bs-pagination-border-radius: var(--umkm-radius-pill);
+    --bs-pagination-color: var(--umkm-primary-dark);
+    --bs-pagination-hover-color: var(--umkm-primary-dark);
+    --bs-pagination-focus-box-shadow: var(--umkm-focus-ring);
+    --bs-pagination-active-bg: var(--umkm-primary);
+    --bs-pagination-active-border-color: var(--umkm-primary);
+}
+
+.accordion {
+    --bs-accordion-border-color: var(--umkm-line-soft);
+    --bs-accordion-border-radius: var(--umkm-radius-lg);
+    --bs-accordion-inner-border-radius: var(--umkm-radius-lg);
+    --bs-accordion-active-bg: var(--umkm-primary-soft);
+    --bs-accordion-active-color: var(--umkm-primary-dark);
+    --bs-accordion-btn-focus-box-shadow: var(--umkm-focus-ring);
+}

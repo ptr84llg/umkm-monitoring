@@ -10,6 +10,7 @@
     $coreCssBase = [
         'bootstrap-local.css',
         'umkm-theme.css',
+        'umkm-bootstrap-bridge.css',
         'umkm-scrollbar.css',
         'umkm-ui.css',
         'umkm-buttons.css',
@@ -86,6 +87,7 @@
         $coreCss = [
             'bootstrap-local.css',
             'umkm-theme.css',
+            'umkm-bootstrap-bridge.css',
             'umkm-scrollbar.css',
             'umkm-ui.css',
             'umkm-buttons.css',

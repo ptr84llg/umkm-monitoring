@@ -1,4 +1,199 @@
-/* umkm-theme.css - core reusable stylesheet */
-:root { --umkm-primary: #0d6efd; }
-.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
+/*
+|--------------------------------------------------------------------------
+| UMKM Theme Foundation
+|--------------------------------------------------------------------------
+| File ini menjadi pusat variabel tema sistem.
+| Bootstrap tetap menjadi pondasi komponen, sedangkan warna, radius,
+| shadow, motif, dan identitas visual diarahkan melalui CSS variables.
+|--------------------------------------------------------------------------
+*/
 
+:root,
+[data-umkm-theme="default"] {
+    --umkm-primary: #0f7665;
+    --umkm-primary-rgb: 15, 118, 101;
+    --umkm-primary-dark: #084c42;
+    --umkm-primary-soft: rgba(15, 118, 101, .10);
+    --umkm-primary-softer: rgba(15, 118, 101, .065);
+
+    --umkm-secondary: #0d6efd;
+    --umkm-secondary-rgb: 13, 110, 253;
+    --umkm-secondary-dark: #084298;
+    --umkm-secondary-soft: rgba(13, 110, 253, .10);
+
+    --umkm-accent: #f0a84a;
+    --umkm-accent-rgb: 240, 168, 74;
+    --umkm-accent-dark: #9a5b08;
+    --umkm-accent-soft: rgba(240, 168, 74, .16);
+    --umkm-accent-softer: rgba(240, 168, 74, .10);
+
+    --umkm-danger: #dc2626;
+    --umkm-danger-rgb: 220, 38, 38;
+    --umkm-danger-dark: #7f1d1d;
+    --umkm-danger-soft: rgba(220, 38, 38, .10);
+
+    --umkm-warning: #f59e0b;
+    --umkm-warning-rgb: 245, 158, 11;
+    --umkm-warning-dark: #92400e;
+    --umkm-warning-soft: rgba(245, 158, 11, .12);
+
+    --umkm-success: #16a34a;
+    --umkm-success-rgb: 22, 163, 74;
+    --umkm-success-dark: #166534;
+    --umkm-success-soft: rgba(22, 163, 74, .10);
+
+    --umkm-info: #0284c7;
+    --umkm-info-rgb: 2, 132, 199;
+    --umkm-info-dark: #075985;
+    --umkm-info-soft: rgba(2, 132, 199, .10);
+
+    --umkm-ink: #10213d;
+    --umkm-ink-rgb: 16, 33, 61;
+    --umkm-muted: #64748b;
+    --umkm-muted-strong: #526176;
+    --umkm-line: rgba(16, 33, 61, .10);
+    --umkm-line-soft: rgba(16, 33, 61, .07);
+
+    --umkm-bg: #f6fbfa;
+    --umkm-bg-soft: #f8fbfb;
+    --umkm-white: #ffffff;
+
+    --umkm-radius-xs: .5rem;
+    --umkm-radius-sm: .75rem;
+    --umkm-radius-md: 1rem;
+    --umkm-radius-lg: 1.5rem;
+    --umkm-radius-xl: 2rem;
+    --umkm-radius-hero: 2.625rem;
+    --umkm-radius-pill: 999px;
+
+    --umkm-shadow-xs: 0 .25rem .75rem rgba(16, 33, 61, .06);
+    --umkm-shadow-sm: 0 .75rem 1.875rem rgba(16, 33, 61, .075);
+    --umkm-shadow-md: 0 1.125rem 3rem rgba(16, 33, 61, .10);
+    --umkm-shadow-lg: 0 2rem 5.625rem rgba(16, 33, 61, .13);
+
+    --umkm-font: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+    --umkm-glass-bg: rgba(255, 255, 255, .78);
+    --umkm-glass-bg-strong: rgba(255, 255, 255, .90);
+    --umkm-glass-border: rgba(255, 255, 255, .74);
+    --umkm-glass-blur: 18px;
+
+    --umkm-focus-ring: 0 0 0 .22rem rgba(15, 118, 101, .14);
+    --umkm-focus-ring-secondary: 0 0 0 .22rem rgba(13, 110, 253, .12);
+}
+
+[data-umkm-theme="emerald"] {
+    --umkm-primary: #0f7665;
+    --umkm-primary-rgb: 15, 118, 101;
+    --umkm-primary-dark: #084c42;
+    --umkm-primary-soft: rgba(15, 118, 101, .10);
+    --umkm-primary-softer: rgba(15, 118, 101, .065);
+}
+
+[data-umkm-theme="blue"] {
+    --umkm-primary: #0d6efd;
+    --umkm-primary-rgb: 13, 110, 253;
+    --umkm-primary-dark: #084298;
+    --umkm-primary-soft: rgba(13, 110, 253, .10);
+    --umkm-primary-softer: rgba(13, 110, 253, .065);
+}
+
+[data-umkm-theme="maroon"] {
+    --umkm-primary: #8a1538;
+    --umkm-primary-rgb: 138, 21, 56;
+    --umkm-primary-dark: #5f0f2a;
+    --umkm-primary-soft: rgba(138, 21, 56, .10);
+    --umkm-primary-softer: rgba(138, 21, 56, .065);
+}
+
+html {
+    color-scheme: light;
+}
+
+body {
+    color: var(--umkm-ink);
+    font-family: var(--umkm-font);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    color: var(--umkm-white);
+    background: var(--umkm-primary);
+}
+
+.umkm-text-ink {
+    color: var(--umkm-ink) !important;
+}
+
+.umkm-text-muted {
+    color: var(--umkm-muted) !important;
+}
+
+.umkm-bg-soft {
+    background: var(--umkm-bg-soft) !important;
+}
+
+.umkm-bg-primary-soft {
+    background: var(--umkm-primary-soft) !important;
+}
+
+.umkm-border-soft {
+    border-color: var(--umkm-line-soft) !important;
+}
+
+.umkm-shadow-sm {
+    box-shadow: var(--umkm-shadow-sm) !important;
+}
+
+.umkm-shadow-md {
+    box-shadow: var(--umkm-shadow-md) !important;
+}
+
+.umkm-shadow-lg {
+    box-shadow: var(--umkm-shadow-lg) !important;
+}
+
+.umkm-rounded-md {
+    border-radius: var(--umkm-radius-md) !important;
+}
+
+.umkm-rounded-lg {
+    border-radius: var(--umkm-radius-lg) !important;
+}
+
+.umkm-rounded-xl {
+    border-radius: var(--umkm-radius-xl) !important;
+}
+
+.umkm-rounded-hero {
+    border-radius: var(--umkm-radius-hero) !important;
+}
+
+.umkm-glass {
+    border: 1px solid var(--umkm-glass-border);
+    background: var(--umkm-glass-bg);
+    box-shadow: var(--umkm-shadow-md);
+    backdrop-filter: blur(var(--umkm-glass-blur));
+}
+
+.umkm-glass-strong {
+    border: 1px solid var(--umkm-glass-border);
+    background: var(--umkm-glass-bg-strong);
+    box-shadow: var(--umkm-shadow-lg);
+    backdrop-filter: blur(var(--umkm-glass-blur));
+}
+
+.umkm-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: var(--umkm-radius-pill);
+    padding: .35rem .75rem;
+    color: var(--umkm-secondary-dark);
+    background: var(--umkm-secondary-soft);
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
