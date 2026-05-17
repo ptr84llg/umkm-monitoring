@@ -15,7 +15,8 @@ Audit ini dibuat setelah refactor landing menuju pola **AJAX component**, **modu
 ## Matriks File dan Tanggung Jawab
 
 | File | Kategori | Peran yang Diizinkan | Baris | Pola Sensitif | Pola Data/Preview |
-|---|---|---|---:|---:|---:|| `public\assets\js\core\umkm-ui.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 100 | 0 | 0 |
+|---|---|---|---:|---:|---:|
+| `public\assets\js\core\umkm-ui.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 100 | 0 | 0 |
 | `public\assets\js\core\umkm-ajax.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 175 | 9 | 0 |
 | `public\assets\js\core\umkm-security.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 145 | 6 | 0 |
 | `public\assets\js\core\umkm-modal.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 290 | 0 | 0 |
