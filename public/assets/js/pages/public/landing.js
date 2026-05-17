@@ -1601,8 +1601,43 @@
 
         const shouldShow = Boolean(visible && (forceVisible || !locationDismissedByUser));
 
-        if (notice) {
+        if (!notice) {
+            document.body.classList.toggle('is-location-gate-open', shouldShow);
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            const modal = window.bootstrap.Modal.getOrCreateInstance(notice, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+
+            if (shouldShow) {
+                modal.show();
+            } else {
+                const instance = window.bootstrap.Modal.getInstance(notice);
+
+                if (instance) {
+                    instance.hide();
+                } else {
+                    notice.classList.remove('show');
+                    notice.style.display = 'none';
+                    notice.setAttribute('aria-hidden', 'true');
+                    notice.removeAttribute('aria-modal');
+                }
+            }
+        } else {
             notice.hidden = !shouldShow;
+            notice.classList.toggle('show', shouldShow);
+            notice.style.display = shouldShow ? 'block' : '';
+            notice.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+
+            if (shouldShow) {
+                notice.setAttribute('aria-modal', 'true');
+            } else {
+                notice.removeAttribute('aria-modal');
+            }
         }
 
         document.body.classList.toggle('is-location-gate-open', shouldShow);
@@ -1620,7 +1655,24 @@
         locationGateState.dismissed = true;
 
         if (notice) {
-            notice.hidden = true;
+            if (window.bootstrap && window.bootstrap.Modal) {
+                const modal = window.bootstrap.Modal.getInstance(notice);
+
+                if (modal) {
+                    modal.hide();
+                } else {
+                    notice.classList.remove('show');
+                    notice.style.display = 'none';
+                    notice.setAttribute('aria-hidden', 'true');
+                    notice.removeAttribute('aria-modal');
+                }
+            } else {
+                notice.hidden = true;
+                notice.classList.remove('show');
+                notice.style.display = '';
+                notice.setAttribute('aria-hidden', 'true');
+                notice.removeAttribute('aria-modal');
+            }
         }
 
         document.body.classList.remove('is-location-gate-open');
@@ -1817,6 +1869,18 @@
     }
 
     function initLocationGate() {
+        const notice = qs(SELECTORS.locationNotice);
+
+        if (notice) {
+            notice.addEventListener('shown.bs.modal', function () {
+                document.body.classList.add('is-location-gate-open');
+            });
+
+            notice.addEventListener('hidden.bs.modal', function () {
+                document.body.classList.remove('is-location-gate-open');
+            });
+        }
+
         qsa(SELECTORS.locationGatedLink).forEach(function (link) {
             link.addEventListener('click', async function (event) {
                 const href = link.getAttribute('href');
