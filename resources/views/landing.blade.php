@@ -423,10 +423,12 @@
                         <div class="row align-items-xl-start g-4 g-xl-5">
                             <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
                                 <div class="hero-copy reveal">
-                                    <span class="landing-pill">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
-                                        <span>Sistem informasi untuk ekosistem UMKM</span>
-                                    </span>
+                                    <x-umkm.section-pill>
+                                        <x-slot:icon>
+                                            <svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                                        </x-slot:icon>
+                                        Sistem informasi untuk ekosistem UMKM
+                                    </x-umkm.section-pill>
 
                                     <h1 class="display-3 fw-bold mt-3 mb-3">Monitoring UMKM berbasis Data</h1>
                                     <p class="lead mb-0">
@@ -507,10 +509,9 @@
                                                 </div>
                                             </div>
 
-                                            <div class="landing-public-note mx-3 my-3">
-                                                <strong>Catatan:</strong>
-                                                <span>Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.</span>
-                                            </div>
+                                            <x-umkm.public-note title="Catatan:" class="mx-3 my-3">
+                                                Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.
+                                            </x-umkm.public-note>
 
                                             <div class="row g-3 board-preview-grid">
                                                 <div class="col-12 col-md-6">
@@ -567,17 +568,15 @@
                                                 </div>
 
                                                 <div class="col-12">
-                                                    <div class="landing-empty-state" data-public-empty-state hidden>
-                                                        <span class="landing-empty-icon">
-                                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                    <x-umkm.empty-state class="landing-empty-state" icon-class="landing-empty-icon" data-public-empty-state hidden>
+                                                        <x-slot:icon>
+                                                            <svg viewBox="0 0 24 24">
                                                                 <path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
                                                             </svg>
-                                                        </span>
-                                                        <div>
-                                                            <strong data-public-empty-title>Data wilayah belum tersedia</strong>
-                                                            <p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
-                                                        </div>
-                                                    </div>
+                                                        </x-slot:icon>
+                                                        <strong data-public-empty-title>Data wilayah belum tersedia</strong>
+                                                        <p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
+                                                    </x-umkm.empty-state>
                                                 </div>
                                             </div>
 
@@ -629,10 +628,12 @@
                     <div class="card-body p-4 p-xl-5">
                         <div class="row align-items-xl-end g-4 mb-4">
                             <div class="col-12 col-lg-10 col-xl-7 mx-lg-auto mx-xl-0">
-                                <span class="landing-pill">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                    <span>Preview dashboard publik</span>
-                                </span>
+                                <x-umkm.section-pill>
+                                    <x-slot:icon>
+                                        <svg viewBox="0 0 24 24"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                                    </x-slot:icon>
+                                    Preview dashboard publik
+                                </x-umkm.section-pill>
 
                                 <h2 class="display-6 fw-bold mt-3 mb-3">
                                     Preview informasi UMKM tampil dalam visual yang lebih hidup
@@ -754,10 +755,12 @@
                         <div class="row align-items-xl-center g-4 g-xl-5">
                             <div class="col-12 col-lg-10 col-xl-5 mx-lg-auto mx-xl-0">
                                 <div class="summary-copy">
-                                    <span class="landing-pill">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
-                                        <span>Ringkasan sistem</span>
-                                    </span>
+                                    <x-umkm.section-pill>
+                                        <x-slot:icon>
+                                            <svg viewBox="0 0 24 24"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                                        </x-slot:icon>
+                                        Ringkasan sistem
+                                    </x-umkm.section-pill>
 
                                     <h2 class="display-6 fw-bold mt-3 mb-3">
                                         Data tersusun, Visual Analitik Interaktif, Keputusan mudah terarah
@@ -818,10 +821,12 @@
                     <div class="card-body p-4 p-xl-5">
                         <div class="row align-items-center g-4">
                             <div class="col-12 col-lg-10 col-xl-8 mx-lg-auto mx-xl-0">
-                                <span class="landing-pill">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
-                                    <span>Monitoring UMKM</span>
-                                </span>
+                                <x-umkm.section-pill>
+                                    <x-slot:icon>
+                                        <svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                                    </x-slot:icon>
+                                    Monitoring UMKM
+                                </x-umkm.section-pill>
 
                                 <h2 class="display-6 fw-bold mt-3 mb-3">
                                     Kelola data UMKM dalam dashboard
@@ -850,9 +855,3 @@
     </button>
 </div>
 @endsection
-
-
-
-
-
-
