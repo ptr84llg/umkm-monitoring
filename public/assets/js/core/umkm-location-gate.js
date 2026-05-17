@@ -368,18 +368,14 @@
     }
 
     function releaseModalFocus(notice) {
-        const activeElement = document.activeElement;
-
-        if (!notice || !activeElement || !notice.contains(activeElement)) {
+        if (UMKM.modal && typeof UMKM.modal.releaseFocus === 'function') {
+            UMKM.modal.releaseFocus(notice, DEFAULT_SELECTORS.statusOpen);
             return;
         }
 
-        const trigger = qs(DEFAULT_SELECTORS.statusOpen);
+        const activeElement = document.activeElement;
 
-        if (trigger && typeof trigger.focus === 'function') {
-            trigger.focus({
-                preventScroll: true
-            });
+        if (!notice || !activeElement || !notice.contains(activeElement)) {
             return;
         }
 
@@ -631,6 +627,14 @@
         const notice = qs(DEFAULT_SELECTORS.notice);
 
         if (notice) {
+            if (UMKM.modal && typeof UMKM.modal.bindFocusGuard === 'function') {
+                UMKM.modal.bindFocusGuard(notice, {
+                    fallbackTriggerSelector: DEFAULT_SELECTORS.statusOpen,
+                    returnFocus: true,
+                    setInertWhenHidden: true
+                });
+            }
+
             notice.addEventListener('shown.bs.modal', function () {
                 document.body.classList.add('is-location-gate-open');
             });

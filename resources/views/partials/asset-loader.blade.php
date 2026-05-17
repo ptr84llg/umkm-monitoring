@@ -87,6 +87,7 @@
         'loader' => 'umkm-loader.js',
         'readiness' => 'umkm-readiness.js',
         'location' => 'umkm-location.js',
+        'modal' => 'umkm-modal.js',
         'locationGate' => 'umkm-location-gate.js',
         'session' => 'umkm-session.js',
         'datatables' => 'umkm-datatables.js',
@@ -99,7 +100,7 @@
     ];
 
     $moduleDependencies = [
-        'locationGate' => ['location'],
+        'locationGate' => ['location', 'modal'],
         'readiness' => ['loader'],
         'datatables' => ['loader'],
         'tabulator' => ['loader', 'tables'],

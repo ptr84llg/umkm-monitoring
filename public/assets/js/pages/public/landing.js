@@ -983,6 +983,39 @@
         setText(SELECTORS.regionModalCurrent, cleanRegionLabel(text || 'Kota Lubuklinggau'));
     }
 
+    function releaseRegionModalFocus(shell) {
+        if (UMKM.modal && typeof UMKM.modal.releaseFocus === 'function') {
+            UMKM.modal.releaseFocus(shell, SELECTORS.regionModalOpen);
+            return;
+        }
+
+        const activeElement = document.activeElement;
+
+        if (shell && activeElement && shell.contains(activeElement) && typeof activeElement.blur === 'function') {
+            activeElement.blur();
+        }
+
+        if (!document.body.hasAttribute('tabindex')) {
+            document.body.setAttribute('tabindex', '-1');
+        }
+
+        document.body.focus({
+            preventScroll: true
+        });
+    }
+
+    function bindRegionModalFocusGuard(shell) {
+        if (!shell || !UMKM.modal || typeof UMKM.modal.bindFocusGuard !== 'function') {
+            return;
+        }
+
+        UMKM.modal.bindFocusGuard(shell, {
+            fallbackTriggerSelector: SELECTORS.regionModalOpen,
+            returnFocus: true,
+            setInertWhenHidden: true
+        });
+    }
+
     function openRegionModal() {
         const shell = qs(SELECTORS.regionModalShell);
 
@@ -992,6 +1025,12 @@
 
         setRegionAlert('');
         ensureRegionContext();
+
+        bindRegionModalFocusGuard(shell);
+
+        if (UMKM.modal && typeof UMKM.modal.rememberTrigger === 'function') {
+            UMKM.modal.rememberTrigger(shell, document.activeElement);
+        }
 
         if (window.bootstrap && window.bootstrap.Modal) {
             const modal = window.bootstrap.Modal.getOrCreateInstance(shell, {
@@ -1020,6 +1059,19 @@
         const shell = qs(SELECTORS.regionModalShell);
 
         if (!shell) {
+            return;
+        }
+
+        bindRegionModalFocusGuard(shell);
+
+        if (UMKM.modal && typeof UMKM.modal.rememberTrigger === 'function') {
+            UMKM.modal.rememberTrigger(shell, document.activeElement);
+        }
+
+        releaseRegionModalFocus(shell);
+
+        if (UMKM.modal && typeof UMKM.modal.hide === 'function') {
+            UMKM.modal.hide(shell, SELECTORS.regionModalOpen);
             return;
         }
 
@@ -1480,12 +1532,15 @@
         const shell = qs(SELECTORS.regionModalShell);
 
         if (shell) {
+            bindRegionModalFocusGuard(shell);
+
             shell.addEventListener('hide.bs.modal', function (event) {
                 if (regionState.loading) {
                     event.preventDefault();
                     return false;
                 }
 
+                releaseRegionModalFocus(shell);
                 return true;
             });
 

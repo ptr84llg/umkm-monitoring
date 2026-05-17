@@ -45,7 +45,6 @@
 
                 <button type="button"
                         class="btn-close landing-region-modal-close"
-                        data-bs-dismiss="modal"
                         data-region-modal-close
                         aria-label="Tutup pilihan wilayah"></button>
             </div>
@@ -100,7 +99,6 @@
             <div class="modal-footer landing-region-modal-actions">
                 <button type="button"
                         class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
                         data-region-modal-close>{{ $cancelLabel }}</button>
 
                 <button type="button"
