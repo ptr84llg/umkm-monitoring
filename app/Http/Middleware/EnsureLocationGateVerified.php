@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class EnsureLocationGateVerified
 {
@@ -54,7 +55,21 @@ class EnsureLocationGateVerified
 
         $expiresAt = $session['expires_at'] ?? null;
 
-        if (! $expiresAt || Carbon::parse($expiresAt)->isPast()) {
+        if (! $expiresAt) {
+            $request->session()->forget($this->sessionKey());
+
+            return false;
+        }
+
+        try {
+            $expiresAt = Carbon::parse($expiresAt);
+        } catch (Throwable) {
+            $request->session()->forget($this->sessionKey());
+
+            return false;
+        }
+
+        if ($expiresAt->isPast()) {
             $request->session()->forget($this->sessionKey());
 
             return false;

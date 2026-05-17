@@ -29,7 +29,7 @@ class LocationGateController extends Controller
             'position' => ['required', 'array'],
             'position.latitude' => ['required', 'numeric', 'between:-90,90'],
             'position.longitude' => ['required', 'numeric', 'between:-180,180'],
-            'position.accuracy' => ['nullable', 'numeric', 'min:0'],
+            'position.accuracy' => ['required', 'numeric', 'min:0'],
             'position.timestamp' => ['nullable', 'numeric'],
         ]);
 

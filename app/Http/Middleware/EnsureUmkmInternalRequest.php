@@ -11,14 +11,20 @@ class EnsureUmkmInternalRequest
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $header = (string) $request->headers->get('X-UMKM-Request', '');
+        $umkmRequestHeader = (string) $request->headers->get('X-UMKM-Request', '');
+        $requestedWith = strtolower((string) $request->headers->get('X-Requested-With', ''));
+        $accept = strtolower((string) $request->headers->get('Accept', ''));
 
-        if ($header !== 'internal') {
+        $isInternal = $umkmRequestHeader === 'internal';
+        $isXmlHttpRequest = $requestedWith === 'xmlhttprequest';
+        $expectsJson = str_contains($accept, 'application/json') || $request->expectsJson();
+
+        if (! $isInternal || ! $isXmlHttpRequest || ! $expectsJson) {
             SecurityEventLog::query()->create([
                 'actor_user_id' => $request->user()?->id,
                 'event_type' => 'blocked_non_internal_request',
                 'severity' => 'high',
-                'event_detail' => 'Blocked request because X-UMKM-Request header was missing or invalid.',
+                'event_detail' => 'Blocked request because internal AJAX headers were missing or invalid.',
                 'ip_address' => $request->ip(),
                 'event_time' => now(),
             ]);
