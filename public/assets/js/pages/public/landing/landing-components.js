@@ -31,7 +31,7 @@
             Landing.initRegionModal?.();
 
             window.setTimeout(function () {
-                Landing.applyRegionSelection?.(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
+                Landing.loadPreviewData?.(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
             }, 60);
 
             return;
@@ -42,10 +42,7 @@
             Landing.initChartResponsiveEvents?.();
 
             window.setTimeout(function () {
-                const selection = Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION);
-                const preview = Landing.buildPreview ? Landing.buildPreview(selection) : { total: 0, active: 0, validation: 0 };
-
-                Landing.renderChart?.(selection, preview);
+                Landing.loadPreviewData?.(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
             }, 60);
 
             return;

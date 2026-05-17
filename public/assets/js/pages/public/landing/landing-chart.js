@@ -72,93 +72,32 @@
         };
     }
 
-    Landing.makeChartPayload = function (selection, preview) {
-        const mode = Landing.DEFAULT_CHART_MODES[Landing.activeMode] ? Landing.activeMode : 'kinerja';
-        const seed = Landing.hash((selection.village?.code || selection.district?.code || selection.city?.code || '16.73') + mode);
-        const label = Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau');
-
-        if (preview && preview.empty) {
-            return {
-                title: 'Data UMKM ' + label + ' belum tersedia',
-                subtitle: 'Belum ada data agregat publik untuk wilayah yang dipilih',
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
-                unitLabel: 'Jumlah UMKM',
-                percentLabel: 'Persentase (%)',
-                unitData: [0, 0, 0, 0, 0, 0, 0],
-                percentData: [0, 0, 0, 0, 0, 0, 0],
-                summaryOne: 'Wilayah tanpa data agregat',
-                summaryTwo: 'Grafik belum tersedia',
-                summaryThree: 'Pilih wilayah lain'
-            };
-        }
-
-        if (mode === 'wilayah') {
-            const source = selection.scope === 'city' ? Landing.regionState.districts : Landing.regionState.villages;
-            const labels = source.length
-                ? source.slice(0, 8).map(function (item) { return Landing.cleanName(item.name || 'Wilayah'); })
-                : Landing.DEFAULT_CHART_MODES.wilayah.labels;
-
-            return {
-                title: 'Sebaran UMKM ' + label,
-                subtitle: 'Preview distribusi agregat berdasarkan wilayah terpilih',
-                labels: labels,
-                unitLabel: 'Jumlah UMKM',
-                percentLabel: 'Konsentrasi (%)',
-                unitData: labels.map(function (_, index) { return 18 + ((seed + index * 11) % 56); }),
-                percentData: labels.map(function (_, index) { return 8 + ((seed + index * 7) % 18); }),
-                summaryOne: selection.scope === 'city' ? 'Kecamatan terpantau' : 'Kelurahan terpantau',
-                summaryTwo: 'Jumlah dan konsentrasi wilayah',
-                summaryThree: 'Sebaran ' + label
-            };
-        }
-
-        if (mode === 'legalitas') {
-            return {
-                title: 'Legalitas dan Kelengkapan Data ' + label,
-                subtitle: 'Preview rasio legalitas dan kelengkapan data UMKM',
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
-                unitLabel: 'UMKM berlegalitas',
-                percentLabel: 'Kelengkapan data (%)',
-                unitData: [44, 51, 58, 66, 74, 82, 91].map(function (value) {
-                    return Math.max(4, Math.round(value * (preview.total / 180)));
-                }),
-                percentData: [46, 52, 58, 63, 69, 74, 79].map(function (value) {
-                    return Math.min(92, value + (seed % 7));
-                }),
-                summaryOne: 'Legalitas, profil, lokasi',
-                summaryTwo: 'Jumlah dan rasio kelengkapan',
-                summaryThree: 'Kesiapan data monitoring'
-            };
-        }
-
+    function normalizeChartPayload(chart) {
         return {
-            title: 'Kinerja UMKM ' + label,
-            subtitle: 'Preview agregat perkembangan UMKM aktif pada wilayah terpilih',
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
-            unitLabel: 'UMKM aktif',
-            percentLabel: 'Pertumbuhan kinerja (%)',
-            unitData: [62, 69, 76, 84, 93, 101, 110].map(function (value) {
-                return Math.max(3, Math.round(value * (preview.active / 160)));
-            }),
-            percentData: [2.4, 3.1, 3.8, 4.5, 5.1, 5.7, 6.2].map(function (value) {
-                return Number((value + ((seed % 5) / 10)).toFixed(1));
-            }),
-            summaryOne: label + ', bidang usaha, periode',
-            summaryTwo: 'Jumlah UMKM dan persentase pertumbuhan',
-            summaryThree: 'Monitoring kinerja wilayah'
+            title: chart?.title || 'Preview data UMKM',
+            subtitle: chart?.subtitle || 'Ringkasan data dalam periode pemantauan',
+            labels: Array.isArray(chart?.labels) ? chart.labels : [],
+            unitLabel: chart?.unit_label || 'Jumlah UMKM',
+            percentLabel: chart?.percent_label || 'Persentase (%)',
+            unitData: Array.isArray(chart?.unit_data) ? chart.unit_data : [],
+            percentData: Array.isArray(chart?.percent_data) ? chart.percent_data : [],
+            summaryOne: chart?.summary_one || 'Wilayah, bidang usaha, periode',
+            summaryTwo: chart?.summary_two || 'Grafik, indikator, dan ringkasan',
+            summaryThree: chart?.summary_three || 'Perkembangan UMKM'
         };
-    };
+    }
 
-    Landing.renderChart = function (selection, preview) {
+    Landing.renderChart = function (selection, previewResponse) {
         const canvas = Landing.qs(S.chartCanvas);
-        const payload = Landing.makeChartPayload(selection, preview);
+        const payload = normalizeChartPayload(previewResponse?.chart);
+        const label = Landing.cleanRegionLabel(selection?.label || previewResponse?.selection?.label || 'Kota Lubuklinggau');
 
         Landing.setText(S.mainChartTitle, payload.title);
         Landing.setText(S.mainChartSubtitle, payload.subtitle);
         Landing.setText(S.chartSummaryOne, payload.summaryOne);
         Landing.setText(S.chartSummaryTwo, payload.summaryTwo);
         Landing.setText(S.chartSummaryThree, payload.summaryThree);
-        Landing.setText(S.publicChartRegion, Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau'));
+        Landing.setText(S.publicChartRegion, label);
 
         if (!window.Chart || !canvas) {
             return;
@@ -312,18 +251,11 @@
 
                 tab.classList.add('active');
 
-                const selection = Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION);
-                const preview = Landing.buildPreview ? Landing.buildPreview(selection) : { total: 0, active: 0, validation: 0 };
-
-                Landing.renderChart(selection, preview);
-                Landing.applyMobileChartMode();
+                Landing.loadPreviewData?.(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
             });
         });
 
-        const selection = Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION);
-        const preview = Landing.buildPreview ? Landing.buildPreview(selection) : { total: 0, active: 0, validation: 0 };
-
-        Landing.renderChart(selection, preview);
+        Landing.loadPreviewData?.(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
     };
 
     Landing.initChartResponsiveEvents = function () {

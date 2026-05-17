@@ -12,7 +12,7 @@
 
         window.setTimeout(function () {
             if (Landing.qs('[data-public-metric="total"]')) {
-                Landing.applyRegionSelection?.(Object.assign({}, Landing.DEFAULT_SELECTION));
+                Landing.loadPreviewData?.(Object.assign({}, Landing.DEFAULT_SELECTION));
             }
         }, 180);
     }

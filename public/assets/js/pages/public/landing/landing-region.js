@@ -369,12 +369,49 @@
         };
     };
 
-    Landing.buildPreview = function (selection) {
-        const key = selection.village?.code || selection.district?.code || selection.city?.code || '16.73';
-        const seed = Landing.hash(key + selection.scope);
+    function previewQuery(selection) {
+        const query = new URLSearchParams();
 
-        if (selection.hasPublicUmkmData === false) {
-            return {
+        query.set('scope', selection.scope || 'city');
+        query.set('mode', Landing.activeMode || 'kinerja');
+        query.set('label', Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau'));
+
+        if (selection.province?.code) {
+            query.set('province_code', selection.province.code);
+        }
+
+        if (selection.city?.code) {
+            query.set('city_code', selection.city.code);
+        }
+
+        if (selection.district?.code) {
+            query.set('district_code', selection.district.code);
+        }
+
+        if (selection.village?.code) {
+            query.set('village_code', selection.village.code);
+        }
+
+        if (selection.hasPublicUmkmData === true) {
+            query.set('has_public_umkm_data', 'true');
+        } else if (selection.hasPublicUmkmData === false) {
+            query.set('has_public_umkm_data', 'false');
+        } else {
+            query.set('has_public_umkm_data', 'unknown');
+        }
+
+        return query.toString();
+    }
+
+    function fallbackPreviewResponse(selection) {
+        return {
+            selection: {
+                scope: selection.scope || 'city',
+                label: Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau'),
+                region_code: selection.village?.code || selection.district?.code || selection.city?.code || '16.73',
+                has_public_umkm_data: selection.hasPublicUmkmData ?? null
+            },
+            preview: {
                 empty: true,
                 total: 0,
                 active: 0,
@@ -382,62 +419,65 @@
                 watched: 'Belum tersedia',
                 dominant: 'Belum tersedia',
                 fields: [],
-                message: 'Belum ada data agregat UMKM untuk wilayah ini.'
-            };
-        }
-
-        if (selection.scope === 'city') {
-            return {
-                total: 1248,
-                active: 1086,
-                validation: 36,
-                watched: (Landing.regionState.districts.length || 8) + ' Kecamatan',
-                dominant: 'Perdagangan',
-                fields: [
-                    { name: 'Perdagangan', percent: 82 },
-                    { name: 'Kuliner', percent: 74 },
-                    { name: 'Jasa', percent: 64 }
-                ]
-            };
-        }
-
-        if (selection.scope === 'district') {
-            const total = 110 + (seed % 115);
-            const active = Math.round(total * (0.81 + ((seed % 8) / 100)));
-            const validation = 3 + (seed % 7);
-            const dominant = ['Perdagangan', 'Kuliner', 'Jasa', 'Industri Rumah Tangga'][seed % 4];
-
-            return {
-                total: total,
-                active: active,
-                validation: validation,
-                watched: (Landing.regionState.villages.length || 'Semua') + ' Kelurahan',
-                dominant: dominant,
-                fields: [
-                    { name: dominant, percent: 76 + (seed % 12) },
-                    { name: dominant === 'Kuliner' ? 'Perdagangan' : 'Kuliner', percent: 66 + (seed % 10) },
-                    { name: 'Jasa', percent: 56 + (seed % 9) }
-                ]
-            };
-        }
-
-        const total = 18 + (seed % 54);
-        const active = Math.round(total * (0.78 + ((seed % 10) / 100)));
-        const validation = 1 + (seed % 4);
-        const dominant = ['Perdagangan', 'Kuliner', 'Jasa'][seed % 3];
-
-        return {
-            total: total,
-            active: active,
-            validation: validation,
-            watched: '1 Kelurahan',
-            dominant: dominant,
-            fields: [
-                { name: dominant, percent: 70 + (seed % 16) },
-                { name: dominant === 'Perdagangan' ? 'Kuliner' : 'Perdagangan', percent: 58 + (seed % 14) },
-                { name: 'Jasa', percent: 48 + (seed % 12) }
-            ]
+                areas: [],
+                message: 'Preview publik belum dapat dimuat dari server.'
+            },
+            chart: {
+                title: 'Preview publik belum tersedia',
+                subtitle: 'Data agregat belum dapat dimuat dari server.',
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                unit_label: 'Jumlah UMKM',
+                percent_label: 'Persentase (%)',
+                unit_data: [0, 0, 0, 0, 0, 0, 0],
+                percent_data: [0, 0, 0, 0, 0, 0, 0],
+                summary_one: 'Server preview belum tersedia',
+                summary_two: 'Data belum dapat dimuat',
+                summary_three: 'Coba muat ulang halaman'
+            }
         };
+    }
+
+    Landing.loadPreviewData = async function (selection) {
+        const safeSelection = Object.assign({}, Landing.DEFAULT_SELECTION, selection || {});
+        const label = Landing.cleanRegionLabel(safeSelection.label || 'Kota Lubuklinggau');
+
+        safeSelection.label = label;
+        Landing.regionState.applied = safeSelection;
+        Landing.regionState.previewLoading = true;
+
+        if (!Landing.ajaxReady()) {
+            const fallback = fallbackPreviewResponse(safeSelection);
+            Landing.applyPreviewResponse(safeSelection, fallback);
+            Landing.regionState.previewLoading = false;
+            return fallback;
+        }
+
+        try {
+            const result = await window.UMKM.ajax.get(Landing.API.previewData + '?' + previewQuery(safeSelection), {
+                headers: {
+                    'X-UMKM-Preview': 'landing-public-safe'
+                }
+            });
+
+            const payload = Landing.unwrap(result);
+
+            if (!Landing.resultOk(result) || !payload || payload.ok !== true || !payload.data) {
+                throw new Error(payload && payload.message ? payload.message : 'Preview publik tidak dapat dimuat.');
+            }
+
+            Landing.applyPreviewResponse(safeSelection, payload.data);
+            return payload.data;
+        } catch (error) {
+            Landing.log('warn', 'landing preview data failed', {
+                message: error.message || 'preview failed'
+            });
+
+            const fallback = fallbackPreviewResponse(safeSelection);
+            Landing.applyPreviewResponse(safeSelection, fallback);
+            return fallback;
+        } finally {
+            Landing.regionState.previewLoading = false;
+        }
     };
 
     function updateMetric(selector, value) {
@@ -541,14 +581,15 @@
 
     function renderAreaStats(selection, preview) {
         const container = Landing.qs(S.publicAreaList);
+        const areas = Array.isArray(preview?.areas) ? preview.areas : [];
 
-        if (!container || !preview || !Array.isArray(preview.fields)) {
+        if (!container) {
             return;
         }
 
         container.innerHTML = '';
 
-        if (preview.empty || !preview.fields.length) {
+        if (preview?.empty || !areas.length) {
             const empty = document.createElement('div');
             empty.className = 'preview-empty-inline';
             empty.innerHTML = '<strong>Data wilayah belum tersedia</strong><small>Belum ada ringkasan UMKM publik untuk wilayah yang dipilih.</small>';
@@ -556,21 +597,15 @@
             return;
         }
 
-        const areaNames = pickAreaNames(selection);
-        const distributions = areaNames.length === 1 ? [1] : [0.42, 0.34, 0.24];
-
-        areaNames.slice(0, 3).forEach(function (area, index) {
-            const field = preview.fields[index % preview.fields.length] || preview.fields[0];
-            const percent = Math.max(1, Math.min(100, Math.round(Number(field.percent || 0))));
-            const count = Math.max(1, Math.round(Number(preview.total || 0) * (distributions[index] || 0.2)));
+        areas.slice(0, 3).forEach(function (area) {
             const row = document.createElement('div');
             const name = document.createElement('span');
             const value = document.createElement('strong');
             const sector = document.createElement('small');
 
-            name.textContent = area.name;
-            value.textContent = Landing.formatNumber(count) + ' UMKM';
-            sector.textContent = field.name + ' ' + percent + '%';
+            name.textContent = area.name || 'Wilayah';
+            value.textContent = Landing.formatNumber(area.count || 0) + ' UMKM';
+            sector.textContent = (area.sector || 'Indikator') + ' ' + Math.max(0, Math.min(100, Number(area.percent || 0))) + '%';
 
             row.appendChild(name);
             row.appendChild(value);
@@ -600,41 +635,47 @@
         }
     }
 
-    Landing.applyRegionSelection = function (selection) {
+    Landing.applyPreviewResponse = function (selection, response) {
         const safeSelection = Object.assign({}, Landing.DEFAULT_SELECTION, selection || {});
-        const preview = Landing.buildPreview(safeSelection);
-        const label = Landing.cleanRegionLabel(safeSelection.label || 'Kota Lubuklinggau');
+        const preview = response?.preview || {};
+        const label = Landing.cleanRegionLabel(response?.selection?.label || safeSelection.label || 'Kota Lubuklinggau');
 
         safeSelection.label = label;
         Landing.regionState.applied = safeSelection;
+        Landing.regionState.preview = response;
 
         Landing.setText(S.publicRegionSource, label);
         Landing.setText(S.publicChartRegion, label);
         Landing.setText(S.regionModalCurrent, label);
-        Landing.setText(S.publicWatchedLabel, preview.watched);
-        Landing.setText(S.publicDominantLabel, preview.dominant);
+        Landing.setText(S.publicWatchedLabel, preview.watched || 'Belum tersedia');
+        Landing.setText(S.publicDominantLabel, preview.dominant || 'Belum tersedia');
         togglePreviewEmptyState(preview, label);
 
-        updateMetric('[data-public-metric="total"]', preview.total);
-        updateMetric('[data-public-metric="active"]', preview.active);
-        updateMetric('[data-public-metric="validation"]', preview.validation);
+        updateMetric('[data-public-metric="total"]', preview.total || 0);
+        updateMetric('[data-public-metric="active"]', preview.active || 0);
+        updateMetric('[data-public-metric="validation"]', preview.validation || 0);
 
         renderIndicatorDetails(preview);
         renderAreaStats(safeSelection, preview);
 
         if (Landing.renderChart) {
-            Landing.renderChart(safeSelection, preview);
+            Landing.renderChart(safeSelection, response);
         }
 
         Landing.emit('umkm:landing-region:changed', {
             selection: safeSelection,
-            preview: preview
+            preview: preview,
+            response: response
         });
 
-        Landing.log('info', 'landing region preview applied', {
+        Landing.log('info', 'landing region preview applied from backend', {
             label: label,
             scope: safeSelection.scope
         });
+    };
+
+    Landing.applyRegionSelection = function (selection) {
+        return Landing.loadPreviewData(selection);
     };
 
     Landing.initRegionModal = function () {

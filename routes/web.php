@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
+use App\Http\Controllers\Api\Public\LandingPreviewController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
@@ -47,6 +48,22 @@ Route::prefix('api/public/landing-regions')
 
         Route::get('/children', [LandingRegionController::class, 'children'])
             ->name('landing.regions.children');
+    });
+
+
+Route::prefix('api/public/landing-preview')
+    ->name('public.landing-preview.')
+    ->middleware([
+        'throttle:internal-sensitive',
+        'validate.umkm.internal.request',
+        'validate.internal.origin',
+        'validate.internal.referer',
+        'validate.fetch.metadata',
+        'log.internal.api',
+    ])
+    ->group(function () {
+        Route::get('/data', [LandingPreviewController::class, 'data'])
+            ->name('data');
     });
 
 Route::prefix('api/public/location-gate')
