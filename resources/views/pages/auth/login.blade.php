@@ -3,8 +3,8 @@
 @php
     $assetProfile = 'base';
     $assetModules = ['loader', 'location', 'session'];
-    $pageCss = ['auth-login.css'];
-    $pageJs = ['auth-login.js'];
+    $pageCss = ['auth/login.css'];
+    $pageJs = ['auth/login.js'];
 @endphp
 
 @section('title', 'Login Internal | Monitoring UMKM')
@@ -190,3 +190,4 @@
     </div>
 </section>
 @endsection
+
