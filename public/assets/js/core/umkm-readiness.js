@@ -6,6 +6,7 @@
     const UMKM = window.UMKM;
     const FINAL_STATUSES = ['success', 'limited', 'failed', 'skipped'];
     const RING_CIRCUMFERENCE = 314.159;
+    const COMPONENT_SELECTOR = '[data-umkm-component]';
 
     const STATUS_META = {
         pending: { icon: '•', label: 'menunggu' },
@@ -346,6 +347,42 @@
         );
     }
 
+    function componentReadinessLineExists(lines) {
+        return lines.some(function (line) {
+            return line.check === 'components' || line.key === 'component-placeholders';
+        });
+    }
+
+    function componentAwarenessEnabled(loader) {
+        return loader.dataset.umkmReadinessComponentAware !== 'false';
+    }
+
+    function componentElements(root) {
+        return qsa(COMPONENT_SELECTOR, root || document);
+    }
+
+    function componentLoaderReady() {
+        return moduleReady('componentLoader') && Boolean(UMKM.componentLoader);
+    }
+
+    function appendComponentReadinessLine(loader, lines) {
+        if (!componentAwarenessEnabled(loader) || componentReadinessLineExists(lines)) {
+            return lines;
+        }
+
+        const nextLines = lines.slice();
+
+        nextLines.push({
+            key: 'component-placeholders',
+            label: 'Wadah komponen AJAX',
+            description: 'Memeriksa placeholder komponen yang dapat dimuat melalui request internal.',
+            check: 'components',
+            required: false
+        });
+
+        return nextLines;
+    }
+
     function evaluateLine(line) {
         const check = line.check || 'manual';
 
@@ -412,6 +449,26 @@
             };
         }
 
+        if (check === 'components') {
+            const placeholders = componentElements();
+            const total = placeholders.length;
+            const loaderReady = componentLoaderReady();
+
+            if (total <= 0) {
+                return {
+                    status: 'skipped',
+                    message: 'Belum ada placeholder komponen AJAX pada halaman ini.'
+                };
+            }
+
+            return {
+                status: loaderReady ? 'success' : (line.required === false ? 'limited' : 'failed'),
+                message: loaderReady
+                    ? total + ' placeholder komponen siap diproses melalui component loader.'
+                    : 'Placeholder komponen terdeteksi, tetapi component loader belum tersedia.'
+            };
+        }
+
         if (check === 'permission') {
             return {
                 status: 'limited',
@@ -445,6 +502,8 @@
         const hasLanding = Boolean(qs('.umkm-landing'));
         const hasLocationModule = moduleReady('location');
         const locationGatedLinks = qsa('[data-location-gated]');
+        const componentPlaceholders = componentElements();
+        const hasComponentLoader = componentLoaderReady();
 
         results.push(makeSmokeResult(
             'loader-hidden',
@@ -487,6 +546,15 @@
                 locationGatedLinks.length > 0,
                 'warning',
                 'Elemen data-location-gated harus tetap ada agar tombol masuk tidak melewati location gate.'
+            ));
+        }
+
+        if (hasComponentLoader || componentPlaceholders.length > 0) {
+            results.push(makeSmokeResult(
+                'component-loader-core-ready',
+                hasComponentLoader,
+                'warning',
+                'Component loader harus tersedia sebelum placeholder komponen AJAX diproses.'
             ));
         }
 
@@ -591,6 +659,8 @@
             }, line);
         });
 
+        lines = appendComponentReadinessLine(loader, lines);
+
         if (!lines.length) {
             lines = [
                 {
@@ -686,3 +756,4 @@
 
     ready(runAll);
 })();
+

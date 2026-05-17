@@ -10,6 +10,7 @@
     'lineDelay' => 80,
     'completeDelay' => 240,
     'smokeGuard' => true,
+    'componentAware' => true,
 ])
 
 @php
@@ -53,6 +54,7 @@
     data-umkm-readiness-line-delay="{{ (int) $lineDelay }}"
     data-umkm-readiness-complete-delay="{{ (int) $completeDelay }}"
     data-umkm-readiness-smoke-guard="{{ $smokeGuard ? 'true' : 'false' }}"
+    data-umkm-readiness-component-aware="{{ $componentAware ? 'true' : 'false' }}"
     role="status"
     aria-live="polite"
 >
@@ -138,3 +140,4 @@
         </div>
     </section>
 </div>
+
