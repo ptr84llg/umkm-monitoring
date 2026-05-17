@@ -346,3 +346,66 @@ html.umkm-readiness-lock body {
         text-align: left;
     }
 }
+
+/* Core Loader 1C behavior polish */
+.umkm-readiness-loader {
+    transform: translateZ(0);
+}
+
+.umkm-readiness-loader.is-complete .umkm-readiness-card {
+    transform: translateY(-2px);
+    transition: transform .28s ease, opacity .28s ease;
+}
+
+.umkm-readiness-loader.is-hiding .umkm-readiness-card {
+    opacity: 0;
+    transform: translateY(10px) scale(.985);
+}
+
+.umkm-readiness-loader[data-umkm-readiness-state="complete"] .umkm-readiness-bar {
+    background: linear-gradient(90deg, var(--umkm-loader-success), #14b8a6);
+}
+
+.umkm-readiness-loader[data-umkm-readiness-state="complete"] .umkm-readiness-percent {
+    color: var(--umkm-loader-success);
+}
+
+.umkm-readiness-line {
+    transition:
+        border-color .22s ease,
+        background-color .22s ease,
+        transform .22s ease,
+        opacity .22s ease;
+}
+
+.umkm-readiness-line.is-running {
+    transform: translateX(2px);
+}
+
+.umkm-readiness-line.is-success,
+.umkm-readiness-line.is-limited,
+.umkm-readiness-line.is-failed,
+.umkm-readiness-line.is-skipped {
+    opacity: .98;
+}
+
+.umkm-readiness-loader[data-umkm-readiness-state="complete"] .umkm-readiness-line.is-success {
+    background: rgba(15, 118, 101, .045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .umkm-readiness-loader,
+    .umkm-readiness-loader.is-complete .umkm-readiness-card,
+    .umkm-readiness-loader.is-hiding .umkm-readiness-card,
+    .umkm-readiness-line,
+    .umkm-readiness-bar,
+    .umkm-readiness-line.is-running .umkm-readiness-line-icon,
+    .umkm-button-loading .umkm-button-loader,
+    .umkm-blocking-spinner,
+    .umkm-skeleton::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+/* End Core Loader 1C behavior polish */
+

@@ -41,12 +41,30 @@
         });
     }
 
+    function wait(ms) {
+        const duration = Math.max(0, Number(ms || 0));
+
+        if (duration <= 0) {
+            return Promise.resolve();
+        }
+
+        return new Promise(function (resolve) {
+            window.setTimeout(resolve, duration);
+        });
+    }
+
     function normalizeStatus(status) {
         return Object.prototype.hasOwnProperty.call(STATUS_META, status) ? status : 'limited';
     }
 
     function isFinal(status) {
         return FINAL_STATUSES.includes(status);
+    }
+
+    function numberFromDataset(element, key, fallback) {
+        const value = Number(element.dataset[key]);
+
+        return Number.isFinite(value) && value >= 0 ? value : fallback;
     }
 
     function decodeBase64Utf8(value) {
@@ -334,6 +352,51 @@
         };
     }
 
+    async function finishAndHide(loader, settings, startedAt, lines) {
+        const elapsed = performance.now() - startedAt;
+        const remainingMinVisible = Math.max(0, settings.minVisible - elapsed);
+
+        if (remainingMinVisible > 0) {
+            await wait(remainingMinVisible);
+        }
+
+        loader.classList.add('is-complete');
+        loader.dataset.umkmReadinessState = 'complete';
+
+        document.dispatchEvent(new CustomEvent('umkm:readiness:complete', {
+            detail: {
+                lines: lines,
+                progress: 100,
+                duration: Math.round(performance.now() - startedAt)
+            }
+        }));
+
+        if (!settings.autoHide) {
+            document.documentElement.classList.remove('umkm-readiness-lock');
+            return;
+        }
+
+        await wait(settings.completeDelay);
+        await wait(settings.hideDelay);
+
+        loader.classList.add('is-hiding');
+        loader.dataset.umkmReadinessState = 'hiding';
+
+        await wait(340);
+
+        loader.hidden = true;
+        loader.classList.remove('is-hiding');
+        document.documentElement.classList.remove('umkm-readiness-lock');
+        loader.dataset.umkmReadinessState = 'hidden';
+
+        document.dispatchEvent(new CustomEvent('umkm:readiness:hidden', {
+            detail: {
+                lines: lines,
+                progress: 100
+            }
+        }));
+    }
+
     async function run(loader, options) {
         if (!loader || loader.dataset.umkmReadinessRunning === 'true') {
             return;
@@ -341,7 +404,10 @@
 
         const settings = Object.assign({
             autoHide: true,
-            hideDelay: 260
+            hideDelay: numberFromDataset(loader, 'umkmReadinessHideDelay', 420),
+            minVisible: numberFromDataset(loader, 'umkmReadinessMinVisible', 1200),
+            lineDelay: numberFromDataset(loader, 'umkmReadinessLineDelay', 80),
+            completeDelay: numberFromDataset(loader, 'umkmReadinessCompleteDelay', 240)
         }, options || {});
 
         let lines = parseLines(loader).map(function (line, index) {
@@ -363,12 +429,22 @@
             ];
         }
 
+        const startedAt = performance.now();
+
         loader.dataset.umkmReadinessRunning = 'true';
+        loader.dataset.umkmReadinessState = 'running';
         loader.hidden = false;
+        loader.classList.remove('is-hiding', 'is-complete');
         document.documentElement.classList.add('umkm-readiness-lock');
 
         renderLines(loader, lines);
         updateProgress(loader, lines);
+
+        document.dispatchEvent(new CustomEvent('umkm:readiness:start', {
+            detail: {
+                lines: lines
+            }
+        }));
 
         for (let index = 0; index < lines.length; index += 1) {
             const line = lines[index];
@@ -390,37 +466,28 @@
             }
 
             updateProgress(loader, lines);
-            await waitFrame();
+
+            if (settings.lineDelay > 0 && index < lines.length - 1) {
+                await wait(settings.lineDelay);
+            } else {
+                await waitFrame();
+            }
         }
 
         loader.dataset.umkmReadinessRunning = 'false';
         loader.dataset.umkmReadinessComplete = 'true';
 
-        document.dispatchEvent(new CustomEvent('umkm:readiness:complete', {
-            detail: {
-                lines: lines,
-                progress: 100
-            }
-        }));
-
-        if (settings.autoHide) {
-            window.setTimeout(function () {
-                loader.classList.add('is-hiding');
-
-                window.setTimeout(function () {
-                    loader.hidden = true;
-                    loader.classList.remove('is-hiding');
-                    document.documentElement.classList.remove('umkm-readiness-lock');
-                }, 280);
-            }, settings.hideDelay);
-        }
+        await finishAndHide(loader, settings, startedAt, lines);
     }
 
     function runAll() {
         qsa('[data-umkm-readiness-loader]').forEach(function (loader) {
             run(loader, {
                 autoHide: loader.dataset.umkmReadinessAutoHide !== 'false',
-                hideDelay: Number(loader.dataset.umkmReadinessHideDelay || 260)
+                hideDelay: numberFromDataset(loader, 'umkmReadinessHideDelay', 420),
+                minVisible: numberFromDataset(loader, 'umkmReadinessMinVisible', 1200),
+                lineDelay: numberFromDataset(loader, 'umkmReadinessLineDelay', 80),
+                completeDelay: numberFromDataset(loader, 'umkmReadinessCompleteDelay', 240)
             });
         });
     }
@@ -439,5 +506,3 @@
 
     ready(runAll);
 })();
-
-

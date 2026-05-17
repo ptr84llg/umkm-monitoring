@@ -5,7 +5,10 @@
     'footnote' => 'Progress 100% berarti seluruh tahapan kesiapan telah diproses. Status terbatas atau gagal tetap ditangani dengan fallback sesuai kebutuhan halaman.',
     'lines' => [],
     'autoHide' => true,
-    'hideDelay' => 260,
+    'hideDelay' => 420,
+    'minVisible' => 1200,
+    'lineDelay' => 80,
+    'completeDelay' => 240,
 ])
 
 @php
@@ -45,6 +48,9 @@
     data-umkm-readiness-lines-base64="{{ $readinessPayload }}"
     data-umkm-readiness-auto-hide="{{ $autoHide ? 'true' : 'false' }}"
     data-umkm-readiness-hide-delay="{{ (int) $hideDelay }}"
+    data-umkm-readiness-min-visible="{{ (int) $minVisible }}"
+    data-umkm-readiness-line-delay="{{ (int) $lineDelay }}"
+    data-umkm-readiness-complete-delay="{{ (int) $completeDelay }}"
     role="status"
     aria-live="polite"
 >
