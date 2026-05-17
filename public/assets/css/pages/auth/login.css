@@ -19,7 +19,7 @@ body.layout-auth {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: .34;
+    opacity: .28;
     background-image:
         linear-gradient(var(--umkm-grid-color) 1px, transparent 1px),
         linear-gradient(90deg, var(--umkm-grid-color) 1px, transparent 1px);
@@ -39,7 +39,7 @@ body.layout-auth {
     position: fixed;
     border-radius: var(--umkm-radius-pill);
     filter: blur(16px);
-    opacity: .72;
+    opacity: .68;
 }
 
 .auth-gradient-a {
@@ -62,9 +62,6 @@ body.layout-auth {
     position: relative;
     z-index: 2;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .auth-shell {
@@ -75,11 +72,7 @@ body.layout-auth {
 }
 
 .auth-brand-link {
-    display: inline-flex;
-    align-items: center;
-    gap: .85rem;
     color: var(--umkm-ink);
-    text-decoration: none;
 }
 
 .auth-brand-link:hover {
@@ -100,14 +93,8 @@ body.layout-auth {
     box-shadow: 0 14px 32px rgba(var(--umkm-primary-rgb), .24);
 }
 
-.auth-brand-text strong,
-.auth-brand-text small {
-    display: block;
-}
-
 .auth-brand-text strong {
     color: var(--umkm-ink);
-    font-size: 1.04rem;
     line-height: 1.08;
     font-weight: 900;
 }
@@ -115,16 +102,14 @@ body.layout-auth {
 .auth-brand-text small {
     margin-top: .16rem;
     color: var(--umkm-muted);
-    font-size: .82rem;
+    font-size: .86rem;
 }
 
 .auth-hero-title {
     max-width: 660px;
     color: var(--umkm-ink);
-    font-size: clamp(2rem, 3vw, 3.35rem);
-    line-height: 1.04;
+    line-height: 1.05;
     letter-spacing: -.045em;
-    font-weight: 900;
 }
 
 .auth-hero-text {
@@ -132,15 +117,17 @@ body.layout-auth {
     color: var(--umkm-muted);
     font-size: 1rem;
     line-height: 1.72;
-    text-align: justify;
-    text-justify: inter-word;
-    text-align-last: left;
+}
+
+.auth-security-list {
+    max-width: 640px;
+    border-radius: var(--umkm-radius-lg);
+    overflow: hidden;
 }
 
 .auth-security-item {
-    max-width: 640px;
-    border-color: var(--umkm-line-soft) !important;
-    background: rgba(255, 255, 255, .64);
+    border-color: var(--umkm-line-soft);
+    background: rgba(255, 255, 255, .66);
 }
 
 .auth-security-icon {
@@ -164,7 +151,7 @@ body.layout-auth {
 
 .auth-security-item strong {
     color: var(--umkm-ink);
-    font-size: .9rem;
+    font-size: .92rem;
     font-weight: 900;
     line-height: 1.2;
 }
@@ -172,7 +159,7 @@ body.layout-auth {
 .auth-security-item small {
     margin-top: .15rem;
     color: var(--umkm-muted);
-    font-size: .8rem;
+    font-size: .82rem;
     line-height: 1.42;
 }
 
@@ -214,8 +201,6 @@ body.layout-auth {
 
 .auth-card-title {
     color: var(--umkm-ink);
-    font-size: 1.55rem;
-    font-weight: 900;
     letter-spacing: -.035em;
 }
 
@@ -233,7 +218,7 @@ body.layout-auth {
 .auth-location-status {
     min-width: 0;
     color: var(--umkm-muted-strong);
-    font-size: .86rem;
+    font-size: .9rem;
     font-weight: 800;
     line-height: 1.35;
 }
@@ -264,7 +249,9 @@ body.layout-auth {
     color: var(--umkm-muted);
 }
 
-.auth-input-group .form-control {
+.auth-input-group .form-control,
+.auth-input-group .input-group-text,
+.auth-password-toggle {
     min-height: 3.15rem;
 }
 
@@ -294,7 +281,7 @@ body.layout-auth {
     background:
         radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
         rgba(var(--umkm-ink-rgb), .045);
-    font-size: .83rem;
+    font-size: .86rem;
     line-height: 1.55;
 }
 
@@ -318,10 +305,6 @@ body.layout-auth {
 }
 
 @media (max-width: 991.98px) {
-    .auth-container {
-        justify-content: flex-start;
-    }
-
     .auth-login-card {
         max-width: none;
         margin-left: 0;
@@ -329,11 +312,6 @@ body.layout-auth {
 }
 
 @media (max-width: 575.98px) {
-    .auth-container {
-        padding-left: .85rem;
-        padding-right: .85rem;
-    }
-
     .auth-shell {
         border-radius: var(--umkm-radius-lg);
     }
@@ -343,10 +321,6 @@ body.layout-auth {
         height: 40px;
         flex-basis: 40px;
         border-radius: var(--umkm-radius-sm);
-    }
-
-    .auth-hero-title {
-        font-size: clamp(2rem, 8vw, 2.75rem);
     }
 
     .auth-location-button {

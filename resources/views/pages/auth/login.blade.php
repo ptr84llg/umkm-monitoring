@@ -16,40 +16,42 @@
         <span class="auth-gradient auth-gradient-b"></span>
     </div>
 
-    <div class="container auth-container py-4 py-lg-5">
-        <div class="card auth-shell border-0">
+    <div class="container py-4 py-lg-5 auth-container">
+        <div class="card border-0 auth-shell">
             <div class="card-body p-4 p-lg-5">
-                <div class="row align-items-center justify-content-between g-4 g-xl-5">
+                <div class="row align-items-center g-4 g-xl-5">
                     <div class="col-12 col-lg-6">
-                        <a href="{{ url('/') }}" class="auth-brand-link mb-4" aria-label="Kembali ke Beranda Monitoring UMKM">
+                        <a href="{{ url('/') }}" class="d-inline-flex align-items-center gap-3 text-decoration-none auth-brand-link mb-4" aria-label="Kembali ke Beranda Monitoring UMKM">
                             <span class="auth-brand-mark">MU</span>
                             <span class="auth-brand-text">
-                                <strong>Monitoring UMKM</strong>
-                                <small>Visual Analitik Interaktif</small>
+                                <strong class="d-block">Monitoring UMKM</strong>
+                                <small class="d-block">Visual Analitik Interaktif</small>
                             </span>
                         </a>
 
-                        <div class="auth-hero-copy">
+                        <div class="mb-4">
                             <span class="umkm-kicker">Akses Internal Terbatas</span>
-                            <h1 class="auth-hero-title mt-3 mb-3">Masuk ke Sistem Monitoring UMKM</h1>
-                            <p class="auth-hero-text mb-0">
+                            <h1 class="display-5 fw-bold auth-hero-title mt-3 mb-3">
+                                Masuk ke Sistem Monitoring UMKM
+                            </h1>
+                            <p class="lead auth-hero-text mb-0">
                                 Akses ini digunakan untuk pengelolaan data, validasi, pemantauan indikator,
                                 visual analitik, dan dukungan pengambilan keputusan UMKM sesuai kewenangan pengguna.
                             </p>
                         </div>
 
-                        <ul class="auth-security-list list-unstyled d-grid gap-2 mt-4 mb-0">
-                            <li class="auth-security-item d-flex align-items-start gap-3 rounded-4 border p-3">
+                        <div class="list-group auth-security-list mb-3">
+                            <div class="list-group-item d-flex align-items-start gap-3 auth-security-item">
                                 <span class="auth-security-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 4.05-2.45 7.85-6 8.9C8.45 18.85 6 15.05 6 11V6.45l6-2.25Zm3.7 5.95-4.5 4.5-2.1-2.1-1.4 1.4 3.5 3.5 5.9-5.9-1.4-1.4Z"/></svg>
                                 </span>
                                 <span>
                                     <strong class="d-block">Keamanan berlapis</strong>
-                                    <small class="d-block">CSRF, validasi server, audit, dan pembatasan akses tetap dijaga.</small>
+                                    <small class="d-block">CSRF, validasi server, audit, pembatasan akses, dan session guard.</small>
                                 </span>
-                            </li>
+                            </div>
 
-                            <li class="auth-security-item d-flex align-items-start gap-3 rounded-4 border p-3">
+                            <div class="list-group-item d-flex align-items-start gap-3 auth-security-item">
                                 <span class="auth-security-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
                                 </span>
@@ -57,20 +59,10 @@
                                     <strong class="d-block">Pemeriksaan lokasi</strong>
                                     <small class="d-block">Form login aktif setelah perangkat memberi akses lokasi.</small>
                                 </span>
-                            </li>
+                            </div>
+                        </div>
 
-                            <li class="auth-security-item d-flex align-items-start gap-3 rounded-4 border p-3">
-                                <span class="auth-security-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4Zm0 4h16v12H4V8Zm2 2v8h12v-8H6Zm2 2h8v2H8v-2Zm0 3h5v2H8v-2Z"/></svg>
-                                </span>
-                                <span>
-                                    <strong class="d-block">Aktivitas tercatat</strong>
-                                    <small class="d-block">Aktivitas login berhasil dan gagal disiapkan untuk audit sistem.</small>
-                                </span>
-                            </li>
-                        </ul>
-
-                        <div class="auth-integrity-strip d-flex flex-wrap gap-2 mt-3">
+                        <div class="d-flex flex-wrap gap-2 auth-integrity-strip">
                             <span>CSRF</span>
                             <span>Location Gate</span>
                             <span>Audit Log</span>
@@ -78,19 +70,19 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-lg-5">
-                        <div class="card auth-login-card border-0">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                    <div class="col-12 col-lg-6 ms-lg-auto">
+                        <div class="card border-0 shadow-sm auth-login-card">
+                            <div class="card-body p-4 p-xl-5">
+                                <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                     <div>
                                         <span class="auth-card-eyebrow">Login Internal</span>
-                                        <h2 class="auth-card-title mt-2 mb-0">Masuk ke Akun</h2>
+                                        <h2 class="h3 fw-bold auth-card-title mt-2 mb-0">Masuk ke Akun</h2>
                                     </div>
                                     <span class="badge rounded-pill auth-card-badge">Secure</span>
                                 </div>
 
-                                <div class="alert alert-primary auth-location-panel d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3" data-auth-location-panel>
-                                    <div class="auth-location-status d-flex align-items-center gap-2" data-auth-location-status="checking">
+                                <div class="alert alert-primary d-flex align-items-center justify-content-between gap-3 flex-wrap auth-location-panel" data-auth-location-panel>
+                                    <div class="d-flex align-items-center gap-2 auth-location-status" data-auth-location-status="checking">
                                         <span class="auth-location-dot" aria-hidden="true"></span>
                                         <span data-auth-location-text>Memeriksa kesiapan lokasi perangkat...</span>
                                     </div>
@@ -174,7 +166,7 @@
                                         <span class="auth-submit-text">Masuk ke Sistem</span>
                                     </button>
 
-                                    <div class="auth-form-note mt-3 rounded-4 p-3">
+                                    <div class="rounded-4 p-3 mt-3 auth-form-note">
                                         <strong>Catatan keamanan:</strong>
                                         jangan membagikan email, password, atau kode verifikasi kepada pihak lain.
                                     </div>
@@ -186,7 +178,7 @@
             </div>
         </div>
 
-        <div class="auth-footer-note d-flex align-items-center justify-content-center gap-2 mt-3">
+        <div class="d-flex align-items-center justify-content-center gap-2 mt-3 auth-footer-note">
             <a href="{{ url('/') }}">Kembali ke Beranda</a>
             <span>•</span>
             <span>Monitoring UMKM</span>
