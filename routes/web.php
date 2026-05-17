@@ -23,6 +23,15 @@ Route::prefix('api/public/landing-components')
     ->group(function () {
         Route::get('/hero-preview-board', [LandingComponentController::class, 'heroPreviewBoard'])
             ->name('hero-preview-board');
+
+        Route::get('/dashboard-preview', [LandingComponentController::class, 'dashboardPreview'])
+            ->name('dashboard-preview');
+
+        Route::get('/summary-section', [LandingComponentController::class, 'summarySection'])
+            ->name('summary-section');
+
+        Route::get('/cta-section', [LandingComponentController::class, 'ctaSection'])
+            ->name('cta-section');
     });
 Route::prefix('api/public/landing-regions')
     ->middleware([
