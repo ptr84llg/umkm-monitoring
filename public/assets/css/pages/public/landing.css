@@ -21,7 +21,7 @@ body.is-region-modal-open {
     position: relative;
     min-height: 100vh;
     overflow-x: hidden;
-    padding-top: 92px;
+    padding-top: 68px;
     background: var(--umkm-page-gradient);
 }
 
@@ -50,9 +50,8 @@ body.is-region-modal-open {
 
 .umkm-landing p,
 .layout-public .umkm-public-footer p {
-    text-align: justify;
-    text-justify: inter-word;
-    text-align-last: left;
+    text-align: left;
+    text-align-last: auto;
 }
 
 .landing-main {
@@ -137,8 +136,9 @@ body.is-region-modal-open {
 
 /* Header */
 .landing-header {
+    padding-block: .45rem;
     z-index: 70;
-    min-height: 76px;
+    min-height: 64px;
     border-bottom: 1px solid var(--umkm-line-soft);
     background: rgba(255, 255, 255, .82);
     backdrop-filter: blur(var(--umkm-glass-blur));
@@ -283,6 +283,27 @@ body.is-region-modal-open {
     color: var(--umkm-ink);
 }
 
+
+/* Header and hero spacing guard */
+@media (max-width: 1199.98px) {
+    .umkm-landing {
+        padding-top: 66px;
+    }
+
+    .hero-section {
+        padding-top: 1.15rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-landing {
+        padding-top: 64px;
+    }
+
+    .hero-section {
+        padding-top: .9rem;
+    }
+}
 /* Location gate link visibility */
 html:not([data-location-gate="granted"]) [data-location-gated] {
     display: none !important;
@@ -436,7 +457,7 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
 }
 /* Hero */
 .hero-section {
-    padding: 38px 0 76px;
+    padding: clamp(1.15rem, 2.2vw, 1.8rem) 0 clamp(3rem, 5vw, 4.5rem);
 }
 
 .hero-shell {

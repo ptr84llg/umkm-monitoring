@@ -369,7 +369,7 @@
             <div class="container">
                 <div class="card border-0 hero-shell">
                     <div class="card-body p-4 p-xl-5">
-                        <div class="row g-4 g-xl-5">
+                        <div class="row align-items-xl-center g-4 g-xl-5">
                             <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
                                 <div class="hero-copy reveal">
                                     <span class="landing-pill">
