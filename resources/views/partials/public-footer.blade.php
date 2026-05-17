@@ -104,18 +104,11 @@
                     </x-slot:icon>
 
                     <div class="d-grid gap-2">
-                        <x-umkm.footer-link
-                            :href="route('login')"
-                            data-location-gated
-                            data-location-gated-key="footer-login"
-                        >
-                            <x-slot:icon>
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/>
-                                </svg>
-                            </x-slot:icon>
-                            Masuk Sistem
-                        </x-umkm.footer-link>
+                        <span data-login-mount
+                              data-login-key="footer-login"
+                              data-login-label="Masuk Sistem"
+                              data-login-class="footer-link"
+                              data-login-variant="footer"></span>
 
                         <x-umkm.footer-link :href="url('/#cta')">
                             <x-slot:icon>

@@ -184,6 +184,147 @@ body.is-region-modal-open {
 
 .landing-nav-actions {
     min-width: 0;
+    flex-wrap: nowrap;
+}
+
+.landing-location-chip {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: .52rem;
+    max-width: 178px;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: var(--umkm-radius-pill);
+    padding: .34rem .68rem;
+    color: var(--umkm-primary-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-primary-soft), transparent 34%),
+        rgba(255, 255, 255, .86);
+    box-shadow: var(--umkm-shadow-xs);
+    font-weight: 850;
+    line-height: 1.1;
+    white-space: nowrap;
+    transition: transform .2s ease, border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+
+.landing-location-chip:hover,
+.landing-location-chip:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(var(--umkm-primary-rgb), .24);
+    background: #ffffff;
+    box-shadow: var(--umkm-shadow-sm);
+}
+
+.landing-location-chip-icon {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary);
+    background: var(--umkm-primary-soft);
+}
+
+.landing-location-chip-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.landing-location-chip-copy {
+    display: grid;
+    gap: .05rem;
+    min-width: 0;
+    text-align: left;
+}
+
+.landing-location-chip-copy strong,
+.landing-location-chip-copy small {
+    display: block;
+    overflow: hidden;
+    max-width: 112px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.landing-location-chip-copy strong {
+    color: currentColor;
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.landing-location-chip-copy small {
+    color: var(--umkm-muted);
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.landing-location-chip.is-checking,
+.landing-location-chip.is-prompt {
+    color: var(--umkm-accent-dark);
+    border-color: rgba(var(--umkm-accent-rgb), .22);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
+        rgba(255, 247, 237, .88);
+}
+
+.landing-location-chip.is-checking .landing-location-chip-icon,
+.landing-location-chip.is-prompt .landing-location-chip-icon {
+    color: var(--umkm-accent-dark);
+    background: var(--umkm-accent-soft);
+}
+
+.landing-location-chip.is-checking .landing-location-chip-icon svg {
+    animation: landing-location-pulse 1.1s ease-in-out infinite;
+}
+
+.landing-location-chip.is-granted {
+    color: var(--umkm-success-dark);
+    border-color: rgba(var(--umkm-success-rgb), .20);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-success-soft), transparent 34%),
+        rgba(240, 253, 244, .88);
+}
+
+.landing-location-chip.is-granted .landing-location-chip-icon {
+    color: var(--umkm-success-dark);
+    background: var(--umkm-success-soft);
+}
+
+.landing-location-chip.is-denied,
+.landing-location-chip.is-blocked,
+.landing-location-chip.is-unsupported,
+.landing-location-chip.is-error {
+    color: var(--umkm-danger-dark);
+    border-color: rgba(var(--umkm-danger-rgb), .18);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-danger-soft), transparent 34%),
+        rgba(255, 247, 247, .90);
+}
+
+.landing-location-chip.is-denied .landing-location-chip-icon,
+.landing-location-chip.is-blocked .landing-location-chip-icon,
+.landing-location-chip.is-unsupported .landing-location-chip-icon,
+.landing-location-chip.is-error .landing-location-chip-icon {
+    color: var(--umkm-danger-dark);
+    background: var(--umkm-danger-soft);
+}
+
+[data-login-mount]:empty {
+    display: none !important;
+}
+
+@keyframes landing-location-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: .82;
+    }
+
+    50% {
+        transform: scale(.82);
+        opacity: .48;
+    }
 }
 
 /* Header and hero spacing guard */
@@ -210,11 +351,6 @@ body.is-region-modal-open {
         padding-top: 1rem !important;
         padding-bottom: 1.1rem !important;
     }
-}
-
-/* Location gate link visibility */
-html:not([data-location-gate="granted"]) [data-location-gated] {
-    display: none !important;
 }
 
 /* Mobile canvas - Bootstrap Offcanvas polish */
@@ -1020,10 +1156,6 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
         linear-gradient(135deg, rgba(255, 255, 255, .97), rgba(244, 253, 250, .92));
 }
 
-html[data-location-gate="granted"] .location-gate-shell {
-    display: none !important;
-}
-
 .location-gate-head {
     display: flex;
     align-items: flex-start;
@@ -1128,6 +1260,53 @@ html[data-location-gate="granted"] .location-gate-shell {
 
 .location-gate-body {
     padding: 1.15rem 1.25rem;
+}
+
+.location-gate-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.location-gate-info-grid[hidden] {
+    display: none !important;
+}
+
+.location-info-card {
+    min-width: 0;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: var(--umkm-radius-lg);
+    padding: .86rem .95rem;
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-primary-soft), transparent 34%),
+        rgba(255, 255, 255, .82);
+    box-shadow: 0 10px 26px rgba(var(--umkm-ink-rgb), .035);
+}
+
+.location-info-card-wide {
+    grid-column: 1 / -1;
+}
+
+.location-info-card span,
+.location-info-card strong {
+    display: block;
+    min-width: 0;
+    text-align: left;
+}
+
+.location-info-card span {
+    color: var(--umkm-muted);
+    font-size: .76rem;
+    font-weight: 850;
+}
+
+.location-info-card strong {
+    overflow-wrap: anywhere;
+    margin-top: .24rem;
+    color: var(--umkm-ink);
+    font-size: .92rem;
+    font-weight: 950;
+    line-height: 1.35;
 }
 
 .location-gate-guide {
@@ -1699,11 +1878,10 @@ html[data-location-gate="checking"] .location-gate-retry {
         min-width: 44px;
         margin-left: 0;
     }
-
-    .landing-nav-actions > a {
+    .landing-nav-actions > a,
+    .landing-nav-actions > [data-login-mount] > a {
         display: none !important;
     }
-
     .landing-menu-button {
         width: 44px;
         height: 44px;
@@ -1845,6 +2023,19 @@ html[data-location-gate="checking"] .location-gate-retry {
     .landing-brand-text small {
         font-size: .78rem;
     }
+    .landing-location-chip {
+        max-width: 124px;
+        padding-inline: .46rem;
+    }
+
+    .landing-location-chip-copy strong,
+    .landing-location-chip-copy small {
+        max-width: 72px;
+    }
+
+    .landing-location-chip-copy small {
+        display: none;
+    }
 
     .landing-menu-button {
         width: 42px;
@@ -1859,14 +2050,14 @@ html[data-location-gate="checking"] .location-gate-retry {
     .cta-panel {
         border-radius: var(--umkm-radius-lg);
     }
-
     .hero-actions {
         align-items: stretch;
         flex-direction: column;
         width: 100%;
     }
 
-    .hero-actions .btn {
+    .hero-actions .btn,
+    .hero-actions [data-login-mount] > .btn {
         width: 100%;
     }
 

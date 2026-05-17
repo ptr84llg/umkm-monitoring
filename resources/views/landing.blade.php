@@ -92,7 +92,7 @@
         ],
     ]"
 />
-<div class="umkm-landing">
+<div class="umkm-landing" data-login-url="{{ route('login') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
 
@@ -124,10 +124,25 @@
 
                 <div class="col-4 col-xl-4">
                     <div class="landing-nav-actions d-flex align-items-center justify-content-end gap-2">
-                        <a class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                            <span>Masuk</span>
-                        </a>
+                        <button type="button"
+                                class="landing-location-chip is-checking"
+                                data-location-status-chip
+                                data-location-status-open
+                                aria-live="polite"
+                                aria-label="Status lokasi: proses mengecek">
+                            <span class="landing-location-chip-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
+                            </span>
+                            <span class="landing-location-chip-copy">
+                                <strong data-location-status-label>Proses mengecek</strong>
+                                <small data-location-status-hint>Lokasi</small>
+                            </span>
+                        </button>
+
+                        <span data-login-mount
+                              data-login-key="header-login"
+                              data-login-label="Masuk"
+                              data-login-class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex"></span>
 
                         <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
@@ -182,6 +197,33 @@
                 </div>
 
                 <div class="modal-body location-gate-body">
+                    <div class="location-gate-info-grid" data-location-info hidden>
+                        <div class="location-info-card">
+                            <span>Status</span>
+                            <strong data-location-info-status>Memeriksa</strong>
+                        </div>
+                        <div class="location-info-card">
+                            <span>Koordinat</span>
+                            <strong data-location-info-coordinate>Belum tersedia</strong>
+                        </div>
+                        <div class="location-info-card">
+                            <span>Akurasi</span>
+                            <strong data-location-info-accuracy>Belum tersedia</strong>
+                        </div>
+                        <div class="location-info-card">
+                            <span>Waktu Cek</span>
+                            <strong data-location-info-checked-at>Belum tersedia</strong>
+                        </div>
+                        <div class="location-info-card">
+                            <span>IP</span>
+                            <strong data-location-info-ip>Belum tersedia</strong>
+                        </div>
+                        <div class="location-info-card location-info-card-wide">
+                            <span>Perangkat</span>
+                            <strong data-location-info-device>Belum tersedia</strong>
+                        </div>
+                    </div>
+
                     <div class="location-gate-guide" data-location-guide hidden>
                         <div class="location-guide-head d-flex align-items-start gap-3">
                             <span class="location-guide-head-icon" aria-hidden="true">
@@ -397,16 +439,12 @@
                     <span>Mulai</span>
                 </a>
 
-                <a class="btn btn-primary mobile-login-link d-flex align-items-center justify-content-center gap-2"
-                   href="{{ route('login') }}"
-                   data-location-gated
-                   data-location-gated-key="mobile-login"
-                   data-menu-link>
-                    <span class="mobile-canvas-link-icon">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                    </span>
-                    <span>Masuk Sistem</span>
-                </a>
+                <span data-login-mount
+                      data-login-key="mobile-login"
+                      data-login-label="Masuk Sistem"
+                      data-login-class="btn btn-primary mobile-login-link d-flex align-items-center justify-content-center gap-2"
+                      data-login-variant="mobile"
+                      data-login-menu-link="true"></span>
             </div>
 
             <div class="alert mobile-canvas-note mt-auto mb-0" role="note">
@@ -438,10 +476,10 @@
                                     </p>
 
                                     <div class="d-flex flex-wrap gap-3 mt-4 hero-actions">
-                                        <a class="btn btn-primary btn-lg landing-main-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="hero-login">
-                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                                            <span>Masuk ke Sistem</span>
-                                        </a>
+                                        <span data-login-mount
+                                              data-login-key="hero-login"
+                                              data-login-label="Masuk ke Sistem"
+                                              data-login-class="btn btn-primary btn-lg landing-main-btn"></span>
                                         <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
                                             <span>Lihat Preview</span>
@@ -839,10 +877,10 @@
                             </div>
 
                             <div class="col-12 col-lg-10 col-xl-auto ms-xl-auto mx-lg-auto mx-xl-0">
-                                <a class="btn btn-light btn-lg cta-button w-100 w-xl-auto" href="{{ route('login') }}" data-location-gated data-location-gated-key="cta-login">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                                    <span>Masuk ke Sistem</span>
-                                </a>
+                                <span data-login-mount
+                                      data-login-key="cta-login"
+                                      data-login-label="Masuk ke Sistem"
+                                      data-login-class="btn btn-light btn-lg cta-button w-100 w-xl-auto"></span>
                             </div>
                         </div>
                     </div>

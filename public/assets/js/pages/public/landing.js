@@ -51,7 +51,18 @@
         locationGuide: '[data-location-guide]',
         locationPermissionBox: '[data-location-permission-state]',
         locationPermissionLabel: '[data-location-permission-label]',
-        locationGatedLink: '[data-location-gated]'
+        locationStatusChip: '[data-location-status-chip]',
+        locationStatusOpen: '[data-location-status-open]',
+        locationStatusLabel: '[data-location-status-label]',
+        locationStatusHint: '[data-location-status-hint]',
+        locationInfo: '[data-location-info]',
+        locationInfoStatus: '[data-location-info-status]',
+        locationInfoCoordinate: '[data-location-info-coordinate]',
+        locationInfoAccuracy: '[data-location-info-accuracy]',
+        locationInfoCheckedAt: '[data-location-info-checked-at]',
+        locationInfoIp: '[data-location-info-ip]',
+        locationInfoDevice: '[data-location-info-device]',
+        loginMount: '[data-login-mount]'
     };
 
     const API = {
@@ -1521,7 +1532,7 @@
             closeRegionModal();
         });
     }
-
+
     function setPermissionLabel(permissionState) {
         locationGateState.permission = permissionState || 'unknown';
 
@@ -1535,6 +1546,96 @@
         if (permissionLabel) {
             permissionLabel.textContent = locationGateState.permission;
         }
+    }
+
+    function getLandingRoot() {
+        return qs('.umkm-landing');
+    }
+
+    function getLoginUrl() {
+        const root = getLandingRoot();
+
+        return root && root.dataset.loginUrl ? root.dataset.loginUrl : '/login';
+    }
+
+    function getClientIp() {
+        const root = getLandingRoot();
+
+        return root && root.dataset.locationClientIp ? root.dataset.locationClientIp : 'Belum tersedia';
+    }
+
+    function getClientDevice() {
+        const root = getLandingRoot();
+        const serverAgent = root && root.dataset.locationClientUserAgent ? root.dataset.locationClientUserAgent : '';
+        const browserAgent = navigator.userAgent || '';
+
+        return browserAgent || serverAgent || 'Tidak terbaca';
+    }
+
+    function loginIconSvg() {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>';
+    }
+
+    function createLoginLink(mount) {
+        const link = document.createElement('a');
+        const label = mount.dataset.loginLabel || 'Masuk Sistem';
+        const variant = mount.dataset.loginVariant || 'default';
+        const classes = mount.dataset.loginClass || 'btn btn-primary landing-main-btn';
+
+        link.className = classes;
+        link.href = getLoginUrl();
+        link.dataset.locationCreatedLogin = 'true';
+
+        if (mount.dataset.loginKey) {
+            link.dataset.locationLoginKey = mount.dataset.loginKey;
+        }
+
+        if (mount.dataset.loginMenuLink === 'true') {
+            link.dataset.menuLink = 'true';
+        }
+
+        if (variant === 'mobile') {
+            link.innerHTML = '<span class="mobile-canvas-link-icon">' + loginIconSvg() + '</span><span>' + label + '</span>';
+            return link;
+        }
+
+        if (variant === 'footer') {
+            link.innerHTML = '<span class="footer-link-icon">' + loginIconSvg() + '</span><span>' + label + '</span>';
+            return link;
+        }
+
+        link.innerHTML = loginIconSvg() + '<span>' + label + '</span>';
+
+        return link;
+    }
+
+    function renderLoginLinks(allowed) {
+        qsa(SELECTORS.loginMount).forEach(function (mount) {
+            const existing = mount.querySelector('[data-location-created-login]');
+
+            if (!allowed) {
+                if (existing) {
+                    existing.remove();
+                }
+
+                return;
+            }
+
+            if (existing) {
+                return;
+            }
+
+            const link = createLoginLink(mount);
+
+            link.addEventListener('click', function (event) {
+                if (locationGateState.status !== 'granted') {
+                    event.preventDefault();
+                    openLocationStatusModal(true);
+                }
+            });
+
+            mount.appendChild(link);
+        });
     }
 
     function setGuideVisible(visible) {
@@ -1556,18 +1657,133 @@
         }
     }
 
+    function setInfoVisible(visible) {
+        const info = qs(SELECTORS.locationInfo);
+
+        if (info) {
+            info.hidden = !visible;
+        }
+    }
+
+    function formatCoordinate(value) {
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return null;
+        }
+
+        return number.toFixed(6);
+    }
+
+    function formatCheckedAt(value) {
+        if (!value) {
+            return 'Belum tersedia';
+        }
+
+        try {
+            return new Date(value).toLocaleString('id-ID');
+        } catch (error) {
+            return String(value);
+        }
+    }
+
+    function setLocationInfo(result, status) {
+        const locationState = result && result.state ? result.state : {};
+        const position = locationState.lastPosition || {};
+        const latitude = formatCoordinate(position.latitude);
+        const longitude = formatCoordinate(position.longitude);
+        const accuracy = Number(position.accuracy);
+        const coordinateText = latitude && longitude ? latitude + ', ' + longitude : 'Belum tersedia';
+
+        setText(SELECTORS.locationInfoStatus, status || locationGateState.status || 'unknown');
+        setText(SELECTORS.locationInfoCoordinate, coordinateText);
+        setText(SELECTORS.locationInfoAccuracy, Number.isFinite(accuracy) ? Math.round(accuracy) + ' meter' : 'Belum tersedia');
+        setText(SELECTORS.locationInfoCheckedAt, formatCheckedAt(locationState.checkedAt || locationGateState.checkedAt));
+        setText(SELECTORS.locationInfoIp, getClientIp());
+        setText(SELECTORS.locationInfoDevice, getClientDevice());
+    }
+
+    function locationCopy(status) {
+        const map = {
+            checking: {
+                label: 'Proses mengecek',
+                hint: 'Lokasi',
+                title: 'Memeriksa status lokasi',
+                message: 'Mohon tunggu, sistem sedang memastikan lokasi aktif sebelum membuka akses masuk.'
+            },
+            granted: {
+                label: 'Lokasi aktif',
+                hint: 'Klik detail',
+                title: 'Lokasi aktif',
+                message: 'Lokasi perangkat berhasil diverifikasi. Tombol masuk sistem sudah ditampilkan.'
+            },
+            prompt: {
+                label: 'Perlu izin lokasi',
+                hint: 'Klik panduan',
+                title: 'Izin lokasi diperlukan',
+                message: 'Pilih Izinkan pada permintaan lokasi browser agar akses masuk ke sistem dapat ditampilkan.'
+            },
+            denied: {
+                label: 'Lokasi ditolak',
+                hint: 'Klik panduan',
+                title: 'Izin lokasi diblokir oleh browser',
+                message: 'Website tidak dapat menampilkan ulang permintaan lokasi karena izin sudah diblokir. Ubah izin lokasi dari pengaturan situs pada browser, lalu refresh halaman.'
+            },
+            blocked: {
+                label: 'Lokasi ditolak',
+                hint: 'Klik panduan',
+                title: 'Lokasi belum aktif',
+                message: 'Aktifkan izin lokasi pada browser untuk membuka akses masuk ke sistem.'
+            },
+            unsupported: {
+                label: 'Lokasi tidak didukung',
+                hint: 'Klik info',
+                title: 'Validasi lokasi belum dapat digunakan',
+                message: 'Browser atau perangkat belum mendukung pemeriksaan izin lokasi yang dibutuhkan untuk membuka akses masuk sistem.'
+            },
+            error: {
+                label: 'Gagal cek lokasi',
+                hint: 'Klik info',
+                title: 'Validasi lokasi terganggu',
+                message: 'Pemeriksaan lokasi belum berhasil. Muat ulang halaman atau klik cek ulang lokasi.'
+            }
+        };
+
+        return map[status] || map.blocked;
+    }
+
+    function setLocationChip(status) {
+        const copy = locationCopy(status);
+        const chips = qsa(SELECTORS.locationStatusChip);
+
+        document.documentElement.setAttribute('data-location-gate', status);
+
+        chips.forEach(function (chip) {
+            chip.classList.remove('is-checking', 'is-granted', 'is-prompt', 'is-denied', 'is-blocked', 'is-unsupported', 'is-error');
+            chip.classList.add('is-' + status);
+            chip.setAttribute('aria-label', 'Status lokasi: ' + copy.label);
+        });
+
+        setText(SELECTORS.locationStatusLabel, copy.label);
+        setText(SELECTORS.locationStatusHint, copy.hint);
+    }
+
     function updateLocationState(status, result, permissionState) {
         locationGateState.status = status;
         locationGateState.permission = permissionState || locationGateState.permission || 'unknown';
         locationGateState.checkedAt = new Date().toISOString();
         locationGateState.lastResult = result || null;
 
+        setLocationChip(status);
+        setLocationInfo(result, status);
+        renderLoginLinks(status === 'granted');
+
         emit('umkm:location-gate:updated', Object.assign({}, locationGateState));
 
         log(status === 'granted' ? 'info' : 'warn', 'location gate updated', Object.assign({}, locationGateState));
     }
 
-    function setLocationNotice(status, titleText, messageText, visible, permissionState, forceVisible) {
+    function setLocationNotice(status, titleText, messageText, permissionState, result) {
         const notice = qs(SELECTORS.locationNotice);
         const noticeCard = notice ? notice.querySelector('.location-gate-card') : null;
         const title = qs(SELECTORS.locationTitle);
@@ -1582,7 +1798,8 @@
                 'is-blocked',
                 'is-unsupported',
                 'is-denied',
-                'is-prompt'
+                'is-prompt',
+                'is-error'
             );
             noticeCard.classList.add('is-' + status);
         }
@@ -1599,10 +1816,23 @@
             setPermissionLabel(permissionState);
         }
 
-        const shouldShow = Boolean(visible && (forceVisible || !locationDismissedByUser));
+        setLocationInfo(result, status);
+        setInfoVisible(status === 'granted');
+        setGuideVisible(status !== 'granted' && status !== 'checking');
+    }
+
+    function openLocationStatusModal(forceGuide) {
+        const notice = qs(SELECTORS.locationNotice);
+        const status = locationGateState.status || 'checking';
+        const copy = locationCopy(status);
+
+        setLocationNotice(status, copy.title, copy.message, locationGateState.permission, locationGateState.lastResult);
+
+        if (forceGuide && status !== 'granted') {
+            setGuideVisible(true);
+        }
 
         if (!notice) {
-            document.body.classList.toggle('is-location-gate-open', shouldShow);
             return;
         }
 
@@ -1613,39 +1843,16 @@
                 focus: true
             });
 
-            if (shouldShow) {
-                modal.show();
-            } else {
-                const instance = window.bootstrap.Modal.getInstance(notice);
-
-                if (instance) {
-                    instance.hide();
-                } else {
-                    notice.classList.remove('show');
-                    notice.style.display = 'none';
-                    notice.setAttribute('aria-hidden', 'true');
-                    notice.removeAttribute('aria-modal');
-                }
-            }
-        } else {
-            notice.hidden = !shouldShow;
-            notice.classList.toggle('show', shouldShow);
-            notice.style.display = shouldShow ? 'block' : '';
-            notice.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-
-            if (shouldShow) {
-                notice.setAttribute('aria-modal', 'true');
-            } else {
-                notice.removeAttribute('aria-modal');
-            }
+            modal.show();
+            return;
         }
 
-        document.body.classList.toggle('is-location-gate-open', shouldShow);
-    }
-
-    function showLocationGateAgain() {
-        locationDismissedByUser = false;
-        locationGateState.dismissed = false;
+        notice.hidden = false;
+        notice.classList.add('show');
+        notice.style.display = 'block';
+        notice.setAttribute('aria-modal', 'true');
+        notice.removeAttribute('aria-hidden');
+        document.body.classList.add('is-location-gate-open');
     }
 
     function closeLocationGate() {
@@ -1697,28 +1904,24 @@
     function showLocationDenied(permission) {
         setLocationNotice(
             'denied',
-            'Izin lokasi diblokir oleh browser',
-            'Website tidak dapat menampilkan ulang permintaan lokasi karena izin sudah diblokir. Ubah izin lokasi dari pengaturan situs pada browser, lalu refresh halaman.',
-            true,
+            locationCopy('denied').title,
+            locationCopy('denied').message,
             permission && permission.state ? permission.state : 'denied',
-            true
+            null
         );
 
-        setGuideVisible(false);
         updateLocationState('denied', null, 'denied');
     }
 
     function showLocationUnsupported(permission) {
         setLocationNotice(
             'unsupported',
-            'Validasi lokasi belum dapat digunakan',
-            'Browser atau perangkat belum mendukung pemeriksaan izin lokasi yang dibutuhkan untuk membuka akses masuk sistem.',
-            true,
+            locationCopy('unsupported').title,
+            locationCopy('unsupported').message,
             permission && permission.state ? permission.state : 'unsupported',
-            true
+            null
         );
 
-        setGuideVisible(false);
         updateLocationState('unsupported', null, permission && permission.state ? permission.state : 'unsupported');
     }
 
@@ -1739,43 +1942,23 @@
             return;
         }
 
-        if (type === 'permission_denied') {
-            setLocationNotice(
-                'blocked',
-                'Lokasi belum aktif',
-                'Aktifkan izin lokasi pada browser untuk membuka akses masuk ke sistem.',
-                true,
-                permissionState,
-                true
-            );
-            setGuideVisible(false);
-            updateLocationState('blocked', result, permissionState);
-            return;
-        }
+        let copy = locationCopy('blocked');
 
         if (type === 'timeout') {
-            setLocationNotice(
-                'blocked',
-                'Pemeriksaan lokasi terlalu lama',
-                'Pastikan layanan lokasi aktif, lalu klik cek ulang lokasi.',
-                true,
-                permissionState,
-                true
-            );
-            setGuideVisible(false);
-            updateLocationState('blocked', result, permissionState);
-            return;
+            copy = {
+                title: 'Pemeriksaan lokasi terlalu lama',
+                message: 'Pastikan layanan lokasi aktif, lalu klik cek ulang lokasi.'
+            };
         }
 
         setLocationNotice(
             'blocked',
-            'Lokasi belum dapat diverifikasi',
-            'Akses masuk sistem dibuka setelah lokasi berhasil diperiksa.',
-            true,
+            copy.title,
+            copy.message,
             permissionState,
-            true
+            result
         );
-        setGuideVisible(false);
+
         updateLocationState('blocked', result, permissionState);
     }
 
@@ -1790,6 +1973,14 @@
         }
 
         locationChecking = true;
+        updateLocationState('checking', null, locationGateState.permission || 'unknown');
+        setLocationNotice(
+            'checking',
+            locationCopy('checking').title,
+            locationCopy('checking').message,
+            locationGateState.permission || 'unknown',
+            null
+        );
 
         try {
             const permission = await getPermissionStatus();
@@ -1809,25 +2000,12 @@
             if (permission.state === 'prompt') {
                 setLocationNotice(
                     'prompt',
-                    'Izin lokasi diperlukan',
-                    'Pilih Izinkan pada permintaan lokasi browser agar akses masuk ke sistem dapat ditampilkan.',
-                    true,
+                    locationCopy('prompt').title,
+                    locationCopy('prompt').message,
                     'prompt',
-                    options && options.forceVisible
+                    null
                 );
-                setGuideVisible(false);
                 updateLocationState('prompt', null, 'prompt');
-            } else {
-                setLocationNotice(
-                    'checking',
-                    'Memeriksa status lokasi',
-                    'Mohon tunggu, sistem sedang memastikan lokasi aktif sebelum membuka akses masuk.',
-                    true,
-                    permission.state || 'unknown',
-                    options && options.forceVisible
-                );
-                setGuideVisible(false);
-                updateLocationState('checking', null, permission.state || 'unknown');
             }
 
             const result = await UMKM.location.check({
@@ -1839,13 +2017,12 @@
             if (result && result.ok) {
                 setLocationNotice(
                     'granted',
-                    'Lokasi aktif',
-                    'Akses masuk sistem sudah dibuka.',
-                    false,
+                    locationCopy('granted').title,
+                    locationCopy('granted').message,
                     'granted',
-                    false
+                    result
                 );
-                setGuideVisible(false);
+
                 updateLocationState('granted', result, 'granted');
                 return true;
             }
@@ -1854,14 +2031,14 @@
             return false;
         } catch (error) {
             setLocationNotice(
-                'blocked',
-                'Validasi lokasi terganggu',
-                'Pemeriksaan lokasi belum berhasil. Muat ulang halaman atau klik cek ulang lokasi.',
-                true,
+                'error',
+                locationCopy('error').title,
+                locationCopy('error').message,
                 'unknown',
-                true
+                { error: error.message || 'location check failed' }
             );
-            updateLocationState('blocked', { error: error.message || 'location check failed' }, 'unknown');
+
+            updateLocationState('error', { error: error.message || 'location check failed' }, 'unknown');
             return false;
         } finally {
             locationChecking = false;
@@ -1870,6 +2047,9 @@
 
     function initLocationGate() {
         const notice = qs(SELECTORS.locationNotice);
+
+        renderLoginLinks(false);
+        setLocationChip('checking');
 
         if (notice) {
             notice.addEventListener('shown.bs.modal', function () {
@@ -1881,31 +2061,15 @@
             });
         }
 
-        qsa(SELECTORS.locationGatedLink).forEach(function (link) {
-            link.addEventListener('click', async function (event) {
-                const href = link.getAttribute('href');
-
-                if (!href || href === '#') {
-                    return;
-                }
-
-                event.preventDefault();
-                showLocationGateAgain();
-
-                const allowed = await checkLocationGate({
-                    forceVisible: true
-                });
-
-                if (allowed) {
-                    window.location.assign(href);
-                }
+        qsa(SELECTORS.locationStatusOpen).forEach(function (button) {
+            button.addEventListener('click', function () {
+                openLocationStatusModal(locationGateState.status !== 'granted');
             });
         });
 
         qs(SELECTORS.locationRetry)?.addEventListener('click', function () {
-            showLocationGateAgain();
             checkLocationGate({
-                forceVisible: true
+                keepModalOpen: true
             });
         });
 
@@ -1926,9 +2090,8 @@
                 setPermissionLabel(permission.state || 'unknown');
 
                 if (permission.state === 'granted') {
-                    showLocationGateAgain();
                     checkLocationGate({
-                        forceVisible: false
+                        keepModalOpen: false
                     });
                     return;
                 }
@@ -1941,13 +2104,11 @@
                 if (permission.state === 'prompt') {
                     setLocationNotice(
                         'prompt',
-                        'Izin lokasi diperlukan',
-                        'Klik cek ulang lokasi, lalu pilih Izinkan pada permintaan lokasi browser.',
-                        true,
+                        locationCopy('prompt').title,
+                        'Klik status lokasi, lalu pilih Izinkan pada permintaan lokasi browser.',
                         'prompt',
-                        true
+                        null
                     );
-                    setGuideVisible(false);
                     updateLocationState('prompt', null, 'prompt');
                 }
             });
@@ -1955,7 +2116,7 @@
 
         window.setTimeout(function () {
             checkLocationGate({
-                forceVisible: false
+                keepModalOpen: false
             });
         }, 450);
 
@@ -1967,16 +2128,15 @@
                 },
                 close: closeLocationGate,
                 open: function () {
-                    showLocationGateAgain();
+                    openLocationStatusModal(true);
                     return checkLocationGate({
-                        forceVisible: true
+                        keepModalOpen: true
                     });
                 },
                 permission: getPermissionStatus
             });
         }
     }
-
     function boot() {
         initHeaderAndNavigation();
         initRevealAnimation();
@@ -1995,5 +2155,4 @@
 
     ready(boot);
 })();
-
 
