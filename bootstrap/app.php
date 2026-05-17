@@ -26,12 +26,20 @@ return Application::configure(basePath: dirname(__DIR__))
             'anti.bot' => \App\Http\Middleware\AntiBotGuard::class,
             'safe.errors' => \App\Http\Middleware\SafeErrorResponder::class,
         ]);
-        $middleware->web(append: [\App\Http\Middleware\SecureHeaders::class]);
+
+        $middleware->redirectGuestsTo('/');
+
+        $middleware->web(append: [
+            \App\Http\Middleware\SecureHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->booted(function (): void {
         RateLimiter::for('internal-sensitive', function (Request $request) {
-            return Limit::perMinutes((int) config('umkm.security.api_rate_window', 1), (int) config('umkm.security.api_rate_limit', 60))->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinutes(
+                (int) config('umkm.security.api_rate_window', 1),
+                (int) config('umkm.security.api_rate_limit', 60)
+            )->by($request->user()?->id ?: $request->ip());
         });
     })->create();
