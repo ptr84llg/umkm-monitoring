@@ -30,7 +30,6 @@
 
                     <button type="button"
                             class="btn-close location-gate-close"
-                            data-bs-dismiss="modal"
                             data-location-gate-close
                             aria-label="Tutup pemberitahuan lokasi"></button>
                 </div>

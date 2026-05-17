@@ -367,6 +367,35 @@
         setGuideVisible(status !== 'granted' && status !== 'checking');
     }
 
+    function releaseModalFocus(notice) {
+        const activeElement = document.activeElement;
+
+        if (!notice || !activeElement || !notice.contains(activeElement)) {
+            return;
+        }
+
+        const trigger = qs(DEFAULT_SELECTORS.statusOpen);
+
+        if (trigger && typeof trigger.focus === 'function') {
+            trigger.focus({
+                preventScroll: true
+            });
+            return;
+        }
+
+        if (typeof activeElement.blur === 'function') {
+            activeElement.blur();
+        }
+
+        if (!document.body.hasAttribute('tabindex')) {
+            document.body.setAttribute('tabindex', '-1');
+        }
+
+        document.body.focus({
+            preventScroll: true
+        });
+    }
+
     function open(forceGuide) {
         const notice = qs(DEFAULT_SELECTORS.notice);
         const status = state.status || 'checking';
@@ -407,6 +436,8 @@
         state.dismissed = true;
 
         if (notice) {
+            releaseModalFocus(notice);
+
             if (window.bootstrap && window.bootstrap.Modal) {
                 const modal = window.bootstrap.Modal.getInstance(notice);
 
