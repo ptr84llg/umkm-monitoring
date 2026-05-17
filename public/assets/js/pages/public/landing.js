@@ -231,7 +231,6 @@
     function initHeaderAndNavigation() {
         const header = qs(SELECTORS.header);
         const canvasMenu = qs(SELECTORS.menuCanvas);
-        const menuOpen = qs(SELECTORS.menuOpen);
         const toTop = qs(SELECTORS.toTop);
 
         function updateHeader() {
@@ -244,36 +243,30 @@
             }
         }
 
-        function closeCanvasMenu() {
-            if (!canvasMenu) {
+        function closeBootstrapOffcanvas() {
+            if (!canvasMenu || !window.bootstrap || !window.bootstrap.Offcanvas) {
                 return;
             }
 
-            canvasMenu.classList.remove('is-open');
-            canvasMenu.setAttribute('aria-hidden', 'true');
-            document.body.classList.remove('is-canvas-open');
+            const instance = window.bootstrap.Offcanvas.getInstance(canvasMenu);
+
+            if (instance) {
+                instance.hide();
+            }
         }
 
         window.addEventListener('scroll', updateHeader, { passive: true });
         updateHeader();
 
-        if (menuOpen && canvasMenu) {
-            menuOpen.addEventListener('click', function () {
-                canvasMenu.classList.add('is-open');
-                canvasMenu.setAttribute('aria-hidden', 'false');
-                document.body.classList.add('is-canvas-open');
+        if (canvasMenu) {
+            qsa(SELECTORS.menuClose, canvasMenu).forEach(function (item) {
+                item.addEventListener('click', closeBootstrapOffcanvas);
+            });
+
+            qsa('[data-menu-link]', canvasMenu).forEach(function (item) {
+                item.addEventListener('click', closeBootstrapOffcanvas);
             });
         }
-
-        qsa(SELECTORS.menuClose).forEach(function (item) {
-            item.addEventListener('click', closeCanvasMenu);
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                closeCanvasMenu();
-            }
-        });
 
         if (toTop) {
             toTop.addEventListener('click', function () {

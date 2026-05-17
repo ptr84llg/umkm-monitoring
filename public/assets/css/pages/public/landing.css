@@ -288,61 +288,28 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
     display: none !important;
 }
 
-/* Mobile canvas */
-.mobile-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.mobile-canvas.is-open {
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.mobile-canvas-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(var(--umkm-ink-rgb), .38);
-    opacity: 0;
-    transition: opacity .24s ease;
-}
-
-.mobile-canvas.is-open .mobile-canvas-backdrop {
-    opacity: 1;
-}
-
-.mobile-canvas-panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: min(390px, 88vw);
-    height: 100%;
-    padding: 1rem;
+/* Mobile canvas - Bootstrap Offcanvas polish */
+.mobile-canvas.offcanvas {
+    --bs-offcanvas-width: min(390px, 88vw);
+    --bs-offcanvas-padding-x: 1rem;
+    --bs-offcanvas-padding-y: 1rem;
+    border-left: 1px solid var(--umkm-line-soft);
+    color: var(--umkm-ink);
     background:
         radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 30%),
         #ffffff;
     box-shadow: -24px 0 64px rgba(var(--umkm-ink-rgb), .18);
-    transform: translateX(100%);
-    transition: transform .28s ease;
 }
 
-.mobile-canvas.is-open .mobile-canvas-panel {
-    transform: translateX(0);
-}
-
-.mobile-canvas-head {
-    flex: 0 0 auto;
+.mobile-canvas .offcanvas-header {
     border-bottom: 1px solid var(--umkm-line-soft);
-    padding-bottom: 1rem;
+    padding: 1rem;
 }
 
-.mobile-canvas-body {
+.mobile-canvas .offcanvas-body {
     min-height: 0;
     overflow: auto;
-    padding-top: 1rem;
+    padding: 1rem;
 }
 
 .canvas-close {
@@ -452,8 +419,14 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
 }
 
 @media (max-width: 575.98px) {
-    .mobile-canvas-panel {
-        width: min(360px, 92vw);
+    .mobile-canvas.offcanvas {
+        --bs-offcanvas-width: min(360px, 92vw);
+        --bs-offcanvas-padding-x: .85rem;
+        --bs-offcanvas-padding-y: .85rem;
+    }
+
+    .mobile-canvas .offcanvas-header,
+    .mobile-canvas .offcanvas-body {
         padding: .85rem;
     }
 
