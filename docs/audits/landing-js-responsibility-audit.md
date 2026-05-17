@@ -1,115 +1,78 @@
-# Landing DOM Exposure Audit 1
+# Landing JS Responsibility Audit
 
 ## Status Audit
 
-Audit ini dibuat setelah fondasi Readiness Loader dan AJAX Component Loader selesai. Tujuannya adalah menentukan bagian landing.blade.php yang masih terlalu penuh di DOM awal dan harus dipindahkan secara bertahap ke pola AJAX component loading.
+Audit ini dibuat setelah refactor landing menuju pola **AJAX component**, **modular JavaScript**, dan **backend-driven preview data**. Tujuannya adalah memastikan setiap file JavaScript memiliki batas tanggung jawab yang jelas, sehingga script yang terlihat di browser hanya berperan sebagai UI bridge, event handler, renderer ringan, atau pemanggil endpoint internal.
 
-## Ringkasan Temuan Otomatis
+## Prinsip yang Dikunci
 
-| Item | Hasil |
-|---|---:|
-| Jumlah baris landing.blade.php | 679 |
-| Jumlah SVG inline | 29 |
-| Jumlah atribut data-* | 67 |
-| Jumlah komponen modal Blade | 2 |
-| Jumlah metric DOM publik | 3 |
-| Jumlah elemen chart/dashboard preview | 8 |
-| Jumlah elemen region/public preview | 7 |
-| Jumlah login mount | 4 |
-| Jumlah placeholder data-umkm-component | 0 |
-| Jumlah baris landing.js | 1627 |
-| Jumlah blok DEFAULT_CHART_MODES | 4 |
-| Jumlah logic preview/chart/region pada JS | 13 |
+1. **Core JS** hanya boleh menjadi infrastruktur umum lintas halaman.
+2. **Landing Page JS** hanya boleh mengatur UI, event, AJAX call, dan render ringan.
+3. **Backend** tetap menjadi pusat validasi, agregasi, pemilihan data, chart payload, partial rendering, dan keputusan akses.
+4. JavaScript yang berjalan di browser memang akan terlihat di Network/DevTools, sehingga isinya tidak boleh dianggap rahasia.
+5. Data internal, query, otorisasi, validasi final, rumus penting, bobot, ranking, dan payload lengkap tidak boleh ditempatkan di JavaScript frontend.
 
-## Kesimpulan Audit
+## Matriks File dan Tanggung Jawab
 
-landing.blade.php masih belum mengikuti Minimal DOM Exposure secara penuh. File tersebut masih memuat struktur besar untuk header, offcanvas, hero, preview board, metrics, area data wilayah, indikator, dashboard preview, CTA, dan modal. Sebagian konten masih layak tetap berada di DOM awal karena bersifat public shell, tetapi bagian preview data, grafik, ringkasan wilayah, indikator, modal berat, dan area yang nanti mengandung data backend harus dipindahkan bertahap ke AJAX component.
+| File | Kategori | Peran yang Diizinkan | Baris | Pola Sensitif | Pola Data/Preview |
+|---|---|---|---:|---:|---:|| `public\assets\js\core\umkm-ui.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 100 | 0 | 0 |
+| `public\assets\js\core\umkm-ajax.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 175 | 9 | 0 |
+| `public\assets\js\core\umkm-security.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 145 | 6 | 0 |
+| `public\assets\js\core\umkm-modal.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 290 | 0 | 0 |
+| `public\assets\js\core\umkm-confirm.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 4 | 0 | 0 |
+| `public\assets\js\core\umkm-toast.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 4 | 0 | 0 |
+| `public\assets\js\core\umkm-loader.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 527 | 0 | 0 |
+| `public\assets\js\core\umkm-component-loader.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 374 | 0 | 0 |
+| `public\assets\js\core\umkm-readiness.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 760 | 1 | 0 |
+| `public\assets\js\core\umkm-location.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 245 | 7 | 0 |
+| `public\assets\js\core\umkm-location-gate.js` | Core JS | Infrastruktur umum lintas halaman; tidak boleh menjadi tempat data internal atau keputusan final. | 926 | 5 | 0 |
+| `public\assets\js\pages\public\landing.js` | Landing Page JS | Legacy bridge/no-op; bukan pusat logic landing. | 7 | 0 | 0 |
+| `public\assets\js\pages\public\landing\landing-state.js` | Landing Page JS | Selector, state minimal, endpoint path, helper umum. | 165 | 0 | 0 |
+| `public\assets\js\pages\public\landing\landing-navigation.js` | Landing Page JS | Navigasi, reveal, parallax, counter, dan tilt UI. | 200 | 2 | 0 |
+| `public\assets\js\pages\public\landing\landing-chart.js` | Landing Page JS | Renderer Chart.js dari response backend public-safe. | 275 | 0 | 6 |
+| `public\assets\js\pages\public\landing\landing-region.js` | Landing Page JS | Request preview data, render UI ringan, dan event modal wilayah. | 765 | 9 | 3 |
+| `public\assets\js\pages\public\landing\landing-location-bridge.js` | Landing Page JS | Inisialisasi location gate public. | 25 | 0 | 0 |
+| `public\assets\js\pages\public\landing\landing-components.js` | Landing Page JS | Re-init setelah AJAX component dimuat. | 61 | 0 | 0 |
+| `public\assets\js\pages\public\landing\landing-boot.js` | Landing Page JS | Urutan boot halaman. | 22 | 0 | 1 |
+| `app\Http\Controllers\Api\Public\LandingComponentController.php` | Backend | Render Blade partial menjadi HTML fragment. | 54 | 1 | 0 |
+| `app\Http\Controllers\Api\Public\LandingPreviewController.php` | Backend | Validasi parameter, agregasi public-safe, dan pembuatan chart payload. | 307 | 7 | 6 |
+| `app\Http\Controllers\Api\Public\LandingRegionController.php` | Backend | Konteks wilayah publik dan daftar children region. | 296 | 1 | 0 |
+| `app\Http\Controllers\Api\Public\LocationGateController.php` | Backend | Verifikasi final location gate di backend. | 164 | 3 | 0 |
+## Interpretasi Audit
 
-## Klasifikasi Bagian Landing
+### Core JS
 
-### Tetap Boleh Berada di DOM Awal
+Core JS tetap dimuat di browser karena menjadi pondasi UI dan request internal. File seperti `umkm-ajax.js`, `umkm-component-loader.js`, `umkm-readiness.js`, dan `umkm-location-gate.js` boleh mengatur mekanisme request, loader, modal, feedback, dan status frontend. Namun, core tidak boleh memuat data internal UMKM, query database, role/permission final, rumus indikator, atau keputusan keamanan final.
 
-1. Shell .umkm-landing.
-2. Background gradient dekoratif.
-3. Header public.
-4. Brand dan menu dasar.
-5. Login mount kosong, selama tombol login tetap dirender oleh location gate.
-6. Hero copy statis yang tidak mengandung data internal.
-7. Container dan placeholder komponen.
-8. Skeleton atau loader ringan.
+### Landing Page JS
 
-### Harus Dipindah Bertahap ke AJAX Component
+Landing Page JS sekarang sudah dipisah ke beberapa modul kecil. Modul `landing-state.js` hanya menyimpan selector, endpoint path, dan state minimal. Modul `landing-chart.js` hanya menggambar chart dari response backend. Modul `landing-region.js` hanya meminta preview data dan merender UI ringan. Modul `landing-components.js` hanya melakukan re-init setelah fragment AJAX masuk ke DOM. Modul `landing-boot.js` hanya mengatur urutan inisialisasi.
 
-1. Hero preview board.
-2. Metric preview UMKM.
-3. Data wilayah preview.
-4. Indikator preview.
-5. Empty state preview yang berkaitan dengan data.
-6. Dashboard chart area.
-7. Chart summary.
-8. Panel ringkasan dinamis.
-9. Region-driven preview content.
-10. Modal/area yang berisi struktur panjang dan tidak harus ada sejak initial DOM.
+### Backend
 
-### Perlu Diproses Backend/Internal API pada Batch Berikutnya
+Backend sekarang memegang tanggung jawab yang lebih tepat. `LandingPreviewController` menangani validasi parameter, pembuatan preview public-safe, dan chart payload. `LandingComponentController` merender Blade partial menjadi HTML fragment. `LandingRegionController` melayani konteks wilayah. `LocationGateController` tetap menjadi pengunci final location gate.
 
-1. Angka agregat UMKM.
-2. UMKM aktif.
-3. Perlu validasi.
-4. Bidang dominan.
-5. Wilayah terpantau.
-6. Data chart.
-7. Data area/wilayah.
-8. Indikator bidang usaha.
-9. Status data tersedia/tidak tersedia.
+## Status Setelah Refactor
 
-## Masalah Saat Ini
+1. `landing.blade.php` sudah menjadi shell + placeholder untuk beberapa komponen.
+2. Section hero preview board, dashboard preview, summary section, dan CTA sudah dimuat melalui AJAX component.
+3. `landing.js` lama tidak lagi menjadi pusat logic.
+4. Landing JS sudah dipisah menjadi modul kecil.
+5. `DEFAULT_CHART_MODES` sudah tidak berada di frontend sebagai sumber data utama.
+6. `buildPreview` frontend sudah tidak menjadi pusat perhitungan preview.
+7. Preview dan chart payload sudah dipindahkan ke backend melalui `LandingPreviewController`.
+8. Endpoint preview tetap memakai middleware internal, origin, referer, fetch metadata, throttle, dan audit.
 
-1. AJAX Component Loader sudah ada, tetapi belum diterapkan pada landing content.
-2. Readiness Loader sudah aware terhadap data-umkm-component, tetapi landing belum banyak memakai placeholder tersebut.
-3. landing.js masih menyimpan data preview default dan logic visual preview di frontend.
-4. Beberapa angka dan payload simulasi masih berada di DOM/JS public.
-5. DOM awal masih terlalu panjang untuk arah Minimal DOM Exposure.
+## Batasan yang Tetap Harus Dijaga
 
-## Urutan Refactor yang Dikunci
+1. Jangan menaruh data internal UMKM pada JS.
+2. Jangan menaruh rumus, bobot, ranking, skor, atau ambang indikator pada JS.
+3. Jangan membuat tombol login statis di DOM.
+4. Jangan melewati location gate.
+5. Jangan memakai fetch langsung pada page JS.
+6. Jangan menambahkan inline script di Blade atau fragment AJAX.
+7. Jangan membuka endpoint publik tanpa middleware internal.
 
-### Batch Berikutnya: Landing Component Refactor 1
+## Rekomendasi Lanjutan
 
-Target:
-1. membuat endpoint internal public component untuk hero preview board;
-2. memindahkan struktur hero preview board dari DOM awal ke partial fragment;
-3. mengganti bagian tersebut di landing.blade.php menjadi placeholder data-umkm-component;
-4. memastikan component dimuat melalui UMKM.ajax;
-5. memastikan fragment tidak membawa script inline;
-6. memastikan location gate dan login mount tidak terganggu.
-
-### Batch Setelahnya: Landing Preview Data Refactor 2
-
-Target:
-1. memindahkan angka preview dari DOM/JS statis ke backend response minimal;
-2. mengurangi DEFAULT_CHART_MODES di frontend secara bertahap;
-3. memastikan data chart publik adalah agregat dan tidak sensitif;
-4. tetap tidak membuka data internal UMKM.
-
-### Batch Setelahnya: Landing Modal/Region Refactor 3
-
-Target:
-1. audit modal region selector;
-2. pisahkan shell modal dan body dinamis;
-3. region context tetap melalui internal API;
-4. modal tidak membawa payload besar di DOM awal.
-
-## Batasan Keamanan
-
-Refactor landing tidak boleh:
-1. menghapus location gate;
-2. membuat tombol login statis di DOM;
-3. menaruh data internal UMKM di Blade;
-4. menaruh rumus/ambang indikator di JavaScript;
-5. membuat endpoint bebas tanpa guard;
-6. memakai fetch langsung di page JS;
-7. menambahkan script inline pada fragment AJAX.
-
-## Keputusan
-
-Sebelum masuk Login-1, landing harus masuk tahap refactor DOM exposure. Fondasi AJAX yang sudah dibuat harus diterapkan dulu pada landing/public shell agar tujuan Minimal DOM Exposure benar-benar berjalan, bukan hanya tersedia sebagai core yang belum dipakai.
+Tahap berikutnya dapat masuk ke **Landing Fragment Renderer 4** jika ingin mengurangi kerja render frontend lebih jauh. Pada tahap itu, backend dapat mengirim HTML fragment kecil untuk metric, area stats, indicator list, dan chart summary. Frontend cukup menerima response dan mengganti isi container. Untuk chart interaktif berbasis Chart.js, data chart tetap akan terlihat sebagai response public-safe karena browser membutuhkan data untuk menggambar chart.
