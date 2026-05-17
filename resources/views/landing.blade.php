@@ -273,20 +273,20 @@
 
                             <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
                                 <div class="landing-component-shell landing-hero-board-shell"
-     data-umkm-component="landing-hero-preview-board"
-     data-umkm-component-url="{{ route('public.landing-components.hero-preview-board') }}"
-     data-umkm-component-load-on="readiness-hidden"
-     data-umkm-component-loading-text="Memuat preview dashboard publik..."
-     aria-live="polite">
-    <div class="card border-0 board-window landing-component-skeleton">
-        <div class="card-body p-4">
-            <div class="umkm-inline-loader">
-                <span class="umkm-inline-spinner" aria-hidden="true"></span>
-                <span class="umkm-inline-loader-text">Menyiapkan preview dashboard publik...</span>
-            </div>
-        </div>
-    </div>
-</div>
+                                     data-umkm-component="landing-hero-preview-board"
+                                     data-umkm-component-url="{{ route('public.landing-components.hero-preview-board') }}"
+                                     data-umkm-component-load-on="readiness-hidden"
+                                     data-umkm-component-loading-text="Memuat preview dashboard publik..."
+                                     aria-live="polite">
+                                    <div class="card border-0 board-window landing-component-skeleton">
+                                        <div class="card-body p-4">
+                                            <div class="umkm-inline-loader">
+                                                <span class="umkm-inline-spinner" aria-hidden="true"></span>
+                                                <span class="umkm-inline-loader-text">Menyiapkan preview dashboard publik...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
