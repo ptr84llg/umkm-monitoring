@@ -9,6 +9,7 @@
     'minVisible' => 1200,
     'lineDelay' => 80,
     'completeDelay' => 240,
+    'smokeGuard' => true,
 ])
 
 @php
@@ -51,6 +52,7 @@
     data-umkm-readiness-min-visible="{{ (int) $minVisible }}"
     data-umkm-readiness-line-delay="{{ (int) $lineDelay }}"
     data-umkm-readiness-complete-delay="{{ (int) $completeDelay }}"
+    data-umkm-readiness-smoke-guard="{{ $smokeGuard ? 'true' : 'false' }}"
     role="status"
     aria-live="polite"
 >

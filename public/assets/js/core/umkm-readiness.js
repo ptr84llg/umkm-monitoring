@@ -352,6 +352,98 @@
         };
     }
 
+    function makeSmokeResult(key, ok, severity, message) {
+        return {
+            key: key,
+            ok: Boolean(ok),
+            severity: severity || 'warning',
+            message: message || ''
+        };
+    }
+
+    function runSmokeGuard(loader, lines) {
+        const enabled = loader.dataset.umkmReadinessSmokeGuard !== 'false';
+
+        if (!enabled) {
+            return null;
+        }
+
+        const results = [];
+        const hasLanding = Boolean(qs('.umkm-landing'));
+        const hasLocationModule = moduleReady('location');
+        const locationGatedLinks = qsa('[data-location-gated]');
+
+        results.push(makeSmokeResult(
+            'loader-hidden',
+            loader.hidden === true,
+            'warning',
+            'Overlay readiness harus sudah tersembunyi setelah selesai.'
+        ));
+
+        results.push(makeSmokeResult(
+            'document-unlocked',
+            !document.documentElement.classList.contains('umkm-readiness-lock'),
+            'warning',
+            'Class pengunci scroll readiness harus dilepas.'
+        ));
+
+        results.push(makeSmokeResult(
+            'content-available',
+            hasLanding || Boolean(document.body && document.body.children.length > 0),
+            'warning',
+            'Konten halaman harus tetap tersedia setelah readiness selesai.'
+        ));
+
+        results.push(makeSmokeResult(
+            'csrf-meta-present',
+            Boolean(qs('meta[name="csrf-token"]')),
+            'warning',
+            'CSRF meta harus tetap tersedia untuk request internal.'
+        ));
+
+        results.push(makeSmokeResult(
+            'security-profile-present',
+            Boolean(qs('meta[name="umkm-security-profile"]')),
+            'warning',
+            'Security profile meta harus tetap tersedia.'
+        ));
+
+        if (hasLocationModule || locationGatedLinks.length > 0) {
+            results.push(makeSmokeResult(
+                'location-gate-preserved',
+                locationGatedLinks.length > 0,
+                'warning',
+                'Elemen data-location-gated harus tetap ada agar tombol masuk tidak melewati location gate.'
+            ));
+        }
+
+        const failed = results.filter(function (item) {
+            return !item.ok;
+        });
+
+        const status = failed.length ? 'warning' : 'clean';
+
+        UMKM.state = UMKM.state || {};
+        UMKM.state.readinessSmoke = {
+            status: status,
+            checkedAt: new Date().toISOString(),
+            results: results,
+            lines: lines
+        };
+
+        document.documentElement.setAttribute('data-umkm-readiness-smoke', status);
+
+        document.dispatchEvent(new CustomEvent('umkm:readiness:smoke', {
+            detail: UMKM.state.readinessSmoke
+        }));
+
+        if (typeof UMKM.log === 'function') {
+            UMKM.log(status === 'clean' ? 'info' : 'warn', 'readiness smoke guard ' + status, UMKM.state.readinessSmoke);
+        }
+
+        return UMKM.state.readinessSmoke;
+    }
+
     async function finishAndHide(loader, settings, startedAt, lines) {
         const elapsed = performance.now() - startedAt;
         const remainingMinVisible = Math.max(0, settings.minVisible - elapsed);
@@ -373,6 +465,7 @@
 
         if (!settings.autoHide) {
             document.documentElement.classList.remove('umkm-readiness-lock');
+            runSmokeGuard(loader, lines);
             return;
         }
 
@@ -389,10 +482,13 @@
         document.documentElement.classList.remove('umkm-readiness-lock');
         loader.dataset.umkmReadinessState = 'hidden';
 
+        const smoke = runSmokeGuard(loader, lines);
+
         document.dispatchEvent(new CustomEvent('umkm:readiness:hidden', {
             detail: {
                 lines: lines,
-                progress: 100
+                progress: 100,
+                smoke: smoke
             }
         }));
     }
@@ -495,6 +591,7 @@
     const api = {
         run: run,
         runAll: runAll,
+        smoke: runSmokeGuard,
         statusMeta: STATUS_META
     };
 
