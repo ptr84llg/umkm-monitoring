@@ -979,10 +979,26 @@
             return;
         }
 
-        shell.hidden = false;
-        document.body.classList.add('is-region-modal-open');
         setRegionAlert('');
         ensureRegionContext();
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            const modal = window.bootstrap.Modal.getOrCreateInstance(shell, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+
+            modal.show();
+            return;
+        }
+
+        shell.hidden = false;
+        shell.classList.add('show');
+        shell.style.display = 'block';
+        shell.setAttribute('aria-modal', 'true');
+        shell.removeAttribute('aria-hidden');
+        document.body.classList.add('is-region-modal-open');
     }
 
     function closeRegionModal() {
@@ -996,7 +1012,20 @@
             return;
         }
 
+        if (window.bootstrap && window.bootstrap.Modal) {
+            const modal = window.bootstrap.Modal.getInstance(shell);
+
+            if (modal) {
+                modal.hide();
+                return;
+            }
+        }
+
         shell.hidden = true;
+        shell.classList.remove('show');
+        shell.style.display = '';
+        shell.setAttribute('aria-hidden', 'true');
+        shell.removeAttribute('aria-modal');
         document.body.classList.remove('is-region-modal-open');
     }
 
@@ -1437,18 +1466,41 @@
     }
 
     function initRegionModal() {
+        const shell = qs(SELECTORS.regionModalShell);
+
+        if (shell) {
+            shell.addEventListener('hide.bs.modal', function (event) {
+                if (regionState.loading) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                return true;
+            });
+
+            shell.addEventListener('shown.bs.modal', function () {
+                document.body.classList.add('is-region-modal-open');
+            });
+
+            shell.addEventListener('hidden.bs.modal', function () {
+                document.body.classList.remove('is-region-modal-open');
+            });
+        }
+
         qsa(SELECTORS.regionModalOpen).forEach(function (button) {
             button.addEventListener('click', openRegionModal);
         });
 
         qsa(SELECTORS.regionModalClose).forEach(function (button) {
-            button.addEventListener('click', closeRegionModal);
-        });
+            button.addEventListener('click', function (event) {
+                if (regionState.loading) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return;
+                }
 
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape' && !regionState.loading) {
                 closeRegionModal();
-            }
+            });
         });
 
         qs(SELECTORS.districtSelect)?.addEventListener('change', onDistrictChanged);
