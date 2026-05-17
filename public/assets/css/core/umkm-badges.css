@@ -1,4 +1,165 @@
-/* umkm-badges.css - core reusable stylesheet */
-:root { --umkm-primary: #0d6efd; }
-.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
+/*
+|--------------------------------------------------------------------------
+| UMKM Core Badges
+|--------------------------------------------------------------------------
+| Pola badge, pill, label, dan penanda status reusable.
+|--------------------------------------------------------------------------
+*/
 
+.umkm-section-pill,
+.landing-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    width: fit-content;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    border-radius: var(--umkm-radius-pill);
+    padding: .48rem .85rem;
+    color: var(--umkm-primary-dark);
+    background: rgba(255, 255, 255, .78);
+    font-size: .82rem;
+    font-weight: 850;
+    box-shadow: var(--umkm-shadow-xs);
+}
+
+.umkm-section-pill svg,
+.landing-pill svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+}
+
+.umkm-section-pill::before,
+.landing-pill::before {
+    content: "";
+    width: .52rem;
+    height: .52rem;
+    border-radius: var(--umkm-radius-pill);
+    background: var(--umkm-accent);
+    box-shadow: 0 0 0 .3rem var(--umkm-accent-soft);
+}
+
+.cta-panel .landing-pill {
+    border-color: rgba(255, 255, 255, .22);
+    color: #ffffff;
+    background: rgba(255, 255, 255, .12);
+}
+
+.umkm-preview-badge,
+.landing-preview-badge,
+.chart-region-badge,
+.chart-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .18);
+    border-radius: var(--umkm-radius-pill);
+    padding: .52rem .78rem;
+    color: var(--umkm-primary-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
+        var(--umkm-primary-soft);
+    font-size: .78rem;
+    font-weight: 850;
+    line-height: 1.15;
+    white-space: nowrap;
+    box-shadow: 0 10px 24px rgba(var(--umkm-ink-rgb), .055);
+}
+
+.umkm-preview-badge,
+.landing-preview-badge {
+    padding: .34rem .62rem;
+    color: var(--umkm-accent-dark);
+    border-color: rgba(var(--umkm-accent-rgb), .28);
+    background: var(--umkm-accent-soft);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.umkm-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: var(--umkm-radius-pill);
+    padding: .28rem .58rem;
+    color: var(--umkm-muted-strong);
+    background: rgba(255, 255, 255, .82);
+    font-size: .72rem;
+    font-weight: 850;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.umkm-status-badge-primary {
+    color: var(--umkm-primary-dark);
+    border-color: rgba(var(--umkm-primary-rgb), .14);
+    background: var(--umkm-primary-soft);
+}
+
+.umkm-status-badge-success {
+    color: var(--umkm-success-dark);
+    border-color: rgba(var(--umkm-success-rgb), .14);
+    background: var(--umkm-success-soft);
+}
+
+.umkm-status-badge-warning {
+    color: var(--umkm-warning-dark);
+    border-color: rgba(var(--umkm-warning-rgb), .16);
+    background: var(--umkm-warning-soft);
+}
+
+.umkm-status-badge-danger {
+    color: var(--umkm-danger-dark);
+    border-color: rgba(var(--umkm-danger-rgb), .16);
+    background: var(--umkm-danger-soft);
+}
+
+.preview-region-stats small,
+.preview-progress span .indicator-meta {
+    width: fit-content;
+    max-width: 100%;
+    border-radius: var(--umkm-radius-pill);
+    white-space: nowrap;
+}
+
+.preview-progress span .indicator-meta {
+    display: inline-flex;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .12);
+    padding: .2rem .46rem;
+    color: var(--umkm-primary-dark);
+    background: var(--umkm-primary-softer);
+    font-size: .66rem;
+    font-weight: 850;
+    line-height: 1.15;
+}
+
+.preview-region-stats small {
+    padding: .2rem .46rem;
+    color: var(--umkm-muted);
+    background: rgba(var(--umkm-ink-rgb), .045);
+    font-size: .68rem;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: left;
+}
+
+@media (max-width: 1199.98px) {
+    .preview-progress span .indicator-meta {
+        font-size: .64rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .landing-preview-badge,
+    .umkm-preview-badge {
+        white-space: normal;
+    }
+}

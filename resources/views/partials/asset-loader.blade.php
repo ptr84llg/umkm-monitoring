@@ -148,6 +148,8 @@
             'umkm-scrollbar.css',
             'umkm-ui.css',
             'umkm-buttons.css',
+            'umkm-cards.css',
+            'umkm-badges.css',
             'umkm-footer.css',
             'umkm-security.css',
         ]);

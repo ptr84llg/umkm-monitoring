@@ -1,4 +1,219 @@
-/* umkm-ui.css - core reusable stylesheet */
-:root { --umkm-primary: #0d6efd; }
-.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
+/*
+|--------------------------------------------------------------------------
+| UMKM Core UI
+|--------------------------------------------------------------------------
+| Lapisan utilitas UI reusable untuk halaman publik, auth, dan dashboard.
+| File ini tidak berisi style spesifik satu halaman.
+|--------------------------------------------------------------------------
+*/
 
+.umkm-svg-icon,
+.umkm-icon-box svg,
+.umkm-public-note svg,
+.umkm-empty-state svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex: 0 0 auto;
+}
+
+.umkm-icon-box,
+.status-icon,
+.dashboard-insight-icon,
+.summary-item-icon,
+.location-gate-icon,
+.region-modal-icon,
+.location-guide-head-icon,
+.footer-icon,
+.footer-column-icon,
+.footer-link-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: var(--umkm-primary);
+    background: var(--umkm-primary-soft);
+}
+
+.umkm-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--umkm-radius-md);
+}
+
+.umkm-icon-box-sm {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--umkm-radius-sm);
+}
+
+.umkm-icon-box-lg {
+    width: 54px;
+    height: 54px;
+    border-radius: var(--umkm-radius-lg);
+}
+
+.umkm-icon-box-primary {
+    color: var(--umkm-primary);
+    background: var(--umkm-primary-soft);
+}
+
+.umkm-icon-box-accent {
+    color: var(--umkm-accent-dark);
+    background: var(--umkm-accent-soft);
+}
+
+.umkm-icon-box-success {
+    color: var(--umkm-success-dark);
+    background: var(--umkm-success-soft);
+}
+
+.umkm-icon-box-danger {
+    color: var(--umkm-danger-dark);
+    background: var(--umkm-danger-soft);
+}
+
+.umkm-icon-box-white {
+    color: #ffffff;
+    background: linear-gradient(145deg, var(--umkm-primary), var(--umkm-primary-dark));
+    box-shadow: 0 14px 28px rgba(var(--umkm-primary-rgb), .18);
+}
+
+.umkm-public-note,
+.landing-public-note {
+    display: grid;
+    gap: .18rem;
+    border: 1px solid rgba(var(--umkm-accent-rgb), .22);
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    padding: .78rem .9rem;
+    color: var(--umkm-accent-dark);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(var(--umkm-accent-rgb), .15), transparent 32%),
+        rgba(255, 247, 237, .88);
+    text-align: left;
+}
+
+.umkm-public-note strong,
+.landing-public-note strong {
+    color: var(--umkm-accent-dark);
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.umkm-public-note span,
+.landing-public-note span {
+    color: #7c4a08;
+    font-size: .78rem;
+    line-height: 1.48;
+}
+
+.umkm-note-info {
+    border-color: rgba(var(--umkm-info-rgb), .16);
+    color: var(--umkm-info-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-info-soft), transparent 32%),
+        rgba(240, 249, 255, .88);
+}
+
+.umkm-note-warning {
+    border-color: rgba(var(--umkm-warning-rgb), .18);
+    color: var(--umkm-warning-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-warning-soft), transparent 32%),
+        rgba(255, 251, 235, .88);
+}
+
+.umkm-note-danger {
+    border-color: rgba(var(--umkm-danger-rgb), .18);
+    color: var(--umkm-danger-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-danger-soft), transparent 32%),
+        rgba(255, 247, 247, .90);
+}
+
+.umkm-empty-state {
+    display: grid;
+    place-items: center;
+    gap: .75rem;
+    min-height: 220px;
+    border: 1px dashed rgba(var(--umkm-primary-rgb), .22);
+    border-radius: var(--umkm-radius-xl);
+    padding: 1.5rem;
+    color: var(--umkm-muted);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-primary-soft), transparent 32%),
+        rgba(255, 255, 255, .78);
+    text-align: center;
+}
+
+.umkm-empty-state strong {
+    color: var(--umkm-ink);
+    font-weight: 950;
+}
+
+.umkm-empty-state p {
+    max-width: 560px;
+    margin: 0;
+    color: var(--umkm-muted);
+    line-height: 1.65;
+}
+
+.umkm-empty-icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--umkm-radius-lg);
+    color: var(--umkm-primary);
+    background: var(--umkm-primary-soft);
+}
+
+.umkm-soft-alert {
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: var(--umkm-radius-lg);
+    padding: .85rem .95rem;
+    color: var(--umkm-muted-strong);
+    background: rgba(255, 255, 255, .82);
+    line-height: 1.55;
+}
+
+.umkm-soft-alert strong {
+    color: var(--umkm-ink);
+    font-weight: 950;
+}
+
+.umkm-text-balance {
+    text-wrap: balance;
+}
+
+.umkm-text-pretty {
+    text-wrap: pretty;
+}
+
+.umkm-min-w-0 {
+    min-width: 0 !important;
+}
+
+.umkm-overflow-safe {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.umkm-layer-local {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 575.98px) {
+    .umkm-public-note,
+    .landing-public-note {
+        padding: .72rem .8rem;
+    }
+
+    .umkm-empty-state {
+        min-height: 190px;
+        border-radius: var(--umkm-radius-lg);
+        padding: 1.15rem;
+    }
+}

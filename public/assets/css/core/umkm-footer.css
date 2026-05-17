@@ -183,6 +183,49 @@
     font-size: .9rem;
 }
 
+.layout-public .umkm-public-footer {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 14% 10%, var(--umkm-primary-soft), transparent 28%),
+        radial-gradient(circle at 90% 0%, var(--umkm-accent-soft), transparent 24%),
+        linear-gradient(180deg, #f8fbfa, #eef7f6);
+}
+
+.layout-public .umkm-public-footer p,
+.layout-public .umkm-public-footer .footer-logo,
+.layout-public .umkm-public-footer .footer-column-title,
+.layout-public .umkm-public-footer .footer-feature,
+.layout-public .umkm-public-footer .footer-column a,
+.layout-public .umkm-public-footer .footer-bottom {
+    text-align: left;
+    text-align-last: auto;
+}
+
+.layout-public .umkm-public-footer .footer-hero,
+.layout-public .umkm-public-footer .footer-shell,
+.layout-public .umkm-public-footer .footer-brand-block,
+.layout-public .umkm-public-footer .footer-note {
+    min-width: 0;
+}
+
+.layout-public .umkm-public-footer .footer-brand-block,
+.layout-public .umkm-public-footer .footer-note {
+    width: 100%;
+    max-width: 100%;
+}
+
+.layout-public .umkm-public-footer .footer-brand-block p,
+.layout-public .umkm-public-footer .footer-note p {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-right: 0;
+    margin-left: 0;
+    line-height: 1.72;
+}
+
 @media (max-width: 1199.98px) {
     .footer-brand-block,
     .footer-feature-grid,
@@ -190,6 +233,42 @@
         max-width: 760px;
         margin-right: auto;
         margin-left: auto;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block,
+    .layout-public .umkm-public-footer .footer-note {
+        width: 100%;
+        max-width: 760px;
+        margin-inline: auto;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block .footer-logo,
+    .layout-public .umkm-public-footer .footer-column-title {
+        justify-content: center;
+        text-align: center;
+        text-align-last: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .layout-public .umkm-public-footer .footer-hero,
+    .layout-public .umkm-public-footer .footer-shell {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .layout-public .umkm-public-footer .footer-brand-block,
+    .layout-public .umkm-public-footer .footer-note {
+        width: 100%;
+        max-width: 100%;
+        flex: 1 1 100%;
+        flex-basis: 100%;
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        margin-right: 0;
+        margin-left: 0;
+        padding-right: 0;
+        padding-left: 0;
     }
 }
 
@@ -206,5 +285,10 @@
     .footer-feature .card-body,
     .footer-column .card-body {
         padding: 1rem;
+    }
+
+    .layout-public .umkm-public-footer .footer-bottom {
+        align-items: flex-start !important;
+        text-align: left;
     }
 }
