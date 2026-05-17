@@ -9,6 +9,14 @@ return [
         'api_rate_window' => (int) env('INTERNAL_API_RATE_WINDOW', 1),
     ],
 
+    'location_gate' => [
+        'enabled' => (bool) env('LOCATION_GATE_ENABLED', true),
+        'session_key' => env('LOCATION_GATE_SESSION_KEY', 'umkm.location_gate'),
+        'ttl_minutes' => (int) env('LOCATION_GATE_TTL_MINUTES', 15),
+        'max_accuracy_meters' => (float) env('LOCATION_GATE_MAX_ACCURACY_METERS', 10000),
+        'coordinate_precision' => (int) env('LOCATION_GATE_COORDINATE_PRECISION', 6),
+    ],
+
     'landing_region' => [
         'enabled' => (bool) env('LANDING_REGION_ENABLE_PUBLIC_SAFE_API', true),
         'province_code' => env('LANDING_REGION_PROVINCE_CODE', '16'),

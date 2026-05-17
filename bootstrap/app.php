@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'secure.headers' => \App\Http\Middleware\SecureHeaders::class,
             'anti.bot' => \App\Http\Middleware\AntiBotGuard::class,
             'safe.errors' => \App\Http\Middleware\SafeErrorResponder::class,
+            'validate.umkm.internal.request' => \App\Http\Middleware\EnsureUmkmInternalRequest::class,
+            'location.gate' => \App\Http\Middleware\EnsureLocationGateVerified::class,
         ]);
 
         $middleware->redirectGuestsTo('/');

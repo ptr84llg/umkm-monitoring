@@ -92,7 +92,7 @@
         ],
     ]"
 />
-<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
+<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-location-gate-verify-url="{{ route('public.location-gate.verify') }}" data-location-gate-clear-url="{{ route('public.location-gate.clear') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
 

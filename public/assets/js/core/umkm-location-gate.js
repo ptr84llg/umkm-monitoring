@@ -36,13 +36,16 @@
         checkedAt: null,
         lastResult: null,
         dismissed: false,
-        initialized: false
+        initialized: false,
+        serverVerified: false
     };
 
     let settings = {
         rootSelector: '[data-location-gate-root]',
         fallbackRootSelector: '.umkm-landing',
         loginUrl: '/login',
+        verifyUrl: '/api/public/location-gate/verify',
+        clearUrl: '/api/public/location-gate/clear',
         enableAutoCheck: true,
         autoCheckDelay: 450,
         checkOptions: {
@@ -91,6 +94,18 @@
         const root = rootElement();
 
         return root && root.dataset.loginUrl ? root.dataset.loginUrl : settings.loginUrl;
+    }
+
+    function getVerifyUrl() {
+        const root = rootElement();
+
+        return root && root.dataset.locationGateVerifyUrl ? root.dataset.locationGateVerifyUrl : settings.verifyUrl;
+    }
+
+    function getClearUrl() {
+        const root = rootElement();
+
+        return root && root.dataset.locationGateClearUrl ? root.dataset.locationGateClearUrl : settings.clearUrl;
     }
 
     function getClientIp() {
@@ -299,6 +314,68 @@
         setTextAll(DEFAULT_SELECTORS.infoDevice, getClientDevice());
     }
 
+    function buildServerVerifyPayload(result) {
+        const locationState = result && result.state ? result.state : {};
+        const position = locationState.lastPosition || {};
+
+        return {
+            status: 'granted',
+            permission: 'granted',
+            checked_at: locationState.checkedAt || state.checkedAt || new Date().toISOString(),
+            position: {
+                latitude: position.latitude,
+                longitude: position.longitude,
+                accuracy: position.accuracy,
+                timestamp: position.timestamp
+            }
+        };
+    }
+
+    async function verifyWithServer(result) {
+        if (!UMKM.ajax || typeof UMKM.ajax.post !== 'function') {
+            log('error', 'location gate server verify failed because UMKM.ajax is unavailable', {});
+            return false;
+        }
+
+        const response = await UMKM.ajax.post(getVerifyUrl(), buildServerVerifyPayload(result));
+        const payload = response && response.payload ? response.payload : null;
+
+        if (response && response.ok && payload && payload.ok === true) {
+            state.serverVerified = true;
+            state.serverVerification = payload.data || {};
+            return true;
+        }
+
+        state.serverVerified = false;
+
+        log('warn', 'location gate server verify rejected', {
+            status: response ? response.status : 0,
+            payload: payload
+        });
+
+        return false;
+    }
+
+    async function clearServerVerification() {
+        state.serverVerified = false;
+
+        if (!UMKM.ajax || typeof UMKM.ajax.post !== 'function') {
+            return;
+        }
+
+        try {
+            await UMKM.ajax.post(getClearUrl(), {
+                status: state.status || 'unknown',
+                permission: state.permission || 'unknown',
+                cleared_at: new Date().toISOString()
+            });
+        } catch (error) {
+            log('warn', 'location gate server clear failed', {
+                message: error.message || 'clear failed'
+            });
+        }
+    }
+
     function setLocationChip(status) {
         const copy = locationCopy(status);
 
@@ -320,9 +397,13 @@
         state.checkedAt = new Date().toISOString();
         state.lastResult = result || null;
 
+        if (status !== 'granted') {
+            state.serverVerified = false;
+        }
+
         setLocationChip(status);
         setLocationInfo(result, status);
-        renderLoginLinks(status === 'granted');
+        renderLoginLinks(status === 'granted' && state.serverVerified === true);
 
         emit('updated', Object.assign({}, state));
 
@@ -474,6 +555,8 @@
     }
 
     function showDenied(permission) {
+        void clearServerVerification();
+
         const copy = locationCopy('denied');
 
         setNotice(
@@ -488,6 +571,8 @@
     }
 
     function showUnsupported(permission) {
+        void clearServerVerification();
+
         const copy = locationCopy('unsupported');
         const permissionState = permission && permission.state ? permission.state : 'unsupported';
 
@@ -503,6 +588,8 @@
     }
 
     function blockByResult(result) {
+        void clearServerVerification();
+
         const permission = result && result.permission ? result.permission : null;
         const locationState = result && result.state ? result.state : {};
         const lastError = locationState.lastError || {};
@@ -593,21 +680,38 @@
             const result = await UMKM.location.check(settings.checkOptions);
 
             if (result && result.ok) {
+                const serverVerified = await verifyWithServer(result);
+
+                if (serverVerified) {
+                    setNotice(
+                        'granted',
+                        locationCopy('granted').title,
+                        locationCopy('granted').message,
+                        'granted',
+                        result
+                    );
+
+                    updateState('granted', result, 'granted');
+                    return true;
+                }
+
                 setNotice(
-                    'granted',
-                    locationCopy('granted').title,
-                    locationCopy('granted').message,
+                    'error',
+                    'Validasi server belum berhasil',
+                    'Lokasi perangkat terbaca, tetapi server belum memverifikasi akses masuk. Klik cek ulang lokasi.',
                     'granted',
                     result
                 );
 
-                updateState('granted', result, 'granted');
-                return true;
+                updateState('error', result, 'granted');
+                return false;
             }
 
             blockByResult(result);
             return false;
         } catch (error) {
+            void clearServerVerification();
+
             setNotice(
                 'error',
                 locationCopy('error').title,

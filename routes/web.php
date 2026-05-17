@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
+use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,11 +24,31 @@ Route::prefix('api/public/landing-regions')
             ->name('landing.regions.children');
     });
 
+Route::prefix('api/public/location-gate')
+    ->name('public.location-gate.')
+    ->middleware([
+        'throttle:internal-sensitive',
+        'validate.umkm.internal.request',
+        'validate.internal.origin',
+        'validate.internal.referer',
+        'validate.fetch.metadata',
+        'log.internal.api',
+    ])
+    ->group(function () {
+        Route::post('/verify', [LocationGateController::class, 'verify'])
+            ->name('verify');
+
+        Route::post('/clear', [LocationGateController::class, 'clear'])
+            ->name('clear');
+    });
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])
+        ->middleware('location.gate')
         ->name('login');
 
     Route::post('/login', [LoginController::class, 'store'])
+        ->middleware('location.gate')
         ->name('login.store');
 });
 
