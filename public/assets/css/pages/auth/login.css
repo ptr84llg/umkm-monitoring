@@ -178,7 +178,6 @@ body.layout-auth {
 }
 
 .auth-login-card {
-    max-width: 500px;
     margin-left: auto;
     border-radius: var(--umkm-radius-xl);
     background: var(--umkm-card-gradient);
@@ -304,7 +303,7 @@ body.layout-auth {
     text-decoration: underline;
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
     .auth-login-card {
         max-width: none;
         margin-left: 0;

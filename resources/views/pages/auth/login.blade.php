@@ -16,11 +16,11 @@
         <span class="auth-gradient auth-gradient-b"></span>
     </div>
 
-    <div class="container py-4 py-lg-5 auth-container">
+    <div class="container py-4 py-xl-5 auth-container">
         <div class="card border-0 auth-shell">
-            <div class="card-body p-4 p-lg-5">
-                <div class="row align-items-center g-4 g-xl-5">
-                    <div class="col-12 col-lg-6">
+            <div class="card-body p-4 p-xl-5">
+                <div class="row g-2">
+                    <div class="col-12 col-lg-8 col-xl-6 mx-lg-auto">
                         <a href="{{ url('/') }}" class="d-inline-flex align-items-center gap-3 text-decoration-none auth-brand-link mb-4" aria-label="Kembali ke Beranda Monitoring UMKM">
                             <span class="auth-brand-mark">MU</span>
                             <span class="auth-brand-text">
@@ -70,7 +70,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-lg-6 ms-lg-auto">
+                    <div class="col-12 col-lg-8 col-xl-6 mx-lg-auto mt-3 mt-xl-0">
                         <div class="card border-0 shadow-sm auth-login-card">
                             <div class="card-body p-4 p-xl-5">
                                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
