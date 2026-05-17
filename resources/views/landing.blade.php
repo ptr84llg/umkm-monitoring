@@ -98,45 +98,51 @@
 
     <header class="landing-header navbar navbar-expand-xl fixed-top" data-landing-header>
         <div class="container">
-            <div class="d-flex align-items-center justify-content-between w-100 gap-3">
-                <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="Monitoring UMKM">
-                    <span class="landing-brand-mark">MU</span>
-                    <span class="landing-brand-text">
-                        <strong>Monitoring UMKM</strong>
-                        <small>Visual Analitik Interaktif</small>
-                    </span>
-                </a>
-
-                <nav class="landing-menu d-none d-xl-flex align-items-center gap-2" aria-label="Menu utama">
-                    <a class="btn btn-light btn-sm landing-menu-link" href="#dashboard">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                        <span>Preview Dashboard</span>
+            <div class="row align-items-center g-2 w-100 landing-header-row">
+                <div class="col-8 col-xl-4">
+                    <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="Monitoring UMKM">
+                        <span class="landing-brand-mark">MU</span>
+                        <span class="landing-brand-text">
+                            <strong>Monitoring UMKM</strong>
+                            <small>Visual Analitik Interaktif</small>
+                        </span>
                     </a>
-                    <a class="btn btn-light btn-sm landing-menu-link" href="#ringkasan">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
-                        <span>Ringkasan</span>
-                    </a>
-                </nav>
+                </div>
 
-                <div class="landing-nav-actions d-flex align-items-center gap-2">
-                    <a class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                        <span>Masuk</span>
-                    </a>
+                <div class="col-xl-4 d-none d-xl-flex justify-content-center">
+                    <nav class="landing-menu d-inline-flex align-items-center gap-2" aria-label="Menu utama">
+                        <a class="btn btn-light btn-sm landing-menu-link" href="#dashboard">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                            <span>Preview Dashboard</span>
+                        </a>
+                        <a class="btn btn-light btn-sm landing-menu-link" href="#ringkasan">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                            <span>Ringkasan</span>
+                        </a>
+                    </nav>
+                </div>
 
-                    <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
-                        <span>Jelajahi</span>
-                    </a>
+                <div class="col-4 col-xl-4">
+                    <div class="landing-nav-actions d-flex align-items-center justify-content-end gap-2">
+                        <a class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex" href="{{ route('login') }}" data-location-gated data-location-gated-key="header-login">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                            <span>Masuk</span>
+                        </a>
 
-                    <button type="button"
-                            class="btn btn-light btn-sm landing-menu-button d-inline-flex d-xl-none"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#landingMobileOffcanvas"
-                            aria-controls="landingMobileOffcanvas"
-                            aria-label="Buka menu">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>
-                    </button>
+                        <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
+                            <span>Jelajahi</span>
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-light btn-sm landing-menu-button d-inline-flex d-xl-none"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#landingMobileOffcanvas"
+                                aria-controls="landingMobileOffcanvas"
+                                aria-label="Buka menu">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -365,11 +371,11 @@
         </div>
     </div>
     <div class="landing-main">
-        <section class="hero-section py-5">
+        <section class="hero-section pt-2 pt-xl-3 pb-5">
             <div class="container">
                 <div class="card border-0 hero-shell">
                     <div class="card-body p-4 p-xl-5">
-                        <div class="row align-items-xl-center g-4 g-xl-5">
+                        <div class="row align-items-xl-start g-4 g-xl-5">
                             <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
                                 <div class="hero-copy reveal">
                                     <span class="landing-pill">

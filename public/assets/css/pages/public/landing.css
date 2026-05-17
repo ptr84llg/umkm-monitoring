@@ -19,9 +19,7 @@ body.is-region-modal-open {
 
 .umkm-landing {
     position: relative;
-    min-height: 100vh;
     overflow-x: hidden;
-    padding-top: 68px;
     background: var(--umkm-page-gradient);
 }
 
@@ -136,15 +134,23 @@ body.is-region-modal-open {
 
 /* Header */
 .landing-header {
-    padding-block: .45rem;
     z-index: 70;
-    min-height: 64px;
+    min-height: 58px;
+    padding-block: .28rem;
     border-bottom: 1px solid var(--umkm-line-soft);
-    background: rgba(255, 255, 255, .82);
+    background: rgba(255, 255, 255, .88);
     backdrop-filter: blur(var(--umkm-glass-blur));
     transition: background-color .24s ease, box-shadow .24s ease;
 }
 
+
+.landing-header-row {
+    min-height: 48px;
+}
+
+.landing-header .container {
+    max-width: min(1200px, calc(100% - 2rem));
+}
 .landing-header.is-scrolled {
     background: rgba(255, 255, 255, .95);
     box-shadow: var(--umkm-shadow-sm);
@@ -286,24 +292,26 @@ body.is-region-modal-open {
 
 /* Header and hero spacing guard */
 @media (max-width: 1199.98px) {
-    .umkm-landing {
-        padding-top: 66px;
-    }
-
     .hero-section {
-        padding-top: 1.15rem;
+        padding-top: .9rem !important;
     }
 }
 
 @media (max-width: 575.98px) {
-    .umkm-landing {
-        padding-top: 64px;
+    .landing-header {
+        min-height: 56px;
     }
 
     .hero-section {
-        padding-top: .9rem;
+        padding-top: .75rem !important;
+    }
+
+    .hero-shell > .card-body {
+        padding-top: 1rem !important;
+        padding-bottom: 1.1rem !important;
     }
 }
+
 /* Location gate link visibility */
 html:not([data-location-gate="granted"]) [data-location-gated] {
     display: none !important;
@@ -457,7 +465,8 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
 }
 /* Hero */
 .hero-section {
-    padding: clamp(1.15rem, 2.2vw, 1.8rem) 0 clamp(3rem, 5vw, 4.5rem);
+    padding-top: .85rem !important;
+    padding-bottom: clamp(2.8rem, 5vw, 4.5rem) !important;
 }
 
 .hero-shell {
@@ -468,6 +477,11 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
     box-shadow: var(--umkm-shadow-lg);
 }
 
+
+.hero-shell > .card-body {
+    padding-top: clamp(1.25rem, 2.4vw, 2.25rem) !important;
+    padding-bottom: clamp(1.35rem, 2.6vw, 2.5rem) !important;
+}
 .hero-copy,
 .hero-board {
     position: relative;
@@ -860,7 +874,12 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
 }
 
 @media (max-width: 1199.98px) {
-    .hero-copy,
+    
+.hero-shell > .card-body {
+    padding-top: clamp(1.25rem, 2.4vw, 2.25rem) !important;
+    padding-bottom: clamp(1.35rem, 2.6vw, 2.5rem) !important;
+}
+.hero-copy,
     .hero-board {
         max-width: 760px;
         margin-right: auto;
@@ -1973,8 +1992,10 @@ html[data-location-gate="checking"] .location-gate-retry {
 
 @media (max-width: 991.98px) {
     .umkm-landing {
-        padding-top: 82px;
-    }
+    position: relative;
+    overflow-x: hidden;
+    background: var(--umkm-page-gradient);
+}
 
     .landing-header .container {
         max-width: 100%;
@@ -2033,7 +2054,12 @@ html[data-location-gate="checking"] .location-gate-retry {
         border-radius: 30px;
     }
 
-    .hero-copy,
+    
+.hero-shell > .card-body {
+    padding-top: clamp(1.25rem, 2.4vw, 2.25rem) !important;
+    padding-bottom: clamp(1.35rem, 2.6vw, 2.5rem) !important;
+}
+.hero-copy,
     .dashboard-panel-head > div,
     .summary-copy,
     .cta-panel > div,
@@ -2383,8 +2409,10 @@ html[data-location-gate="checking"] .location-gate-retry {
         white-space: normal;
     }
     .umkm-landing {
-        padding-top: 76px;
-    }
+    position: relative;
+    overflow-x: hidden;
+    background: var(--umkm-page-gradient);
+}
 
     .landing-nav {
         min-height: 68px;
@@ -2426,9 +2454,9 @@ html[data-location-gate="checking"] .location-gate-retry {
     }
 
     .hero-section {
-        padding-top: 24px;
-        padding-bottom: 52px;
-    }
+    padding-top: .85rem !important;
+    padding-bottom: clamp(2.8rem, 5vw, 4.5rem) !important;
+}
 
     .hero-copy h1,
     .dashboard-panel h2,
