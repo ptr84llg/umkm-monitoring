@@ -737,3 +737,113 @@ body.layout-auth {
         scroll-behavior: auto !important;
     }
 }
+
+/* Login-1A-Fix-3: align auth form as landing-like hero board */
+@media (min-width: 992px) {
+    .auth-shell {
+        min-height: min(720px, calc(100vh - 6.8rem));
+        display: flex;
+        align-items: stretch;
+    }
+
+    .auth-shell > .row {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .auth-shell-info {
+        min-height: auto;
+        height: 100%;
+        padding-right: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .auth-hero-copy {
+        margin-top: clamp(2.25rem, 4vw, 3.8rem);
+    }
+
+    .auth-hero-copy h1 {
+        max-width: 760px;
+        font-size: clamp(3rem, 4.6vw, 4.85rem);
+    }
+
+    .auth-security-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: clamp(1.6rem, 2.4vw, 2rem);
+    }
+
+    .auth-integrity-strip {
+        margin-top: 1.6rem;
+        padding-top: 0;
+    }
+
+    .auth-shell-board {
+        min-height: 100%;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding-top: clamp(5.1rem, 7.2vw, 6.35rem);
+    }
+
+    .auth-card {
+        width: min(100%, 430px);
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 1200px) {
+    .auth-shell-board {
+        padding-top: clamp(5.55rem, 7vw, 6.85rem);
+    }
+
+    .auth-card {
+        width: min(100%, 448px);
+    }
+}
+
+@media (min-width: 1400px) {
+    .auth-shell {
+        min-height: 720px;
+    }
+
+    .auth-shell-board {
+        padding-top: 6.15rem;
+    }
+}
+
+@media (max-width: 1199.98px) and (min-width: 992px) {
+    .auth-shell {
+        min-height: auto;
+    }
+
+    .auth-hero-copy h1 {
+        font-size: clamp(2.65rem, 4.2vw, 3.65rem);
+    }
+
+    .auth-security-list {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-security-item {
+        grid-template-columns: auto 1fr;
+        align-items: flex-start;
+    }
+
+    .auth-shell-board {
+        padding-top: clamp(4.8rem, 7vw, 5.7rem);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .auth-shell {
+        min-height: auto;
+        display: block;
+    }
+
+    .auth-shell-board {
+        padding-top: 0;
+        margin-top: 1.25rem;
+    }
+
+    .auth-card {
+        width: 100%;
+    }
+}
