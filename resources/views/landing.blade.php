@@ -6,8 +6,8 @@
     $vendorJs = [
         asset('assets/vendor/chartjs/chart.umd.min.js'),
     ];
-    $pageCss = ['landing.css'];
-    $pageJs = ['landing.js'];
+    $pageCss = ['public/landing.css'];
+    $pageJs = ['public/landing.js'];
 @endphp
 
 @section('title', 'Monitoring UMKM | Visual Analitik Interaktif')
