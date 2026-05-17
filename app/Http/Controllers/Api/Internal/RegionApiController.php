@@ -48,7 +48,7 @@ class RegionApiController extends Controller
         $keyword = trim((string) ($validated['q'] ?? ''));
         $limit = $this->limit($request, 200);
 
-        if (!$parentCode && !$requestedLevel) {
+        if (! $parentCode && ! $requestedLevel) {
             return response()->json([
                 'message' => 'Parameter parent_code atau level wajib diisi.',
                 'errors' => [
@@ -122,7 +122,7 @@ class RegionApiController extends Controller
             ->where('code', $code)
             ->first();
 
-        if (!$region) {
+        if (! $region) {
             return response()->json([
                 'message' => 'Wilayah tidak ditemukan.',
             ], 404);
@@ -140,7 +140,7 @@ class RegionApiController extends Controller
             ->where('code', $code)
             ->first();
 
-        if (!$region) {
+        if (! $region) {
             return response()->json([
                 'message' => 'Wilayah tidak ditemukan.',
             ], 404);
@@ -192,7 +192,6 @@ class RegionApiController extends Controller
     protected function transform(Region $region, bool $withRelations = false): array
     {
         $payload = [
-            'id' => $region->id,
             'code' => $region->code,
             'name' => $region->name,
             'level' => $region->level,
@@ -201,8 +200,6 @@ class RegionApiController extends Controller
             'city_code' => $region->city_code,
             'district_code' => $region->district_code,
             'village_code' => $region->village_code,
-            'source' => $region->source,
-            'is_active' => (bool) $region->is_active,
         ];
 
         if ($withRelations) {
