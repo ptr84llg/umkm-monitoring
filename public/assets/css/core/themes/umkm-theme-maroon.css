@@ -1,0 +1,36 @@
+:root[data-umkm-theme="maroon"],
+[data-umkm-theme="maroon"] {
+    --umkm-primary: #8a1538;
+    --umkm-primary-rgb: 138, 21, 56;
+    --umkm-primary-dark: #5f0f2a;
+    --umkm-primary-soft: rgba(138, 21, 56, .10);
+    --umkm-primary-softer: rgba(138, 21, 56, .065);
+
+    --umkm-secondary: #be123c;
+    --umkm-secondary-rgb: 190, 18, 60;
+    --umkm-secondary-dark: #881337;
+    --umkm-secondary-soft: rgba(190, 18, 60, .10);
+
+    --umkm-accent: #f59e0b;
+    --umkm-accent-rgb: 245, 158, 11;
+    --umkm-accent-dark: #92400e;
+    --umkm-accent-soft: rgba(245, 158, 11, .16);
+
+    --umkm-page-gradient:
+        radial-gradient(circle at 10% 12%, rgba(138, 21, 56, .13), transparent 28%),
+        radial-gradient(circle at 94% 16%, rgba(245, 158, 11, .18), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #fff8fb 44%, #fdf2f8 100%);
+
+    --umkm-hero-gradient:
+        radial-gradient(circle at 16% 18%, rgba(138, 21, 56, .12), transparent 30%),
+        radial-gradient(circle at 95% 8%, rgba(245, 158, 11, .16), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .58));
+
+    --umkm-card-gradient:
+        radial-gradient(circle at 100% 0%, rgba(138, 21, 56, .10), transparent 30%),
+        rgba(255, 255, 255, .90);
+
+    --umkm-grid-color: rgba(138, 21, 56, .045);
+    --umkm-orb-primary: rgba(138, 21, 56, .22);
+    --umkm-orb-accent: rgba(245, 158, 11, .24);
+}

@@ -7,9 +7,20 @@
     $pageJs = $pageJs ?? [];
     $assetModules = $assetModules ?? [];
 
-    $coreCssBase = [
+    $coreThemeCss = [
+        'themes/umkm-theme-blue.css',
+        'themes/umkm-theme-green.css',
+        'themes/umkm-theme-maroon.css',
+        'themes/umkm-theme-gold.css',
+        'themes/umkm-theme-gradient-1.css',
+        'themes/umkm-theme-gradient-2.css',
+        'themes/umkm-theme-gradient-3.css',
+    ];
+
+    $coreCssBase = array_merge([
         'bootstrap-local.css',
         'umkm-theme.css',
+    ], $coreThemeCss, [
         'umkm-bootstrap-bridge.css',
         'umkm-scrollbar.css',
         'umkm-ui.css',
@@ -21,7 +32,7 @@
         'umkm-toast.css',
         'umkm-footer.css',
         'umkm-security.css',
-    ];
+    ]);
 
     $coreCssModules = [
         'loader' => 'umkm-loader.css',
@@ -84,16 +95,17 @@
     $assetModules = array_values(array_unique($requestedModules));
 
     if ($assetProfile === 'landing') {
-        $coreCss = [
+        $coreCss = array_merge([
             'bootstrap-local.css',
             'umkm-theme.css',
+        ], $coreThemeCss, [
             'umkm-bootstrap-bridge.css',
             'umkm-scrollbar.css',
             'umkm-ui.css',
             'umkm-buttons.css',
             'umkm-footer.css',
             'umkm-security.css',
-        ];
+        ]);
 
         $coreJs = [
             'bootstrap-local.js',

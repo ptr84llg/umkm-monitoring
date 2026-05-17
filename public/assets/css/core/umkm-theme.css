@@ -2,14 +2,14 @@
 |--------------------------------------------------------------------------
 | UMKM Theme Foundation
 |--------------------------------------------------------------------------
-| File ini menjadi pusat variabel tema sistem.
-| Bootstrap tetap menjadi pondasi komponen, sedangkan warna, radius,
-| shadow, motif, dan identitas visual diarahkan melalui CSS variables.
+| File ini menjadi pusat token visual sistem.
+| Opsi warna theme ditempatkan secara modular pada:
+| public/assets/css/core/themes/
 |--------------------------------------------------------------------------
 */
 
 :root,
-[data-umkm-theme="default"] {
+[data-umkm-theme] {
     --umkm-primary: #0f7665;
     --umkm-primary-rgb: 15, 118, 101;
     --umkm-primary-dark: #084c42;
@@ -80,30 +80,24 @@
 
     --umkm-focus-ring: 0 0 0 .22rem rgba(15, 118, 101, .14);
     --umkm-focus-ring-secondary: 0 0 0 .22rem rgba(13, 110, 253, .12);
-}
 
-[data-umkm-theme="emerald"] {
-    --umkm-primary: #0f7665;
-    --umkm-primary-rgb: 15, 118, 101;
-    --umkm-primary-dark: #084c42;
-    --umkm-primary-soft: rgba(15, 118, 101, .10);
-    --umkm-primary-softer: rgba(15, 118, 101, .065);
-}
+    --umkm-page-gradient:
+        radial-gradient(circle at 10% 12%, rgba(15, 118, 101, .13), transparent 28%),
+        radial-gradient(circle at 94% 16%, rgba(240, 168, 74, .18), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbfb 44%, #eef7f6 100%);
 
-[data-umkm-theme="blue"] {
-    --umkm-primary: #0d6efd;
-    --umkm-primary-rgb: 13, 110, 253;
-    --umkm-primary-dark: #084298;
-    --umkm-primary-soft: rgba(13, 110, 253, .10);
-    --umkm-primary-softer: rgba(13, 110, 253, .065);
-}
+    --umkm-hero-gradient:
+        radial-gradient(circle at 16% 18%, rgba(15, 118, 101, .11), transparent 30%),
+        radial-gradient(circle at 95% 8%, rgba(240, 168, 74, .15), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .58));
 
-[data-umkm-theme="maroon"] {
-    --umkm-primary: #8a1538;
-    --umkm-primary-rgb: 138, 21, 56;
-    --umkm-primary-dark: #5f0f2a;
-    --umkm-primary-soft: rgba(138, 21, 56, .10);
-    --umkm-primary-softer: rgba(138, 21, 56, .065);
+    --umkm-card-gradient:
+        radial-gradient(circle at 100% 0%, rgba(13, 110, 253, .08), transparent 30%),
+        rgba(255, 255, 255, .90);
+
+    --umkm-grid-color: rgba(15, 118, 101, .045);
+    --umkm-orb-primary: rgba(15, 118, 101, .22);
+    --umkm-orb-accent: rgba(240, 168, 74, .24);
 }
 
 html {
@@ -196,4 +190,24 @@ body {
     font-weight: 900;
     letter-spacing: .03em;
     text-transform: uppercase;
+}
+
+.umkm-theme-page-bg {
+    background: var(--umkm-page-gradient);
+}
+
+.umkm-theme-hero-bg {
+    background: var(--umkm-hero-gradient);
+}
+
+.umkm-theme-card-bg {
+    background: var(--umkm-card-gradient);
+}
+
+.umkm-theme-orb-primary {
+    background: radial-gradient(circle, var(--umkm-orb-primary), transparent 68%);
+}
+
+.umkm-theme-orb-accent {
+    background: radial-gradient(circle, var(--umkm-orb-accent), transparent 68%);
 }

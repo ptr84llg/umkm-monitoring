@@ -1,0 +1,36 @@
+:root[data-umkm-theme="gold"],
+[data-umkm-theme="gold"] {
+    --umkm-primary: #d97706;
+    --umkm-primary-rgb: 217, 119, 6;
+    --umkm-primary-dark: #92400e;
+    --umkm-primary-soft: rgba(217, 119, 6, .10);
+    --umkm-primary-softer: rgba(217, 119, 6, .065);
+
+    --umkm-secondary: #b45309;
+    --umkm-secondary-rgb: 180, 83, 9;
+    --umkm-secondary-dark: #78350f;
+    --umkm-secondary-soft: rgba(180, 83, 9, .10);
+
+    --umkm-accent: #fbbf24;
+    --umkm-accent-rgb: 251, 191, 36;
+    --umkm-accent-dark: #92400e;
+    --umkm-accent-soft: rgba(251, 191, 36, .18);
+
+    --umkm-page-gradient:
+        radial-gradient(circle at 10% 12%, rgba(217, 119, 6, .13), transparent 28%),
+        radial-gradient(circle at 94% 16%, rgba(251, 191, 36, .22), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #fffaf0 44%, #fff7ed 100%);
+
+    --umkm-hero-gradient:
+        radial-gradient(circle at 16% 18%, rgba(217, 119, 6, .12), transparent 30%),
+        radial-gradient(circle at 95% 8%, rgba(251, 191, 36, .20), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .58));
+
+    --umkm-card-gradient:
+        radial-gradient(circle at 100% 0%, rgba(251, 191, 36, .14), transparent 30%),
+        rgba(255, 255, 255, .90);
+
+    --umkm-grid-color: rgba(217, 119, 6, .045);
+    --umkm-orb-primary: rgba(217, 119, 6, .22);
+    --umkm-orb-accent: rgba(251, 191, 36, .26);
+}
