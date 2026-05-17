@@ -23,6 +23,8 @@
     ];
 
     $coreCssModules = [
+        'loader' => 'umkm-loader.css',
+        'readiness' => 'umkm-loader.css',
         'tables' => 'umkm-tables.css',
         'datatables' => 'umkm-datatables.css',
         'map' => 'umkm-map.css',
@@ -44,6 +46,8 @@
     $coreJsModules = [
         'ajax' => 'umkm-ajax.js',
         'security' => 'umkm-security.js',
+        'loader' => 'umkm-loader.js',
+        'readiness' => 'umkm-readiness.js',
         'location' => 'umkm-location.js',
         'session' => 'umkm-session.js',
         'datatables' => 'umkm-datatables.js',
@@ -51,6 +55,32 @@
         'map' => 'umkm-map.js',
         'charts' => 'umkm-charts.js',
     ];
+
+    $moduleDependencies = [
+        'readiness' => ['loader'],
+        'datatables' => ['loader'],
+        'wizard' => ['loader'],
+        'map' => ['loader'],
+        'charts' => ['loader'],
+    ];
+
+    $requestedModules = [];
+
+    foreach ($assetModules as $module) {
+        if (! is_string($module) || trim($module) === '') {
+            continue;
+        }
+
+        $module = trim($module);
+
+        foreach (($moduleDependencies[$module] ?? []) as $dependency) {
+            $requestedModules[] = $dependency;
+        }
+
+        $requestedModules[] = $module;
+    }
+
+    $assetModules = array_values(array_unique($requestedModules));
 
     if ($assetProfile === 'landing') {
         $coreCss = [
