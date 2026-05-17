@@ -314,8 +314,8 @@
          data-menu-canvas
          data-bs-backdrop="true"
          data-bs-scroll="false">
-        <div class="offcanvas-header mobile-canvas-head align-items-center gap-3">
-            <a class="landing-brand d-inline-flex align-items-center gap-3 text-decoration-none"
+        <div class="offcanvas-header mobile-canvas-head px-3 py-3">
+            <a class="landing-brand mobile-canvas-brand d-inline-flex align-items-center gap-2 text-decoration-none"
                href="{{ url('/') }}"
                data-menu-link
                aria-label="Monitoring UMKM">
@@ -335,46 +335,48 @@
             </button>
         </div>
 
-        <div class="offcanvas-body mobile-canvas-body umkm-scrollbar-modal">
-            <div class="card border-0 mobile-canvas-card">
-                <div class="card-body p-3">
-                    <div class="d-grid gap-2 mobile-canvas-menu">
-                        <a class="mobile-canvas-link" href="#dashboard" data-menu-link>
-                            <span class="mobile-canvas-link-icon">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                            </span>
-                            <span>Preview Dashboard</span>
-                        </a>
+        <div class="offcanvas-body mobile-canvas-body p-3 d-flex flex-column gap-3">
+            <div class="list-group mobile-canvas-menu d-grid gap-2">
+                <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3"
+                   href="#dashboard"
+                   data-menu-link>
+                    <span class="mobile-canvas-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                    </span>
+                    <span>Preview Dashboard</span>
+                </a>
 
-                        <a class="mobile-canvas-link" href="#ringkasan" data-menu-link>
-                            <span class="mobile-canvas-link-icon">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
-                            </span>
-                            <span>Ringkasan</span>
-                        </a>
+                <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3"
+                   href="#ringkasan"
+                   data-menu-link>
+                    <span class="mobile-canvas-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
+                    </span>
+                    <span>Ringkasan</span>
+                </a>
 
-                        <a class="mobile-canvas-link" href="#cta" data-menu-link>
-                            <span class="mobile-canvas-link-icon">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
-                            </span>
-                            <span>Mulai</span>
-                        </a>
+                <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3"
+                   href="#cta"
+                   data-menu-link>
+                    <span class="mobile-canvas-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                    </span>
+                    <span>Mulai</span>
+                </a>
 
-                        <a class="mobile-canvas-link mobile-login-link"
-                           href="{{ route('login') }}"
-                           data-location-gated
-                           data-location-gated-key="mobile-login"
-                           data-menu-link>
-                            <span class="mobile-canvas-link-icon">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                            </span>
-                            <span>Masuk Sistem</span>
-                        </a>
-                    </div>
-                </div>
+                <a class="btn btn-primary mobile-login-link d-flex align-items-center justify-content-center gap-2"
+                   href="{{ route('login') }}"
+                   data-location-gated
+                   data-location-gated-key="mobile-login"
+                   data-menu-link>
+                    <span class="mobile-canvas-link-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                    </span>
+                    <span>Masuk Sistem</span>
+                </a>
             </div>
 
-            <div class="rounded-4 mobile-canvas-note mt-3">
+            <div class="alert mobile-canvas-note mt-auto mb-0" role="note">
                 <strong>Akses aman</strong>
                 <p class="mb-0">Tombol masuk hanya tersedia setelah perangkat memberikan izin lokasi.</p>
             </div>
