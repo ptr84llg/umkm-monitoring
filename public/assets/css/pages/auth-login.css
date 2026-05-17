@@ -1,7 +1,12 @@
+.auth-main {
+    min-height: 100vh;
+}
+
 .auth-login-page {
     position: relative;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background:
         radial-gradient(circle at top left, rgba(13, 110, 253, 0.16), transparent 34rem),
         radial-gradient(circle at bottom right, rgba(15, 118, 101, 0.18), transparent 32rem),
@@ -52,17 +57,27 @@
 .auth-container {
     position: relative;
     z-index: 1;
+    width: 100%;
     min-height: 100vh;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding-top: clamp(1.25rem, 3vw, 3rem);
+    padding-bottom: clamp(1.25rem, 3vw, 3rem);
     display: flex;
     align-items: center;
 }
 
+.auth-container > .row {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .auth-hero-panel {
+    width: 100%;
+    max-width: 42rem;
+    margin-inline: auto;
     border: 1px solid rgba(15, 118, 101, 0.12);
     border-radius: 2rem;
-    padding: 2rem;
+    padding: clamp(1.35rem, 2.2vw, 2rem);
     background: rgba(255, 255, 255, 0.62);
     box-shadow: 0 24px 80px rgba(16, 33, 61, 0.08);
     backdrop-filter: blur(14px);
@@ -74,6 +89,10 @@
     gap: 0.85rem;
     color: #10213d;
     text-decoration: none;
+}
+
+.auth-brand-link:hover {
+    color: #10213d;
 }
 
 .auth-brand-mark {
@@ -105,7 +124,7 @@
 }
 
 .auth-hero-content {
-    margin-top: 4rem;
+    margin-top: clamp(2rem, 4vw, 4rem);
     max-width: 38rem;
 }
 
@@ -127,7 +146,7 @@
 .auth-hero-content h1 {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-size: clamp(2rem, 3.4vw, 3.35rem);
     line-height: 1.05;
     font-weight: 850;
     letter-spacing: -0.055em;
@@ -188,9 +207,12 @@
 }
 
 .auth-card {
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
     border: 1px solid rgba(16, 33, 61, 0.1);
     border-radius: 2rem;
-    padding: 1.5rem;
+    padding: clamp(1.15rem, 2vw, 1.5rem);
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 24px 90px rgba(16, 33, 61, 0.14);
     backdrop-filter: blur(18px);
@@ -247,6 +269,7 @@
 .auth-location-dot {
     width: 0.65rem;
     height: 0.65rem;
+    flex: 0 0 0.65rem;
     border-radius: 999px;
     background: #f59e0b;
     box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.15);
@@ -415,25 +438,102 @@
     text-decoration: underline;
 }
 
+@media (min-width: 992px) {
+    .auth-container > .row {
+        align-items: center;
+    }
+
+    .auth-hero-panel,
+    .auth-card {
+        transform: translateZ(0);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .auth-hero-panel {
+        max-width: 39rem;
+    }
+
+    .auth-card {
+        max-width: 32rem;
+    }
+
+    .auth-hero-content h1 {
+        font-size: clamp(2rem, 3vw, 2.85rem);
+    }
+}
+
 @media (max-width: 991.98px) {
     .auth-container {
+        align-items: flex-start;
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
     }
 
+    .auth-container > .row {
+        row-gap: 1rem;
+    }
+
     .auth-hero-panel {
-        padding: 1.35rem;
+        max-width: 40rem;
+    }
+
+    .auth-card {
+        max-width: 40rem;
     }
 
     .auth-hero-content {
         margin-top: 2rem;
     }
+
+    .auth-security-list {
+        margin-top: 1.4rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .auth-hero-panel {
+        border-radius: 1.5rem;
+    }
+
+    .auth-card {
+        border-radius: 1.5rem;
+    }
+
+    .auth-hero-content h1 {
+        font-size: clamp(2rem, 9vw, 2.65rem);
+    }
+
+    .auth-hero-content p {
+        font-size: 0.98rem;
+    }
 }
 
 @media (max-width: 575.98px) {
+    .auth-login-page {
+        background:
+            radial-gradient(circle at top left, rgba(13, 110, 253, 0.14), transparent 24rem),
+            linear-gradient(135deg, #f7fbff 0%, #eef7f5 100%);
+    }
+
+    .auth-container {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    .auth-hero-panel,
     .auth-card {
-        padding: 1.1rem;
-        border-radius: 1.35rem;
+        border-radius: 1.25rem;
+    }
+
+    .auth-brand-mark {
+        width: 2.65rem;
+        height: 2.65rem;
+        border-radius: 0.85rem;
+    }
+
+    .auth-card-header {
+        align-items: flex-start;
     }
 
     .auth-location-panel {
@@ -443,6 +543,10 @@
 
     .auth-location-button {
         width: 100%;
+    }
+
+    .auth-security-item {
+        padding: 0.85rem;
     }
 }
 
