@@ -115,19 +115,36 @@
     ];
 
     $requestedModules = [];
+    $visitedModules = [];
+
+    $collectModule = function (string $module) use (&$collectModule, &$requestedModules, &$visitedModules, $moduleDependencies): void {
+        $module = trim($module);
+
+        if ($module === '') {
+            return;
+        }
+
+        if (isset($visitedModules[$module])) {
+            return;
+        }
+
+        $visitedModules[$module] = true;
+
+        foreach (($moduleDependencies[$module] ?? []) as $dependency) {
+            if (is_string($dependency) && trim($dependency) !== '') {
+                $collectModule($dependency);
+            }
+        }
+
+        $requestedModules[] = $module;
+    };
 
     foreach ($assetModules as $module) {
         if (! is_string($module) || trim($module) === '') {
             continue;
         }
 
-        $module = trim($module);
-
-        foreach (($moduleDependencies[$module] ?? []) as $dependency) {
-            $requestedModules[] = $dependency;
-        }
-
-        $requestedModules[] = $module;
+        $collectModule($module);
     }
 
     $assetModules = array_values(array_unique($requestedModules));
