@@ -325,170 +325,209 @@
     </div>
 
     <div class="landing-main">
-        <section class="hero-section">
+        <section class="hero-section py-5">
             <div class="container">
-                <div class="hero-shell">
-                    <div class="row align-items-center g-5">
-                        <div class="col-lg-6">
-                            <div class="hero-copy reveal">
-                                <span class="landing-pill">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
-                                    <span>Sistem informasi untuk ekosistem UMKM</span>
-                                </span>
+                <div class="card border-0 hero-shell">
+                    <div class="card-body p-4 p-xl-5">
+                        <div class="row align-items-xl-center g-4 g-xl-5">
+                            <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
+                                <div class="hero-copy reveal">
+                                    <span class="landing-pill">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
+                                        <span>Sistem informasi untuk ekosistem UMKM</span>
+                                    </span>
 
-                                <h1>Monitoring UMKM berbasis Data</h1>
-                                <p>
-                                    Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
-                                    aktivitas UMKM dalam tampilan Visual Analitik Interaktif yang mudah dibaca untuk
-                                    membantu pemantauan program dan pengambilan keputusan.
-                                </p>
+                                    <h1 class="display-3 fw-bold mt-3 mb-3">Monitoring UMKM berbasis Data</h1>
+                                    <p class="lead mb-0">
+                                        Temukan ringkasan usaha, persebaran wilayah, status legalitas, dan perkembangan
+                                        aktivitas UMKM dalam tampilan Visual Analitik Interaktif yang mudah dibaca untuk
+                                        membantu pemantauan program dan pengambilan keputusan.
+                                    </p>
 
-                                <div class="hero-actions">
-                                    <a class="btn btn-success btn-lg landing-main-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="hero-login">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
-                                        <span>Masuk ke Sistem</span>
-                                    </a>
-                                    <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                        <span>Lihat Preview</span>
-                                    </a>
+                                    <div class="d-flex flex-wrap gap-3 mt-4 hero-actions">
+                                        <a class="btn btn-primary btn-lg landing-main-btn" href="{{ route('login') }}" data-location-gated data-location-gated-key="hero-login">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5-5 5Zm2-14h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7v-2h7V5h-7V3Z"/></svg>
+                                            <span>Masuk ke Sistem</span>
+                                        </a>
+                                        <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
+                                            <span>Lihat Preview</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-lg-6">
-                            <div class="hero-board reveal reveal-delay-1" data-tilt-card>
-                                <div class="board-source board-source-with-action board-source-stacked" data-public-region-current>
-                                    <div class="board-source-info">
-                                        <span class="board-source-kicker">Wilayah aktif</span>
-                                        <strong data-public-region-source>Kota Lubuklinggau</strong>
-                                    </div>
-
-                                    <button type="button" class="board-region-button" data-region-modal-open>
-                                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                                            <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
-                                        </svg>
-                                        <span>Pilih Wilayah</span>
-                                    </button>
-                                </div>
-
-                                <div class="board-window">
-                                    <div class="board-top">
-                                        <div class="board-dots">
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                        </div>
-                                        <strong>Preview Dashboard UMKM</strong>
-                                        <small>preview agregat</small>
-                                    </div>
-
-                                    <div class="board-metrics">
-                                        <div>
-                                            <span>UMKM Terdata</span>
-                                            <strong class="count-up" data-count="1248" data-public-metric="total">0</strong>
-                                        </div>
-                                        <div>
-                                            <span>UMKM Aktif</span>
-                                            <strong class="count-up" data-count="1086" data-public-metric="active">0</strong>
-                                        </div>
-                                        <div>
-                                            <span>Perlu Validasi</span>
-                                            <strong class="count-up" data-count="36" data-public-metric="validation">0</strong>
-                                        </div>
-                                    </div>
-
-                                    <div class="landing-public-note">
-                                        <strong>Catatan:</strong>
-                                        <span>Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.</span>
-                                    </div>
-
-                                    <div class="board-preview-grid">
-                                        <div class="preview-map-card">
-                                            <div class="preview-card-title">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5v-13Zm3 1v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v2h3v-2H7Zm5 0v2h5v-2h-5Z"/></svg>
-                                                <strong>Data Wilayah</strong>
-                                            </div>
-                                            <div class="preview-region-stats" data-public-area-list>
-                                                <div>
-                                                    <span>Lubuk Linggau Timur II</span>
-                                                    <strong>312 UMKM</strong>
-                                                    <small>Perdagangan 42%</small>
+                            <div class="col-12 col-lg-10 col-xl-6 mx-lg-auto mx-xl-0">
+                                <div class="hero-board reveal reveal-delay-1" data-tilt-card>
+                                    <div class="card border-0 board-source board-source-stacked mb-3" data-public-region-current>
+                                        <div class="card-body p-3">
+                                            <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-between gap-3">
+                                                <div class="board-source-info">
+                                                    <span class="board-source-kicker">Wilayah aktif</span>
+                                                    <strong data-public-region-source>Kota Lubuklinggau</strong>
                                                 </div>
-                                                <div>
-                                                    <span>Lubuk Linggau Utara II</span>
-                                                    <strong>286 UMKM</strong>
-                                                    <small>Kuliner 35%</small>
-                                                </div>
-                                                <div>
-                                                    <span>Lubuk Linggau Barat II</span>
-                                                    <strong>214 UMKM</strong>
-                                                    <small>Jasa 23%</small>
-                                                </div>
+
+                                                <button type="button" class="btn btn-primary board-region-button" data-region-modal-open>
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
+                                                    </svg>
+                                                    <span>Pilih Wilayah</span>
+                                                </button>
                                             </div>
                                         </div>
-
-                                        <div class="preview-list-card">
-                                            <div class="preview-card-title">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
-                                                <strong>Indikator</strong>
-                                            </div>
-                                            <div class="preview-progress" data-public-field-list>
-                                                <div>
-                                                    <span>Perdagangan</span>
-                                                    <b class="progress-fill-82"></b>
-                                                </div>
-                                                <div>
-                                                    <span>Kuliner</span>
-                                                    <b class="progress-fill-74"></b>
-                                                </div>
-                                                <div>
-                                                    <span>Jasa</span>
-                                                    <b class="progress-fill-64"></b>
-                                                </div>
-                                            </div>
-										</div>
-
-										<div class="landing-empty-state" data-public-empty-state hidden>
-											<span class="landing-empty-icon">
-												<svg viewBox="0 0 24 24" aria-hidden="true">
-													<path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
-												</svg>
-											</span>
-											<div>
-												<strong data-public-empty-title>Data wilayah belum tersedia</strong>
-												<p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
-											</div>
-										</div>
-                                    </div>
-									
-									<div class="board-bottom">
-                                        <div>
-                                            <span class="status-icon">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
-                                                </svg>
-                                            </span>
-                                            <strong>Wilayah Terpantau</strong>
-                                            <small data-public-watched-label>8 Kecamatan</small>
-                                        </div>
-                                        <div>
-                                            <span class="status-icon gold">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/>
-                                                </svg>
-                                            </span>
-                                            <strong>Bidang Dominan</strong>
-                                            <small data-public-dominant-label>Perdagangan</small>
-                                        </div>
                                     </div>
 
-                                    
+                                    <div class="card border-0 board-window">
+                                        <div class="board-top">
+                                            <div class="board-dots">
+                                                <span></span>
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                            <strong>Preview Dashboard UMKM</strong>
+                                            <small>preview agregat</small>
+                                        </div>
+
+                                        <div class="card-body p-0">
+                                            <div class="row g-3 board-metrics">
+                                                <div class="col-12 col-sm-4">
+                                                    <div class="card border-0 h-100">
+                                                        <div class="card-body">
+                                                            <span>UMKM Terdata</span>
+                                                            <strong class="count-up" data-count="1248" data-public-metric="total">0</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-4">
+                                                    <div class="card border-0 h-100">
+                                                        <div class="card-body">
+                                                            <span>UMKM Aktif</span>
+                                                            <strong class="count-up" data-count="1086" data-public-metric="active">0</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-4">
+                                                    <div class="card border-0 h-100">
+                                                        <div class="card-body">
+                                                            <span>Perlu Validasi</span>
+                                                            <strong class="count-up" data-count="36" data-public-metric="validation">0</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="landing-public-note mx-3 my-3">
+                                                <strong>Catatan:</strong>
+                                                <span>Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.</span>
+                                            </div>
+
+                                            <div class="row g-3 board-preview-grid">
+                                                <div class="col-12 col-md-6">
+                                                    <div class="card h-100 preview-map-card">
+                                                        <div class="card-body">
+                                                            <div class="preview-card-title">
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5v-13Zm3 1v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v3h3v-3H7Zm5 0v3h5v-3h-5Zm-5 5v2h3v-2H7Zm5 0v2h5v-2h-5Z"/></svg>
+                                                                <strong>Data Wilayah</strong>
+                                                            </div>
+                                                            <div class="preview-region-stats" data-public-area-list>
+                                                                <div>
+                                                                    <span>Lubuk Linggau Timur II</span>
+                                                                    <strong>312 UMKM</strong>
+                                                                    <small>Perdagangan 42%</small>
+                                                                </div>
+                                                                <div>
+                                                                    <span>Lubuk Linggau Utara II</span>
+                                                                    <strong>286 UMKM</strong>
+                                                                    <small>Kuliner 35%</small>
+                                                                </div>
+                                                                <div>
+                                                                    <span>Lubuk Linggau Barat II</span>
+                                                                    <strong>214 UMKM</strong>
+                                                                    <small>Jasa 23%</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12 col-md-6">
+                                                    <div class="card h-100 preview-list-card">
+                                                        <div class="card-body">
+                                                            <div class="preview-card-title">
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg>
+                                                                <strong>Indikator</strong>
+                                                            </div>
+                                                            <div class="preview-progress" data-public-field-list>
+                                                                <div>
+                                                                    <span>Perdagangan</span>
+                                                                    <b class="progress-fill-82"></b>
+                                                                </div>
+                                                                <div>
+                                                                    <span>Kuliner</span>
+                                                                    <b class="progress-fill-74"></b>
+                                                                </div>
+                                                                <div>
+                                                                    <span>Jasa</span>
+                                                                    <b class="progress-fill-64"></b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <div class="landing-empty-state" data-public-empty-state hidden>
+                                                        <span class="landing-empty-icon">
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                                <path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
+                                                            </svg>
+                                                        </span>
+                                                        <div>
+                                                            <strong data-public-empty-title>Data wilayah belum tersedia</strong>
+                                                            <p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-3 board-bottom">
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="card border-0 h-100">
+                                                        <div class="card-body d-flex align-items-center gap-3">
+                                                            <span class="status-icon">
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                                    <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
+                                                                </svg>
+                                                            </span>
+                                                            <span>
+                                                                <strong>Wilayah Terpantau</strong>
+                                                                <small data-public-watched-label>8 Kecamatan</small>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <div class="card border-0 h-100">
+                                                        <div class="card-body d-flex align-items-center gap-3">
+                                                            <span class="status-icon gold">
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                                    <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/>
+                                                                </svg>
+                                                            </span>
+                                                            <span>
+                                                                <strong>Bidang Dominan</strong>
+                                                                <small data-public-dominant-label>Perdagangan</small>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>

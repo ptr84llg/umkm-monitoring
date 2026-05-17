@@ -477,7 +477,6 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
     box-shadow: 0 0 0 .3rem var(--umkm-accent-soft);
 }
 
-/* Hero board */
 .hero-board {
     width: 100%;
 }
@@ -659,7 +658,6 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
     text-align: left;
 }
 
-/* Board region statistics */
 .preview-region-stats {
     display: grid;
     gap: .58rem;
@@ -711,7 +709,6 @@ html:not([data-location-gate="granted"]) [data-location-gated] {
     text-align: left;
 }
 
-/* Board indicators */
 .preview-progress {
     display: grid;
     gap: .68rem;
