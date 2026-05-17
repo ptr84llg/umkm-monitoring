@@ -551,7 +551,7 @@
             indicatorName.textContent = field.name || 'Indikator';
             indicatorMeta.className = 'indicator-meta';
             indicatorMeta.textContent = Landing.formatNumber(count) + ' UMKM • ' + percent + '%';
-            bar.style.width = Math.max(24, Math.min(95, percent)) + '%';
+            bar.className = 'progress-fill-' + Math.max(24, Math.min(95, percent));
 
             label.appendChild(indicatorName);
             label.appendChild(indicatorMeta);

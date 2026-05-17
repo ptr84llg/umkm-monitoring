@@ -15,6 +15,7 @@
             $percent = max(1, min(100, (int) round((float) ($field['percent'] ?? 0))));
             $count = max($index === 0 ? 1 : 0, (int) round($total * ($percent / 100)));
             $width = max(24, min(95, $percent));
+            $widthClass = 'progress-fill-' . $width;
         @endphp
 
         <div>
@@ -22,7 +23,7 @@
                 <span class="indicator-name">{{ $field['name'] ?? 'Indikator' }}</span>
                 <span class="indicator-meta">{{ number_format($count, 0, ',', '.') }} UMKM • {{ $percent }}%</span>
             </span>
-            <b style="width: {{ $width }}%;"></b>
+            <b class="{{ $widthClass }}"></b>
         </div>
     @endforeach
 @endif
