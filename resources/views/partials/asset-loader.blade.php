@@ -15,6 +15,24 @@
         'bootstrap/5.3.8/js/bootstrap.bundle.min.js',
     ];
 
+    $vendorLocalCssModules = [
+        'tabulator' => [
+            'tabulator/css/tabulator_bootstrap5.min.css',
+        ],
+    ];
+
+    $vendorLocalJsModules = [
+        'vue' => [
+            'vue/vue.global.prod.js',
+        ],
+        'echarts' => [
+            'echarts/echarts.min.js',
+        ],
+        'tabulator' => [
+            'tabulator/js/tabulator.min.js',
+        ],
+    ];
+
     $coreThemeCss = [
         'themes/umkm-theme-blue.css',
         'themes/umkm-theme-green.css',
@@ -46,8 +64,10 @@
         'readiness' => 'umkm-loader.css',
         'tables' => 'umkm-tables.css',
         'datatables' => 'umkm-datatables.css',
+        'tabulator' => 'umkm-tabulator.css',
         'map' => 'umkm-map.css',
         'charts' => 'umkm-charts.css',
+        'echarts' => 'umkm-charts.css',
         'security' => 'umkm-security.css',
     ];
 
@@ -69,17 +89,23 @@
         'location' => 'umkm-location.js',
         'session' => 'umkm-session.js',
         'datatables' => 'umkm-datatables.js',
+        'tabulator' => 'umkm-tabulator.js',
         'wizard' => 'umkm-wizard.js',
         'map' => 'umkm-map.js',
         'charts' => 'umkm-charts.js',
+        'echarts' => 'umkm-echarts.js',
+        'vue' => 'umkm-vue.js',
     ];
 
     $moduleDependencies = [
         'readiness' => ['loader'],
         'datatables' => ['loader'],
+        'tabulator' => ['loader', 'tables'],
         'wizard' => ['loader'],
         'map' => ['loader'],
         'charts' => ['loader'],
+        'echarts' => ['loader', 'charts'],
+        'vue' => ['loader'],
     ];
 
     $requestedModules = [];
@@ -99,6 +125,20 @@
     }
 
     $assetModules = array_values(array_unique($requestedModules));
+
+    foreach ($assetModules as $module) {
+        if (isset($vendorLocalCssModules[$module])) {
+            foreach ($vendorLocalCssModules[$module] as $file) {
+                $vendorLocalCss[] = $file;
+            }
+        }
+
+        if (isset($vendorLocalJsModules[$module])) {
+            foreach ($vendorLocalJsModules[$module] as $file) {
+                $vendorLocalJs[] = $file;
+            }
+        }
+    }
 
     if ($assetProfile === 'landing') {
         $coreCss = array_merge([

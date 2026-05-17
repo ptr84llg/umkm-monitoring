@@ -1,0 +1,1 @@
+Vue 3 global production build. Downloaded as local vendor asset for UMKM Monitoring.

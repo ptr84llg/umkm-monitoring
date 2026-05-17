@@ -1,0 +1,1 @@
+Tabulator Tables 6.4.0 browser dist with Bootstrap 5 theme. Downloaded as local vendor asset for UMKM Monitoring.

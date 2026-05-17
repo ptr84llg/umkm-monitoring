@@ -1,0 +1,1 @@
+Apache ECharts browser build. Downloaded as local vendor asset for UMKM Monitoring.
