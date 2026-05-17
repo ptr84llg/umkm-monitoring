@@ -31,7 +31,7 @@
                 <div class="landing-menu" aria-label="Menu utama">
                     <a href="#dashboard">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                        <span>Dashboard</span>
+                        <span>Preview Dashboard</span>
                     </a>
                     <a href="#ringkasan">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
@@ -226,7 +226,7 @@
             <div class="mobile-canvas-menu">
                 <a href="#dashboard" data-menu-link>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                    <span>Dashboard</span>
+                    <span>Preview Dashboard</span>
                 </a>
                 <a href="#ringkasan" data-menu-link>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
@@ -244,7 +244,7 @@
         </aside>
     </div>
 
-    <main>
+    <div class="landing-main">
         <section class="hero-section">
             <div class="container">
                 <div class="hero-shell">
@@ -270,7 +270,7 @@
                                     </a>
                                     <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                        <span>Lihat Dashboard</span>
+                                        <span>Lihat Preview</span>
                                     </a>
                                 </div>
                             </div>
@@ -299,8 +299,8 @@
                                             <span></span>
                                             <span></span>
                                         </div>
-                                        <strong>UMKM Dashboard</strong>
-                                        <small>preview</small>
+                                        <strong>Preview Dashboard UMKM</strong>
+                                        <small>preview agregat</small>
                                     </div>
 
                                     <div class="board-metrics">
@@ -401,9 +401,9 @@
                         <div>
                             <span class="landing-pill">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                <span>Dashboard interaktif</span>
+                                <span>Preview dashboard publik</span>
                             </span>
-                            <h2>Informasi UMKM tampil dalam visual yang lebih hidup</h2>
+                            <h2>Preview informasi UMKM tampil dalam visual yang lebih hidup</h2>
                             <p>
                                 Dashboard membantu membaca kondisi UMKM berdasarkan indikator utama, bidang usaha,
                                 perkembangan data, dan sebaran wilayah dalam tampilan yang lebih ringkas.
@@ -531,10 +531,10 @@
                 </div>
             </div>
         </section>
-    </main>
-
+    </div>
     <button type="button" class="to-top-button" data-to-top aria-label="Kembali ke atas">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 7-1.4 1.4L13 7.8V20h-2V7.8l-4.6 4.6L5 11l7-7Z"/></svg>
     </button>
 </div>
 @endsection
+

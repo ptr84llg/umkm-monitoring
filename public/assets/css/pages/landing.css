@@ -1,16 +1,3 @@
-/*
-|--------------------------------------------------------------------------
-| Landing Page CSS - Batch 3A-6 Consolidated
-|--------------------------------------------------------------------------
-| Konsolidasi landing.css.
-| Fokus:
-| - satu struktur CSS yang rapi;
-| - tidak menambah patch bertumpuk;
-| - tidak menyentuh core JS/CSS;
-| - menjaga location gate, region modal, hero, dashboard, chart, mobile, dan footer.
-|--------------------------------------------------------------------------
-*/
-
 :root {
     --landing-ink: #10213d;
     --landing-muted: #64748b;
@@ -93,6 +80,58 @@ body.is-region-modal-open {
     text-align: justify;
     text-justify: inter-word;
     text-align-last: left;
+}
+
+.landing-main {
+    display: block;
+}
+
+.landing-preview-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border: 1px solid rgba(240, 168, 74, .28);
+    border-radius: 999px;
+    padding: .34rem .62rem;
+    color: var(--landing-gold-dark);
+    background: rgba(255, 247, 237, .92);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.landing-public-note {
+    display: grid;
+    gap: .18rem;
+    margin-top: .86rem;
+    border: 1px solid rgba(240, 168, 74, .22);
+    border-radius: 18px;
+    padding: .78rem .9rem;
+    color: var(--landing-gold-dark);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(240, 168, 74, .15), transparent 32%),
+        rgba(255, 247, 237, .88);
+}
+
+.landing-public-note strong {
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.landing-public-note span {
+    color: #7c4a08;
+    font-size: .78rem;
+    line-height: 1.48;
+}
+
+.chart-head-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
 }
 
 .landing-gradient {
@@ -2410,6 +2449,14 @@ html[data-location-gate="checking"] .location-gate-retry {
 }
 
 @media (max-width: 575.98px) {
+    .chart-head-badges {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .landing-preview-badge {
+        white-space: normal;
+    }
     .umkm-landing {
         padding-top: 76px;
     }
@@ -2721,3 +2768,4 @@ html[data-location-gate="checking"] .location-gate-retry {
         transform: none;
     }
 }
+
