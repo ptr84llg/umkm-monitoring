@@ -4,8 +4,8 @@
     window.UMKM = window.UMKM || {};
 
     const UMKM = window.UMKM;
-
     const FINAL_STATUSES = ['success', 'limited', 'failed', 'skipped'];
+    const RING_CIRCUMFERENCE = 314.159;
 
     const STATUS_META = {
         pending: { icon: '•', label: 'menunggu' },
@@ -201,12 +201,40 @@
         return qs('[data-umkm-readiness-key="' + key + '"]', loader);
     }
 
+    function updateActive(loader, line, status, message) {
+        const safeStatus = normalizeStatus(status);
+        const meta = STATUS_META[safeStatus] || STATUS_META.limited;
+        const activeBadge = qs('[data-umkm-readiness-active-badge]', loader);
+        const activeTitle = qs('[data-umkm-readiness-active-title]', loader);
+        const activeMessage = qs('[data-umkm-readiness-active-message]', loader);
+        const activeIcon = qs('[data-umkm-readiness-active-icon]', loader);
+
+        if (activeBadge) {
+            activeBadge.textContent = meta.label;
+        }
+
+        if (activeTitle) {
+            activeTitle.textContent = line?.label || 'Kesiapan halaman';
+        }
+
+        if (activeMessage) {
+            activeMessage.textContent = message || line?.description || 'Tahapan kesiapan sedang diproses.';
+        }
+
+        if (activeIcon) {
+            activeIcon.textContent = meta.icon;
+        }
+
+        loader.dataset.umkmReadinessActiveStatus = safeStatus;
+    }
+
     function updateLine(loader, line, status, message) {
         const safeStatus = normalizeStatus(status);
         const key = line.key;
         const element = getLineElement(loader, key);
 
         if (!element) {
+            updateActive(loader, line, safeStatus, message);
             return;
         }
 
@@ -237,6 +265,43 @@
         if (statusLabel) {
             statusLabel.textContent = STATUS_META[safeStatus].label;
         }
+
+        updateActive(loader, line, safeStatus, message);
+    }
+
+    function updateSummary(loader, lines) {
+        const counts = {
+            success: 0,
+            limited: 0,
+            failed: 0,
+            skipped: 0
+        };
+
+        lines.forEach(function (line) {
+            const status = normalizeStatus(line.status);
+
+            if (Object.prototype.hasOwnProperty.call(counts, status)) {
+                counts[status] += 1;
+            }
+        });
+
+        Object.keys(counts).forEach(function (status) {
+            const target = qs('[data-umkm-readiness-count="' + status + '"]', loader);
+
+            if (target) {
+                target.textContent = String(counts[status]);
+            }
+        });
+
+        const processed = lines.filter(function (line) {
+            return isFinal(line.status);
+        }).length;
+
+        const detailSummary = qs('[data-umkm-readiness-detail-summary]', loader);
+
+        if (detailSummary) {
+            detailSummary.textContent = processed + '/' + lines.length + ' diproses';
+        }
     }
 
     function updateProgress(loader, lines) {
@@ -247,6 +312,8 @@
         const percent = Math.round((done / total) * 100);
         const bar = qs('[data-umkm-readiness-bar]', loader);
         const label = qs('[data-umkm-readiness-percent]', loader);
+        const ring = qs('[data-umkm-readiness-ring]', loader);
+        const dashOffset = RING_CIRCUMFERENCE - ((percent / 100) * RING_CIRCUMFERENCE);
 
         if (bar) {
             bar.style.width = percent + '%';
@@ -256,7 +323,13 @@
             label.textContent = percent + '%';
         }
 
+        if (ring) {
+            ring.style.strokeDasharray = String(RING_CIRCUMFERENCE);
+            ring.style.strokeDashoffset = String(dashOffset);
+        }
+
         loader.dataset.umkmReadinessProgress = String(percent);
+        updateSummary(loader, lines);
 
         return percent;
     }
@@ -455,6 +528,11 @@
         loader.classList.add('is-complete');
         loader.dataset.umkmReadinessState = 'complete';
 
+        updateActive(loader, {
+            label: 'Halaman siap ditampilkan',
+            description: 'Seluruh tahapan kesiapan telah diproses.'
+        }, 'success', 'Seluruh tahapan kesiapan telah diproses.');
+
         document.dispatchEvent(new CustomEvent('umkm:readiness:complete', {
             detail: {
                 lines: lines,
@@ -534,7 +612,12 @@
         document.documentElement.classList.add('umkm-readiness-lock');
 
         renderLines(loader, lines);
+        updateSummary(loader, lines);
         updateProgress(loader, lines);
+        updateActive(loader, {
+            label: 'Menyiapkan kesiapan halaman',
+            description: 'Mohon tunggu, sistem sedang menyiapkan tampilan awal.'
+        }, 'pending', 'Mohon tunggu, sistem sedang menyiapkan tampilan awal.');
 
         document.dispatchEvent(new CustomEvent('umkm:readiness:start', {
             detail: {
