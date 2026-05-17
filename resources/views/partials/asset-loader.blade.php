@@ -62,6 +62,7 @@
     $coreCssModules = [
         'loader' => 'umkm-loader.css',
         'readiness' => 'umkm-loader.css',
+        'componentLoader' => 'umkm-loader.css',
         'tables' => 'umkm-tables.css',
         'datatables' => 'umkm-datatables.css',
         'tabulator' => 'umkm-tabulator.css',
@@ -85,6 +86,7 @@
         'ajax' => 'umkm-ajax.js',
         'security' => 'umkm-security.js',
         'loader' => 'umkm-loader.js',
+        'componentLoader' => 'umkm-component-loader.js',
         'readiness' => 'umkm-readiness.js',
         'location' => 'umkm-location.js',
         'modal' => 'umkm-modal.js',
@@ -101,7 +103,8 @@
 
     $moduleDependencies = [
         'locationGate' => ['location', 'modal'],
-        'readiness' => ['loader'],
+        'readiness' => ['loader', 'componentLoader'],
+        'componentLoader' => ['ajax', 'loader'],
         'datatables' => ['loader'],
         'tabulator' => ['loader', 'tables'],
         'wizard' => ['loader'],
