@@ -331,13 +331,44 @@
         };
     }
 
+    function payloadReadyForServerVerify(payload) {
+        const position = payload && payload.position ? payload.position : {};
+        const latitude = Number(position.latitude);
+        const longitude = Number(position.longitude);
+        const accuracy = Number(position.accuracy);
+
+        return payload
+            && payload.status === 'granted'
+            && payload.permission === 'granted'
+            && Number.isFinite(latitude)
+            && latitude >= -90
+            && latitude <= 90
+            && Number.isFinite(longitude)
+            && longitude >= -180
+            && longitude <= 180
+            && Number.isFinite(accuracy)
+            && accuracy >= 0;
+    }
+
     async function verifyWithServer(result) {
         if (!UMKM.ajax || typeof UMKM.ajax.post !== 'function') {
             log('error', 'location gate server verify failed because UMKM.ajax is unavailable', {});
             return false;
         }
 
-        const response = await UMKM.ajax.post(getVerifyUrl(), buildServerVerifyPayload(result));
+        const verifyPayload = buildServerVerifyPayload(result);
+
+        if (!payloadReadyForServerVerify(verifyPayload)) {
+            state.serverVerified = false;
+
+            log('warn', 'location gate server verify skipped because payload is incomplete', {
+                payload: verifyPayload
+            });
+
+            return false;
+        }
+
+        const response = await UMKM.ajax.post(getVerifyUrl(), verifyPayload);
         const payload = response && response.payload ? response.payload : null;
 
         if (response && response.ok && payload && payload.ok === true) {

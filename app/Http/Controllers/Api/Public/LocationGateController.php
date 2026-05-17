@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SecurityEventLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class LocationGateController extends Controller
 {
@@ -22,7 +23,7 @@ class LocationGateController extends Controller
             ]);
         }
 
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'status' => ['required', 'string', 'in:granted'],
             'permission' => ['required', 'string', 'in:granted'],
             'checked_at' => ['nullable', 'date'],
@@ -32,6 +33,29 @@ class LocationGateController extends Controller
             'position.accuracy' => ['required', 'numeric', 'min:0'],
             'position.timestamp' => ['nullable', 'numeric'],
         ]);
+
+        if ($validator->fails()) {
+            $this->logEvent(
+                $request,
+                'location_gate_rejected_payload',
+                'medium',
+                'Location gate rejected because verification payload was incomplete or invalid.'
+            );
+
+            return response()
+                ->json([
+                    'ok' => false,
+                    'message' => 'Data lokasi belum lengkap untuk diverifikasi. Aktifkan lokasi, tunggu hingga koordinat terbaca, lalu coba ulang.',
+                    'data' => [
+                        'verified' => false,
+                        'reason' => 'invalid_location_payload',
+                    ],
+                ])
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                ->header('Pragma', 'no-cache');
+        }
+
+        $validated = $validator->validated();
 
         $accuracy = data_get($validated, 'position.accuracy');
         $maxAccuracy = (float) config('umkm.location_gate.max_accuracy_meters', 10000);
@@ -44,10 +68,17 @@ class LocationGateController extends Controller
                 'Location gate rejected because reported accuracy exceeded configured limit.'
             );
 
-            return response()->json([
-                'ok' => false,
-                'message' => 'Akurasi lokasi belum memenuhi batas validasi sistem. Aktifkan lokasi dengan akurasi lebih baik lalu coba ulang.',
-            ], 422);
+            return response()
+                ->json([
+                    'ok' => false,
+                    'message' => 'Akurasi lokasi belum memenuhi batas validasi sistem. Aktifkan lokasi dengan akurasi lebih baik lalu coba ulang.',
+                    'data' => [
+                        'verified' => false,
+                        'reason' => 'accuracy_exceeded',
+                    ],
+                ])
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                ->header('Pragma', 'no-cache');
         }
 
         $ttlMinutes = max(1, (int) config('umkm.location_gate.ttl_minutes', 15));
