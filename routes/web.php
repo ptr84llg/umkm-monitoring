@@ -2,12 +2,28 @@
 
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
+use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('landing'));
 
+
+Route::prefix('api/public/landing-components')
+    ->name('public.landing-components.')
+    ->middleware([
+        'throttle:internal-sensitive',
+        'validate.umkm.internal.request',
+        'validate.internal.origin',
+        'validate.internal.referer',
+        'validate.fetch.metadata',
+        'log.internal.api',
+    ])
+    ->group(function () {
+        Route::get('/hero-preview-board', [LandingComponentController::class, 'heroPreviewBoard'])
+            ->name('hero-preview-board');
+    });
 Route::prefix('api/public/landing-regions')
     ->middleware([
         'throttle:internal-sensitive',

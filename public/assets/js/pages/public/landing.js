@@ -406,6 +406,12 @@
             return;
         }
 
+        if (tiltCard.dataset.tiltCardBound === 'true') {
+            return;
+        }
+
+        tiltCard.dataset.tiltCardBound = 'true';
+
         tiltCard.addEventListener('mousemove', function (event) {
             const rect = tiltCard.getBoundingClientRect();
             const x = event.clientX - rect.left;
@@ -1554,10 +1560,20 @@
         }
 
         qsa(SELECTORS.regionModalOpen).forEach(function (button) {
+            if (button.dataset.regionOpenBound === 'true') {
+                return;
+            }
+
+            button.dataset.regionOpenBound = 'true';
             button.addEventListener('click', openRegionModal);
         });
 
         qsa(SELECTORS.regionModalClose).forEach(function (button) {
+            if (button.dataset.regionCloseBound === 'true') {
+                return;
+            }
+
+            button.dataset.regionCloseBound = 'true';
             button.addEventListener('click', function (event) {
                 if (regionState.loading) {
                     event.preventDefault();
@@ -1569,23 +1585,38 @@
             });
         });
 
-        qs(SELECTORS.districtSelect)?.addEventListener('change', onDistrictChanged);
+        const districtSelect = qs(SELECTORS.districtSelect);
 
-        qs(SELECTORS.villageSelect)?.addEventListener('change', function () {
-            const selection = getAppliedSelection();
-            setModalCurrent(selection.label);
-        });
+        if (districtSelect && districtSelect.dataset.regionChangeBound !== 'true') {
+            districtSelect.dataset.regionChangeBound = 'true';
+            districtSelect.addEventListener('change', onDistrictChanged);
+        }
 
-        qs(SELECTORS.regionModalApply)?.addEventListener('click', function () {
-            if (regionState.loading) {
-                return;
-            }
+        const villageSelect = qs(SELECTORS.villageSelect);
 
-            const selection = getAppliedSelection();
+        if (villageSelect && villageSelect.dataset.regionChangeBound !== 'true') {
+            villageSelect.dataset.regionChangeBound = 'true';
+            villageSelect.addEventListener('change', function () {
+                const selection = getAppliedSelection();
+                setModalCurrent(selection.label);
+            });
+        }
 
-            applyRegionSelection(selection);
-            closeRegionModal();
-        });
+        const applyButton = qs(SELECTORS.regionModalApply);
+
+        if (applyButton && applyButton.dataset.regionApplyBound !== 'true') {
+            applyButton.dataset.regionApplyBound = 'true';
+            applyButton.addEventListener('click', function () {
+                if (regionState.loading) {
+                    return;
+                }
+
+                const selection = getAppliedSelection();
+
+                applyRegionSelection(selection);
+                closeRegionModal();
+            });
+        }
     }
 
     function initLocationGate() {
@@ -1606,6 +1637,26 @@
             }
         });
     }
+
+    function initLoadedLandingComponent(detail) {
+        if (!detail || detail.component !== 'landing-hero-preview-board') {
+            return;
+        }
+
+        initRevealAnimation();
+        initCounters();
+        initTiltCard();
+        initRegionModal();
+
+        window.setTimeout(function () {
+            applyRegionSelection(regionState.applied || Object.assign({}, DEFAULT_SELECTION));
+        }, 60);
+    }
+
+    document.addEventListener('umkm:component-loader:loaded', function (event) {
+        initLoadedLandingComponent(event.detail || {});
+    });
+
     function boot() {
         initHeaderAndNavigation();
         initRevealAnimation();
@@ -1624,3 +1675,4 @@
 
     ready(boot);
 })();
+
