@@ -37,8 +37,8 @@
                         </p>
                     </div>
 
-                    <div class="auth-security-list" aria-label="Ringkasan keamanan login">
-                        <div class="auth-security-item">
+                    <div class="auth-security-brief" aria-label="Ringkasan keamanan login">
+                        <div class="auth-security-brief-item">
                             <span class="auth-security-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 4.05-2.45 7.85-6 8.9C8.45 18.85 6 15.05 6 11V6.45l6-2.25Zm3.7 5.95-4.5 4.5-2.1-2.1-1.4 1.4 3.5 3.5 5.9-5.9-1.4-1.4Z"/></svg>
                             </span>
@@ -48,23 +48,23 @@
                             </span>
                         </div>
 
-                        <div class="auth-security-item">
+                        <div class="auth-security-brief-item">
                             <span class="auth-security-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
                             </span>
                             <span>
                                 <strong>Pemeriksaan lokasi</strong>
-                                <small>Form login hanya aktif setelah perangkat memberi akses lokasi.</small>
+                                <small>Form login aktif setelah perangkat memberi akses lokasi.</small>
                             </span>
                         </div>
 
-                        <div class="auth-security-item">
+                        <div class="auth-security-brief-item">
                             <span class="auth-security-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4Zm0 4h16v12H4V8Zm2 2v8h12v-8H6Zm2 2h8v2H8v-2Zm0 3h5v2H8v-2Z"/></svg>
                             </span>
                             <span>
                                 <strong>Aktivitas tercatat</strong>
-                                <small>Aktivitas login berhasil maupun gagal disiapkan untuk audit sistem.</small>
+                                <small>Aktivitas login berhasil dan gagal disiapkan untuk audit sistem.</small>
                             </span>
                         </div>
                     </div>
