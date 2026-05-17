@@ -409,3 +409,123 @@ html.umkm-readiness-lock body {
 }
 /* End Core Loader 1C behavior polish */
 
+/* Core Loader 1E ecosystem helpers */
+html.umkm-blocking-lock,
+html.umkm-blocking-lock body {
+    overflow: hidden;
+}
+
+.umkm-component-loading {
+    position: relative;
+}
+
+.umkm-component-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, .72);
+    backdrop-filter: blur(4px);
+}
+
+.umkm-component-loader-box,
+.umkm-inline-loader {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    color: var(--umkm-loader-dark);
+    font-size: .86rem;
+    font-weight: 800;
+}
+
+.umkm-inline-spinner {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: 0 0 1.05rem;
+    display: inline-block;
+    border: 2px solid rgba(15, 118, 101, .18);
+    border-top-color: var(--umkm-loader-success);
+    border-radius: 999px;
+    animation: umkm-loader-spin .75s linear infinite;
+}
+
+.umkm-skeleton-line {
+    display: block;
+    height: .82rem;
+    margin: .42rem 0;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, .25);
+}
+
+.umkm-table-loader,
+.umkm-chart-loader,
+.umkm-map-loader,
+.umkm-export-loader {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border: 1px dashed rgba(148, 163, 184, .42);
+    border-radius: 18px;
+    background: rgba(248, 250, 252, .78);
+}
+
+.umkm-map-loader {
+    min-height: 180px;
+}
+
+.umkm-chart-loader {
+    min-height: 220px;
+}
+
+.umkm-upload-loader {
+    width: 100%;
+    display: grid;
+    gap: .45rem;
+    padding: .85rem;
+    border: 1px solid rgba(148, 163, 184, .28);
+    border-radius: 16px;
+    background: rgba(248, 250, 252, .86);
+}
+
+.umkm-upload-loader-label {
+    color: var(--umkm-loader-dark);
+    font-size: .84rem;
+    font-weight: 850;
+}
+
+.umkm-upload-loader-track {
+    height: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, .24);
+}
+
+.umkm-upload-loader-bar {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--umkm-loader-success), var(--umkm-loader-warning));
+    transition: width .22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .umkm-inline-spinner,
+    .umkm-upload-loader-bar,
+    .umkm-component-loader,
+    .umkm-table-loader,
+    .umkm-chart-loader,
+    .umkm-map-loader,
+    .umkm-export-loader {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+/* End Core Loader 1E ecosystem helpers */
+
