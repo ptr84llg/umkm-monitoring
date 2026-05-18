@@ -44,4 +44,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 (int) config('umkm.security.api_rate_limit', 60)
             )->by($request->user()?->id ?: $request->ip());
         });
+
+        RateLimiter::for('login', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email', '')));
+            $emailHash = sha1($email);
+
+            return [
+                Limit::perMinute(5)->by($request->ip().'|'.$emailHash),
+                Limit::perMinutes(15, 20)->by($request->ip()),
+            ];
+        });
     })->create();
+

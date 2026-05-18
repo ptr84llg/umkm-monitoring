@@ -94,7 +94,15 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('/login', [LoginController::class, 'store'])
-        ->middleware('location.gate')
+        ->middleware([
+            'throttle:login',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'location.gate',
+            'log.internal.api',
+        ])
         ->name('login.store');
 });
 
@@ -363,5 +371,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/smoke/layout-components', fn () => view('pages.smoke.layout-components'));
 });
+
 
 
