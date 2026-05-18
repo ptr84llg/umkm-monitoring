@@ -39,6 +39,14 @@ class LandingComponentController extends Controller
         );
     }
 
+    public function regionModal(): JsonResponse
+    {
+        return $this->component(
+            'landing-region-modal',
+            'partials.public.landing.region-modal'
+        );
+    }
+
     private function component(string $component, string $view): JsonResponse
     {
         return response()
@@ -51,4 +59,5 @@ class LandingComponentController extends Controller
             ->header('Pragma', 'no-cache');
     }
 }
+
 
