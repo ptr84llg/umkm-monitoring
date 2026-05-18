@@ -427,6 +427,23 @@
                 return;
             }
 
+            if (UMKM.forms && typeof UMKM.forms.validate === 'function') {
+                const errors = UMKM.forms.validate(form);
+
+                if (errors.length) {
+                    event.preventDefault();
+
+                    if (typeof UMKM.forms.showValidationModal === 'function') {
+                        UMKM.forms.showValidationModal(errors, {
+                            title: 'Login belum lengkap',
+                            message: 'Lengkapi atau perbaiki isian berikut sebelum masuk ke sistem.'
+                        });
+                    }
+
+                    return;
+                }
+            }
+
             if (UMKM.loader && typeof UMKM.loader.button === 'function' && elements.submit) {
                 UMKM.loader.button(elements.submit, {
                     text: 'Memproses login...'
@@ -452,5 +469,6 @@
         }
     });
 })();
+
 
 
