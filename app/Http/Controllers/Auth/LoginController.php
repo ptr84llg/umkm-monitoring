@@ -92,7 +92,7 @@ class LoginController extends Controller
 
         $auditLogger->log('login_success', $request, 'users', $user->id);
 
-        $redirectUrl = redirect()->intended('/dashboard/interaktif')->getTargetUrl();
+        $redirectUrl = $this->intendedOrRoleRedirect($request, $user);
 
         if ($this->expectsJson($request)) {
             return response()->json([
@@ -115,6 +115,63 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    private function intendedOrRoleRedirect(Request $request, $user): string
+    {
+        $fallbackUrl = $this->roleRedirectUrl($user);
+        $intendedUrl = $request->session()->pull('url.intended');
+
+        if (! is_string($intendedUrl) || $intendedUrl === '') {
+            return $fallbackUrl;
+        }
+
+        if (! $this->isSafeLocalUrl($request, $intendedUrl)) {
+            return $fallbackUrl;
+        }
+
+        return $intendedUrl;
+    }
+
+    private function roleRedirectUrl($user): string
+    {
+        $roleRouteMap = [
+            'admin_utama' => 'admin-utama.dashboard',
+            'admin_dinas' => 'admin-dinas.dashboard',
+            'kepala_dinas' => 'kepala-dinas.dashboard',
+            'pelaku_umkm' => 'pelaku-umkm.dashboard',
+            'validator_ahli' => 'expert.validator.list',
+        ];
+
+        foreach ($roleRouteMap as $role => $routeName) {
+            if ($user->hasRole($role) && route($routeName, [], false)) {
+                return route($routeName);
+            }
+        }
+
+        if ($user->hasPermission('dashboard.view.executive')) {
+            return route('dashboard.interactive');
+        }
+
+        SecurityEventLog::query()->create([
+            'actor_user_id' => $user->id,
+            'event_type' => 'login_without_dashboard_role',
+            'severity' => 'medium',
+            'event_detail' => 'User logged in but no dashboard role redirect was available.',
+            'ip_address' => request()->ip(),
+            'event_time' => now(),
+        ]);
+
+        return url('/');
+    }
+
+    private function isSafeLocalUrl(Request $request, string $url): bool
+    {
+        if (str_starts_with($url, '/')) {
+            return ! str_starts_with($url, '//');
+        }
+
+        return str_starts_with($url, $request->getSchemeAndHttpHost());
     }
 
     private function expectsJson(Request $request): bool
