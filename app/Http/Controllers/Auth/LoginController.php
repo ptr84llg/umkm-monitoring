@@ -51,13 +51,46 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
+        $user = $request->user();
+
+        if (! $user || ! $user->isActive()) {
+            SecurityEventLog::query()->create([
+                'actor_user_id' => $user?->id,
+                'event_type' => 'inactive_account_login_blocked',
+                'severity' => 'medium',
+                'event_detail' => 'Login blocked because user account is inactive.',
+                'ip_address' => $request->ip(),
+                'event_time' => now(),
+            ]);
+
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            if ($this->expectsJson($request)) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Login belum berhasil.',
+                    'errors' => [
+                        'email' => ['Akun tidak aktif. Hubungi pengelola sistem.'],
+                    ],
+                ]);
+            }
+
+            return back()->withErrors([
+                'email' => 'Akun tidak aktif. Hubungi pengelola sistem.',
+            ])->onlyInput('email');
+        }
+
         $request->session()->regenerate();
 
-        $request->user()->update([
+        $user->forceFill([
             'last_login_at' => now(),
-        ]);
+            'last_login_ip' => $request->ip(),
+        ])->save();
 
-        $auditLogger->log('login_success', $request, 'users', $request->user()->id);
+        $auditLogger->log('login_success', $request, 'users', $user->id);
 
         $redirectUrl = redirect()->intended('/dashboard/interaktif')->getTargetUrl();
 
@@ -91,4 +124,3 @@ class LoginController extends Controller
             || $request->header('X-UMKM-Request') === 'internal';
     }
 }
-
