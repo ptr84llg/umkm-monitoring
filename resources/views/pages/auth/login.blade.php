@@ -84,27 +84,24 @@
                                     <span class="badge rounded-pill auth-card-badge">Secure</span>
                                 </div>
 
-                                <div class="alert alert-primary d-flex align-items-center justify-content-between gap-3 flex-wrap auth-location-panel" data-auth-location-panel>
-                                    <div class="d-flex align-items-center gap-2 auth-location-status" data-auth-location-status="checking">
-                                        <span class="auth-location-dot" aria-hidden="true"></span>
-                                        <span data-auth-location-text>Memeriksa kesiapan lokasi perangkat...</span>
-                                    </div>
-                                    <button type="button" class="btn btn-light btn-sm auth-location-button" data-auth-location-check>
-                                        Periksa Lokasi
-                                    </button>
-                                </div>
-
                                 <div class="auth-location-reading" data-auth-location-reading role="status" aria-live="polite">
                                     <span class="auth-location-orbit" aria-hidden="true">
                                         <span></span>
                                     </span>
                                     <div class="auth-location-reading-copy">
                                         <strong data-auth-location-reading-title>Sedang membaca lokasi perangkat</strong>
-                                        <small data-auth-location-reading-message>
+                                        <small data-auth-location-reading-message data-auth-location-text>
                                             Sistem sedang memastikan lokasi aktif sebelum form login ditampilkan.
                                         </small>
                                     </div>
-                                    <span class="auth-location-attempt" data-auth-location-attempt>Percobaan 1 dari 3</span>
+
+                                    <div class="auth-location-reading-actions">
+                                        <span class="auth-location-status visually-hidden" data-auth-location-status="checking"></span>
+                                        <span class="auth-location-attempt" data-auth-location-attempt>Percobaan 1 dari 3</span>
+                                        <button type="button" class="btn btn-light btn-sm auth-location-button" data-auth-location-check>
+                                            Periksa Lokasi
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="auth-login-form-shell is-location-hidden"
@@ -206,3 +203,4 @@
     </div>
 </section>
 @endsection
+

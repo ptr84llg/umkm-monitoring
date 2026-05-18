@@ -335,6 +335,15 @@ body.layout-auth {
     line-height: 1.45;
 }
 
+.auth-location-reading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .55rem;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+}
+
 .auth-location-attempt {
     flex: 0 0 auto;
     border-radius: var(--umkm-radius-pill);
@@ -487,7 +496,13 @@ body.layout-auth {
         flex-wrap: wrap;
     }
 
-    .auth-location-attempt {
+    .auth-location-reading-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .auth-location-attempt,
+    .auth-location-reading-actions .auth-location-button {
         width: 100%;
         justify-content: center;
         text-align: center;
@@ -503,4 +518,5 @@ body.layout-auth {
         scroll-behavior: auto !important;
     }
 }
+
 
