@@ -21,8 +21,30 @@
 
     function setText(element, text) {
         if (element) {
-            element.textContent = text;
+            element.textContent = text == null ? '' : String(text);
         }
+    }
+
+    function toInt(value, fallback) {
+        const parsed = Number.parseInt(value, 10);
+
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+    }
+
+    function loginPage() {
+        return document.querySelector('[data-auth-login-page]');
+    }
+
+    function getLandingUrl() {
+        const page = loginPage();
+
+        return page && page.dataset.authLandingUrl ? page.dataset.authLandingUrl : '/';
+    }
+
+    function getMaxFailures() {
+        const page = loginPage();
+
+        return toInt(page && page.dataset.authLocationMaxFailures, 3);
     }
 
     function setLocationStatus(elements, status, message) {
@@ -53,6 +75,18 @@
         if (elements.checkedAtInput) {
             elements.checkedAtInput.value = '';
         }
+    }
+
+    function clearSensitiveInputs(elements) {
+        if (elements.password) {
+            elements.password.value = '';
+            elements.password.setAttribute('type', 'password');
+        }
+
+        document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
+            button.setAttribute('aria-label', 'Tampilkan password');
+            button.setAttribute('data-auth-password-visible', 'false');
+        });
     }
 
     function fillLocationInputs(elements, locationState) {
@@ -89,13 +123,141 @@
         elements.submit.setAttribute('aria-disabled', enabled ? 'false' : 'true');
     }
 
+    function setFormVisible(elements, visible) {
+        if (!elements.formShell) {
+            return;
+        }
+
+        elements.formShell.classList.toggle('is-location-hidden', !visible);
+        elements.formShell.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    }
+
+    function setReadingVisible(elements, visible) {
+        if (!elements.reading) {
+            return;
+        }
+
+        elements.reading.hidden = !visible;
+        elements.reading.classList.toggle('is-active', Boolean(visible));
+    }
+
+    function setReadingCopy(elements, title, message, attemptText) {
+        setText(elements.readingTitle, title);
+        setText(elements.readingMessage, message);
+        setText(elements.readingAttempt, attemptText);
+    }
+
+    function lockLoginForLocationCheck(elements, message, attemptText) {
+        setSubmitState(elements, false);
+        setFormVisible(elements, false);
+        setReadingVisible(elements, true);
+        clearSensitiveInputs(elements);
+        clearLocationInputs(elements);
+        setLocationStatus(elements, 'checking', message || 'Membaca lokasi perangkat...');
+        setReadingCopy(
+            elements,
+            'Sedang membaca lokasi perangkat',
+            'Sistem sedang memastikan lokasi aktif sebelum form login ditampilkan.',
+            attemptText || ''
+        );
+    }
+
+    function unlockLoginAfterLocationGranted(elements, locationState) {
+        fillLocationInputs(elements, locationState);
+        setLocationStatus(elements, 'granted', 'Lokasi aktif. Form login siap digunakan.');
+        setReadingCopy(
+            elements,
+            'Lokasi berhasil dibaca',
+            'Form login telah dibuka karena lokasi perangkat aktif.',
+            ''
+        );
+        setReadingVisible(elements, false);
+        setFormVisible(elements, true);
+        setSubmitState(elements, true);
+
+        if (elements.email && !elements.email.value) {
+            elements.email.focus({ preventScroll: true });
+        }
+    }
+
+    function redirectToLanding(elements) {
+        if (elements.redirecting) {
+            return;
+        }
+
+        elements.redirecting = true;
+        setSubmitState(elements, false);
+        setFormVisible(elements, false);
+        clearSensitiveInputs(elements);
+        setLocationStatus(elements, 'blocked', 'Lokasi tidak aktif. Anda akan diarahkan ke halaman awal.');
+        setReadingVisible(elements, true);
+        setReadingCopy(
+            elements,
+            'Lokasi belum aktif',
+            'Sistem tidak dapat melanjutkan halaman login karena lokasi gagal dibaca sebanyak 3 kali.',
+            'Mengalihkan ke halaman awal...'
+        );
+
+        window.setTimeout(function () {
+            window.location.assign(getLandingUrl());
+        }, 900);
+    }
+
+    function scheduleRetry(elements) {
+        if (elements.retryTimer) {
+            window.clearTimeout(elements.retryTimer);
+        }
+
+        elements.retryTimer = window.setTimeout(function () {
+            checkLocation(elements, {
+                reason: 'retry'
+            });
+        }, 1100);
+    }
+
+    function handleLocationFailure(elements, message) {
+        const maxFailures = getMaxFailures();
+
+        elements.failureCount += 1;
+
+        setSubmitState(elements, false);
+        setFormVisible(elements, false);
+        setReadingVisible(elements, true);
+        clearSensitiveInputs(elements);
+        clearLocationInputs(elements);
+
+        const attemptText = 'Percobaan ' + Math.min(elements.failureCount, maxFailures) + ' dari ' + maxFailures;
+
+        setLocationStatus(
+            elements,
+            'blocked',
+            message || 'Lokasi belum aktif. Sistem sedang mencoba membaca ulang lokasi perangkat.'
+        );
+
+        setReadingCopy(
+            elements,
+            'Lokasi belum terbaca',
+            'Aktifkan izin lokasi pada browser/perangkat. Sistem akan mencoba membaca ulang secara otomatis.',
+            attemptText
+        );
+
+        if (elements.failureCount >= maxFailures) {
+            redirectToLanding(elements);
+            return;
+        }
+
+        scheduleRetry(elements);
+    }
+
     function bindPasswordToggle() {
         document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
             const field = document.querySelector('[data-auth-password]');
 
-            if (!field) {
+            if (!field || button.dataset.authPasswordToggleBound === 'true') {
                 return;
             }
+
+            button.dataset.authPasswordToggleBound = 'true';
 
             button.addEventListener('click', function () {
                 const isPassword = field.getAttribute('type') === 'password';
@@ -108,13 +270,31 @@
         });
     }
 
-    async function checkLocation(elements) {
-        setSubmitState(elements, false);
-        clearLocationInputs(elements);
-        setLocationStatus(elements, 'checking', 'Memeriksa lokasi perangkat...');
+    async function checkLocation(elements, options) {
+        const settings = Object.assign({
+            reason: 'manual'
+        }, options || {});
+
+        if (elements.redirecting || elements.checking) {
+            return false;
+        }
+
+        elements.checking = true;
+
+        const maxFailures = getMaxFailures();
+        const nextAttempt = Math.min(elements.failureCount + 1, maxFailures);
+
+        lockLoginForLocationCheck(
+            elements,
+            settings.reason === 'initial'
+                ? 'Membaca lokasi perangkat sebelum form login ditampilkan...'
+                : 'Memeriksa ulang lokasi perangkat...',
+            'Percobaan ' + nextAttempt + ' dari ' + maxFailures
+        );
 
         if (!UMKM.location || typeof UMKM.location.check !== 'function') {
-            setLocationStatus(elements, 'blocked', 'Modul lokasi belum siap. Muat ulang halaman sebelum login.');
+            elements.checking = false;
+            handleLocationFailure(elements, 'Modul lokasi belum siap. Sistem mencoba membaca ulang lokasi.');
             return false;
         }
 
@@ -125,27 +305,38 @@
                 maximumAge: 0
             });
 
+            elements.checking = false;
+
             if (result && result.ok) {
-                fillLocationInputs(elements, result.state);
-                setLocationStatus(elements, 'granted', 'Lokasi aktif. Form login siap digunakan.');
-                setSubmitState(elements, true);
+                elements.failureCount = 0;
+
+                if (elements.retryTimer) {
+                    window.clearTimeout(elements.retryTimer);
+                    elements.retryTimer = null;
+                }
+
+                unlockLoginAfterLocationGranted(elements, result.state);
                 return true;
             }
 
-            setLocationStatus(elements, 'blocked', 'Lokasi belum aktif. Aktifkan izin lokasi untuk melanjutkan login.');
-            setSubmitState(elements, false);
+            handleLocationFailure(elements, 'Lokasi belum aktif. Aktifkan izin lokasi untuk melanjutkan login.');
             return false;
         } catch (error) {
-            setLocationStatus(elements, 'blocked', 'Pemeriksaan lokasi gagal. Coba periksa kembali izin lokasi browser.');
-            setSubmitState(elements, false);
+            elements.checking = false;
+            handleLocationFailure(elements, 'Pemeriksaan lokasi gagal. Sistem mencoba membaca ulang lokasi.');
             return false;
         }
     }
 
-    function bindLocationGate() {
+    function bindLocationGuard() {
         const form = document.querySelector('[data-auth-login-form]');
         const elements = {
             form: form,
+            formShell: document.querySelector('[data-auth-login-form-shell]'),
+            reading: document.querySelector('[data-auth-location-reading]'),
+            readingTitle: document.querySelector('[data-auth-location-reading-title]'),
+            readingMessage: document.querySelector('[data-auth-location-reading-message]'),
+            readingAttempt: document.querySelector('[data-auth-location-attempt]'),
             submit: document.querySelector('[data-auth-submit]'),
             checkButton: document.querySelector('[data-auth-location-check]'),
             status: document.querySelector('[data-auth-location-status]'),
@@ -154,36 +345,86 @@
             latitudeInput: document.querySelector('[data-auth-location-latitude-input]'),
             longitudeInput: document.querySelector('[data-auth-location-longitude-input]'),
             accuracyInput: document.querySelector('[data-auth-location-accuracy-input]'),
-            checkedAtInput: document.querySelector('[data-auth-location-checked-at-input]')
+            checkedAtInput: document.querySelector('[data-auth-location-checked-at-input]'),
+            email: document.querySelector('#email'),
+            password: document.querySelector('[data-auth-password]'),
+            failureCount: 0,
+            checking: false,
+            redirecting: false,
+            retryTimer: null,
+            intervalTimer: null
         };
 
         if (!form) {
             return;
         }
 
-        setSubmitState(elements, false);
-        setLocationStatus(elements, 'checking', 'Menyiapkan pemeriksaan lokasi perangkat...');
+        lockLoginForLocationCheck(
+            elements,
+            'Menyiapkan pemeriksaan lokasi perangkat...',
+            'Percobaan 1 dari ' + getMaxFailures()
+        );
 
         window.setTimeout(function () {
-            checkLocation(elements);
-        }, 520);
+            checkLocation(elements, {
+                reason: 'initial'
+            });
+        }, 420);
 
         if (elements.checkButton) {
             elements.checkButton.addEventListener('click', function () {
-                checkLocation(elements);
+                elements.failureCount = 0;
+
+                if (elements.retryTimer) {
+                    window.clearTimeout(elements.retryTimer);
+                    elements.retryTimer = null;
+                }
+
+                checkLocation(elements, {
+                    reason: 'manual'
+                });
             });
         }
 
         document.addEventListener('umkm:location:permission-change', function () {
-            checkLocation(elements);
+            elements.failureCount = 0;
+            checkLocation(elements, {
+                reason: 'permission-change'
+            });
         });
+
+        window.addEventListener('focus', function () {
+            if (!elements.redirecting) {
+                checkLocation(elements, {
+                    reason: 'focus'
+                });
+            }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden && !elements.redirecting) {
+                checkLocation(elements, {
+                    reason: 'visibility'
+                });
+            }
+        });
+
+        elements.intervalTimer = window.setInterval(function () {
+            if (!elements.redirecting && !elements.checking) {
+                checkLocation(elements, {
+                    reason: 'interval'
+                });
+            }
+        }, 30000);
 
         form.addEventListener('submit', function (event) {
             const isGranted = elements.statusInput && elements.statusInput.value === 'granted';
 
             if (!isGranted) {
                 event.preventDefault();
-                checkLocation(elements);
+                checkLocation(elements, {
+                    reason: 'submit'
+                });
                 return;
             }
 
@@ -201,7 +442,7 @@
 
     ready(function () {
         bindPasswordToggle();
-        bindLocationGate();
+        bindLocationGuard();
 
         document.documentElement.setAttribute('data-umkm-auth-login', 'ready');
 

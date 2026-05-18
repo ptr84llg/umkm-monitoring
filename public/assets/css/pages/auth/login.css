@@ -231,15 +231,138 @@ body.layout-auth {
     box-shadow: 0 0 0 .25rem var(--umkm-warning-soft);
 }
 
+.auth-location-status[data-auth-location-status="checking"] .auth-location-dot {
+    animation: authLocationPulse 1.05s ease-in-out infinite;
+}
+
 .auth-location-status[data-auth-location-status="granted"] .auth-location-dot {
     background: var(--umkm-primary);
     box-shadow: 0 0 0 .25rem var(--umkm-primary-soft);
 }
 
 .auth-location-status[data-auth-location-status="blocked"] .auth-location-dot,
-.auth-location-status[data-auth-location-status="unsupported"] .auth-location-dot {
+.auth-location-status[data-auth-location-status="unsupported"] .auth-location-dot,
+.auth-location-status[data-auth-location-status="error"] .auth-location-dot {
     background: var(--umkm-danger);
     box-shadow: 0 0 0 .25rem var(--umkm-danger-soft);
+}
+
+.auth-location-reading {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    border-radius: var(--umkm-radius-xl);
+    padding: 1rem;
+    color: var(--umkm-muted-strong);
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-primary-soft), transparent 38%),
+        linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .58));
+    box-shadow: 0 18px 40px rgba(var(--umkm-ink-rgb), .075);
+    overflow: hidden;
+}
+
+.auth-location-reading[hidden] {
+    display: none !important;
+}
+
+.auth-location-reading::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--umkm-primary), var(--umkm-secondary), transparent);
+    transform: translateX(-70%);
+    animation: authLocationLine 1.5s ease-in-out infinite;
+}
+
+.auth-location-orbit {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    border-radius: var(--umkm-radius-pill);
+    background: var(--umkm-primary-softer);
+}
+
+.auth-location-orbit::before,
+.auth-location-orbit::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: inherit;
+    border: 2px solid rgba(var(--umkm-primary-rgb), .26);
+}
+
+.auth-location-orbit::after {
+    border-top-color: var(--umkm-primary);
+    border-right-color: var(--umkm-primary);
+    animation: authLocationSpin .9s linear infinite;
+}
+
+.auth-location-orbit span {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--umkm-radius-pill);
+    background: var(--umkm-primary);
+    box-shadow: 0 0 0 .35rem var(--umkm-primary-soft);
+}
+
+.auth-location-reading-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.auth-location-reading-copy strong {
+    display: block;
+    color: var(--umkm-ink);
+    font-size: .96rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.auth-location-reading-copy small {
+    display: block;
+    margin-top: .22rem;
+    color: var(--umkm-muted);
+    font-size: .84rem;
+    line-height: 1.45;
+}
+
+.auth-location-attempt {
+    flex: 0 0 auto;
+    border-radius: var(--umkm-radius-pill);
+    padding: .38rem .62rem;
+    color: var(--umkm-primary-dark);
+    background: var(--umkm-primary-soft);
+    font-size: .74rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.auth-login-form-shell {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 980px;
+    overflow: visible;
+    transition:
+        opacity .28s ease,
+        transform .28s ease,
+        max-height .35s ease;
+}
+
+.auth-login-form-shell.is-location-hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    max-height: 0;
+    overflow: hidden;
+    pointer-events: none;
 }
 
 .auth-input-group .input-group-text {
@@ -303,6 +426,39 @@ body.layout-auth {
     text-decoration: underline;
 }
 
+@keyframes authLocationSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes authLocationPulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(.82);
+        opacity: .72;
+    }
+}
+
+@keyframes authLocationLine {
+    0% {
+        transform: translateX(-82%);
+    }
+
+    50% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(82%);
+    }
+}
+
 @media (max-width: 1199.98px) {
     .auth-login-card {
         max-width: none;
@@ -324,6 +480,17 @@ body.layout-auth {
 
     .auth-location-button {
         width: 100%;
+    }
+
+    .auth-location-reading {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .auth-location-attempt {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
     }
 }
 

@@ -10,7 +10,10 @@
 @section('title', 'Login Internal | Monitoring UMKM')
 
 @section('content')
-<section class="auth-login-page" data-auth-login-page>
+<section class="auth-login-page"
+         data-auth-login-page
+         data-auth-landing-url="{{ url('/') }}"
+         data-auth-location-max-failures="3">
     <div class="auth-background" aria-hidden="true">
         <span class="auth-gradient auth-gradient-a"></span>
         <span class="auth-gradient auth-gradient-b"></span>
@@ -57,7 +60,7 @@
                                 </span>
                                 <span>
                                     <strong class="d-block">Pemeriksaan lokasi</strong>
-                                    <small class="d-block">Form login aktif setelah perangkat memberi akses lokasi.</small>
+                                    <small class="d-block">Form login hanya ditampilkan ketika lokasi perangkat berhasil dibaca.</small>
                                 </span>
                             </div>
                         </div>
@@ -91,86 +94,103 @@
                                     </button>
                                 </div>
 
-                                @if ($errors->any())
-                                    <div class="alert alert-danger d-grid gap-1" role="alert">
-                                        <strong>Login belum berhasil.</strong>
-                                        <span>Periksa kembali kredensial dan kesiapan perangkat Anda.</span>
+                                <div class="auth-location-reading" data-auth-location-reading role="status" aria-live="polite">
+                                    <span class="auth-location-orbit" aria-hidden="true">
+                                        <span></span>
+                                    </span>
+                                    <div class="auth-location-reading-copy">
+                                        <strong data-auth-location-reading-title>Sedang membaca lokasi perangkat</strong>
+                                        <small data-auth-location-reading-message>
+                                            Sistem sedang memastikan lokasi aktif sebelum form login ditampilkan.
+                                        </small>
                                     </div>
-                                @endif
+                                    <span class="auth-location-attempt" data-auth-location-attempt>Percobaan 1 dari 3</span>
+                                </div>
 
-                                @if (session('status'))
-                                    <div class="alert alert-success" role="status">
-                                        {{ session('status') }}
-                                    </div>
-                                @endif
-
-                                <form method="POST" action="{{ route('login.store') }}" data-auth-login-form novalidate>
-                                    @csrf
-
-                                    <input type="hidden" name="location_status" value="pending" data-auth-location-status-input>
-                                    <input type="hidden" name="location_latitude" value="" data-auth-location-latitude-input>
-                                    <input type="hidden" name="location_longitude" value="" data-auth-location-longitude-input>
-                                    <input type="hidden" name="location_accuracy" value="" data-auth-location-accuracy-input>
-                                    <input type="hidden" name="location_checked_at" value="" data-auth-location-checked-at-input>
-
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <div class="input-group auth-input-group">
-                                            <span class="input-group-text">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>
-                                            </span>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                id="email"
-                                                class="form-control @error('email') is-invalid @enderror"
-                                                value="{{ old('email') }}"
-                                                autocomplete="username"
-                                                inputmode="email"
-                                                maxlength="190"
-                                                required
-                                                autofocus
-                                            >
+                                <div class="auth-login-form-shell is-location-hidden"
+                                     data-auth-login-form-shell
+                                     aria-hidden="true">
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger d-grid gap-1" role="alert">
+                                            <strong>Login belum berhasil.</strong>
+                                            <span>Periksa kembali kredensial dan kesiapan perangkat Anda.</span>
                                         </div>
-                                        @error('email')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                    @endif
 
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Password</label>
-                                        <div class="input-group auth-input-group">
-                                            <span class="input-group-text">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8V7a5 5 0 0 0-10 0v1H5v14h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm4 9.73V19h-2v-1.27A2 2 0 1 1 13 17.73Z"/></svg>
-                                            </span>
-                                            <input
-                                                type="password"
-                                                name="password"
-                                                id="password"
-                                                class="form-control @error('password') is-invalid @enderror"
-                                                autocomplete="current-password"
-                                                minlength="8"
-                                                required
-                                                data-auth-password
-                                            >
-                                            <button type="button" class="btn btn-light auth-password-toggle" data-auth-password-toggle aria-label="Tampilkan password">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9 4.5 10 7-1 2.5-5 7-10 7S3 14.5 2 12c1-2.5 5-7 10-7Zm0 2C8.6 7 5.65 9.65 4.25 12 5.65 14.35 8.6 17 12 17s6.35-2.65 7.75-5C18.35 9.65 15.4 7 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>
-                                            </button>
+                                    @if (session('status'))
+                                        <div class="alert alert-success" role="status">
+                                            {{ session('status') }}
                                         </div>
-                                        @error('password')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                    @endif
 
-                                    <button type="submit" class="btn btn-primary w-100 py-3 auth-submit" data-auth-submit disabled>
-                                        <span class="auth-submit-text">Masuk ke Sistem</span>
-                                    </button>
+                                    <form method="POST" action="{{ route('login.store') }}" data-auth-login-form novalidate>
+                                        @csrf
 
-                                    <div class="rounded-4 p-3 mt-3 auth-form-note">
-                                        <strong>Catatan keamanan:</strong>
-                                        jangan membagikan email, password, atau kode verifikasi kepada pihak lain.
-                                    </div>
-                                </form>
+                                        <input type="hidden" name="location_status" value="pending" data-auth-location-status-input>
+                                        <input type="hidden" name="location_latitude" value="" data-auth-location-latitude-input>
+                                        <input type="hidden" name="location_longitude" value="" data-auth-location-longitude-input>
+                                        <input type="hidden" name="location_accuracy" value="" data-auth-location-accuracy-input>
+                                        <input type="hidden" name="location_checked_at" value="" data-auth-location-checked-at-input>
+
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <div class="input-group auth-input-group">
+                                                <span class="input-group-text">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>
+                                                </span>
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    id="email"
+                                                    class="form-control @error('email') is-invalid @enderror"
+                                                    value="{{ old('email') }}"
+                                                    autocomplete="username"
+                                                    inputmode="email"
+                                                    maxlength="190"
+                                                    required
+                                                    autofocus
+                                                >
+                                            </div>
+                                            @error('email')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password</label>
+                                            <div class="input-group auth-input-group">
+                                                <span class="input-group-text">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8V7a5 5 0 0 0-10 0v1H5v14h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm4 9.73V19h-2v-1.27A2 2 0 1 1 13 17.73Z"/></svg>
+                                                </span>
+                                                <input
+                                                    type="password"
+                                                    name="password"
+                                                    id="password"
+                                                    class="form-control @error('password') is-invalid @enderror"
+                                                    autocomplete="current-password"
+                                                    minlength="8"
+                                                    required
+                                                    data-auth-password
+                                                >
+                                                <button type="button" class="btn btn-light auth-password-toggle" data-auth-password-toggle aria-label="Tampilkan password">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9 4.5 10 7-1 2.5-5 7-10 7S3 14.5 2 12c1-2.5 5-7 10-7Zm0 2C8.6 7 5.65 9.65 4.25 12 5.65 14.35 8.6 17 12 17s6.35-2.65 7.75-5C18.35 9.65 15.4 7 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>
+                                                </button>
+                                            </div>
+                                            @error('password')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary w-100 py-3 auth-submit" data-auth-submit disabled>
+                                            <span class="auth-submit-text">Masuk ke Sistem</span>
+                                        </button>
+
+                                        <div class="rounded-4 p-3 mt-3 auth-form-note">
+                                            <strong>Catatan keamanan:</strong>
+                                            jangan membagikan email, password, atau kode verifikasi kepada pihak lain.
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
