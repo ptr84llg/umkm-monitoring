@@ -136,7 +136,8 @@ textarea.is-invalid {
 }
 
 .umkm-form-validation-modal.show .modal-dialog {
-    animation: umkmValidationModalIn .26s ease-out both;
+    transform-origin: 50% 100%;
+    animation: umkmValidationSoftFlipIn .38s cubic-bezier(.22, .78, .28, 1) both;
 }
 
 .umkm-form-validation-card {
@@ -351,3 +352,4 @@ textarea.is-invalid {
         transition: none !important;
     }
 }
+
