@@ -486,6 +486,27 @@
                 validateFirst: false,
                 onSuccess: function (response) {
                     const payload = response && response.payload ? response.payload : {};
+
+                    if (payload && payload.ok === false) {
+                        setText(submitText, originalSubmitText);
+
+                        const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
+                        setSubmitState(elements, Boolean(stillGranted));
+
+                        if (UMKM.forms && typeof UMKM.forms.errorsFromBackend === 'function') {
+                            const backendErrors = UMKM.forms.errorsFromBackend(payload, form);
+
+                            if (backendErrors.length && typeof UMKM.forms.showValidationModal === 'function') {
+                                UMKM.forms.showValidationModal(backendErrors, {
+                                    title: 'Login belum berhasil',
+                                    message: payload.message || 'Periksa kembali data login Anda.'
+                                });
+                            }
+                        }
+
+                        return;
+                    }
+
                     const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
 
                     window.location.assign(redirectUrl);
@@ -557,6 +578,7 @@
         }
     });
 })();
+
 
 
 

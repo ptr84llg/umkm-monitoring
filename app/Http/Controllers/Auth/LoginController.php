@@ -43,7 +43,7 @@ class LoginController extends Controller
                     'errors' => [
                         'email' => ['Kredensial tidak valid.'],
                     ],
-                ], 422);
+                ]);
             }
 
             return back()->withErrors([
@@ -91,3 +91,4 @@ class LoginController extends Controller
             || $request->header('X-UMKM-Request') === 'internal';
     }
 }
+
