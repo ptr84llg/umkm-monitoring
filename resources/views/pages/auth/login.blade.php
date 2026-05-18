@@ -128,6 +128,20 @@
                                         <input type="hidden" name="location_longitude" value="" data-auth-location-longitude-input>
                                         <input type="hidden" name="location_accuracy" value="" data-auth-location-accuracy-input>
                                         <input type="hidden" name="location_checked_at" value="" data-auth-location-checked-at-input>
+                                        <input type="hidden" name="tts" value="0" data-auth-tts-input>
+
+                                        <div class="visually-hidden" aria-hidden="true">
+                                            <label for="auth_login_website">Website</label>
+                                            <input
+                                                type="text"
+                                                name="website"
+                                                id="auth_login_website"
+                                                value=""
+                                                autocomplete="off"
+                                                tabindex="-1"
+                                                data-auth-honeypot
+                                            >
+                                        </div>
 
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email</label>
@@ -203,5 +217,6 @@
     </div>
 </section>
 @endsection
+
 
 

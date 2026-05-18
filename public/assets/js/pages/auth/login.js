@@ -47,6 +47,15 @@
         return toInt(page && page.dataset.authLocationMaxFailures, 3);
     }
 
+    function setTimeToSubmit(elements) {
+        if (!elements || !elements.ttsInput || !elements.formReadyAt) {
+            return;
+        }
+
+        const elapsedSeconds = Math.max(1, Math.ceil((Date.now() - elements.formReadyAt) / 1000));
+        elements.ttsInput.value = String(elapsedSeconds);
+    }
+
     function setLocationStatus(elements, status, message) {
         if (elements.status) {
             elements.status.setAttribute('data-auth-location-status', status);
@@ -345,8 +354,10 @@
             longitudeInput: document.querySelector('[data-auth-location-longitude-input]'),
             accuracyInput: document.querySelector('[data-auth-location-accuracy-input]'),
             checkedAtInput: document.querySelector('[data-auth-location-checked-at-input]'),
+            ttsInput: document.querySelector('[data-auth-tts-input]'),
             email: document.querySelector('#email'),
             password: document.querySelector('[data-auth-password]'),
+            formReadyAt: Date.now(),
             failureCount: 0,
             checking: false,
             redirecting: false,
@@ -469,6 +480,8 @@
                 return;
             }
 
+            setTimeToSubmit(elements);
+
             const result = await UMKM.forms.ajaxSubmit(form, {
                 validateFirst: false,
                 onSuccess: function (response) {
@@ -544,6 +557,7 @@
         }
     });
 })();
+
 
 
 

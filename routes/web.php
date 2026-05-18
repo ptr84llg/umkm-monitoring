@@ -100,6 +100,7 @@ Route::middleware('guest')->group(function () {
             'validate.internal.origin',
             'validate.internal.referer',
             'validate.fetch.metadata',
+            'anti.bot',
             'location.gate',
             'log.internal.api',
         ])
@@ -371,6 +372,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/smoke/layout-components', fn () => view('pages.smoke.layout-components'));
 });
+
 
 
 
