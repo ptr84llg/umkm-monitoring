@@ -20,6 +20,11 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Email harus menggunakan format yang valid.',
+            'password.required' => 'Password wajib diisi.',
+            'password.string' => 'Password tidak valid.',
         ]);
 
         if (! Auth::attempt($credentials)) {
@@ -31,9 +36,19 @@ class LoginController extends Controller
                 'event_time' => now(),
             ]);
 
+            if ($this->expectsJson($request)) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Login belum berhasil.',
+                    'errors' => [
+                        'email' => ['Kredensial tidak valid.'],
+                    ],
+                ], 422);
+            }
+
             return back()->withErrors([
                 'email' => 'Kredensial tidak valid.',
-            ]);
+            ])->onlyInput('email');
         }
 
         $request->session()->regenerate();
@@ -44,7 +59,17 @@ class LoginController extends Controller
 
         $auditLogger->log('login_success', $request, 'users', $request->user()->id);
 
-        return redirect()->intended('/dashboard/interaktif');
+        $redirectUrl = redirect()->intended('/dashboard/interaktif')->getTargetUrl();
+
+        if ($this->expectsJson($request)) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Login berhasil.',
+                'redirect_url' => $redirectUrl,
+            ]);
+        }
+
+        return redirect()->to($redirectUrl);
     }
 
     public function destroy(Request $request, AuditLogger $auditLogger)
@@ -57,5 +82,12 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    private function expectsJson(Request $request): bool
+    {
+        return $request->expectsJson()
+            || $request->ajax()
+            || $request->header('X-UMKM-Request') === 'internal';
     }
 }

@@ -416,11 +416,12 @@
             }
         }, 30000);
 
-        form.addEventListener('submit', function (event) {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
             const isGranted = elements.statusInput && elements.statusInput.value === 'granted';
 
             if (!isGranted) {
-                event.preventDefault();
                 checkLocation(elements, {
                     reason: 'submit'
                 });
@@ -431,8 +432,6 @@
                 const errors = UMKM.forms.validate(form);
 
                 if (errors.length) {
-                    event.preventDefault();
-
                     if (typeof UMKM.forms.showValidationModal === 'function') {
                         UMKM.forms.showValidationModal(errors, {
                             title: 'Login belum lengkap',
@@ -444,14 +443,90 @@
                 }
             }
 
-            if (UMKM.loader && typeof UMKM.loader.button === 'function' && elements.submit) {
-                UMKM.loader.button(elements.submit, {
-                    text: 'Memproses login...'
-                });
-            } else if (elements.submit) {
-                elements.submit.disabled = true;
-                const submitText = elements.submit.querySelector('.auth-submit-text');
-                setText(submitText, 'Memproses login...');
+            const submitText = elements.submit ? elements.submit.querySelector('.auth-submit-text') : null;
+            const originalSubmitText = submitText ? submitText.textContent : 'Masuk ke Sistem';
+
+            setSubmitState(elements, false);
+            setText(submitText, 'Memproses login...');
+
+            if (!UMKM.forms || typeof UMKM.forms.ajaxSubmit !== 'function') {
+                setText(submitText, originalSubmitText);
+                setSubmitState(elements, true);
+
+                if (UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
+                    UMKM.forms.showValidationModal([
+                        {
+                            field: elements.email,
+                            label: 'Sistem login',
+                            message: 'Core form belum siap. Muat ulang halaman sebelum login.'
+                        }
+                    ], {
+                        title: 'Login belum dapat diproses',
+                        message: 'Sistem belum siap memproses login melalui AJAX.'
+                    });
+                }
+
+                return;
+            }
+
+            const result = await UMKM.forms.ajaxSubmit(form, {
+                validateFirst: false,
+                onSuccess: function (response) {
+                    const payload = response && response.payload ? response.payload : {};
+                    const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
+
+                    window.location.assign(redirectUrl);
+                },
+                onError: function (response, backendErrors) {
+                    const payload = response && response.payload ? response.payload : {};
+                    const message = payload.message || 'Login belum berhasil. Periksa kembali data dan kesiapan lokasi.';
+
+                    setText(submitText, originalSubmitText);
+
+                    const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
+                    setSubmitState(elements, Boolean(stillGranted));
+
+                    if (response && response.status === 403) {
+                        if (UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
+                            UMKM.forms.showValidationModal([
+                                {
+                                    field: elements.email,
+                                    label: 'Akses login',
+                                    message: message
+                                }
+                            ], {
+                                title: 'Akses login memerlukan lokasi',
+                                message: 'Anda akan diarahkan kembali ke halaman awal untuk memvalidasi lokasi.'
+                            });
+                        }
+
+                        window.setTimeout(function () {
+                            window.location.assign(getLandingUrl());
+                        }, 1100);
+
+                        return;
+                    }
+
+                    if ((!backendErrors || !backendErrors.length) && UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
+                        UMKM.forms.showValidationModal([
+                            {
+                                field: elements.email,
+                                label: 'Login',
+                                message: message
+                            }
+                        ], {
+                            title: 'Login belum berhasil',
+                            message: 'Periksa kembali data login Anda.'
+                        });
+                    }
+                }
+            });
+
+            if (!result || !result.ok) {
+                setText(submitText, originalSubmitText);
+
+                const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
+                setSubmitState(elements, Boolean(stillGranted));
             }
         });
     }
@@ -469,6 +544,7 @@
         }
     });
 })();
+
 
 
 
