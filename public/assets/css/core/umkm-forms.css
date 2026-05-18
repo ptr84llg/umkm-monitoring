@@ -1,4 +1,128 @@
 /* umkm-forms.css - core reusable stylesheet */
-:root { --umkm-primary: #0d6efd; }
-.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
 
+.umkm-field-focused,
+.form-control.umkm-field-focused,
+.form-select.umkm-field-focused {
+    border-color: rgba(var(--umkm-primary-rgb), .62);
+    box-shadow: 0 0 0 .22rem rgba(var(--umkm-primary-rgb), .14);
+}
+
+.umkm-field-filled,
+.form-control.umkm-field-filled,
+.form-select.umkm-field-filled {
+    border-color: rgba(var(--umkm-primary-rgb), .34);
+    background-image: linear-gradient(0deg, rgba(var(--umkm-primary-rgb), .035), rgba(var(--umkm-primary-rgb), .035));
+}
+
+.umkm-field-corrected,
+.form-control.umkm-field-corrected,
+.form-select.umkm-field-corrected {
+    border-color: rgba(var(--umkm-secondary-rgb), .46);
+    background-image: linear-gradient(0deg, rgba(var(--umkm-secondary-rgb), .05), rgba(var(--umkm-secondary-rgb), .05));
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid,
+textarea.is-invalid {
+    border-color: rgba(var(--umkm-danger-rgb), .72);
+    box-shadow: 0 0 0 .2rem rgba(var(--umkm-danger-rgb), .12);
+}
+
+.umkm-form-validation-modal .modal-dialog {
+    max-width: 560px;
+}
+
+.umkm-form-validation-card {
+    border: 0;
+    border-radius: var(--umkm-radius-xl);
+    box-shadow: var(--umkm-shadow-lg);
+    overflow: hidden;
+}
+
+.umkm-form-validation-head {
+    align-items: flex-start;
+    border-bottom: 1px solid var(--umkm-line-soft);
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-danger-soft), transparent 40%),
+        rgba(255, 255, 255, .88);
+}
+
+.umkm-form-validation-kicker {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--umkm-radius-pill);
+    padding: .28rem .58rem;
+    color: var(--umkm-danger);
+    background: var(--umkm-danger-soft);
+    font-size: .72rem;
+    font-weight: 950;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.umkm-form-validation-head .modal-title {
+    margin-top: .55rem;
+    color: var(--umkm-ink);
+    font-weight: 950;
+    letter-spacing: -.025em;
+}
+
+.umkm-form-validation-message {
+    margin-bottom: 1rem;
+    color: var(--umkm-muted);
+    line-height: 1.55;
+}
+
+.umkm-form-validation-list {
+    display: grid;
+    gap: .65rem;
+}
+
+.umkm-form-validation-item {
+    width: 100%;
+    border: 1px solid rgba(var(--umkm-danger-rgb), .16);
+    border-radius: var(--umkm-radius-lg);
+    padding: .78rem .9rem;
+    text-align: left;
+    color: var(--umkm-muted-strong);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .68)),
+        var(--umkm-danger-soft);
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.umkm-form-validation-item:hover,
+.umkm-form-validation-item:focus-visible {
+    border-color: rgba(var(--umkm-danger-rgb), .34);
+    box-shadow: 0 12px 28px rgba(var(--umkm-ink-rgb), .08);
+    transform: translateY(-1px);
+    outline: 0;
+}
+
+.umkm-form-validation-item strong {
+    display: block;
+    color: var(--umkm-ink);
+    font-size: .92rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.umkm-form-validation-item span {
+    display: block;
+    margin-top: .2rem;
+    font-size: .84rem;
+    line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .umkm-field-focused,
+    .umkm-field-filled,
+    .umkm-field-corrected,
+    .umkm-form-validation-item {
+        transition: none !important;
+        animation: none !important;
+    }
+}
