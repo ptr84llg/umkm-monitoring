@@ -149,9 +149,8 @@
 
     function lockLoginForLocationCheck(elements, message, attemptText) {
         setSubmitState(elements, false);
-        setFormVisible(elements, false);
+        setFormVisible(elements, true);
         setReadingVisible(elements, true);
-        clearSensitiveInputs(elements);
         clearLocationInputs(elements);
         setLocationStatus(elements, 'checking', message || 'Membaca lokasi perangkat...');
         setReadingCopy(
@@ -221,9 +220,8 @@
         elements.failureCount += 1;
 
         setSubmitState(elements, false);
-        setFormVisible(elements, false);
+        setFormVisible(elements, true);
         setReadingVisible(elements, true);
-        clearSensitiveInputs(elements);
         clearLocationInputs(elements);
 
         const attemptText = 'Percobaan ' + Math.min(elements.failureCount, maxFailures) + ' dari ' + maxFailures;
@@ -453,3 +451,4 @@
         }
     });
 })();
+

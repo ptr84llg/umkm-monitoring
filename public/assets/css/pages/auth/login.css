@@ -358,10 +358,10 @@ body.layout-auth {
 }
 
 .auth-login-form-shell.is-location-hidden {
-    opacity: 0;
-    transform: translateY(10px);
-    max-height: 0;
-    overflow: hidden;
+    opacity: .72;
+    transform: none;
+    max-height: none;
+    overflow: visible;
     pointer-events: none;
 }
 
@@ -503,3 +503,4 @@ body.layout-auth {
         scroll-behavior: auto !important;
     }
 }
+
