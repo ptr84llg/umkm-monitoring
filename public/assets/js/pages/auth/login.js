@@ -128,8 +128,9 @@
             return;
         }
 
-        elements.formShell.classList.toggle('is-location-hidden', !visible);
-        elements.formShell.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        elements.formShell.classList.remove('is-location-hidden');
+        elements.formShell.classList.toggle('is-location-locked', !visible);
+        elements.formShell.setAttribute('aria-hidden', 'false');
     }
 
     function setReadingVisible(elements, visible) {
@@ -170,7 +171,7 @@
             'Form login telah dibuka karena lokasi perangkat aktif.',
             ''
         );
-        setReadingVisible(elements, false);
+        setReadingVisible(elements, true);
         setFormVisible(elements, true);
         setSubmitState(elements, true);
 
@@ -186,7 +187,7 @@
 
         elements.redirecting = true;
         setSubmitState(elements, false);
-        setFormVisible(elements, false);
+        setFormVisible(elements, true);
         clearSensitiveInputs(elements);
         setLocationStatus(elements, 'blocked', 'Lokasi tidak aktif. Anda akan diarahkan ke halaman awal.');
         setReadingVisible(elements, true);
@@ -451,4 +452,5 @@
         }
     });
 })();
+
 

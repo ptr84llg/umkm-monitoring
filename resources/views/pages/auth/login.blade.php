@@ -104,9 +104,9 @@
                                     </div>
                                 </div>
 
-                                <div class="auth-login-form-shell is-location-hidden"
+                                <div class="auth-login-form-shell"
                                      data-auth-login-form-shell
-                                     aria-hidden="true">
+                                     aria-hidden="false">
                                     @if ($errors->any())
                                         <div class="alert alert-danger d-grid gap-1" role="alert">
                                             <strong>Login belum berhasil.</strong>
@@ -203,4 +203,5 @@
     </div>
 </section>
 @endsection
+
 

@@ -367,11 +367,18 @@ body.layout-auth {
 }
 
 .auth-login-form-shell.is-location-hidden {
-    opacity: .72;
+    opacity: 1;
     transform: none;
     max-height: none;
     overflow: visible;
-    pointer-events: none;
+    pointer-events: auto;
+}
+
+.auth-login-form-shell.is-location-locked {
+    opacity: 1;
+    transform: none;
+    max-height: none;
+    overflow: visible;
 }
 
 .auth-input-group .input-group-text {
@@ -518,5 +525,6 @@ body.layout-auth {
         scroll-behavior: auto !important;
     }
 }
+
 
 
