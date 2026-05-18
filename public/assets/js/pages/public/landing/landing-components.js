@@ -25,6 +25,11 @@
         Landing.initRevealAnimation?.();
         Landing.refreshLocationGateMounts();
 
+        if (detail.component === 'landing-region-modal') {
+            Landing.initRegionModal?.();
+            return;
+        }
+
         if (detail.component === 'landing-hero-preview-board') {
             Landing.initCounters?.();
             Landing.initTiltCard?.();
@@ -58,3 +63,4 @@
         Landing.initLoadedLandingComponent(event.detail || {});
     });
 })();
+

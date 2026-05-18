@@ -51,3 +51,4 @@ class LandingComponentController extends Controller
             ->header('Pragma', 'no-cache');
     }
 }
+

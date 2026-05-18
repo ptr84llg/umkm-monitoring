@@ -85,9 +85,9 @@
         [
             'key' => 'region-preview',
             'label' => 'Preview wilayah',
-            'description' => 'Memeriksa elemen pilihan wilayah preview.',
+            'description' => 'Memeriksa mount pilihan wilayah berbasis SSA.',
             'check' => 'selector',
-            'selector' => '[data-region-modal]',
+            'selector' => '[data-region-modal-mount]',
             'required' => false,
         ],
         [
@@ -172,7 +172,15 @@
     </header>
 
     <x-umkm.location-gate-modal />
-    <x-umkm.region-selector-modal mode="analytics" />
+
+    <div class="landing-component-shell landing-region-modal-mount"
+         data-region-modal-mount
+         data-umkm-component="landing-region-modal"
+         data-umkm-component-url="{{ route('public.landing-components.region-modal') }}"
+         data-umkm-component-load-on="readiness-hidden"
+         data-umkm-component-loading-text="Memuat pilihan wilayah..."
+         data-umkm-component-overlay="false"
+         aria-live="polite"></div>
     <div class="offcanvas offcanvas-end mobile-canvas"
          tabindex="-1"
          id="landingMobileOffcanvas"
@@ -364,3 +372,4 @@
     </button>
 </div>
 @endsection
+

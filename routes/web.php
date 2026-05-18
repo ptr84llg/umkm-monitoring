@@ -33,10 +33,14 @@ Route::prefix('api/public/landing-components')
 
         Route::get('/cta-section', [LandingComponentController::class, 'ctaSection'])
             ->name('cta-section');
+
+        Route::get('/region-modal', [LandingComponentController::class, 'regionModal'])
+            ->name('region-modal');
     });
 Route::prefix('api/public/landing-regions')
     ->middleware([
         'throttle:internal-sensitive',
+        'validate.umkm.internal.request',
         'validate.internal.origin',
         'validate.internal.referer',
         'validate.fetch.metadata',
@@ -359,3 +363,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/smoke/layout-components', fn () => view('pages.smoke.layout-components'));
 });
+
+
