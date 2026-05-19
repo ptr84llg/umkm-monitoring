@@ -96,6 +96,18 @@
         return root && root.dataset.loginUrl ? root.dataset.loginUrl : settings.loginUrl;
     }
 
+    function isAuthenticatedLanding() {
+        const root = rootElement();
+
+        return Boolean(root && root.dataset.authenticated === 'true');
+    }
+
+    function getDashboardUrl() {
+        const root = rootElement();
+
+        return root && root.dataset.dashboardUrl ? root.dataset.dashboardUrl : getLoginUrl();
+    }
+
     function getVerifyUrl() {
         const root = rootElement();
 
@@ -128,13 +140,18 @@
 
     function createLoginLink(mount) {
         const link = document.createElement('a');
-        const label = mount.dataset.loginLabel || 'Masuk Sistem';
+        const authenticated = isAuthenticatedLanding();
+        const label = authenticated ? (mount.dataset.dashboardLabel || 'Dashboard') : (mount.dataset.loginLabel || 'Masuk Sistem');
         const variant = mount.dataset.loginVariant || 'default';
         const classes = mount.dataset.loginClass || 'btn btn-primary';
 
         link.className = classes;
-        link.href = getLoginUrl();
+        link.href = authenticated ? getDashboardUrl() : getLoginUrl();
         link.dataset.locationCreatedLogin = 'true';
+
+        if (authenticated) {
+            link.dataset.authenticatedDashboardLink = 'true';
+        }
 
         if (mount.dataset.loginKey) {
             link.dataset.locationLoginKey = mount.dataset.loginKey;
@@ -160,10 +177,13 @@
     }
 
     function renderLoginLinks(allowed) {
+        const authenticated = isAuthenticatedLanding();
+        const canRender = allowed || authenticated;
+
         qsa(DEFAULT_SELECTORS.loginMount).forEach(function (mount) {
             const existing = mount.querySelector('[data-location-created-login]');
 
-            if (!allowed) {
+            if (!canRender) {
                 if (existing) {
                     existing.remove();
                 }
@@ -172,13 +192,17 @@
             }
 
             if (existing) {
+                if (authenticated && existing.getAttribute('href') !== getDashboardUrl()) {
+                    existing.setAttribute('href', getDashboardUrl());
+                }
+
                 return;
             }
 
             const link = createLoginLink(mount);
 
             link.addEventListener('click', function (event) {
-                if (state.status !== 'granted') {
+                if (!authenticated && state.status !== 'granted') {
                     event.preventDefault();
                     open(true);
                 }
@@ -923,3 +947,4 @@
 
     UMKM.register?.('locationGate', UMKM.locationGate);
 })();
+

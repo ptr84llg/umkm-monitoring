@@ -20,6 +20,30 @@
 
 @section('title', 'Monitoring UMKM | Visual Analitik Interaktif')
 
+@php
+    $landingDashboardUrl = route('login');
+
+    if (auth()->check()) {
+        $landingUser = auth()->user();
+
+        if ($landingUser?->hasRole('admin_utama')) {
+            $landingDashboardUrl = route('admin-utama.dashboard');
+        } elseif ($landingUser?->hasRole('admin_dinas')) {
+            $landingDashboardUrl = route('admin-dinas.dashboard');
+        } elseif ($landingUser?->hasRole('kepala_dinas')) {
+            $landingDashboardUrl = route('kepala-dinas.dashboard');
+        } elseif ($landingUser?->hasRole('pelaku_umkm')) {
+            $landingDashboardUrl = route('pelaku-umkm.dashboard');
+        } elseif ($landingUser?->hasRole('validator_ahli')) {
+            $landingDashboardUrl = route('expert.validator.list');
+        } elseif ($landingUser?->hasPermission('dashboard.view.executive')) {
+            $landingDashboardUrl = route('dashboard.interactive');
+        } else {
+            $landingDashboardUrl = url('/');
+        }
+    }
+@endphp
+
 @section('content')
 <x-umkm.readiness-loader
     id="landingReadinessLoader"
@@ -100,7 +124,7 @@
         ],
     ]"
 />
-<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-location-gate-verify-url="{{ route('public.location-gate.verify') }}" data-location-gate-clear-url="{{ route('public.location-gate.clear') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
+<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-dashboard-url="{{ $landingDashboardUrl }}" data-authenticated="{{ auth()->check() ? 'true' : 'false' }}" data-location-gate-verify-url="{{ route('public.location-gate.verify') }}" data-location-gate-clear-url="{{ route('public.location-gate.clear') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
 
@@ -372,4 +396,5 @@
     </button>
 </div>
 @endsection
+
 
