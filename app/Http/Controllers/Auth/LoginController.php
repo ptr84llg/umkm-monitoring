@@ -54,33 +54,25 @@ class LoginController extends Controller
         $user = $request->user();
 
         if (! $user || ! $user->isActive()) {
-            SecurityEventLog::query()->create([
-                'actor_user_id' => $user?->id,
-                'event_type' => 'inactive_account_login_blocked',
-                'severity' => 'medium',
-                'event_detail' => 'Login blocked because user account is inactive.',
-                'ip_address' => $request->ip(),
-                'event_time' => now(),
-            ]);
+            return $this->denyAuthenticatedLogin(
+                $request,
+                $user,
+                'inactive_account_login_blocked',
+                'Akun tidak aktif. Hubungi pengelola sistem.',
+                'Login blocked because user account is inactive.'
+            );
+        }
 
-            Auth::logout();
+        $access = $this->resolveManualLoginAccess($request, $user);
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            if ($this->expectsJson($request)) {
-                return response()->json([
-                    'ok' => false,
-                    'message' => 'Login belum berhasil.',
-                    'errors' => [
-                        'email' => ['Akun tidak aktif. Hubungi pengelola sistem.'],
-                    ],
-                ]);
-            }
-
-            return back()->withErrors([
-                'email' => 'Akun tidak aktif. Hubungi pengelola sistem.',
-            ])->onlyInput('email');
+        if (! $access['allowed']) {
+            return $this->denyAuthenticatedLogin(
+                $request,
+                $user,
+                $access['event_type'],
+                $access['message'],
+                $access['event_detail']
+            );
         }
 
         $request->session()->regenerate();
@@ -92,7 +84,7 @@ class LoginController extends Controller
 
         $auditLogger->log('login_success', $request, 'users', $user->id);
 
-        $redirectUrl = $this->intendedOrRoleRedirect($request, $user);
+        $redirectUrl = $access['redirect_url'];
 
         if ($this->expectsJson($request)) {
             return response()->json([
@@ -117,52 +109,159 @@ class LoginController extends Controller
         return redirect('/');
     }
 
-    private function intendedOrRoleRedirect(Request $request, $user): string
+    private function resolveManualLoginAccess(Request $request, $user): array
     {
-        $fallbackUrl = $this->roleRedirectUrl($user);
-        $intendedUrl = $request->session()->pull('url.intended');
-
-        if (! is_string($intendedUrl) || $intendedUrl === '') {
-            return $fallbackUrl;
-        }
-
-        if (! $this->isSafeLocalUrl($request, $intendedUrl)) {
-            return $fallbackUrl;
-        }
-
-        return $intendedUrl;
-    }
-
-    private function roleRedirectUrl($user): string
-    {
-        $roleRouteMap = [
-            'admin_utama' => 'admin-utama.dashboard',
-            'admin_dinas' => 'admin-dinas.dashboard',
-            'kepala_dinas' => 'kepala-dinas.dashboard',
-            'pelaku_umkm' => 'pelaku-umkm.dashboard',
-            'validator_ahli' => 'expert.validator.list',
+        $roleAccessMap = [
+            'admin_utama' => [
+                'route' => 'admin-utama.dashboard',
+                'permission' => 'dashboard.view.executive',
+                'prefixes' => ['/admin-utama'],
+            ],
+            'admin_dinas' => [
+                'route' => 'admin-dinas.dashboard',
+                'permission' => 'umkm.read.official',
+                'prefixes' => ['/admin-dinas'],
+            ],
+            'kepala_dinas' => [
+                'route' => 'kepala-dinas.dashboard',
+                'permission' => 'dashboard.view.executive',
+                'prefixes' => ['/kepala-dinas'],
+            ],
+            'pelaku_umkm' => [
+                'route' => 'pelaku-umkm.dashboard',
+                'permission' => 'umkm.submit.update',
+                'prefixes' => ['/pelaku-umkm', '/proposals', '/survey'],
+            ],
+            'validator_ahli' => [
+                'route' => 'expert.validator.list',
+                'permission' => 'validation.expert.fill',
+                'prefixes' => ['/expert-validation/validator'],
+            ],
         ];
 
-        foreach ($roleRouteMap as $role => $routeName) {
-            if ($user->hasRole($role) && route($routeName, [], false)) {
-                return route($routeName);
+        $activeRoleCodes = $user->roles()
+            ->where('roles.is_active', true)
+            ->pluck('code')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (count($activeRoleCodes) === 0) {
+            return [
+                'allowed' => false,
+                'event_type' => 'manual_login_without_role_blocked',
+                'event_detail' => 'Manual login blocked because user has no active role. No-role accounts are reserved for Google limited access flow.',
+                'message' => 'Akun berhasil dikenali, tetapi akses sistem belum diaktifkan. Silakan hubungi pengelola sistem.',
+            ];
+        }
+
+        foreach ($roleAccessMap as $role => $access) {
+            if (! in_array($role, $activeRoleCodes, true)) {
+                continue;
             }
+
+            if (! $user->hasPermission($access['permission'])) {
+                return [
+                    'allowed' => false,
+                    'event_type' => 'manual_login_missing_dashboard_permission_blocked',
+                    'event_detail' => "Manual login blocked because role {$role} does not have required permission {$access['permission']}.",
+                    'message' => 'Akun berhasil dikenali, tetapi hak akses dashboard belum lengkap. Silakan hubungi pengelola sistem.',
+                ];
+            }
+
+            $intendedUrl = $this->safeIntendedUrlForAccess($request, $access['prefixes']);
+
+            return [
+                'allowed' => true,
+                'redirect_url' => $intendedUrl ?: route($access['route']),
+            ];
         }
 
-        if ($user->hasPermission('dashboard.view.executive')) {
-            return route('dashboard.interactive');
-        }
+        return [
+            'allowed' => false,
+            'event_type' => 'manual_login_unsupported_role_blocked',
+            'event_detail' => 'Manual login blocked because user role is not registered as a dashboard login role.',
+            'message' => 'Akun berhasil dikenali, tetapi role akun belum terdaftar sebagai akses login sistem. Silakan hubungi pengelola sistem.',
+        ];
+    }
 
+    private function denyAuthenticatedLogin(Request $request, $user, string $eventType, string $message, string $eventDetail)
+    {
         SecurityEventLog::query()->create([
-            'actor_user_id' => $user->id,
-            'event_type' => 'login_without_dashboard_role',
+            'actor_user_id' => $user?->id,
+            'event_type' => $eventType,
             'severity' => 'medium',
-            'event_detail' => 'User logged in but no dashboard role redirect was available.',
-            'ip_address' => request()->ip(),
+            'event_detail' => $eventDetail,
+            'ip_address' => $request->ip(),
             'event_time' => now(),
         ]);
 
-        return url('/');
+        Auth::logout();
+
+        /*
+         * Jangan invalidate/regenerateToken di respons AJAX login gagal setelah Auth::attempt().
+         * Token CSRF halaman login harus tetap dapat dipakai agar user bisa memperbaiki akses/login
+         * tanpa terkena 419 pada percobaan berikutnya.
+         */
+        $request->session()->regenerate();
+
+        if ($this->expectsJson($request)) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Login belum dapat dilanjutkan.',
+                'errors' => [
+                    'email' => [$message],
+                ],
+            ]);
+        }
+
+        return back()->withErrors([
+            'email' => $message,
+        ])->onlyInput('email');
+    }
+
+    private function safeIntendedUrlForAccess(Request $request, array $allowedPrefixes): ?string
+    {
+        $intendedUrl = $request->session()->pull('url.intended');
+
+        if (! is_string($intendedUrl) || $intendedUrl === '') {
+            return null;
+        }
+
+        if (! $this->isSafeLocalUrl($request, $intendedUrl)) {
+            return null;
+        }
+
+        $path = $this->localPathFromUrl($request, $intendedUrl);
+
+        foreach ($allowedPrefixes as $prefix) {
+            $normalizedPrefix = rtrim($prefix, '/');
+
+            if ($path === $normalizedPrefix || str_starts_with($path, $normalizedPrefix . '/')) {
+                return $intendedUrl;
+            }
+        }
+
+        return null;
+    }
+
+    private function localPathFromUrl(Request $request, string $url): string
+    {
+        if (str_starts_with($url, '/')) {
+            $path = parse_url($url, PHP_URL_PATH);
+
+            return is_string($path) && $path !== '' ? $path : '/';
+        }
+
+        $host = $request->getSchemeAndHttpHost();
+
+        if (! str_starts_with($url, $host)) {
+            return '/';
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+
+        return is_string($path) && $path !== '' ? $path : '/';
     }
 
     private function isSafeLocalUrl(Request $request, string $url): bool
