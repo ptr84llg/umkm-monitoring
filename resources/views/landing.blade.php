@@ -145,11 +145,11 @@
                     <nav class="landing-menu d-inline-flex align-items-center gap-2" aria-label="Menu utama">
                         <a class="btn btn-light btn-sm landing-menu-link" href="#dashboard">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                            <span>Preview Dashboard</span>
+                            <span>Preview Visual</span>
                         </a>
                         <a class="btn btn-light btn-sm landing-menu-link" href="#ringkasan">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
-                            <span>Ringkasan</span>
+                            <span>Ringkasan Sistem</span>
                         </a>
                     </nav>
                 </div>
@@ -177,10 +177,6 @@
                               data-dashboard-label="Ruang Kerja"
                               data-login-class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex"></span>
 
-                        <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/></svg>
-                            <span>Jelajahi</span>
-                        </a>
 
                         <button type="button"
                                 class="btn btn-light btn-sm landing-menu-button d-inline-flex d-xl-none"
@@ -242,7 +238,7 @@
                     <span class="mobile-canvas-link-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
                     </span>
-                    <span>Preview Dashboard</span>
+                    <span>Preview Visual</span>
                 </a>
 
                 <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3"
@@ -251,7 +247,7 @@
                     <span class="mobile-canvas-link-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
                     </span>
-                    <span>Ringkasan</span>
+                    <span>Ringkasan Sistem</span>
                 </a>
 
                 <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3"
@@ -260,7 +256,7 @@
                     <span class="mobile-canvas-link-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg>
                     </span>
-                    <span>Mulai</span>
+                    <span>Akses Sistem</span>
                 </a>
 
                 <span data-login-mount
@@ -308,7 +304,7 @@
                                               data-login-class="btn btn-primary btn-lg landing-main-btn"></span>
                                         <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                            <span>Lihat Preview</span>
+                                            <span>Lihat Preview Visual</span>
                                         </a>
                                     </div>
                                 </div>
@@ -399,6 +395,7 @@
     </button>
 </div>
 @endsection
+
 
 
 

@@ -12,11 +12,11 @@
                                 </x-umkm.section-pill>
 
                                 <h2 class="display-6 fw-bold mt-3 mb-3">
-                                    Kelola data UMKM dalam dashboard
+                                    Kelola data UMKM dalam ruang kerja
                                 </h2>
 
                                 <p class="lead mb-0">
-                                    Masuk ke sistem untuk mengakses dashboard, modul pengelolaan data,
+                                    Masuk ke sistem untuk mengakses ruang kerja, modul pengelolaan data,
                                     peta sebaran, dan ringkasan informasi pendukung keputusan.
                                 </p>
                             </div>
@@ -25,6 +25,7 @@
                                 <span data-login-mount
                                       data-login-key="cta-login"
                                       data-login-label="Masuk ke Sistem"
+                                      data-dashboard-label="Buka Ruang Kerja"
                                       data-login-class="btn btn-light btn-lg cta-button w-100 w-xl-auto"></span>
                             </div>
                         </div>
@@ -32,3 +33,4 @@
                 </div>
             </div>
         
+

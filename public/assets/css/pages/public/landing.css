@@ -2248,3 +2248,49 @@ html[data-location-gate="checking"] .location-gate-retry {
         text-align: left;
     }
 }
+/* Landing UI label cleanup */
+.landing-nav-actions {
+    gap: .55rem !important;
+}
+
+.landing-login-btn[data-authenticated-dashboard-link="true"] {
+    color: var(--umkm-ink) !important;
+    border-color: rgba(var(--umkm-ink-rgb), .08) !important;
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-primary-soft), transparent 34%),
+        rgba(255, 255, 255, .92) !important;
+    box-shadow: var(--umkm-shadow-xs);
+}
+
+.landing-login-btn[data-authenticated-dashboard-link="true"]:hover,
+.landing-login-btn[data-authenticated-dashboard-link="true"]:focus-visible {
+    color: var(--umkm-primary-dark) !important;
+    border-color: rgba(var(--umkm-primary-rgb), .18) !important;
+    transform: translateY(-1px);
+    box-shadow: var(--umkm-shadow-sm);
+}
+
+.hero-actions .landing-main-btn[data-authenticated-dashboard-link="true"],
+.cta-button[data-authenticated-dashboard-link="true"] {
+    letter-spacing: -.01em;
+}
+
+.landing-menu-link span,
+.landing-login-btn span {
+    white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+    .landing-header .container {
+        max-width: min(1260px, calc(100% - 2rem));
+    }
+
+    .landing-menu {
+        gap: .15rem !important;
+    }
+
+    .landing-menu-link {
+        padding-inline: .78rem;
+    }
+}
+

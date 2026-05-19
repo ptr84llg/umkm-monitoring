@@ -80,7 +80,7 @@
                                     <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
                                 </svg>
                             </x-slot:icon>
-                            Dashboard
+                            Preview Visual
                         </x-umkm.footer-link>
 
                         <x-umkm.footer-link :href="url('/#ringkasan')">
@@ -89,7 +89,7 @@
                                     <path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/>
                                 </svg>
                             </x-slot:icon>
-                            Ringkasan
+                            Ringkasan Sistem
                         </x-umkm.footer-link>
                     </div>
                 </x-umkm.footer-column>
@@ -107,6 +107,7 @@
                         <span data-login-mount
                               data-login-key="footer-login"
                               data-login-label="Masuk Sistem"
+                              data-dashboard-label="Buka Ruang Kerja"
                               data-login-class="footer-link"
                               data-login-variant="footer"></span>
 
@@ -116,7 +117,7 @@
                                     <path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/>
                                 </svg>
                             </x-slot:icon>
-                            Mulai Penggunaan
+                            Panduan Akses
                         </x-umkm.footer-link>
                     </div>
                 </x-umkm.footer-column>
@@ -131,7 +132,7 @@
                     </x-slot:icon>
 
                     <p class="mb-0">
-                        Tampilan publik ini menyediakan gambaran umum sistem. Akses data dan dashboard internal
+                        Tampilan publik ini menyediakan gambaran umum sistem. Akses data dan ruang kerja internal
                         dilakukan melalui akun yang terdaftar agar pemantauan tetap terkontrol dan aman.
                     </p>
                 </x-umkm.footer-column>
