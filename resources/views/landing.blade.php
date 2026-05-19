@@ -174,6 +174,7 @@
                         <span data-login-mount
                               data-login-key="header-login"
                               data-login-label="Masuk"
+                              data-dashboard-label="Ruang Kerja"
                               data-login-class="btn btn-light btn-sm landing-login-btn d-none d-xl-inline-flex"></span>
 
                         <a class="btn btn-primary btn-sm landing-main-btn d-none d-xl-inline-flex" href="#dashboard">
@@ -265,6 +266,7 @@
                 <span data-login-mount
                       data-login-key="mobile-login"
                       data-login-label="Masuk Sistem"
+                      data-dashboard-label="Buka Ruang Kerja"
                       data-login-class="btn btn-primary mobile-login-link d-flex align-items-center justify-content-center gap-2"
                       data-login-variant="mobile"
                       data-login-menu-link="true"></span>
@@ -302,6 +304,7 @@
                                         <span data-login-mount
                                               data-login-key="hero-login"
                                               data-login-label="Masuk ke Sistem"
+                                              data-dashboard-label="Buka Ruang Kerja"
                                               data-login-class="btn btn-primary btn-lg landing-main-btn"></span>
                                         <a class="btn btn-outline-dark btn-lg landing-outline-btn" href="#dashboard">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
@@ -396,5 +399,6 @@
     </button>
 </div>
 @endsection
+
 
 
