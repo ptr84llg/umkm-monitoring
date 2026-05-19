@@ -355,7 +355,7 @@
             accuracyInput: document.querySelector('[data-auth-location-accuracy-input]'),
             checkedAtInput: document.querySelector('[data-auth-location-checked-at-input]'),
             ttsInput: document.querySelector('[data-auth-tts-input]'),
-            email: document.querySelector('#email'),
+            identifier: document.querySelector('#identifier'),
             password: document.querySelector('[data-auth-password]'),
             formReadyAt: Date.now(),
             failureCount: 0,
@@ -467,7 +467,7 @@
                 if (UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
                     UMKM.forms.showValidationModal([
                         {
-                            field: elements.email,
+                            field: elements.identifier,
                             label: 'Sistem login',
                             message: 'Core form belum siap. Muat ulang halaman sebelum login.'
                         }
@@ -524,7 +524,7 @@
                         if (UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
                             UMKM.forms.showValidationModal([
                                 {
-                                    field: elements.email,
+                                    field: elements.identifier,
                                     label: 'Akses login',
                                     message: message
                                 }
@@ -544,8 +544,8 @@
                     if ((!backendErrors || !backendErrors.length) && UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
                         UMKM.forms.showValidationModal([
                             {
-                                field: elements.email,
-                                label: 'Login',
+                                field: elements.identifier,
+                                label: 'Identitas akun',
                                 message: message
                             }
                         ], {
@@ -578,6 +578,7 @@
         }
     });
 })();
+
 
 
 

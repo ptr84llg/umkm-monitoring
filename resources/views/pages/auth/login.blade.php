@@ -144,27 +144,30 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
+                                            <label for="identifier" class="form-label">Email / Username / NIK</label>
                                             <div class="input-group auth-input-group">
                                                 <span class="input-group-text">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>
                                                 </span>
                                                 <input
-                                                    type="email"
-                                                    name="email"
-                                                    id="email"
-                                                    class="form-control @error('email') is-invalid @enderror"
-                                                    value="{{ old('email') }}"
+                                                    type="text"
+                                                    name="identifier"
+                                                    id="identifier"
+                                                    class="form-control @error('identifier') is-invalid @enderror"
+                                                    value="{{ old('identifier', old('email')) }}"
                                                     autocomplete="username"
-                                                    inputmode="email"
+                                                    inputmode="text"
                                                     maxlength="190"
                                                     required
                                                     autofocus
                                                 >
                                             </div>
-                                            @error('email')
+                                            @error('identifier')
                                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
+                                            <div class="form-text auth-field-hint">
+                                                Gunakan email, username, atau NIK yang sudah diaktifkan untuk login.
+                                            </div>
                                         </div>
 
                                         <div class="mb-3">
@@ -217,6 +220,7 @@
     </div>
 </section>
 @endsection
+
 
 
 
