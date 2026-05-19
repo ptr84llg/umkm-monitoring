@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\SecurityEventLog;
+use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -17,21 +20,30 @@ class LoginController extends Controller
 
     public function store(Request $request, AuditLogger $auditLogger)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $identifierField = $request->has('identifier') ? 'identifier' : 'email';
+
+        $validated = $request->validate([
+            $identifierField => ['required', 'string', 'max:190'],
             'password' => ['required', 'string'],
         ], [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Email harus menggunakan format yang valid.',
+            $identifierField.'.required' => 'Identitas akun wajib diisi.',
+            $identifierField.'.string' => 'Identitas akun tidak valid.',
+            $identifierField.'.max' => 'Identitas akun terlalu panjang.',
             'password.required' => 'Password wajib diisi.',
             'password.string' => 'Password tidak valid.',
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        $identifier = trim((string) ($validated[$identifierField] ?? ''));
+        $password = (string) ($validated['password'] ?? '');
+
+        $resolved = $this->resolveLoginIdentifier($identifier);
+        $user = $resolved['user'];
+
+        if (! $user || ! Hash::check($password, (string) $user->password)) {
             SecurityEventLog::query()->create([
                 'event_type' => 'failed_login',
                 'severity' => 'medium',
-                'event_detail' => 'Internal login failed',
+                'event_detail' => 'Manual login failed using identifier type: '.$resolved['type'].'.',
                 'ip_address' => $request->ip(),
                 'event_time' => now(),
             ]);
@@ -41,19 +53,19 @@ class LoginController extends Controller
                     'ok' => false,
                     'message' => 'Login belum berhasil.',
                     'errors' => [
-                        'email' => ['Kredensial tidak valid.'],
+                        $identifierField => ['Kredensial tidak valid.'],
                     ],
                 ]);
             }
 
             return back()->withErrors([
-                'email' => 'Kredensial tidak valid.',
-            ])->onlyInput('email');
+                $identifierField => 'Kredensial tidak valid.',
+            ])->onlyInput($identifierField);
         }
 
-        $user = $request->user();
+        Auth::login($user);
 
-        if (! $user || ! $user->isActive()) {
+        if (! $user->isActive()) {
             return $this->denyAuthenticatedLogin(
                 $request,
                 $user,
@@ -82,6 +94,8 @@ class LoginController extends Controller
             'last_login_ip' => $request->ip(),
         ])->save();
 
+        $this->markIdentifierUsed($resolved);
+
         $auditLogger->log('login_success', $request, 'users', $user->id);
 
         $redirectUrl = $access['redirect_url'];
@@ -107,6 +121,84 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    private function resolveLoginIdentifier(string $identifier): array
+    {
+        $identifier = trim($identifier);
+        $normalized = strtolower($identifier);
+
+        if ($identifier === '') {
+            return [
+                'type' => 'empty',
+                'user' => null,
+                'credential_id' => null,
+            ];
+        }
+
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'type' => 'email',
+                'user' => User::query()
+                    ->whereRaw('LOWER(email) = ?', [$normalized])
+                    ->first(),
+                'credential_id' => null,
+            ];
+        }
+
+        if (preg_match('/^\d{16}$/', $identifier)) {
+            $credential = DB::table('user_identity_credentials')
+                ->where('identifier_type', 'nik')
+                ->where('identifier_hash', $this->identifierHash($identifier))
+                ->where('is_active', true)
+                ->where('login_enabled', true)
+                ->first();
+
+            return [
+                'type' => 'nik',
+                'user' => $credential ? User::query()->find($credential->user_id) : null,
+                'credential_id' => $credential?->id,
+            ];
+        }
+
+        if (! preg_match('/^[a-zA-Z0-9._-]{3,80}$/', $identifier)) {
+            return [
+                'type' => 'invalid',
+                'user' => null,
+                'credential_id' => null,
+            ];
+        }
+
+        return [
+            'type' => 'username',
+            'user' => User::query()
+                ->whereRaw('LOWER(username) = ?', [$normalized])
+                ->first(),
+            'credential_id' => null,
+        ];
+    }
+
+    private function identifierHash(string $value): string
+    {
+        return hash_hmac('sha256', $value, (string) config('app.key'));
+    }
+
+    private function markIdentifierUsed(array $resolved): void
+    {
+        if (($resolved['type'] ?? null) !== 'nik') {
+            return;
+        }
+
+        if (empty($resolved['credential_id'])) {
+            return;
+        }
+
+        DB::table('user_identity_credentials')
+            ->where('id', $resolved['credential_id'])
+            ->update([
+                'last_used_at' => now(),
+                'updated_at' => now(),
+            ]);
     }
 
     private function resolveManualLoginAccess(Request $request, $user): array
@@ -199,7 +291,7 @@ class LoginController extends Controller
         Auth::logout();
 
         /*
-         * Jangan invalidate/regenerateToken di respons AJAX login gagal setelah Auth::attempt().
+         * Jangan invalidate/regenerateToken di respons AJAX login gagal setelah Auth::login().
          * Token CSRF halaman login harus tetap dapat dipakai agar user bisa memperbaiki akses/login
          * tanpa terkena 419 pada percobaan berikutnya.
          */
@@ -210,14 +302,14 @@ class LoginController extends Controller
                 'ok' => false,
                 'message' => 'Login belum dapat dilanjutkan.',
                 'errors' => [
-                    'email' => [$message],
+                    $request->has('identifier') ? 'identifier' : 'email' => [$message],
                 ],
             ]);
         }
 
         return back()->withErrors([
-            'email' => $message,
-        ])->onlyInput('email');
+            $request->has('identifier') ? 'identifier' : 'email' => $message,
+        ])->onlyInput($request->has('identifier') ? 'identifier' : 'email');
     }
 
     private function safeIntendedUrlForAccess(Request $request, array $allowedPrefixes): ?string

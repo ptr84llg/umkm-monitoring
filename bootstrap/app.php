@@ -46,13 +46,14 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $email = strtolower(trim((string) $request->input('email', '')));
-            $emailHash = sha1($email);
+            $identifier = strtolower(trim((string) $request->input('identifier', $request->input('email', ''))));
+            $identifierHash = hash('sha256', $identifier);
 
             return [
-                Limit::perMinute(5)->by($request->ip().'|'.$emailHash),
+                Limit::perMinute(5)->by($request->ip().'|'.$identifierHash),
                 Limit::perMinutes(15, 20)->by($request->ip()),
             ];
         });
     })->create();
+
 
