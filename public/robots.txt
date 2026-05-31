@@ -1,2 +1,19 @@
+# UMKM Monitoring - Public-Safe Robots Policy
+# File ini hanya memberi arahan crawler. Keamanan tetap dikunci oleh backend, middleware, CSRF, auth, role, permission, dan guard lain.
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Area yang tidak ditujukan untuk pengindeksan publik
+Disallow: /login
+Disallow: /logout
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin-utama
+Disallow: /admin-utama/
+Disallow: /api/
+Disallow: /storage/
+Disallow: /_debugbar/
+
+Sitemap: http://localhost:8000/sitemap.xml
