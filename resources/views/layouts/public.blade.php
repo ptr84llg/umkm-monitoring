@@ -4,7 +4,7 @@
 <!doctype html>
 <html lang="id" data-umkm-theme="{{ $activeTheme }}">
 <head>
-    <x-umkm.seo-meta area="public" robots="public" :render-title="false" :render-description="false" />
+    <x-umkm.seo-meta area="public" robots="public" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,3 +22,4 @@
     @includeWhen(($showPublicFooter ?? true), 'partials.public-footer')
 </body>
 </html>
+

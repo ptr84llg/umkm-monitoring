@@ -62,4 +62,28 @@ class SeoGuardCoreTest extends TestCase
         $this->assertStringNotContainsString('application/ld+json', $component);
         $this->assertStringNotContainsString('<script', strtolower($component));
     }
+
+    public function test_public_landing_renders_standard_title_and_description_meta(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('<title>', false);
+        $response->assertSee('<meta name="description"', false);
+        $response->assertSee('<meta name="robots"', false);
+        // Canonical tidak dipaksa pada feature test karena SeoManager melewati canonical saat app()->runningInConsole().
+        $response->assertSee('property="og:title"', false);
+        $response->assertSee('name="twitter:title"', false);
+    }
+
+    public function test_public_layout_does_not_disable_title_and_description_rendering(): void
+    {
+        $public = file_get_contents(resource_path('views/layouts/public.blade.php'));
+
+        $this->assertStringContainsString('<x-umkm.seo-meta', $public);
+        $this->assertStringContainsString('area="public"', $public);
+        $this->assertStringNotContainsString(':render-title="false"', $public);
+        $this->assertStringNotContainsString(':render-description="false"', $public);
+    }
 }
+
