@@ -38,6 +38,7 @@
 <!doctype html>
 <html lang="id" data-umkm-theme="{{ $activeTheme ?? 'green' }}">
 <head>
+    <x-umkm.seo-meta area="private" robots="noindex,nofollow,noarchive,nosnippet" :render-title="false" :render-description="false" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -49,6 +50,7 @@
 <body class="layout-dashboard">
     <div class="dashboard-shell">
         <header class="dashboard-topbar" data-dashboard-topbar>
+    <x-umkm.seo-meta area="private" robots="noindex,nofollow,noarchive,nosnippet" :render-title="false" :render-description="false" />
             <div class="dashboard-topbar-inner">
                 <a class="dashboard-brand" href="{{ $dashboardHomeUrl }}" aria-label="Ruang Kerja Monitoring UMKM">
                     <span class="dashboard-brand-mark">MU</span>
@@ -104,3 +106,4 @@
     </div>
 </body>
 </html>
+
