@@ -50,7 +50,7 @@
                                 </span>
                                 <span>
                                     <strong class="d-block">Keamanan berlapis</strong>
-                                    <small class="d-block">CSRF, validasi server, audit, pembatasan akses, dan session guard.</small>
+                                    <small class="d-block">Pemeriksaan sistem, pembatasan akses, dan sesi pengguna yang dijaga.</small>
                                 </span>
                             </div>
 
@@ -66,10 +66,10 @@
                         </div>
 
                         <div class="d-flex flex-wrap gap-2 auth-integrity-strip">
-                            <span>CSRF</span>
-                            <span>Location Gate</span>
+                            <span>Akses Terbatas</span>
+                            <span>Lokasi Aktif</span>
                             <span>Audit Log</span>
-                            <span>Session Guard</span>
+                            <span>Sesi Terjaga</span>
                         </div>
                     </div>
 
@@ -166,7 +166,7 @@
                                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                             <div class="form-text auth-field-hint">
-                                                Gunakan email, username, atau NIK yang sudah diaktifkan untuk login.
+                                                Gunakan identitas akun yang sudah diaktifkan oleh pengelola sistem.
                                             </div>
                                         </div>
 
