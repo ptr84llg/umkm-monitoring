@@ -53,10 +53,20 @@ return [
     | Public Share Image
     |--------------------------------------------------------------------------
     |
-    | Kosongkan bila belum ada gambar publik yang benar-benar aman. Jangan
-    | memakai screenshot dashboard internal atau data UMKM sensitif.
+    | Gunakan gambar publik yang aman, bukan screenshot dashboard internal,
+    | bukan data UMKM, bukan peta koordinat, dan bukan visual yang memuat
+    | informasi sensitif.
     |
     */
 
-    'default_image' => env('UMKM_SEO_DEFAULT_IMAGE', null),
+    'default_image' => env('UMKM_SEO_DEFAULT_IMAGE', '/assets/img/public/share/umkm-monitoring-og.png'),
+
+    'default_image_width' => (int) env('UMKM_SEO_DEFAULT_IMAGE_WIDTH', 1200),
+
+    'default_image_height' => (int) env('UMKM_SEO_DEFAULT_IMAGE_HEIGHT', 630),
+
+    'default_image_alt' => env(
+        'UMKM_SEO_DEFAULT_IMAGE_ALT',
+        'UMKM Monitoring - Sistem Monitoring UMKM Berbasis Data'
+    ),
 ];

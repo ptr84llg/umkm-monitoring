@@ -71,7 +71,6 @@ class SeoGuardCoreTest extends TestCase
         $response->assertSee('<title>', false);
         $response->assertSee('<meta name="description"', false);
         $response->assertSee('<meta name="robots"', false);
-        // Canonical tidak dipaksa pada feature test karena SeoManager melewati canonical saat app()->runningInConsole().
         $response->assertSee('property="og:title"', false);
         $response->assertSee('name="twitter:title"', false);
     }
@@ -85,5 +84,40 @@ class SeoGuardCoreTest extends TestCase
         $this->assertStringNotContainsString(':render-title="false"', $public);
         $this->assertStringNotContainsString(':render-description="false"', $public);
     }
-}
 
+    public function test_seo_manager_resolves_public_share_image_metadata(): void
+    {
+        config([
+            'umkm-seo.default_image' => '/assets/img/public/share/umkm-monitoring-og.png',
+            'umkm-seo.default_image_width' => 1200,
+            'umkm-seo.default_image_height' => 630,
+            'umkm-seo.default_image_alt' => 'UMKM Monitoring - Sistem Monitoring UMKM Berbasis Data',
+        ]);
+
+        $meta = SeoManager::make([
+            'area' => 'public',
+            'robots' => 'public',
+        ])->toArray();
+
+        $this->assertNotEmpty($meta['image']);
+        $this->assertStringEndsWith('/assets/img/public/share/umkm-monitoring-og.png', $meta['image']);
+        $this->assertSame(1200, $meta['image_width']);
+        $this->assertSame(630, $meta['image_height']);
+        $this->assertSame('UMKM Monitoring - Sistem Monitoring UMKM Berbasis Data', $meta['image_alt']);
+    }
+
+    public function test_public_landing_renders_public_share_image_metadata(): void
+    {
+        $this->assertFileExists(public_path('assets/img/public/share/umkm-monitoring-og.png'));
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('property="og:image"', false);
+        $response->assertSee('property="og:image:width"', false);
+        $response->assertSee('property="og:image:height"', false);
+        $response->assertSee('property="og:image:alt"', false);
+        $response->assertSee('name="twitter:image"', false);
+        $response->assertSee('name="twitter:image:alt"', false);
+    }
+}

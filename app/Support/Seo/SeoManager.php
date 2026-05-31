@@ -38,6 +38,25 @@ final class SeoManager
             $options['image'] ?? $config['default_image'] ?? null
         );
 
+        $imageWidth = self::resolvePositiveInt(
+            $options['image_width'] ?? $config['default_image_width'] ?? null
+        );
+
+        $imageHeight = self::resolvePositiveInt(
+            $options['image_height'] ?? $config['default_image_height'] ?? null
+        );
+
+        $imageAlt = self::limitCleanText(
+            (string) ($options['image_alt'] ?? $config['default_image_alt'] ?? $siteName),
+            120
+        );
+
+        if ($image === null) {
+            $imageWidth = null;
+            $imageHeight = null;
+            $imageAlt = null;
+        }
+
         $locale = self::cleanText((string) ($options['locale'] ?? $config['default_locale'] ?? 'id_ID'));
         $type = self::cleanText((string) ($options['type'] ?? $config['default_type'] ?? 'website'));
 
@@ -50,6 +69,9 @@ final class SeoManager
             locale: $locale,
             type: $type,
             image: $image,
+            imageWidth: $imageWidth,
+            imageHeight: $imageHeight,
+            imageAlt: $imageAlt,
         );
     }
 
@@ -92,7 +114,7 @@ final class SeoManager
         }
 
         if (is_string($canonical) && trim($canonical) !== '') {
-            return url(trim($canonical));
+            return self::toAbsoluteUrl(trim($canonical));
         }
 
         if (app()->runningInConsole()) {
@@ -108,7 +130,27 @@ final class SeoManager
             return null;
         }
 
-        return url(trim($image));
+        return self::toAbsoluteUrl(trim($image));
+    }
+
+    private static function toAbsoluteUrl(string $value): string
+    {
+        if (Str::startsWith($value, ['http://', 'https://'])) {
+            return $value;
+        }
+
+        return url($value);
+    }
+
+    private static function resolvePositiveInt(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $intValue = (int) $value;
+
+        return $intValue > 0 ? $intValue : null;
     }
 
     private static function cleanArea(string $area): string

@@ -13,6 +13,9 @@ final class SeoMeta
         public readonly string $locale,
         public readonly string $type,
         public readonly ?string $image,
+        public readonly ?int $imageWidth,
+        public readonly ?int $imageHeight,
+        public readonly ?string $imageAlt,
     ) {
     }
 
@@ -27,6 +30,9 @@ final class SeoMeta
             'locale' => $this->locale,
             'type' => $this->type,
             'image' => $this->image,
+            'image_width' => $this->imageWidth,
+            'image_height' => $this->imageHeight,
+            'image_alt' => $this->imageAlt,
         ];
     }
 }

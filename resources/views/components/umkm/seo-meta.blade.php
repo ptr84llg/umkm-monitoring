@@ -4,6 +4,9 @@
     'robots' => null,
     'canonical' => null,
     'image' => null,
+    'imageWidth' => null,
+    'imageHeight' => null,
+    'imageAlt' => null,
     'type' => null,
     'area' => 'public',
     'locale' => null,
@@ -18,6 +21,9 @@
         'robots' => $robots,
         'canonical' => $canonical,
         'image' => $image,
+        'image_width' => $imageWidth,
+        'image_height' => $imageHeight,
+        'image_alt' => $imageAlt,
         'type' => $type,
         'area' => $area,
         'locale' => $locale,
@@ -47,6 +53,15 @@
 @endif
 @if(!empty($meta['image']))
 <meta property="og:image" content="{{ $meta['image'] }}">
+@if(!empty($meta['image_width']))
+<meta property="og:image:width" content="{{ $meta['image_width'] }}">
+@endif
+@if(!empty($meta['image_height']))
+<meta property="og:image:height" content="{{ $meta['image_height'] }}">
+@endif
+@if(!empty($meta['image_alt']))
+<meta property="og:image:alt" content="{{ $meta['image_alt'] }}">
+@endif
 @endif
 <meta name="twitter:card" content="{{ !empty($meta['image']) ? 'summary_large_image' : 'summary' }}">
 <meta name="twitter:title" content="{{ $meta['title'] }}">
@@ -55,4 +70,7 @@
 @endif
 @if(!empty($meta['image']))
 <meta name="twitter:image" content="{{ $meta['image'] }}">
+@if(!empty($meta['image_alt']))
+<meta name="twitter:image:alt" content="{{ $meta['image_alt'] }}">
+@endif
 @endif
