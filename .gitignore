@@ -59,3 +59,6 @@ Homestead.yaml
 # Local terminal logs and temporary screenshot helper
 _terminal_logs/
 ss.ps1
+
+# Local work logs generated during assisted audit/coding sessions
+_work_logs/
