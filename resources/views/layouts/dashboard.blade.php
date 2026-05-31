@@ -50,7 +50,6 @@
 <body class="layout-dashboard">
     <div class="dashboard-shell">
         <header class="dashboard-topbar" data-dashboard-topbar>
-    <x-umkm.seo-meta area="private" robots="noindex,nofollow,noarchive,nosnippet" :render-title="false" :render-description="false" />
             <div class="dashboard-topbar-inner">
                 <a class="dashboard-brand" href="{{ $dashboardHomeUrl }}" aria-label="Ruang Kerja Monitoring UMKM">
                     <span class="dashboard-brand-mark">MU</span>
