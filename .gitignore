@@ -55,3 +55,7 @@ Homestead.yaml
 /backups
 /_audit
 /_backup
+
+# Local terminal logs and temporary screenshot helper
+_terminal_logs/
+ss.ps1
