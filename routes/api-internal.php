@@ -1,71 +1,21 @@
 <?php
 
-use App\Http\Controllers\Api\Internal\DashboardApiController;
-use App\Http\Controllers\Api\Internal\InternalApiController;
-use App\Http\Controllers\Api\Internal\RegionApiController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('internal')
-    ->middleware([
-        'auth',
-        'throttle:internal-sensitive',
-        'validate.internal.origin',
-        'validate.internal.referer',
-        'validate.fetch.metadata',
-        'log.internal.api',
-    ])
-    ->group(function () {
-        Route::get('/dashboard', [InternalApiController::class, 'dashboard'])
-            ->middleware('permission:dashboard.view.executive');
-
-        Route::get('/map', [InternalApiController::class, 'map'])
-            ->middleware('permission:umkm.read.official');
-
-        Route::get('/table', [InternalApiController::class, 'table'])
-            ->middleware('permission:umkm.read.official');
-
-        Route::get('/filter', [InternalApiController::class, 'filter'])
-            ->middleware('permission:umkm.read.official');
-
-        Route::post('/upload', [InternalApiController::class, 'upload'])
-            ->middleware('permission:umkm.write.official');
-
-        Route::post('/export', [InternalApiController::class, 'export'])
-            ->middleware('permission:export.sensitive');
-
-        Route::post('/survey', [InternalApiController::class, 'survey'])
-            ->middleware('permission:survey.fill');
-
-        Route::post('/expert-validation', [InternalApiController::class, 'expertValidation'])
-            ->middleware('permission:validation.expert.fill');
-
-        Route::get('/audit', [InternalApiController::class, 'audit'])
-            ->middleware('permission:audit.read');
-
-        Route::prefix('regions')
-            ->middleware('permission:umkm.read.official')
-            ->group(function () {
-                Route::get('/', [RegionApiController::class, 'children']);
-                Route::get('/provinces', [RegionApiController::class, 'provinces']);
-                Route::get('/children', [RegionApiController::class, 'children']);
-                Route::get('/search', [RegionApiController::class, 'search']);
-
-                Route::get('/{code}/breadcrumb', [RegionApiController::class, 'breadcrumb'])
-                    ->where('code', '[0-9.]+');
-
-                Route::get('/{code}', [RegionApiController::class, 'show'])
-                    ->where('code', '[0-9.]+');
-            });
-
-        Route::get('/dashboard/indicators', [DashboardApiController::class, 'indicators'])
-            ->middleware('permission:dashboard.view.executive');
-
-        Route::get('/dashboard/charts', [DashboardApiController::class, 'charts'])
-            ->middleware('permission:dashboard.view.executive');
-
-        Route::get('/dashboard/map', [DashboardApiController::class, 'map'])
-            ->middleware('permission:dashboard.view.executive');
-
-        Route::get('/dashboard/summary-table', [DashboardApiController::class, 'summaryTable'])
-            ->middleware('permission:dashboard.view.executive');
-    });
+/*
+|--------------------------------------------------------------------------
+| Temporarily Disabled Internal API Routes
+|--------------------------------------------------------------------------
+|
+| Scope-2A disables internal API routes until their related modules are
+| explicitly reopened and implemented in the approved batch sequence.
+|
+| Public landing AJAX endpoints remain in routes/web.php because they require
+| same-origin/same-site behavior, CSRF/session context, Origin/Referer guard,
+| Fetch Metadata validation, internal request guard, throttling, and audit log.
+|
+| Do not add survey, export, expert validation, internal dashboard, table, map,
+| upload, or other internal endpoints here until the related module batch is
+| approved.
+|
+*/

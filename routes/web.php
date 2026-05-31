@@ -1,15 +1,35 @@
 <?php
 
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
-use App\Http\Controllers\Api\Public\LandingRegionController;
-use App\Http\Controllers\Api\Public\LandingPreviewController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
+use App\Http\Controllers\Api\Public\LandingPreviewController;
+use App\Http\Controllers\Api\Public\LandingRegionController;
 use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('landing'));
+/*
+|--------------------------------------------------------------------------
+| Active Scope Routes
+|--------------------------------------------------------------------------
+|
+| Scope-2A intentionally keeps only the routes that match the current locked
+| development stage:
+|
+| 1. public landing;
+| 2. public landing AJAX components;
+| 3. public location gate;
+| 4. login/logout;
+| 5. simple admin utama dashboard.
+|
+| Routes for admin dinas, pelaku UMKM, kepala dinas, survey, expert validation,
+| export, proposal, dashboard analytics, smoke pages, and internal API modules
+| are temporarily disabled at route level. Their controllers, views, models,
+| services, policies, assets, and other foundations are not deleted.
+|
+*/
 
+Route::get('/', fn () => view('landing'));
 
 Route::prefix('api/public/landing-components')
     ->name('public.landing-components.')
@@ -37,6 +57,7 @@ Route::prefix('api/public/landing-components')
         Route::get('/region-modal', [LandingComponentController::class, 'regionModal'])
             ->name('region-modal');
     });
+
 Route::prefix('api/public/landing-regions')
     ->middleware([
         'throttle:internal-sensitive',
@@ -53,7 +74,6 @@ Route::prefix('api/public/landing-regions')
         Route::get('/children', [LandingRegionController::class, 'children'])
             ->name('landing.regions.children');
     });
-
 
 Route::prefix('api/public/landing-preview')
     ->name('public.landing-preview.')
@@ -119,262 +139,5 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [AdminUtamaController::class, 'dashboard'])
                 ->middleware('permission:dashboard.view.executive')
                 ->name('dashboard');
-
-            Route::get('/accounts', [AdminUtamaController::class, 'accounts'])
-                ->middleware('permission:role.manage')
-                ->name('accounts');
-
-            Route::get('/roles', [AdminUtamaController::class, 'roles'])
-                ->middleware('permission:role.manage')
-                ->name('roles');
-
-            Route::get('/permissions', [AdminUtamaController::class, 'permissions'])
-                ->middleware('permission:permission.manage')
-                ->name('permissions');
-
-            Route::get('/settings', [AdminUtamaController::class, 'settings'])
-                ->middleware('permission:permission.manage')
-                ->name('settings');
-
-            Route::get('/kbli', [AdminUtamaController::class, 'kbliReferences'])
-                ->middleware('permission:umkm.read.official')
-                ->name('kbli');
-
-            Route::get('/regions', [AdminUtamaController::class, 'regions'])
-                ->middleware('permission:umkm.read.official')
-                ->name('regions');
-
-            Route::get('/survey-settings', [AdminUtamaController::class, 'surveySettings'])
-                ->middleware('permission:permission.manage')
-                ->name('survey-settings');
-
-            Route::get('/expert-settings', [AdminUtamaController::class, 'expertInstrumentSettings'])
-                ->middleware('permission:permission.manage')
-                ->name('expert-settings');
-
-            Route::get('/announcements', [AdminUtamaController::class, 'announcements'])
-                ->middleware('permission:permission.manage')
-                ->name('announcements');
-
-            Route::post('/announcements', [AdminUtamaController::class, 'storeAnnouncement'])
-                ->middleware('permission:permission.manage')
-                ->name('announcements.store');
-
-            Route::get('/security-logs', [AdminUtamaController::class, 'securityLogs'])
-                ->middleware('permission:audit.read')
-                ->name('security-logs');
         });
-
-    Route::prefix('proposals')
-        ->name('proposals.')
-        ->middleware(['role:pelaku_umkm', 'permission:umkm.submit.update'])
-        ->group(function () {
-            Route::get('/create', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'create'])
-                ->name('create');
-
-            Route::post('/', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'store'])
-                ->name('store');
-
-            Route::get('/{proposal}', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'show'])
-                ->name('show');
-        });
-
-    Route::prefix('pelaku-umkm')
-        ->name('pelaku-umkm.')
-        ->middleware(['role:pelaku_umkm'])
-        ->group(function () {
-            Route::get('/dashboard', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'dashboard'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('dashboard');
-
-            Route::get('/profiles', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'profiles'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('profiles');
-
-            Route::get('/profiles/{umkm}', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'profileShow'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('profiles.show');
-
-            Route::get('/proposals/status', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'proposalStatus'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('proposals.status');
-
-            Route::get('/proposals/{proposal}/fix', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'proposalFixForm'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('proposals.fix');
-
-            Route::post('/proposals/{proposal}/fix', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'proposalFixSubmit'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('proposals.fix.submit');
-
-            Route::get('/survey', [\App\Http\Controllers\PelakuUmkm\PelakuUmkmController::class, 'survey'])
-                ->middleware('permission:survey.fill')
-                ->name('survey');
-        });
-
-    Route::get('/dashboard/interaktif', fn () => view('pages.dashboard.interactive'))
-        ->middleware('permission:dashboard.view.executive')
-        ->name('dashboard.interactive');
-
-    Route::prefix('kepala-dinas')
-        ->name('kepala-dinas.')
-        ->middleware(['role:kepala_dinas'])
-        ->group(function () {
-            Route::get('/dashboard', [\App\Http\Controllers\KepalaDinas\KepalaDinasController::class, 'dashboard'])
-                ->middleware('permission:dashboard.view.executive')
-                ->name('dashboard');
-
-            Route::get('/report', [\App\Http\Controllers\KepalaDinas\KepalaDinasController::class, 'report'])
-                ->middleware('permission:dashboard.view.executive')
-                ->name('report');
-
-            Route::post('/export', [\App\Http\Controllers\KepalaDinas\KepalaDinasController::class, 'export'])
-                ->middleware('permission:export.sensitive')
-                ->name('export');
-        });
-
-    Route::prefix('survey')
-        ->name('survey.')
-        ->group(function () {
-            Route::get('/google/redirect', [\App\Http\Controllers\Survey\SurveyController::class, 'googleRedirect'])
-                ->name('google.redirect');
-
-            Route::get('/google/callback', [\App\Http\Controllers\Survey\SurveyController::class, 'googleCallback'])
-                ->name('google.callback');
-
-            Route::get('/', [\App\Http\Controllers\Survey\SurveyController::class, 'list'])
-                ->middleware('permission:survey.fill')
-                ->name('list');
-
-            Route::get('/{survey}', [\App\Http\Controllers\Survey\SurveyController::class, 'fill'])
-                ->middleware('permission:survey.fill')
-                ->name('fill');
-
-            Route::post('/{survey}/draft', [\App\Http\Controllers\Survey\SurveyController::class, 'saveDraft'])
-                ->middleware('permission:survey.fill')
-                ->name('draft');
-
-            Route::post('/{survey}/submit', [\App\Http\Controllers\Survey\SurveyController::class, 'submitFinal'])
-                ->middleware('permission:survey.fill')
-                ->name('submit');
-
-            Route::get('/recap/view', [\App\Http\Controllers\Survey\SurveyController::class, 'recap'])
-                ->middleware('permission:audit.read')
-                ->name('recap');
-        });
-
-    Route::prefix('expert-validation')
-        ->name('expert.')
-        ->group(function () {
-            Route::get('/admin/instruments', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'adminInstruments'])
-                ->middleware(['role:admin_utama', 'permission:permission.manage'])
-                ->name('admin.instruments');
-
-            Route::post('/admin/instruments', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'adminStoreInstrument'])
-                ->middleware(['role:admin_utama', 'permission:permission.manage'])
-                ->name('admin.instruments.store');
-
-            Route::post('/admin/instruments/{instrument}/invite', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'adminInvite'])
-                ->middleware(['role:admin_utama', 'permission:permission.manage'])
-                ->name('admin.invite');
-
-            Route::get('/validator', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'validatorList'])
-                ->middleware(['role:validator_ahli', 'permission:validation.expert.fill'])
-                ->name('validator.list');
-
-            Route::get('/validator/{instrument}', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'validatorOpen'])
-                ->middleware(['role:validator_ahli', 'permission:validation.expert.fill'])
-                ->name('validator.open');
-
-            Route::post('/validator/{instrument}/draft', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'saveDraft'])
-                ->middleware(['role:validator_ahli', 'permission:validation.expert.fill'])
-                ->name('validator.draft');
-
-            Route::post('/validator/{instrument}/submit', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'submitFinal'])
-                ->middleware(['role:validator_ahli', 'permission:validation.expert.fill'])
-                ->name('validator.submit');
-
-            Route::get('/recap', [\App\Http\Controllers\ValidasiAhli\ExpertValidationController::class, 'recap'])
-                ->middleware(['role:admin_utama', 'permission:audit.read'])
-                ->name('recap');
-        });
-
-    Route::prefix('export')
-        ->name('export.')
-        ->middleware('permission:export.sensitive')
-        ->group(function () {
-            Route::get('/form', [\App\Http\Controllers\Export\ExportController::class, 'form'])
-                ->name('form');
-
-            Route::post('/generate', [\App\Http\Controllers\Export\ExportController::class, 'generate'])
-                ->name('generate');
-        });
-
-    Route::prefix('admin-dinas')
-        ->name('admin-dinas.')
-        ->middleware(['role:admin_dinas'])
-        ->group(function () {
-            Route::get('/dashboard', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'dashboard'])
-                ->middleware('permission:umkm.read.official')
-                ->name('dashboard');
-
-            Route::get('/umkm', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'index'])
-                ->middleware('permission:umkm.read.official')
-                ->name('umkm.index');
-
-            Route::get('/umkm/create', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'create'])
-                ->middleware('permission:umkm.write.official')
-                ->name('umkm.create');
-
-            Route::post('/umkm', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'store'])
-                ->middleware('permission:umkm.write.official')
-                ->name('umkm.store');
-
-            Route::get('/umkm/{umkm}', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'show'])
-                ->middleware('permission:umkm.read.official')
-                ->name('umkm.show');
-
-            Route::get('/umkm/{umkm}/edit', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'edit'])
-                ->middleware('permission:umkm.write.official')
-                ->name('umkm.edit');
-
-            Route::put('/umkm/{umkm}', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'update'])
-                ->middleware('permission:umkm.write.official')
-                ->name('umkm.update');
-
-            Route::get('/references', [\App\Http\Controllers\AdminDinas\AdminDinasController::class, 'references'])
-                ->middleware('permission:umkm.read.official')
-                ->name('references');
-
-            Route::get('/umkm/{umkm}/location', [\App\Http\Controllers\AdminDinas\LocationController::class, 'edit'])
-                ->middleware('permission:umkm.read.official')
-                ->name('location.edit');
-
-            Route::post('/umkm/{umkm}/location/proposal', [\App\Http\Controllers\AdminDinas\LocationController::class, 'submitProposal'])
-                ->middleware('permission:umkm.submit.update')
-                ->name('location.proposal');
-
-            Route::get('/proposals', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'indexForAdmin'])
-                ->middleware('permission:umkm.review.update')
-                ->name('proposals.index');
-
-            Route::get('/proposals/{proposal}', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'show'])
-                ->middleware('permission:umkm.review.update')
-                ->name('proposals.show');
-
-            Route::post('/proposals/{proposal}/review', [\App\Http\Controllers\Proposal\UmkmProposalController::class, 'review'])
-                ->middleware('permission:umkm.review.update')
-                ->name('proposals.review');
-
-            Route::post('/location-proposals/{proposal}/review', [\App\Http\Controllers\AdminDinas\LocationController::class, 'adminValidate'])
-                ->middleware('permission:umkm.review.update')
-                ->name('location-proposals.review');
-        });
-
-    Route::get('/smoke/layout-components', fn () => view('pages.smoke.layout-components'));
 });
-
-
-
-
-
