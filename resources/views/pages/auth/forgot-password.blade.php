@@ -73,8 +73,13 @@
                                     </div>
                                 </form>
 
-                                <div class="text-center mt-3">
-                                    <a href="{{ route('login') }}" class="small text-decoration-none">Kembali ke login</a>
+                                <div class="auth-return-row">
+                                    <a href="{{ route('login') }}" class="auth-return-action" aria-label="Kembali ke halaman login">
+                                        <span class="auth-action-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M10.8 5.2 4 12l6.8 6.8 1.4-1.4L7.8 13H20v-2H7.8l4.4-4.4-1.4-1.4Z"/></svg>
+                                        </span>
+                                        <span>Kembali ke login</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>

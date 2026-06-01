@@ -475,6 +475,124 @@ body.layout-auth {
     }
 }
 
+
+.auth-recovery-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: .72rem;
+    margin-bottom: 1rem;
+}
+
+.auth-quick-recovery,
+.auth-return-action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: .66rem;
+    min-height: 2.58rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary-dark);
+    text-decoration: none;
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-primary-soft), transparent 44%),
+        rgba(255, 255, 255, .76);
+    box-shadow: 0 12px 26px rgba(var(--umkm-ink-rgb), .06);
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease,
+        color .18s ease;
+}
+
+.auth-quick-recovery {
+    padding: .44rem .52rem .44rem .58rem;
+}
+
+.auth-return-action {
+    justify-content: center;
+    padding: .62rem .92rem;
+    font-weight: 900;
+}
+
+.auth-quick-recovery:hover,
+.auth-quick-recovery:focus-visible,
+.auth-return-action:hover,
+.auth-return-action:focus-visible {
+    color: var(--umkm-primary-dark);
+    border-color: rgba(var(--umkm-primary-rgb), .26);
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-primary-soft), transparent 38%),
+        rgba(255, 255, 255, .94);
+    box-shadow: 0 18px 36px rgba(var(--umkm-primary-rgb), .16);
+    transform: translateY(-1px);
+}
+
+.auth-action-icon,
+.auth-action-arrow {
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary);
+    background: var(--umkm-primary-soft);
+}
+
+.auth-action-icon {
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+}
+
+.auth-action-arrow {
+    width: 1.76rem;
+    height: 1.76rem;
+    flex: 0 0 1.76rem;
+    background: rgba(var(--umkm-primary-rgb), .08);
+    transition: transform .18s ease;
+}
+
+.auth-quick-recovery:hover .auth-action-arrow,
+.auth-quick-recovery:focus-visible .auth-action-arrow {
+    transform: translateX(2px);
+}
+
+.auth-return-action:hover .auth-action-icon,
+.auth-return-action:focus-visible .auth-action-icon {
+    transform: translateX(-2px);
+}
+
+.auth-action-icon svg,
+.auth-action-arrow svg {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+}
+
+.auth-action-copy {
+    display: grid;
+    gap: .02rem;
+    line-height: 1.08;
+    text-align: left;
+}
+
+.auth-action-copy strong {
+    color: var(--umkm-ink);
+    font-size: .82rem;
+    font-weight: 950;
+}
+
+.auth-action-copy small {
+    color: var(--umkm-muted);
+    font-size: .72rem;
+    font-weight: 750;
+}
+
+.auth-return-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.05rem;
+}
 @media (max-width: 1199.98px) {
     .auth-login-card {
         max-width: none;
@@ -508,6 +626,18 @@ body.layout-auth {
         justify-content: stretch;
     }
 
+    .auth-recovery-row {
+        justify-content: stretch;
+    }
+
+    .auth-quick-recovery,
+    .auth-return-action {
+        width: 100%;
+    }
+
+    .auth-quick-recovery {
+        justify-content: space-between;
+    }
     .auth-location-attempt,
     .auth-location-reading-actions .auth-location-button {
         width: 100%;

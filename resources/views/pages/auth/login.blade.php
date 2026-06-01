@@ -205,9 +205,18 @@
                                             <span class="auth-submit-text">Masuk ke Sistem</span>
                                         </button>
 
-                                        <div class="d-flex justify-content-end mb-3">
-                                            <a href="{{ route('password.request') }}" class="small text-decoration-none">
-                                                Lupa password?
+                                        <div class="auth-recovery-row">
+                                            <a href="{{ route('password.request') }}" class="auth-quick-recovery" aria-label="Pulihkan password akun">
+                                                <span class="auth-action-icon" aria-hidden="true">
+                                                    <svg viewBox="0 0 24 24"><path d="M17 8h1a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3h1V7a3.5 3.5 0 1 1 7 0v1Zm-5 0h3V7a1.5 1.5 0 0 0-3 0v1Zm2.5 8.75V18h-2v-1.25a2 2 0 1 1 2 0ZM5.45 4.4 3.6 2.55 2.2 3.95l1.85 1.85-1.85 1.85 1.4 1.4 1.85-1.85L7.3 9.05l1.4-1.4L6.85 5.8 8.7 3.95l-1.4-1.4L5.45 4.4Z"/></svg>
+                                                </span>
+                                                <span class="auth-action-copy">
+                                                    <strong>Lupa password?</strong>
+                                                    <small>Pulihkan akses akun</small>
+                                                </span>
+                                                <span class="auth-action-arrow" aria-hidden="true">
+                                                    <svg viewBox="0 0 24 24"><path d="M13.2 5.2 20 12l-6.8 6.8-1.4-1.4 4.4-4.4H4v-2h12.2l-4.4-4.4 1.4-1.4Z"/></svg>
+                                                </span>
                                             </a>
                                         </div>
                                         <div class="rounded-4 p-3 mt-3 auth-form-note">
