@@ -5,6 +5,24 @@
     $assetModules = ['loader', 'location', 'session'];
     $pageCss = ['auth/login.css'];
     $pageJs = ['auth/otp-challenge.js', 'auth-login-anti-bot.js'];
+
+    $otpContext = $otpContext ?? 'login';
+    $verifyAction = $verifyAction ?? route('login.otp.verify');
+    $resendAction = $resendAction ?? route('login.otp.resend');
+    $returnUrl = $returnUrl ?? route('login');
+    $returnLabel = $returnLabel ?? 'Kembali ke login';
+    $brandSubtitle = $brandSubtitle ?? 'Verifikasi Akses Internal';
+    $eyebrow = $eyebrow ?? 'Verifikasi OTP';
+    $title = $title ?? 'Masukkan Kode OTP';
+    $subtitle = $subtitle ?? ('Kode OTP dikirim ke '.$maskedEmail.'. Gunakan kode terbaru untuk menyelesaikan login.');
+    $submitLabel = $submitLabel ?? 'Verifikasi dan Masuk';
+    $successTitle = $successTitle ?? 'Verifikasi berhasil';
+    $successMessage = $successMessage ?? 'Mengalihkan ke dashboard.';
+    $loadingTitle = $loadingTitle ?? 'Memverifikasi OTP';
+    $loadingMessage = $loadingMessage ?? 'Sistem sedang memvalidasi kode OTP.';
+    $resendLoadingTitle = $resendLoadingTitle ?? 'Mengirim OTP Baru';
+    $resendLoadingMessage = $resendLoadingMessage ?? 'Sistem sedang mengirim ulang kode OTP.';
+    $note = $note ?? 'Verifikasi OTP hanya aktif setelah proses membutuhkan perlindungan tambahan. Jika halaman ini dibuka tanpa sesi verifikasi, sistem akan mengarahkan kembali ke proses yang sesuai.';
 @endphp
 
 @section('title', 'Verifikasi OTP | Monitoring UMKM')
@@ -12,9 +30,16 @@
 @section('content')
 <section class="auth-login-page auth-login-premium"
          data-auth-otp-page
+         data-auth-otp-context="{{ $otpContext }}"
          data-auth-login-url="{{ route('login') }}"
          data-auth-otp-expires-at="{{ $expiresAt }}"
-         data-auth-otp-resend-available-at="{{ $resendAvailableAt }}">
+         data-auth-otp-resend-available-at="{{ $resendAvailableAt }}"
+         data-auth-otp-verify-loading-title="{{ $loadingTitle }}"
+         data-auth-otp-verify-loading-message="{{ $loadingMessage }}"
+         data-auth-otp-resend-loading-title="{{ $resendLoadingTitle }}"
+         data-auth-otp-resend-loading-message="{{ $resendLoadingMessage }}"
+         data-auth-otp-success-title="{{ $successTitle }}"
+         data-auth-otp-success-message="{{ $successMessage }}">
     <div class="auth-background" aria-hidden="true">
         <span class="auth-gradient auth-gradient-a"></span>
         <span class="auth-gradient auth-gradient-b"></span>
@@ -29,7 +54,7 @@
                             <span class="auth-brand-mark">MU</span>
                             <span class="auth-brand-text">
                                 <strong class="d-block">Monitoring UMKM</strong>
-                                <small class="d-block">Verifikasi Akses Internal</small>
+                                <small class="d-block">{{ $brandSubtitle }}</small>
                             </span>
                         </a>
 
@@ -37,11 +62,9 @@
                             <div class="card-body p-4 p-xl-5">
                                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                     <div>
-                                        <span class="auth-card-eyebrow">Verifikasi OTP</span>
-                                        <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Masukkan Kode OTP</h1>
-                                        <p class="auth-card-subtitle mb-0">
-                                            Kode OTP dikirim ke {{ $maskedEmail }}. Gunakan kode terbaru untuk menyelesaikan login.
-                                        </p>
+                                        <span class="auth-card-eyebrow">{{ $eyebrow }}</span>
+                                        <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">{{ $title }}</h1>
+                                        <p class="auth-card-subtitle mb-0">{{ $subtitle }}</p>
                                     </div>
                                     <span class="badge rounded-pill auth-card-badge" data-auth-otp-status-badge>OTP Aktif</span>
                                 </div>
@@ -67,11 +90,10 @@
                                     </div>
                                 @endif
 
-                                <form method="POST" action="{{ route('login.otp.verify') }}" data-auth-otp-form data-umkm-anti-bot-form novalidate>
+                                <form method="POST" action="{{ $verifyAction }}" data-auth-otp-form data-umkm-anti-bot-form novalidate>
                                     @csrf
                                     <input type="hidden" name="challenge_token" value="{{ $challengeToken }}" data-auth-otp-challenge-token>
                                     <input type="hidden" name="otp_code" value="" data-auth-otp-code>
-
                                     <div class="visually-hidden" aria-hidden="true" data-umkm-login-honeypot>
                                         <label for="otp_website">Website</label>
                                         <input type="text" id="otp_website" name="website" value="" tabindex="-1" autocomplete="off">
@@ -97,27 +119,27 @@
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100 py-3 auth-submit" data-auth-otp-submit disabled>
-                                        <span data-auth-otp-submit-text>Verifikasi dan Masuk</span>
+                                        <span data-auth-otp-submit-text>{{ $submitLabel }}</span>
                                     </button>
                                 </form>
 
                                 <div class="auth-otp-resend-area"
                                      data-auth-otp-resend-area
-                                     data-auth-otp-resend-action="{{ route('login.otp.resend') }}"
+                                     data-auth-otp-resend-action="{{ $resendAction }}"
                                      data-auth-otp-resend-csrf="{{ csrf_token() }}"
                                      data-auth-otp-resend-token-value="{{ $challengeToken }}"></div>
 
                                 <div class="auth-return-row">
-                                    <a href="{{ route('login') }}" class="auth-return-action" aria-label="Kembali ke halaman login">
+                                    <a href="{{ $returnUrl }}" class="auth-return-action" aria-label="{{ $returnLabel }}">
                                         <span class="auth-action-icon" aria-hidden="true">
                                             <svg viewBox="0 0 24 24"><path d="M10.8 5.2 4 12l6.8 6.8 1.4-1.4L7.8 13H20v-2H7.8l4.4-4.4-1.4-1.4Z"/></svg>
                                         </span>
-                                        <span>Kembali ke login</span>
+                                        <span>{{ $returnLabel }}</span>
                                     </a>
                                 </div>
 
                                 <div class="rounded-4 p-3 mt-3 auth-form-note">
-                                    <strong>Catatan keamanan:</strong> verifikasi OTP hanya aktif setelah login membutuhkan perlindungan tambahan. Jika halaman ini dibuka tanpa sesi verifikasi, sistem akan mengarahkan kembali ke login.
+                                    <strong>Catatan keamanan:</strong> {{ $note }}
                                 </div>
                             </div>
                         </div>
@@ -125,6 +147,6 @@
                 </div>
             </div>
         </div>
-    </div>
+   </div>
 </section>
 @endsection

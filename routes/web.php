@@ -183,6 +183,38 @@ Route::middleware('guest')->group(function () {
         ])
         ->name('password.email');
 
+    Route::get('/reset-password/otp', [PasswordResetController::class, 'otpChallenge'])
+        ->middleware('location.gate')
+        ->name('password.otp.challenge');
+
+    Route::post('/reset-password/otp', [PasswordResetController::class, 'verifyOtp'])
+        ->middleware([
+            'throttle:login.otp.verify',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('password.otp.verify');
+
+    Route::post('/reset-password/otp/resend', [PasswordResetController::class, 'resendOtp'])
+        ->middleware([
+            'throttle:login.otp.resend',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('password.otp.resend');
+
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])
         ->middleware('location.gate')
         ->name('password.reset');
@@ -200,6 +232,7 @@ Route::middleware('guest')->group(function () {
             'log.internal.api',
         ])
         ->name('password.update');
+
 });
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])

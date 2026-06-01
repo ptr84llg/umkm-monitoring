@@ -438,9 +438,13 @@
                 return;
             }
 
+            var root = page();
+            var verifyLoadingTitle = root && root.dataset.authOtpVerifyLoadingTitle ? root.dataset.authOtpVerifyLoadingTitle : 'Memverifikasi OTP';
+            var verifyLoadingMessage = root && root.dataset.authOtpVerifyLoadingMessage ? root.dataset.authOtpVerifyLoadingMessage : 'Sistem sedang memvalidasi kode OTP.';
+
             setButtonState(submit, false);
             setText(submitText, 'Memverifikasi...');
-            showLoading('Memverifikasi OTP', 'Sistem sedang memvalidasi kode OTP login.');
+            showLoading(verifyLoadingTitle, verifyLoadingMessage);
 
             var result = await UMKM.forms.ajaxSubmit(form, {
                 validateFirst: false,
@@ -456,10 +460,13 @@
                         return;
                     }
 
+                    var successTitle = root && root.dataset.authOtpSuccessTitle ? root.dataset.authOtpSuccessTitle : 'Verifikasi berhasil';
+                    var successMessage = root && root.dataset.authOtpSuccessMessage ? root.dataset.authOtpSuccessMessage : 'Mengalihkan ke dashboard.';
+
                     if (UMKM.toast && typeof UMKM.toast.success === 'function') {
                         UMKM.toast.success({
-                            title: 'Verifikasi berhasil',
-                            message: payload.message || 'Mengalihkan ke dashboard.',
+                            title: successTitle,
+                            message: payload.message || successMessage,
                             delay: 1000
                         });
                     }
@@ -511,10 +518,14 @@
                 return;
             }
 
+            var rootForResend = page();
+            var resendLoadingTitle = rootForResend && rootForResend.dataset.authOtpResendLoadingTitle ? rootForResend.dataset.authOtpResendLoadingTitle : 'Mengirim OTP Baru';
+            var resendLoadingMessage = rootForResend && rootForResend.dataset.authOtpResendLoadingMessage ? rootForResend.dataset.authOtpResendLoadingMessage : 'Sistem sedang mengirim ulang kode OTP.';
+
             updateAntiBotTime(form);
             setButtonState(submit, false);
             setText(resendText, 'Mengirim ulang...');
-            showLoading('Mengirim OTP Baru', 'Sistem sedang mengirim ulang kode OTP.');
+            showLoading(resendLoadingTitle, resendLoadingMessage);
 
             var result = await UMKM.forms.ajaxSubmit(form, {
                 validateFirst: false,
