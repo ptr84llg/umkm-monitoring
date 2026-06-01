@@ -298,7 +298,7 @@
     }
     /* FEEDBACK-CORE-1C LOGIN FEEDBACK HELPERS END */
 
-function bindPasswordToggle() {
+    function bindPasswordToggle() {
         document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
             const field = document.querySelector('[data-auth-password]');
 
@@ -554,7 +554,6 @@ function bindPasswordToggle() {
                     const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
 
                     showLoginSuccess(elements, redirectUrl);
-
                 },
                 onError: function (response, backendErrors) {
                     const payload = response && response.payload ? response.payload : {};
