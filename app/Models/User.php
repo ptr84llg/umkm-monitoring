@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -10,11 +11,16 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    public const AUTH_PROVIDER_GOOGLE = 'google';
+
     protected $fillable = [
         'name',
         'email',
         'username',
         'password',
+        'auth_provider_required',
+        'manual_login_disabled_at',
+        'google_linked_at',
         'is_active',
         'last_login_at',
         'last_login_ip',
@@ -29,6 +35,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'manual_login_disabled_at' => 'datetime',
+            'google_linked_at' => 'datetime',
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
             'password' => 'hashed',
@@ -38,6 +46,11 @@ class User extends Authenticatable
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
+    }
+
+    public function oauthIdentities(): HasMany
+    {
+        return $this->hasMany(AuthOAuthIdentity::class);
     }
 
     public function hasRole(string $role): bool
@@ -59,5 +72,16 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return (bool) $this->is_active;
+    }
+
+    public function requiresGoogleLogin(): bool
+    {
+        return $this->auth_provider_required === self::AUTH_PROVIDER_GOOGLE
+            && $this->manual_login_disabled_at !== null;
+    }
+
+    public function manualLoginIsDisabled(): bool
+    {
+        return $this->manual_login_disabled_at !== null;
     }
 }
