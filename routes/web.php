@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Public\LandingPreviewController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
 use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -128,6 +129,43 @@ Route::middleware('guest')->group(function () {
         ->name('login.store');
 });
 
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [PasswordResetController::class, 'create'])
+        ->middleware('location.gate')
+        ->name('password.request');
+
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])
+        ->middleware([
+            'throttle:password.email',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])
+        ->middleware('location.gate')
+        ->name('password.reset');
+
+    Route::post('/reset-password', [PasswordResetController::class, 'update'])
+        ->middleware([
+            'throttle:password.update',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('password.update');
+});
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])
         ->name('logout');

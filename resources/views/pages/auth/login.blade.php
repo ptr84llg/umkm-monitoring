@@ -205,6 +205,11 @@
                                             <span class="auth-submit-text">Masuk ke Sistem</span>
                                         </button>
 
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <a href="{{ route('password.request') }}" class="small text-decoration-none">
+                                                Lupa password?
+                                            </a>
+                                        </div>
                                         <div class="rounded-4 p-3 mt-3 auth-form-note">
                                             <strong>Catatan keamanan:</strong>
                                             jangan membagikan email, password, atau kode verifikasi kepada pihak lain.

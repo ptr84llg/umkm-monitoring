@@ -54,6 +54,26 @@ return Application::configure(basePath: dirname(__DIR__))
                 Limit::perMinutes(15, 20)->by($request->ip()),
             ];
         });
+
+        RateLimiter::for('password.email', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email', '')));
+            $emailHash = hash('sha256', $email);
+
+            return [
+                Limit::perMinute(3)->by($request->ip().'|'.$emailHash),
+                Limit::perMinutes(30, 10)->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('password.update', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email', '')));
+            $emailHash = hash('sha256', $email);
+
+            return [
+                Limit::perMinute(5)->by($request->ip().'|'.$emailHash),
+                Limit::perMinutes(30, 12)->by($request->ip()),
+            ];
+        });
     })->create();
 
 

@@ -38,10 +38,10 @@
     }
 
     function boot() {
-        var forms = document.querySelectorAll('form[data-umkm-auth-login-form]');
+        var forms = document.querySelectorAll('form[data-umkm-auth-login-form], form[data-umkm-anti-bot-form]');
 
         if (!forms.length) {
-            forms = document.querySelectorAll('form[action*="/login"]');
+            forms = document.querySelectorAll('form[action*="/login"], form[action*="/forgot-password"], form[action*="/reset-password"]');
         }
 
         Array.prototype.forEach.call(forms, bindForm);
