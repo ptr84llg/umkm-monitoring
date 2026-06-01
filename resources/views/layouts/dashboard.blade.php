@@ -6,6 +6,10 @@
         'dashboard/dashboard-shell.css',
     ])));
 
+    $assetModules = array_values(array_unique(array_merge($assetModules ?? [], [
+        'session',
+    ])));
+
     $dashboardUser = auth()->user();
     $dashboardHomeUrl = url('/');
 
@@ -47,7 +51,12 @@
     <title>@yield('title', 'Ruang Kerja | Monitoring UMKM')</title>
     @include('partials.asset-loader')
 </head>
-<body class="layout-dashboard">
+<body class="layout-dashboard"
+      data-umkm-session-guard
+      data-umkm-session-lifetime-minutes="{{ (int) config('session.lifetime', 60) }}"
+      data-umkm-session-warning-seconds="{{ (int) config('umkm.security.session_warning_seconds', 300) }}"
+      data-umkm-session-redirect-url="{{ url('/') }}"
+      data-umkm-session-keep-alive-url="{{ route('session.keep-alive') }}">
     <div class="dashboard-shell">
         <header class="dashboard-topbar" data-dashboard-topbar>
             <div class="dashboard-topbar-inner">

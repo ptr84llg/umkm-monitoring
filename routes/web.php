@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\SessionKeepAliveController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -203,6 +204,18 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])
         ->name('logout');
+
+    Route::post('/session/keep-alive', SessionKeepAliveController::class)
+        ->middleware([
+            'throttle:internal-sensitive',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'log.internal.api',
+        ])
+        ->name('session.keep-alive');
 
     Route::prefix('admin-utama')
         ->name('admin-utama.')
