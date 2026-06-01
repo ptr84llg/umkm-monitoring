@@ -120,8 +120,14 @@
                                         </div>
                                     @endif
 
-                                    <form method="POST" action="{{ route('login.store') }}" data-auth-login-form novalidate>
+                                    <form data-umkm-auth-login-form method="POST" action="{{ route('login.store') }}" data-auth-login-form novalidate>
                                         @csrf
+
+    <div class="d-none" aria-hidden="true" data-umkm-login-honeypot>
+        <label for="umkm-login-website">Website</label>
+        <input type="text" id="umkm-login-website" name="website" value="" tabindex="-1" autocomplete="off">
+    </div>
+    <input type="hidden" name="tts" value="0" data-umkm-login-tts>
 
                                         <input type="hidden" name="location_status" value="pending" data-auth-location-status-input>
                                         <input type="hidden" name="location_latitude" value="" data-auth-location-latitude-input>
@@ -204,6 +210,8 @@
                                             jangan membagikan email, password, atau kode verifikasi kepada pihak lain.
                                         </div>
                                     </form>
+<script src="{{ asset('assets/js/pages/auth-login-anti-bot.js') }}" defer></script>
+
                                 </div>
                             </div>
                         </div>
