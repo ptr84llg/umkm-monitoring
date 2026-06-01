@@ -257,6 +257,45 @@
         scheduleRetry(elements);
     }
 
+    /* FEEDBACK-CORE-1C LOGIN FEEDBACK HELPERS START */
+    function showLoginLoading() {
+        if (UMKM.modal && typeof UMKM.modal.showLoading === 'function') {
+            UMKM.modal.showLoading({
+                kicker: 'Login',
+                title: 'Memproses Login',
+                message: 'Sistem sedang memvalidasi akun dan kesiapan akses Anda.',
+                caption: 'Mohon tunggu, jangan menutup halaman sampai proses selesai.'
+            });
+        }
+    }
+
+    function hideLoginLoading() {
+        if (UMKM.modal && typeof UMKM.modal.hideLoading === 'function') {
+            UMKM.modal.hideLoading();
+        }
+    }
+
+    function showLoginSuccess(elements, redirectUrl) {
+        if (elements) {
+            elements.redirecting = true;
+        }
+
+        hideLoginLoading();
+
+        if (UMKM.toast && typeof UMKM.toast.success === 'function') {
+            UMKM.toast.success({
+                title: 'Login berhasil',
+                message: 'Mengalihkan ke dashboard.',
+                delay: 950
+            });
+        }
+
+        window.setTimeout(function () {
+            window.location.assign(redirectUrl);
+        }, 850);
+    }
+    /* FEEDBACK-CORE-1C LOGIN FEEDBACK HELPERS END */
+
     function bindPasswordToggle() {
         document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
             const field = document.querySelector('[data-auth-password]');
@@ -459,9 +498,11 @@
 
             setSubmitState(elements, false);
             setText(submitText, 'Memproses login...');
+            showLoginLoading();
 
             if (!UMKM.forms || typeof UMKM.forms.ajaxSubmit !== 'function') {
                 setText(submitText, originalSubmitText);
+                hideLoginLoading();
                 setSubmitState(elements, true);
 
                 if (UMKM.forms && typeof UMKM.forms.showValidationModal === 'function') {
@@ -489,6 +530,9 @@
 
                     if (payload && payload.ok === false) {
                         setText(submitText, originalSubmitText);
+                    hideLoginLoading();
+                        hideLoginLoading();
+                hideLoginLoading();
 
                         const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
                         setSubmitState(elements, Boolean(stillGranted));
@@ -509,13 +553,15 @@
 
                     const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
 
-                    window.location.assign(redirectUrl);
+                    showLoginSuccess(elements, redirectUrl);
                 },
                 onError: function (response, backendErrors) {
                     const payload = response && response.payload ? response.payload : {};
                     const message = payload.message || 'Login belum berhasil. Periksa kembali data dan kesiapan lokasi.';
 
                     setText(submitText, originalSubmitText);
+                    hideLoginLoading();
+                hideLoginLoading();
 
                     const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
                     setSubmitState(elements, Boolean(stillGranted));
@@ -558,6 +604,7 @@
 
             if (!result || !result.ok) {
                 setText(submitText, originalSubmitText);
+                hideLoginLoading();
 
                 const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
                 setSubmitState(elements, Boolean(stillGranted));

@@ -1041,3 +1041,45 @@ body.layout-auth {
     }
 }
 /* LOGIN-3D PREMIUM THEMEABLE REDESIGN END */
+
+/* FEEDBACK-CORE-1C LOGIN FEEDBACK INTEGRATION START */
+/* Scope: visual stability for login status panel only. No security or AJAX rule changes. */
+.auth-login-premium .auth-location-reading {
+    min-height: 7.85rem;
+    align-content: center;
+}
+
+.auth-login-premium .auth-location-reading-copy {
+    min-height: 2.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-login-premium .auth-location-reading-actions {
+    min-height: 2.15rem;
+}
+
+.auth-login-premium .auth-location-reading-copy strong,
+.auth-login-premium .auth-location-reading-copy small {
+    overflow-wrap: anywhere;
+}
+
+.auth-login-premium .auth-submit[disabled] {
+    cursor: wait;
+}
+
+@media (max-width: 575.98px) {
+    .auth-login-premium .auth-location-reading {
+        min-height: 9.25rem;
+    }
+
+    .auth-login-premium .auth-location-reading-copy {
+        min-height: 3.35rem;
+    }
+
+    .auth-login-premium .auth-location-reading-actions {
+        min-height: 2.75rem;
+    }
+}
+/* FEEDBACK-CORE-1C LOGIN FEEDBACK INTEGRATION END */
