@@ -37,20 +37,16 @@
         }, options || {});
     }
 
-    function iconFor(type) {
-        if (type === 'success') {
-            return '✓';
+    function normalizeType(type) {
+        if (type === 'danger') {
+            return 'error';
         }
 
-        if (type === 'error' || type === 'danger') {
-            return '!';
+        if (type === 'success' || type === 'error' || type === 'warning' || type === 'info') {
+            return type;
         }
 
-        if (type === 'warning') {
-            return 'i';
-        }
-
-        return 'i';
+        return 'info';
     }
 
     function titleFor(type) {
@@ -58,7 +54,7 @@
             return 'Berhasil';
         }
 
-        if (type === 'error' || type === 'danger') {
+        if (type === 'error') {
             return 'Belum Berhasil';
         }
 
@@ -67,6 +63,22 @@
         }
 
         return 'Informasi';
+    }
+
+    function iconSvgFor(type) {
+        if (type === 'success') {
+            return '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M9.4 16.6 4.9 12.1l1.7-1.7 2.8 2.8 8-8 1.7 1.7-9.7 9.7Z"/></svg>';
+        }
+
+        if (type === 'error') {
+            return '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M12 2.3 1.8 20h20.4L12 2.3Zm0 5.7c.7 0 1.2.5 1.2 1.2v4.2h-2.4V9.2c0-.7.5-1.2 1.2-1.2Zm0 9.8a1.35 1.35 0 1 1 0-2.7 1.35 1.35 0 0 1 0 2.7Z"/></svg>';
+        }
+
+        if (type === 'warning') {
+            return '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M12 2.4 1.8 20h20.4L12 2.4Zm-1.1 6.2h2.2v5.8h-2.2V8.6Zm1.1 9.3a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Z"/></svg>';
+        }
+
+        return '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M12 2a10 10 0 1 0 .01 20.01A10 10 0 0 0 12 2Zm1.1 15.5h-2.2v-7.1h2.2v7.1ZM12 8.7a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Z"/></svg>';
     }
 
     function safeText(value, fallback) {
@@ -86,16 +98,34 @@
         }
     }
 
+    function hide(toastElement) {
+        if (!toastElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Toast) {
+            const instance = window.bootstrap.Toast.getInstance(toastElement);
+
+            if (instance) {
+                instance.hide();
+                return;
+            }
+        }
+
+        toastElement.classList.remove('show');
+        removeToast(toastElement);
+    }
+
     function show(messageOrOptions, options) {
         const settings = Object.assign({
             type: 'info',
             title: '',
             message: '',
-            delay: 3200,
+            delay: 3400,
             autohide: true
         }, normalizeOptions(messageOrOptions, options));
 
-        const type = settings.type === 'danger' ? 'error' : settings.type;
+        const type = normalizeType(settings.type);
         const container = ensureContainer();
         const toastElement = document.createElement('div');
         const title = safeText(settings.title, titleFor(type));
@@ -110,10 +140,14 @@
         const body = document.createElement('div');
         body.className = 'umkm-toast-body';
 
+        const accent = document.createElement('span');
+        accent.className = 'umkm-toast-accent';
+        accent.setAttribute('aria-hidden', 'true');
+
         const icon = document.createElement('span');
         icon.className = 'umkm-toast-icon';
         icon.setAttribute('aria-hidden', 'true');
-        icon.textContent = iconFor(type);
+        icon.innerHTML = iconSvgFor(type);
 
         const copy = document.createElement('div');
         copy.className = 'umkm-toast-copy';
@@ -133,6 +167,7 @@
 
         copy.appendChild(titleElement);
         copy.appendChild(messageElement);
+        body.appendChild(accent);
         body.appendChild(icon);
         body.appendChild(copy);
         body.appendChild(closeButton);
@@ -151,7 +186,7 @@
         if (window.bootstrap && window.bootstrap.Toast) {
             const instance = window.bootstrap.Toast.getOrCreateInstance(toastElement, {
                 autohide: Boolean(settings.autohide),
-                delay: Number(settings.delay) || 3200
+                delay: Number(settings.delay) || 3400
             });
 
             instance.show();
@@ -161,29 +196,11 @@
             if (settings.autohide) {
                 window.setTimeout(function () {
                     hide(toastElement);
-                }, Number(settings.delay) || 3200);
+                }, Number(settings.delay) || 3400);
             }
         }
 
         return toastElement;
-    }
-
-    function hide(toastElement) {
-        if (!toastElement) {
-            return;
-        }
-
-        if (window.bootstrap && window.bootstrap.Toast) {
-            const instance = window.bootstrap.Toast.getInstance(toastElement);
-
-            if (instance) {
-                instance.hide();
-                return;
-            }
-        }
-
-        toastElement.classList.remove('show');
-        removeToast(toastElement);
     }
 
     function hideAll() {

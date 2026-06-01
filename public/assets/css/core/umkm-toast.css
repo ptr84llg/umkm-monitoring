@@ -1,5 +1,5 @@
 /* ============================================================
-   UMKM CORE FEEDBACK: TOAST + LOADING MODAL
+   UMKM CORE FEEDBACK: MODERN TOAST + LOADING MODAL
    Scope: reusable visual feedback only.
    ============================================================ */
 
@@ -9,92 +9,116 @@
     right: 1rem;
     z-index: 1085;
     display: grid;
-    gap: .75rem;
-    width: min(420px, calc(100vw - 2rem));
+    gap: .85rem;
+    width: min(440px, calc(100vw - 2rem));
     pointer-events: none;
 }
 
 .umkm-toast {
+    --toast-accent: var(--umkm-primary);
+    --toast-accent-rgb: var(--umkm-primary-rgb);
     width: 100%;
     border: 1px solid rgba(var(--umkm-ink-rgb), .08);
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, .94);
-    box-shadow: 0 22px 54px rgba(var(--umkm-ink-rgb), .14);
-    backdrop-filter: blur(18px);
+    border-radius: 1.12rem;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--toast-accent-rgb), .12), transparent 35%),
+        rgba(255, 255, 255, .96);
+    box-shadow: 0 24px 64px rgba(var(--umkm-ink-rgb), .18);
+    backdrop-filter: blur(20px);
     overflow: hidden;
     pointer-events: auto;
 }
 
+.umkm-toast-success {
+    --toast-accent: var(--umkm-primary);
+    --toast-accent-rgb: var(--umkm-primary-rgb);
+}
+
+.umkm-toast-info {
+    --toast-accent: var(--umkm-primary);
+    --toast-accent-rgb: var(--umkm-primary-rgb);
+}
+
+.umkm-toast-warning {
+    --toast-accent: #f59f00;
+    --toast-accent-rgb: 245, 159, 0;
+}
+
+.umkm-toast-error {
+    --toast-accent: #dc3545;
+    --toast-accent-rgb: 220, 53, 69;
+}
+
 .umkm-toast-body {
+    position: relative;
     display: grid;
-    grid-template-columns: 2.35rem minmax(0, 1fr) auto;
-    gap: .8rem;
-    align-items: start;
-    padding: .9rem;
+    grid-template-columns: .24rem 2.85rem minmax(0, 1fr) auto;
+    gap: .85rem;
+    align-items: center;
+    padding: 1rem;
+}
+
+.umkm-toast-accent {
+    align-self: stretch;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--toast-accent), rgba(var(--toast-accent-rgb), .42));
+    box-shadow: 0 0 0 .24rem rgba(var(--toast-accent-rgb), .09);
 }
 
 .umkm-toast-icon {
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 2.85rem;
+    height: 2.85rem;
     display: grid;
     place-items: center;
-    border-radius: .85rem;
-    font-weight: 950;
-    line-height: 1;
+    border: 1px solid rgba(var(--toast-accent-rgb), .18);
+    border-radius: 1rem;
+    color: var(--toast-accent);
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), transparent 36%),
+        rgba(var(--toast-accent-rgb), .12);
+    box-shadow: 0 14px 28px rgba(var(--toast-accent-rgb), .18);
+}
+
+.umkm-toast-icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    display: block;
+    fill: currentColor;
 }
 
 .umkm-toast-copy {
     min-width: 0;
     display: grid;
-    gap: .18rem;
+    gap: .2rem;
 }
 
 .umkm-toast-title {
     color: var(--umkm-ink);
-    font-size: .92rem;
+    font-size: .96rem;
     font-weight: 950;
-    letter-spacing: -.01em;
-    line-height: 1.22;
+    letter-spacing: -.015em;
+    line-height: 1.18;
 }
 
 .umkm-toast-message {
     color: var(--umkm-muted);
-    font-size: .84rem;
+    font-size: .86rem;
     line-height: 1.45;
 }
 
 .umkm-toast-close {
+    align-self: start;
     margin-top: .15rem;
     opacity: .55;
 }
 
 .umkm-toast-close:hover,
 .umkm-toast-close:focus-visible {
-    opacity: .9;
+    opacity: .92;
 }
 
-.umkm-toast-success {
-    border-color: rgba(var(--umkm-primary-rgb), .18);
-}
-
-.umkm-toast-success .umkm-toast-icon {
-    color: var(--umkm-primary-dark);
-    background: rgba(var(--umkm-primary-rgb), .13);
-}
-
-.umkm-toast-info .umkm-toast-icon {
-    color: var(--umkm-primary-dark);
-    background: rgba(var(--umkm-primary-rgb), .1);
-}
-
-.umkm-toast-warning .umkm-toast-icon {
-    color: #8a5a00;
-    background: rgba(255, 193, 7, .18);
-}
-
-.umkm-toast-error .umkm-toast-icon {
-    color: #9d1c1c;
-    background: rgba(220, 53, 69, .12);
+.umkm-toast.show {
+    animation: umkmToastEnter .22s ease-out both;
 }
 
 .umkm-loading-modal .modal-dialog {
@@ -213,6 +237,18 @@
     line-height: 1.35;
 }
 
+@keyframes umkmToastEnter {
+    from {
+        opacity: 0;
+        transform: translate3d(.75rem, -.35rem, 0) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
 @keyframes umkmCoreLoadingSpin {
     to {
         transform: rotate(360deg);
@@ -240,6 +276,23 @@
         width: calc(100vw - 1.5rem);
     }
 
+    .umkm-toast-body {
+        grid-template-columns: .22rem 2.45rem minmax(0, 1fr) auto;
+        gap: .68rem;
+        padding: .85rem;
+    }
+
+    .umkm-toast-icon {
+        width: 2.45rem;
+        height: 2.45rem;
+        border-radius: .88rem;
+    }
+
+    .umkm-toast-icon svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
     .umkm-loading-body {
         grid-template-columns: 1fr;
         text-align: center;
@@ -255,6 +308,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .umkm-toast.show,
     .umkm-loading-ring,
     .umkm-loading-progress span {
         animation: none !important;
