@@ -35,7 +35,7 @@ class SafeErrorResponder
 
             return response()->json([
                 'ok' => false,
-                'message' => 'Sesi belum valid. Silakan masuk kembali.',
+                'message' => 'Sesi berakhir. Silakan masuk kembali.',
             ], 401);
         } catch (AuthorizationException $exception) {
             if (! $this->expectsSafeJson($request)) {
@@ -53,7 +53,7 @@ class SafeErrorResponder
 
             return response()->json([
                 'ok' => false,
-                'message' => 'Sesi keamanan berakhir. Muat ulang halaman dan coba kembali.',
+                'message' => 'Sesi berakhir. Muat ulang halaman login dan coba kembali.',
             ], 419);
         } catch (Throwable $exception) {
             if (! $this->expectsSafeJson($request)) {
@@ -89,11 +89,11 @@ class SafeErrorResponder
     {
         return match ($status) {
             400 => 'Permintaan tidak valid.',
-            401 => 'Sesi belum valid. Silakan masuk kembali.',
+            401 => 'Sesi berakhir. Silakan masuk kembali.',
             403 => 'Akses tidak diizinkan.',
             404 => 'Data atau halaman tidak ditemukan.',
             405 => 'Metode permintaan tidak diizinkan.',
-            419 => 'Sesi keamanan berakhir. Muat ulang halaman dan coba kembali.',
+            419 => 'Sesi berakhir. Muat ulang halaman login dan coba kembali.',
             422 => 'Validasi belum terpenuhi.',
             429 => 'Terlalu banyak percobaan. Tunggu beberapa saat sebelum mencoba kembali.',
             default => $status >= 500

@@ -51,15 +51,15 @@ class LoginController extends Controller
             if ($this->expectsJson($request)) {
                 return response()->json([
                     'ok' => false,
-                    'message' => 'Login belum berhasil.',
+                    'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
                     'errors' => [
-                        $identifierField => ['Kredensial tidak valid.'],
+                        $identifierField => ['Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.'],
                     ],
                 ]);
             }
 
             return back()->withErrors([
-                $identifierField => 'Kredensial tidak valid.',
+                $identifierField => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
             ])->onlyInput($identifierField);
         }
 
@@ -70,7 +70,7 @@ class LoginController extends Controller
                 $request,
                 $user,
                 'inactive_account_login_blocked',
-                'Akun tidak aktif. Hubungi pengelola sistem.',
+                'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
                 'Login blocked because user account is inactive.'
             );
         }
@@ -243,7 +243,7 @@ class LoginController extends Controller
                 'allowed' => false,
                 'event_type' => 'manual_login_without_role_blocked',
                 'event_detail' => 'Manual login blocked because user has no active role. No-role accounts are reserved for Google limited access flow.',
-                'message' => 'Akun berhasil dikenali, tetapi akses sistem belum diaktifkan. Silakan hubungi pengelola sistem.',
+                'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
             ];
         }
 
@@ -257,7 +257,7 @@ class LoginController extends Controller
                     'allowed' => false,
                     'event_type' => 'manual_login_missing_dashboard_permission_blocked',
                     'event_detail' => "Manual login blocked because role {$role} does not have required permission {$access['permission']}.",
-                    'message' => 'Akun berhasil dikenali, tetapi hak akses dashboard belum lengkap. Silakan hubungi pengelola sistem.',
+                    'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
                 ];
             }
 
@@ -273,7 +273,7 @@ class LoginController extends Controller
             'allowed' => false,
             'event_type' => 'manual_login_unsupported_role_blocked',
             'event_detail' => 'Manual login blocked because user role is not registered as a dashboard login role.',
-            'message' => 'Akun berhasil dikenali, tetapi role akun belum terdaftar sebagai akses login sistem. Silakan hubungi pengelola sistem.',
+            'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
         ];
     }
 
@@ -300,7 +300,7 @@ class LoginController extends Controller
         if ($this->expectsJson($request)) {
             return response()->json([
                 'ok' => false,
-                'message' => 'Login belum dapat dilanjutkan.',
+                'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
                 'errors' => [
                     $request->has('identifier') ? 'identifier' : 'email' => [$message],
                 ],
