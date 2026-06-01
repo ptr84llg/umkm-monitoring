@@ -270,7 +270,9 @@
     }
 
     function hideLoginLoading() {
-        if (UMKM.modal && typeof UMKM.modal.hideLoading === 'function') {
+        const loadingModal = document.querySelector('[data-umkm-loading-modal]');
+
+        if (loadingModal && UMKM.modal && typeof UMKM.modal.hideLoading === 'function') {
             UMKM.modal.hideLoading();
         }
     }
@@ -286,17 +288,17 @@
             UMKM.toast.success({
                 title: 'Login berhasil',
                 message: 'Mengalihkan ke dashboard.',
-                delay: 950
+                delay: 1150
             });
         }
 
         window.setTimeout(function () {
             window.location.assign(redirectUrl);
-        }, 850);
+        }, 900);
     }
     /* FEEDBACK-CORE-1C LOGIN FEEDBACK HELPERS END */
 
-    function bindPasswordToggle() {
+function bindPasswordToggle() {
         document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
             const field = document.querySelector('[data-auth-password]');
 
@@ -530,9 +532,7 @@
 
                     if (payload && payload.ok === false) {
                         setText(submitText, originalSubmitText);
-                    hideLoginLoading();
                         hideLoginLoading();
-                hideLoginLoading();
 
                         const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
                         setSubmitState(elements, Boolean(stillGranted));
@@ -554,6 +554,7 @@
                     const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
 
                     showLoginSuccess(elements, redirectUrl);
+
                 },
                 onError: function (response, backendErrors) {
                     const payload = response && response.payload ? response.payload : {};
@@ -561,7 +562,6 @@
 
                     setText(submitText, originalSubmitText);
                     hideLoginLoading();
-                hideLoginLoading();
 
                     const stillGranted = elements.statusInput && elements.statusInput.value === 'granted';
                     setSubmitState(elements, Boolean(stillGranted));
@@ -625,10 +625,3 @@
         }
     });
 })();
-
-
-
-
-
-
-
