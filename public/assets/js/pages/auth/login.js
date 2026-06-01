@@ -277,7 +277,13 @@
         }
     }
 
-    function showLoginSuccess(elements, redirectUrl) {
+    function showLoginSuccess(elements, redirectUrl, options) {
+        const settings = Object.assign({
+            title: 'Login berhasil',
+            message: 'Mengalihkan ke dashboard.',
+            delay: 1150
+        }, options || {});
+
         if (elements) {
             elements.redirecting = true;
         }
@@ -286,9 +292,9 @@
 
         if (UMKM.toast && typeof UMKM.toast.success === 'function') {
             UMKM.toast.success({
-                title: 'Login berhasil',
-                message: 'Mengalihkan ke dashboard.',
-                delay: 1150
+                title: settings.title,
+                message: settings.message,
+                delay: settings.delay
             });
         }
 
@@ -552,6 +558,15 @@
                     }
 
                     const redirectUrl = payload.redirect_url || '/dashboard/interaktif';
+
+                    if (payload.requires_otp) {
+                        showLoginSuccess(elements, redirectUrl, {
+                            title: 'Verifikasi diperlukan',
+                            message: payload.message || 'Masukkan kode OTP untuk menyelesaikan login.',
+                            delay: 950
+                        });
+                        return;
+                    }
 
                     showLoginSuccess(elements, redirectUrl);
                 },

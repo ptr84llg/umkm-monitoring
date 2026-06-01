@@ -55,6 +55,25 @@ return Application::configure(basePath: dirname(__DIR__))
             ];
         });
 
+        RateLimiter::for('login.otp.verify', function (Request $request) {
+            $challenge = strtolower(trim((string) $request->input('challenge_token', '')));
+            $challengeHash = $challenge !== '' ? hash('sha256', $challenge) : 'empty';
+
+            return [
+                Limit::perMinute(5)->by($request->ip().'|'.$challengeHash),
+                Limit::perMinutes(15, 20)->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('login.otp.resend', function (Request $request) {
+            $challenge = strtolower(trim((string) $request->input('challenge_token', '')));
+            $challengeHash = $challenge !== '' ? hash('sha256', $challenge) : 'empty';
+
+            return [
+                Limit::perMinute(2)->by($request->ip().'|'.$challengeHash),
+                Limit::perMinutes(30, 6)->by($request->ip()),
+            ];
+        });
         RateLimiter::for('password.email', function (Request $request) {
             $email = strtolower(trim((string) $request->input('email', '')));
             $emailHash = hash('sha256', $email);

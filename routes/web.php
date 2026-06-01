@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Public\LandingPreviewController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
 use App\Http\Controllers\Api\Public\LocationGateController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
@@ -129,6 +130,39 @@ Route::middleware('guest')->group(function () {
         ->name('login.store');
 });
 
+Route::middleware('guest')->group(function () {
+    Route::get('/login/otp', [LoginOtpController::class, 'challenge'])
+        ->middleware('location.gate')
+        ->name('login.otp.challenge');
+
+    Route::post('/login/otp', [LoginOtpController::class, 'verify'])
+        ->middleware([
+            'throttle:login.otp.verify',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('login.otp.verify');
+
+    Route::post('/login/otp/resend', [LoginOtpController::class, 'resend'])
+        ->middleware([
+            'throttle:login.otp.resend',
+            'safe.errors',
+            'validate.umkm.internal.request',
+            'validate.internal.origin',
+            'validate.internal.referer',
+            'validate.fetch.metadata',
+            'anti.bot',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('login.otp.resend');
+});
 Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', [PasswordResetController::class, 'create'])
         ->middleware('location.gate')

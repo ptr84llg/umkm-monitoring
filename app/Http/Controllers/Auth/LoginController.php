@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SecurityEventLog;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
+use App\Services\Auth\LoginOtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class LoginController extends Controller
         return view('pages.auth.login');
     }
 
-    public function store(Request $request, AuditLogger $auditLogger)
+    public function store(Request $request, AuditLogger $auditLogger, LoginOtpService $loginOtpService)
     {
         $identifierField = $request->has('identifier') ? 'identifier' : 'email';
 
@@ -87,10 +88,28 @@ class LoginController extends Controller
             );
         }
 
+        if ($loginOtpService->requiresOtpForManualLogin($user, $request)) {
+            Auth::logout();
+
+            $challenge = $loginOtpService->createLoginChallenge($user, $request, $access['redirect_url']);
+            $request->session()->put('auth.login_otp', $challenge['session_payload']);
+
+            if ($this->expectsJson($request)) {
+                return response()->json([
+                    'ok' => true,
+                    'requires_otp' => true,
+                    'message' => 'Verifikasi OTP diperlukan untuk melanjutkan login.',
+                    'redirect_url' => route('login.otp.challenge'),
+                ]);
+            }
+
+            return redirect()->route('login.otp.challenge')
+                ->with('status', 'Verifikasi OTP diperlukan untuk melanjutkan login.');
+        }
+
         $request->session()->regenerate();
 
-        $user->forceFill([
-            'last_login_at' => now(),
+        $user->forceFill([            'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
         ])->save();
 
