@@ -1,4 +1,262 @@
-/* umkm-toast.css - core reusable stylesheet */
-:root { --umkm-primary: #0d6efd; }
-.umkm-card{border:1px solid #e5e7eb;border-radius:8px}.umkm-summary-card{display:inline-block;margin:8px;padding:12px;border:1px solid #e5e7eb;border-radius:8px}.umkm-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#e7f1ff}
+/* ============================================================
+   UMKM CORE FEEDBACK: TOAST + LOADING MODAL
+   Scope: reusable visual feedback only.
+   ============================================================ */
 
+.umkm-toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1085;
+    display: grid;
+    gap: .75rem;
+    width: min(420px, calc(100vw - 2rem));
+    pointer-events: none;
+}
+
+.umkm-toast {
+    width: 100%;
+    border: 1px solid rgba(var(--umkm-ink-rgb), .08);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 22px 54px rgba(var(--umkm-ink-rgb), .14);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+.umkm-toast-body {
+    display: grid;
+    grid-template-columns: 2.35rem minmax(0, 1fr) auto;
+    gap: .8rem;
+    align-items: start;
+    padding: .9rem;
+}
+
+.umkm-toast-icon {
+    width: 2.35rem;
+    height: 2.35rem;
+    display: grid;
+    place-items: center;
+    border-radius: .85rem;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.umkm-toast-copy {
+    min-width: 0;
+    display: grid;
+    gap: .18rem;
+}
+
+.umkm-toast-title {
+    color: var(--umkm-ink);
+    font-size: .92rem;
+    font-weight: 950;
+    letter-spacing: -.01em;
+    line-height: 1.22;
+}
+
+.umkm-toast-message {
+    color: var(--umkm-muted);
+    font-size: .84rem;
+    line-height: 1.45;
+}
+
+.umkm-toast-close {
+    margin-top: .15rem;
+    opacity: .55;
+}
+
+.umkm-toast-close:hover,
+.umkm-toast-close:focus-visible {
+    opacity: .9;
+}
+
+.umkm-toast-success {
+    border-color: rgba(var(--umkm-primary-rgb), .18);
+}
+
+.umkm-toast-success .umkm-toast-icon {
+    color: var(--umkm-primary-dark);
+    background: rgba(var(--umkm-primary-rgb), .13);
+}
+
+.umkm-toast-info .umkm-toast-icon {
+    color: var(--umkm-primary-dark);
+    background: rgba(var(--umkm-primary-rgb), .1);
+}
+
+.umkm-toast-warning .umkm-toast-icon {
+    color: #8a5a00;
+    background: rgba(255, 193, 7, .18);
+}
+
+.umkm-toast-error .umkm-toast-icon {
+    color: #9d1c1c;
+    background: rgba(220, 53, 69, .12);
+}
+
+.umkm-loading-modal .modal-dialog {
+    width: min(430px, calc(100vw - 2rem));
+}
+
+.umkm-loading-card {
+    border: 1px solid rgba(255, 255, 255, .72);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--umkm-primary-rgb), .12), transparent 36%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(255,255,255,.84));
+    box-shadow: 0 32px 90px rgba(var(--umkm-ink-rgb), .18);
+    backdrop-filter: blur(22px);
+    overflow: hidden;
+}
+
+.umkm-loading-body {
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem;
+}
+
+.umkm-loading-visual {
+    position: relative;
+    width: 4.2rem;
+    height: 4.2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 1.25rem;
+    background: rgba(var(--umkm-primary-rgb), .105);
+}
+
+.umkm-loading-ring {
+    position: absolute;
+    inset: .55rem;
+    border: 3px solid rgba(var(--umkm-primary-rgb), .18);
+    border-top-color: var(--umkm-primary);
+    border-radius: 999px;
+    animation: umkmCoreLoadingSpin .85s linear infinite;
+}
+
+.umkm-loading-dot {
+    width: .86rem;
+    height: .86rem;
+    border-radius: 999px;
+    background: var(--umkm-primary);
+    box-shadow: 0 0 0 .38rem rgba(var(--umkm-primary-rgb), .13);
+}
+
+.umkm-loading-copy {
+    min-width: 0;
+}
+
+.umkm-loading-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: .28rem .58rem;
+    color: var(--umkm-primary-dark);
+    background: rgba(var(--umkm-primary-rgb), .105);
+    font-size: .72rem;
+    font-weight: 950;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.umkm-loading-title {
+    margin: .48rem 0 .25rem;
+    color: var(--umkm-ink);
+    font-size: 1.16rem;
+    font-weight: 950;
+    letter-spacing: -.025em;
+    line-height: 1.18;
+}
+
+.umkm-loading-message {
+    margin: 0;
+    color: var(--umkm-muted);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.umkm-loading-progress {
+    position: relative;
+    height: .38rem;
+    margin-top: .85rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(var(--umkm-primary-rgb), .12);
+}
+
+.umkm-loading-progress span {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 42%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--umkm-primary), var(--umkm-secondary));
+    animation: umkmCoreLoadingProgress 1.25s ease-in-out infinite;
+}
+
+.umkm-loading-progress.is-determinate span {
+    animation: none;
+}
+
+.umkm-loading-caption {
+    display: block;
+    margin-top: .62rem;
+    color: var(--umkm-muted);
+    font-size: .78rem;
+    line-height: 1.35;
+}
+
+@keyframes umkmCoreLoadingSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes umkmCoreLoadingProgress {
+    0% {
+        transform: translateX(-105%);
+    }
+
+    50% {
+        transform: translateX(55%);
+    }
+
+    100% {
+        transform: translateX(245%);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-toast-container {
+        top: .75rem;
+        right: .75rem;
+        width: calc(100vw - 1.5rem);
+    }
+
+    .umkm-loading-body {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .umkm-loading-visual {
+        margin-inline: auto;
+    }
+
+    .umkm-loading-kicker {
+        margin-inline: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .umkm-loading-ring,
+    .umkm-loading-progress span {
+        animation: none !important;
+    }
+}

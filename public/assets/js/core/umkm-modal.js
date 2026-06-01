@@ -276,14 +276,125 @@
         modal.removeAttribute('aria-hidden');
     }
 
+    /* FEEDBACK-CORE-1B LOADING MODAL START */
+    let loadingModalElement = null;
+
+    function ensureLoadingModal() {
+        if (loadingModalElement && document.contains(loadingModalElement)) {
+            return loadingModalElement;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = [
+            '<div class="modal fade umkm-loading-modal" id="umkmCoreLoadingModal" tabindex="-1" aria-labelledby="umkmCoreLoadingModalTitle" aria-hidden="true" data-umkm-loading-modal="true">',
+            '  <div class="modal-dialog modal-dialog-centered">',
+            '    <section class="modal-content umkm-loading-card">',
+            '      <div class="modal-body umkm-loading-body">',
+            '        <div class="umkm-loading-visual" aria-hidden="true">',
+            '          <span class="umkm-loading-ring"></span>',
+            '          <span class="umkm-loading-dot"></span>',
+            '        </div>',
+            '        <div class="umkm-loading-copy">',
+            '          <span class="umkm-loading-kicker" data-umkm-loading-kicker>Mohon Tunggu</span>',
+            '          <h5 class="umkm-loading-title" id="umkmCoreLoadingModalTitle" data-umkm-loading-title>Proses sedang berjalan</h5>',
+            '          <p class="umkm-loading-message" data-umkm-loading-message>Sistem sedang memproses permintaan Anda.</p>',
+            '          <div class="umkm-loading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="30">',
+            '            <span data-umkm-loading-progress-bar></span>',
+            '          </div>',
+            '          <small class="umkm-loading-caption" data-umkm-loading-caption>Jangan menutup halaman sampai proses selesai.</small>',
+            '        </div>',
+            '      </div>',
+            '    </section>',
+            '  </div>',
+            '</div>'
+        ].join('');
+
+        loadingModalElement = wrapper.firstElementChild;
+        document.body.appendChild(loadingModalElement);
+
+        bindFocusGuard(loadingModalElement, {
+            returnFocus: false,
+            setInertWhenHidden: true
+        });
+
+        return loadingModalElement;
+    }
+
+    function setLoadingContent(options) {
+        const modal = ensureLoadingModal();
+        const settings = Object.assign({
+            kicker: 'Mohon Tunggu',
+            title: 'Proses sedang berjalan',
+            message: 'Sistem sedang memproses permintaan Anda.',
+            caption: 'Jangan menutup halaman sampai proses selesai.',
+            progress: null
+        }, options || {});
+
+        const kicker = qs('[data-umkm-loading-kicker]', modal);
+        const title = qs('[data-umkm-loading-title]', modal);
+        const message = qs('[data-umkm-loading-message]', modal);
+        const caption = qs('[data-umkm-loading-caption]', modal);
+        const progress = qs('.umkm-loading-progress', modal);
+        const progressBar = qs('[data-umkm-loading-progress-bar]', modal);
+
+        if (kicker) {
+            kicker.textContent = String(settings.kicker || 'Mohon Tunggu');
+        }
+
+        if (title) {
+            title.textContent = String(settings.title || 'Proses sedang berjalan');
+        }
+
+        if (message) {
+            message.textContent = String(settings.message || 'Sistem sedang memproses permintaan Anda.');
+        }
+
+        if (caption) {
+            caption.textContent = String(settings.caption || 'Jangan menutup halaman sampai proses selesai.');
+        }
+
+        if (progress && progressBar && settings.progress !== null && settings.progress !== undefined) {
+            const value = Math.max(0, Math.min(100, Number(settings.progress) || 0));
+            progress.setAttribute('aria-valuenow', String(value));
+            progressBar.style.width = value + '%';
+            progress.classList.add('is-determinate');
+        } else if (progress && progressBar) {
+            progress.removeAttribute('aria-valuenow');
+            progressBar.style.width = '';
+            progress.classList.remove('is-determinate');
+        }
+
+        return modal;
+    }
+
+    function showLoading(options) {
+        const modal = setLoadingContent(options);
+
+        show(modal, {
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
+        });
+
+        return modal;
+    }
+
+    function hideLoading(fallback) {
+        const modal = ensureLoadingModal();
+        hide(modal, fallback);
+    }
+    /* FEEDBACK-CORE-1B LOADING MODAL END */
+
     UMKM.modal = {
         bindFocusGuard: bindFocusGuard,
         releaseFocus: releaseFocus,
         restoreFocus: restoreFocus,
         rememberTrigger: rememberTrigger,
         hide: hide,
-        show: show
+        show: show,
+        showLoading: showLoading,
+        hideLoading: hideLoading,
+        setLoadingContent: setLoadingContent
     };
-
     UMKM.register?.('modal', UMKM.modal);
 })();
