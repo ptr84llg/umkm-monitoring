@@ -10,7 +10,7 @@
 @section('title', 'Login Internal | Monitoring UMKM')
 
 @section('content')
-<section class="auth-login-page"
+<section class="auth-login-page auth-login-premium"
          data-auth-login-page
          data-auth-landing-url="{{ url('/') }}"
          data-auth-location-max-failures="3">
@@ -68,7 +68,7 @@
                         <div class="d-flex flex-wrap gap-2 auth-integrity-strip">
                             <span>Akses Terbatas</span>
                             <span>Lokasi Aktif</span>
-                            <span>Audit Log</span>
+                            <span>Aktivitas Tercatat</span>
                             <span>Sesi Terjaga</span>
                         </div>
                     </div>
@@ -79,9 +79,9 @@
                                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                     <div>
                                         <span class="auth-card-eyebrow">Login Internal</span>
-                                        <h2 class="h3 fw-bold auth-card-title mt-2 mb-0">Masuk ke Akun</h2>
+                                        <h2 class="h3 fw-bold auth-card-title mt-2 mb-1">Masuk ke Akun</h2><p class="auth-card-subtitle mb-0">Validasi akses dilakukan secara aman sebelum masuk ke dashboard.</p>
                                     </div>
-                                    <span class="badge rounded-pill auth-card-badge">Secure</span>
+                                    <span class="badge rounded-pill auth-card-badge">Akses Aman</span>
                                 </div>
 
                                 <div class="auth-location-reading" data-auth-location-reading role="status" aria-live="polite">
