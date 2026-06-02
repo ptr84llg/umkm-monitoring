@@ -12,12 +12,18 @@
 
     ready(function () {
         var frame = document.querySelector("[data-dashboard-shell-frame]");
-        var toggle = document.querySelector("[data-dashboard-sidebar-toggle]");
-        var backdrop = document.querySelector("[data-dashboard-sidebar-backdrop]");
+        var megaToggle = document.querySelector("[data-dashboard-mega-toggle]");
+        var megaMenu = document.querySelector("[data-dashboard-mega-menu]");
+        var megaBackdrop = document.querySelector("[data-dashboard-mega-backdrop]");
+        var menuToggle = document.querySelector("[data-dashboard-menu-toggle]");
+        var menuClose = document.querySelector("[data-dashboard-menu-close]");
+        var offcanvas = document.querySelector("[data-dashboard-offcanvas]");
+        var offcanvasBackdrop = document.querySelector("[data-dashboard-offcanvas-backdrop]");
+        var previewTitle = document.querySelector("[data-dashboard-mega-preview-title]");
+        var previewDescription = document.querySelector("[data-dashboard-mega-preview-description]");
         var desktopQuery = window.matchMedia("(min-width: 992px)");
-        var storageKey = "umkm.dashboard.sidebar.state";
 
-        if (!frame || !toggle) {
+        if (!frame) {
             return;
         }
 
@@ -25,73 +31,212 @@
             return desktopQuery.matches;
         }
 
-        function setExpanded(expanded) {
-            frame.setAttribute("data-sidebar-state", expanded ? "expanded" : "collapsed");
-            toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-
-            try {
-                window.localStorage.setItem(storageKey, expanded ? "expanded" : "collapsed");
-            } catch (error) {
-                // Storage can be unavailable in strict browser modes. Ignore safely.
-            }
-        }
-
-        function closeMobileSidebar() {
-            frame.setAttribute("data-sidebar-mobile", "closed");
-            toggle.setAttribute("aria-expanded", "false");
-        }
-
-        function openMobileSidebar() {
-            frame.setAttribute("data-sidebar-mobile", "open");
-            toggle.setAttribute("aria-expanded", "true");
-        }
-
-        function initializeSidebar() {
-            if (!isDesktop()) {
-                closeMobileSidebar();
+        function openMegaMenu() {
+            if (!isDesktop() || !megaMenu) {
                 return;
             }
 
-            var stored = "expanded";
+            frame.setAttribute("data-mega-menu", "open");
+            megaMenu.setAttribute("aria-hidden", "false");
 
-            try {
-                stored = window.localStorage.getItem(storageKey) || "expanded";
-            } catch (error) {
-                stored = "expanded";
+            if (megaToggle) {
+                megaToggle.setAttribute("aria-expanded", "true");
             }
 
-            setExpanded(stored !== "collapsed");
-            frame.setAttribute("data-sidebar-mobile", "closed");
+            closeMobileMenu();
         }
 
-        toggle.addEventListener("click", function () {
-            if (!isDesktop()) {
-                var isOpen = frame.getAttribute("data-sidebar-mobile") === "open";
+        function closeMegaMenu() {
+            if (!megaMenu) {
+                return;
+            }
 
-                if (isOpen) {
-                    closeMobileSidebar();
-                } else {
-                    openMobileSidebar();
+            frame.setAttribute("data-mega-menu", "closed");
+            megaMenu.setAttribute("aria-hidden", "true");
+
+            if (megaToggle) {
+                megaToggle.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function toggleMegaMenu() {
+            if (frame.getAttribute("data-mega-menu") === "open") {
+                closeMegaMenu();
+                return;
+            }
+
+            openMegaMenu();
+        }
+
+        function openMobileMenu() {
+            if (!offcanvas) {
+                return;
+            }
+
+            frame.setAttribute("data-mobile-menu", "open");
+            offcanvas.setAttribute("aria-hidden", "false");
+
+            if (menuToggle) {
+                menuToggle.setAttribute("aria-expanded", "true");
+            }
+
+            document.documentElement.classList.add("dashboard-menu-open");
+            closeMegaMenu();
+        }
+
+        function closeMobileMenu() {
+            if (!offcanvas) {
+                return;
+            }
+
+            frame.setAttribute("data-mobile-menu", "closed");
+            offcanvas.setAttribute("aria-hidden", "true");
+
+            if (menuToggle) {
+                menuToggle.setAttribute("aria-expanded", "false");
+            }
+
+            document.documentElement.classList.remove("dashboard-menu-open");
+        }
+
+        function toggleMobileMenu() {
+            if (frame.getAttribute("data-mobile-menu") === "open") {
+                closeMobileMenu();
+                return;
+            }
+
+            openMobileMenu();
+        }
+
+        if (megaToggle) {
+            megaToggle.addEventListener("click", function (event) {
+                event.stopPropagation();
+                toggleMegaMenu();
+            });
+        }
+
+        if (megaBackdrop) {
+            megaBackdrop.addEventListener("click", closeMegaMenu);
+        }
+
+        if (menuToggle) {
+            menuToggle.addEventListener("click", function () {
+                toggleMobileMenu();
+            });
+        }
+
+        if (menuClose) {
+            menuClose.addEventListener("click", closeMobileMenu);
+        }
+
+        if (offcanvasBackdrop) {
+            offcanvasBackdrop.addEventListener("click", closeMobileMenu);
+        }
+
+        if (offcanvas) {
+            offcanvas.addEventListener("click", function (event) {
+                var target = event.target;
+
+                if (!(target instanceof Element)) {
+                    return;
                 }
 
+                var item = target.closest(".dashboard-offcanvas-item");
+
+                if (!item) {
+                    return;
+                }
+
+                if (item.classList.contains("is-disabled")) {
+                    event.preventDefault();
+                    return;
+                }
+
+                closeMobileMenu();
+            });
+        }
+
+        if (megaMenu) {
+            megaMenu.addEventListener("click", function (event) {
+                var target = event.target;
+
+                if (!(target instanceof Element)) {
+                    return;
+                }
+
+                var item = target.closest(".dashboard-mega-item");
+
+                if (!item) {
+                    return;
+                }
+
+                if (item.classList.contains("is-disabled")) {
+                    event.preventDefault();
+                    return;
+                }
+
+                closeMegaMenu();
+            });
+        }
+
+        Array.prototype.slice.call(document.querySelectorAll("[data-dashboard-mega-item]")).forEach(function (item) {
+            item.addEventListener("mouseenter", function () {
+                if (!previewTitle || !previewDescription) {
+                    return;
+                }
+
+                previewTitle.textContent = item.getAttribute("data-menu-title") || "Ruang Kerja";
+                previewDescription.textContent = item.getAttribute("data-menu-detail") || item.getAttribute("data-menu-description") || "Pilih modul untuk melihat ringkasan fungsi.";
+            });
+
+            item.addEventListener("focus", function () {
+                if (!previewTitle || !previewDescription) {
+                    return;
+                }
+
+                previewTitle.textContent = item.getAttribute("data-menu-title") || "Ruang Kerja";
+                previewDescription.textContent = item.getAttribute("data-menu-detail") || item.getAttribute("data-menu-description") || "Pilih modul untuk melihat ringkasan fungsi.";
+            });
+        });
+
+        desktopQuery.addEventListener("change", function () {
+            if (isDesktop()) {
+                closeMobileMenu();
                 return;
             }
 
-            var isExpanded = frame.getAttribute("data-sidebar-state") !== "collapsed";
-            setExpanded(!isExpanded);
+            closeMegaMenu();
         });
-
-        if (backdrop) {
-            backdrop.addEventListener("click", closeMobileSidebar);
-        }
-
-        desktopQuery.addEventListener("change", initializeSidebar);
-        initializeSidebar();
 
         document.addEventListener("keydown", function (event) {
             if (event.key === "Escape") {
-                closeMobileSidebar();
+                closeMegaMenu();
+                closeMobileMenu();
                 closeAllPanels();
+            }
+        });
+
+        document.addEventListener("click", function (event) {
+            var target = event.target;
+
+            if (!(target instanceof Element)) {
+                return;
+            }
+
+            var disabledMenu = target.closest(".dashboard-mega-item.is-disabled, .dashboard-offcanvas-item.is-disabled");
+
+            if (disabledMenu) {
+                event.preventDefault();
+                return;
+            }
+
+            if (
+                megaMenu &&
+                frame.getAttribute("data-mega-menu") === "open" &&
+                !target.closest("[data-dashboard-mega-menu]") &&
+                !target.closest("[data-dashboard-mega-toggle]")
+            ) {
+                closeMegaMenu();
             }
         });
 
@@ -152,5 +297,8 @@
 
             closeAllPanels();
         });
+
+        closeMegaMenu();
+        closeMobileMenu();
     });
 })();

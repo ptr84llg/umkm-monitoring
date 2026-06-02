@@ -3,8 +3,6 @@
 
     $assetProfile = $assetProfile ?? 'full';
 
-
-
     $assetModules = array_values(array_unique(array_merge($assetModules ?? [], [
         'session',
         'internalLayout',
@@ -60,10 +58,12 @@
         'admin_utama' => [
             [
                 'label' => 'Utama',
+                'summary' => 'Akses awal ruang kendali sistem.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
                         'description' => 'Kendali sistem',
+                        'detail' => 'Ringkasan sistem, keamanan, konfigurasi, kualitas data, pengguna, dan kesiapan modul.',
                         'route' => 'admin-utama.dashboard',
                         'permission' => 'dashboard.view.executive',
                         'icon' => 'dashboard',
@@ -72,10 +72,12 @@
             ],
             [
                 'label' => 'Tata Kelola',
+                'summary' => 'Modul pengelolaan inti untuk Admin Utama.',
                 'items' => [
                     [
                         'title' => 'Akses',
                         'description' => 'Akun, role, permission',
+                        'detail' => 'Pengelolaan akun internal, role, permission, dan pembatasan akses berbasis kewenangan.',
                         'route' => null,
                         'permission' => 'access.manage',
                         'icon' => 'shield',
@@ -83,6 +85,7 @@
                     [
                         'title' => 'Referensi',
                         'description' => 'Wilayah, KBLI, master data',
+                        'detail' => 'Pengaturan referensi wilayah, KBLI, dan data dasar pendukung sistem monitoring UMKM.',
                         'route' => null,
                         'permission' => 'reference.manage',
                         'icon' => 'database',
@@ -90,6 +93,7 @@
                     [
                         'title' => 'Governance',
                         'description' => 'Setting, keamanan, audit',
+                        'detail' => 'Pengaturan sistem, keamanan, audit log, dan tata kelola operasional sistem.',
                         'route' => null,
                         'permission' => 'system.manage',
                         'icon' => 'settings',
@@ -97,6 +101,7 @@
                     [
                         'title' => 'Publikasi',
                         'description' => 'Pengumuman dan konten',
+                        'detail' => 'Pengelolaan informasi publik, pengumuman, dan narasi sistem yang telah disanitasi.',
                         'route' => null,
                         'permission' => 'content.manage',
                         'icon' => 'megaphone',
@@ -104,6 +109,7 @@
                     [
                         'title' => 'Validasi',
                         'description' => 'Survei dan ahli',
+                        'detail' => 'Pengaturan instrumen survei, validasi ahli, dan status penilaian terkontrol.',
                         'route' => null,
                         'permission' => 'validation.manage',
                         'icon' => 'check',
@@ -114,10 +120,12 @@
         'admin_dinas' => [
             [
                 'label' => 'Operasional',
+                'summary' => 'Pembinaan, validasi, dan monitoring wilayah.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
                         'description' => 'Ringkasan pembinaan',
+                        'detail' => 'Ikhtisar pembinaan, validasi, dan perkembangan data UMKM pada wilayah kerja.',
                         'route' => 'admin-dinas.dashboard',
                         'permission' => null,
                         'icon' => 'dashboard',
@@ -125,6 +133,7 @@
                     [
                         'title' => 'Data UMKM',
                         'description' => 'Validasi dan pembinaan',
+                        'detail' => 'Pemeriksaan data usaha, status legalitas, dan usulan perubahan data dari pelaku UMKM.',
                         'route' => null,
                         'permission' => 'umkm.verify',
                         'icon' => 'store',
@@ -132,6 +141,7 @@
                     [
                         'title' => 'Analitik',
                         'description' => 'Kinerja dan wilayah',
+                        'detail' => 'Analisis data wilayah, bidang usaha, dan indikator perkembangan UMKM.',
                         'route' => null,
                         'permission' => 'dashboard.view.operational',
                         'icon' => 'chart',
@@ -142,10 +152,12 @@
         'kepala_dinas' => [
             [
                 'label' => 'Eksekutif',
+                'summary' => 'Monitoring keputusan dan laporan strategis.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
                         'description' => 'Monitoring keputusan',
+                        'detail' => 'Ringkasan eksekutif untuk pemantauan kinerja, wilayah, dan pengambilan keputusan.',
                         'route' => 'kepala-dinas.dashboard',
                         'permission' => null,
                         'icon' => 'dashboard',
@@ -153,6 +165,7 @@
                     [
                         'title' => 'Laporan',
                         'description' => 'Ringkasan strategis',
+                        'detail' => 'Laporan ringkas untuk evaluasi program dan kebutuhan pengambilan keputusan pimpinan.',
                         'route' => null,
                         'permission' => 'report.view.executive',
                         'icon' => 'document',
@@ -163,10 +176,12 @@
         'pelaku_umkm' => [
             [
                 'label' => 'Usaha Saya',
+                'summary' => 'Pengelolaan data usaha dan pelaporan.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
                         'description' => 'Ringkasan usaha',
+                        'detail' => 'Ikhtisar profil usaha, status data, dan informasi perkembangan yang relevan.',
                         'route' => 'pelaku-umkm.dashboard',
                         'permission' => null,
                         'icon' => 'dashboard',
@@ -174,6 +189,7 @@
                     [
                         'title' => 'Profil Usaha',
                         'description' => 'Identitas dan lokasi',
+                        'detail' => 'Pengelolaan identitas usaha, legalitas, lokasi, dan data yang dapat diajukan untuk validasi.',
                         'route' => null,
                         'permission' => 'umkm.profile.manage',
                         'icon' => 'store',
@@ -181,6 +197,7 @@
                     [
                         'title' => 'Pelaporan',
                         'description' => 'Kinerja dan transaksi',
+                        'detail' => 'Pelaporan data perkembangan usaha secara terkontrol sesuai kewenangan pelaku UMKM.',
                         'route' => null,
                         'permission' => 'umkm.report.submit',
                         'icon' => 'document',
@@ -191,10 +208,12 @@
         'validator_ahli' => [
             [
                 'label' => 'Validasi Ahli',
+                'summary' => 'Penilaian instrumen dan artefak validasi.',
                 'items' => [
                     [
                         'title' => 'Instrumen',
                         'description' => 'Daftar validasi',
+                        'detail' => 'Daftar instrumen penilaian yang diberikan kepada validator ahli.',
                         'route' => 'expert.validator.list',
                         'permission' => 'validation.expert.fill',
                         'icon' => 'check',
@@ -202,6 +221,7 @@
                     [
                         'title' => 'Riwayat',
                         'description' => 'Penilaian tersimpan',
+                        'detail' => 'Riwayat hasil penilaian yang sudah tersimpan dan dikunci sesuai status submit.',
                         'route' => null,
                         'permission' => 'validation.expert.fill',
                         'icon' => 'document',
@@ -214,10 +234,12 @@
     $dashboardMenuSections = $internalMenuBlueprint[$dashboardRoleKey] ?? [
         [
             'label' => 'Ruang Kerja',
+            'summary' => 'Menu internal belum dikonfigurasi.',
             'items' => [
                 [
                     'title' => 'Dashboard',
                     'description' => 'Menu belum dikonfigurasi',
+                    'detail' => 'Menu dashboard akan mengikuti role pengguna setelah konfigurasi modul tersedia.',
                     'route' => $dashboardHomeRoute,
                     'permission' => null,
                     'icon' => 'dashboard',
@@ -226,6 +248,9 @@
         ],
     ];
 
+    $dashboardMenuItems = collect($dashboardMenuSections)->flatMap(fn ($section) => $section['items'] ?? [])->values();
+    $dashboardFeaturedItem = $dashboardMenuItems->first(fn ($item) => ! empty($item['route']) && is_string($item['route']) && Route::has($item['route'])) ?? $dashboardMenuItems->first();
+
     $dashboardRoleBadgeClass = [
         'admin_utama' => 'dashboard-role-admin-utama',
         'admin_dinas' => 'dashboard-role-admin-dinas',
@@ -233,6 +258,20 @@
         'pelaku_umkm' => 'dashboard-role-pelaku-umkm',
         'validator_ahli' => 'dashboard-role-validator-ahli',
     ][$dashboardRoleKey] ?? 'dashboard-role-user';
+
+    $dashboardIcon = function (string $icon): string {
+        return match ($icon) {
+            'shield' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 5 5v6c0 5 3 9 7 11 4-2 7-6 7-11V5l-7-3Zm0 4 3 1.3V11c0 3-1.4 5.4-3 6.8-1.6-1.4-3-3.8-3-6.8V7.3L12 6Z"/></svg>',
+            'database' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C7 3 4 4.8 4 7v10c0 2.2 3 4 8 4s8-1.8 8-4V7c0-2.2-3-4-8-4Zm0 2c4 0 6 1.2 6 2s-2 2-6 2-6-1.2-6-2 2-2 6-2Zm0 14c-4 0-6-1.2-6-2v-2.2c1.4.9 3.5 1.2 6 1.2s4.6-.3 6-1.2V17c0 .8-2 2-6 2Zm0-5c-4 0-6-1.2-6-2V9.8c1.4.9 3.5 1.2 6 1.2s4.6-.3 6-1.2V12c0 .8-2 2-6 2Z"/></svg>',
+            'settings' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2.1-1.6-2-3.5-2.5 1a8 8 0 0 0-2.6-1.5L14 2h-4l-.4 2.9A8 8 0 0 0 7 6.4l-2.5-1-2 3.5 2.1 1.6c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2.1 1.6 2 3.5 2.5-1a8 8 0 0 0 2.6 1.5L10 22h4l.4-2.9a8 8 0 0 0 2.6-1.5l2.5 1 2-3.5-2.1-1.6ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>',
+            'megaphone' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4v14h-2l-8-4H7v4H4v-4H3V8h8l8-4h2ZM7 10v2h4.5l5.5 2.8V7.2L11.5 10H7Z"/></svg>',
+            'check' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.8 12.5 4.4 13.9l5.1 5.1L20 8.5 18.6 7.1 9.5 16.2Z"/></svg>',
+            'chart' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H2V3h2v16Zm3-2V9h3v8H7Zm5 0V5h3v12h-3Zm5 0v-6h3v6h-3Z"/></svg>',
+            'store' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16l1 6v2h-1v8H4v-8H3v-2l1-6Zm2 10v4h12v-4H6Zm-.6-8-.6 4h14.4l-.6-4H5.4Z"/></svg>',
+            'document' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5ZM8 12h8v2H8v-2Zm0 4h8v2H8v-2Z"/></svg>',
+            default => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>',
+        };
+    };
 @endphp
 <!doctype html>
 <html lang="id" data-umkm-theme="{{ $activeTheme ?? 'green' }}">
@@ -253,21 +292,10 @@
       data-umkm-session-warning-seconds="{{ (int) config('umkm.security.session_warning_seconds', 300) }}"
       data-umkm-session-redirect-url="{{ url('/') }}"
       data-umkm-session-keep-alive-url="{{ route('session.keep-alive') }}">
-    <div class="dashboard-shell" data-dashboard-shell-frame data-sidebar-state="expanded" data-sidebar-mobile="closed">
+    <div class="dashboard-shell" data-dashboard-shell-frame data-mega-menu="closed" data-mobile-menu="closed">
         <header class="dashboard-topbar" data-dashboard-topbar>
             <div class="dashboard-topbar-inner">
                 <div class="dashboard-topbar-start">
-                    <button type="button"
-                            class="dashboard-icon-button dashboard-sidebar-toggle"
-                            data-dashboard-sidebar-toggle
-                            aria-label="Buka atau tutup menu samping"
-                            aria-controls="dashboard-sidebar"
-                            aria-expanded="true">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M4 6.5h16v2H4v-2Zm0 4.5h16v2H4v-2Zm0 4.5h16v2H4v-2Z"/>
-                        </svg>
-                    </button>
-
                     <a class="dashboard-brand" href="{{ $dashboardHomeUrl }}" aria-label="Ruang Kerja Monitoring UMKM">
                         <span class="dashboard-brand-mark">MU</span>
                         <span class="dashboard-brand-copy">
@@ -275,6 +303,36 @@
                             <small>Monitoring UMKM</small>
                         </span>
                     </a>
+
+                    <button type="button"
+                            class="dashboard-mega-trigger"
+                            data-dashboard-mega-toggle
+                            aria-controls="dashboard-mega-menu"
+                            aria-expanded="false">
+                        <span class="dashboard-mega-trigger-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
+                            </svg>
+                        </span>
+                        <span class="dashboard-mega-trigger-copy">
+                            <strong>Menu Sistem</strong>
+                            <small>{{ $dashboardRoleLabel }}</small>
+                        </span>
+                        <svg class="dashboard-mega-trigger-caret" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m7 10 5 5 5-5H7Z"/>
+                        </svg>
+                    </button>
+
+                    <button type="button"
+                            class="dashboard-icon-button dashboard-menu-toggle"
+                            data-dashboard-menu-toggle
+                            aria-label="Buka menu ruang kerja"
+                            aria-controls="dashboard-offcanvas"
+                            aria-expanded="false">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 6.5h16v2H4v-2Zm0 4.5h16v2H4v-2Zm0 4.5h16v2H4v-2Z"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <div class="dashboard-topbar-actions">
@@ -336,23 +394,51 @@
             </div>
         </header>
 
-        <div class="dashboard-workspace">
-            <aside id="dashboard-sidebar" class="dashboard-sidebar" data-dashboard-sidebar aria-label="Menu ruang kerja internal">
-                <div class="dashboard-sidebar-inner">
-                    <div class="dashboard-sidebar-profile">
-                        <div class="dashboard-sidebar-avatar">{{ $dashboardUserInitial }}</div>
-                        <div class="dashboard-sidebar-profile-copy">
-                            <strong>{{ $dashboardRoleLabel }}</strong>
-                            <small>{{ $dashboardRoleHint }}</small>
+        <div id="dashboard-mega-menu"
+             class="dashboard-mega-layer"
+             data-dashboard-mega-menu
+             aria-hidden="true">
+            <button type="button"
+                    class="dashboard-mega-backdrop"
+                    data-dashboard-mega-backdrop
+                    aria-label="Tutup menu sistem"></button>
+
+            <div class="dashboard-mega-panel" role="dialog" aria-modal="false" aria-label="Mega menu sistem">
+                <div class="dashboard-mega-grid">
+                    <aside class="dashboard-mega-context">
+                        <div class="dashboard-mega-role-card">
+                            <span class="dashboard-user-avatar">{{ $dashboardUserInitial }}</span>
+                            <div>
+                                <strong>{{ $dashboardRoleLabel }}</strong>
+                                <small>{{ $dashboardRoleHint }}</small>
+                            </div>
                         </div>
-                    </div>
 
-                    <nav class="dashboard-menu" aria-label="Navigasi internal">
+                        <div class="dashboard-mega-context-copy">
+                            <span>Ruang Kerja</span>
+                            <h2>Menu internal berbasis peran</h2>
+                            <p>
+                                Struktur layout tetap sama untuk seluruh pengguna internal. Yang berbeda hanya isi menu,
+                                permission, dan konten sesuai role.
+                            </p>
+                        </div>
+
+                        <div class="dashboard-mega-context-badges">
+                            @foreach ($dashboardMenuSections as $section)
+                                <span>{{ $section['label'] ?? 'Menu' }}</span>
+                            @endforeach
+                        </div>
+                    </aside>
+
+                    <nav class="dashboard-mega-modules" aria-label="Modul ruang kerja">
                         @foreach ($dashboardMenuSections as $section)
-                            <section class="dashboard-menu-section">
-                                <div class="dashboard-menu-label">{{ $section['label'] ?? 'Menu' }}</div>
+                            <section class="dashboard-mega-section">
+                                <div class="dashboard-mega-section-head">
+                                    <span>{{ $section['label'] ?? 'Menu' }}</span>
+                                    <small>{{ $section['summary'] ?? 'Modul internal' }}</small>
+                                </div>
 
-                                <div class="dashboard-menu-list">
+                                <div class="dashboard-mega-list">
                                     @foreach (($section['items'] ?? []) as $menuItem)
                                         @php
                                             $menuRoute = $menuItem['route'] ?? null;
@@ -366,39 +452,13 @@
                                         @endphp
 
                                         <a href="{{ $menuHref }}"
-                                           class="dashboard-menu-item {{ $menuActive ? 'is-active' : '' }} {{ $menuEnabled ? '' : 'is-disabled' }}"
-                                           @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif
-                                           title="{{ $menuItem['description'] ?? $menuItem['title'] ?? 'Menu' }}">
-                                            <span class="dashboard-menu-icon" aria-hidden="true">
-                                                @switch($menuIcon)
-                                                    @case('shield')
-                                                        <svg viewBox="0 0 24 24"><path d="M12 2 5 5v6c0 5 3 9 7 11 4-2 7-6 7-11V5l-7-3Zm0 4 3 1.3V11c0 3-1.4 5.4-3 6.8-1.6-1.4-3-3.8-3-6.8V7.3L12 6Z"/></svg>
-                                                        @break
-                                                    @case('database')
-                                                        <svg viewBox="0 0 24 24"><path d="M12 3C7 3 4 4.8 4 7v10c0 2.2 3 4 8 4s8-1.8 8-4V7c0-2.2-3-4-8-4Zm0 2c4 0 6 1.2 6 2s-2 2-6 2-6-1.2-6-2 2-2 6-2Zm0 14c-4 0-6-1.2-6-2v-2.2c1.4.9 3.5 1.2 6 1.2s4.6-.3 6-1.2V17c0 .8-2 2-6 2Zm0-5c-4 0-6-1.2-6-2V9.8c1.4.9 3.5 1.2 6 1.2s4.6-.3 6-1.2V12c0 .8-2 2-6 2Z"/></svg>
-                                                        @break
-                                                    @case('settings')
-                                                        <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2.1-1.6-2-3.5-2.5 1a8 8 0 0 0-2.6-1.5L14 2h-4l-.4 2.9A8 8 0 0 0 7 6.4l-2.5-1-2 3.5 2.1 1.6c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2.1 1.6 2 3.5 2.5-1a8 8 0 0 0 2.6 1.5L10 22h4l.4-2.9a8 8 0 0 0 2.6-1.5l2.5 1 2-3.5-2.1-1.6ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
-                                                        @break
-                                                    @case('megaphone')
-                                                        <svg viewBox="0 0 24 24"><path d="M21 4v14h-2l-8-4H7v4H4v-4H3V8h8l8-4h2ZM7 10v2h4.5l5.5 2.8V7.2L11.5 10H7Z"/></svg>
-                                                        @break
-                                                    @case('check')
-                                                        <svg viewBox="0 0 24 24"><path d="M9.5 16.2 5.8 12.5 4.4 13.9l5.1 5.1L20 8.5 18.6 7.1 9.5 16.2Z"/></svg>
-                                                        @break
-                                                    @case('chart')
-                                                        <svg viewBox="0 0 24 24"><path d="M4 19h16v2H2V3h2v16Zm3-2V9h3v8H7Zm5 0V5h3v12h-3Zm5 0v-6h3v6h-3Z"/></svg>
-                                                        @break
-                                                    @case('store')
-                                                        <svg viewBox="0 0 24 24"><path d="M4 4h16l1 6v2h-1v8H4v-8H3v-2l1-6Zm2 10v4h12v-4H6Zm-.6-8-.6 4h14.4l-.6-4H5.4Z"/></svg>
-                                                        @break
-                                                    @case('document')
-                                                        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5ZM8 12h8v2H8v-2Zm0 4h8v2H8v-2Z"/></svg>
-                                                        @break
-                                                    @default
-                                                        <svg viewBox="0 0 24 24"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
-                                                @endswitch
-                                            </span>
+                                           class="dashboard-mega-item {{ $menuActive ? 'is-active' : '' }} {{ $menuEnabled ? '' : 'is-disabled' }}"
+                                           data-dashboard-mega-item
+                                           data-menu-title="{{ $menuItem['title'] ?? 'Menu' }}"
+                                           data-menu-description="{{ $menuItem['description'] ?? 'Belum tersedia' }}"
+                                           data-menu-detail="{{ $menuItem['detail'] ?? $menuItem['description'] ?? 'Belum tersedia' }}"
+                                           @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif>
+                                            <span class="dashboard-menu-icon">{!! $dashboardIcon($menuIcon) !!}</span>
                                             <span class="dashboard-menu-copy">
                                                 <strong>{{ $menuItem['title'] ?? 'Menu' }}</strong>
                                                 <small>{{ $menuItem['description'] ?? 'Belum tersedia' }}</small>
@@ -412,35 +472,113 @@
                             </section>
                         @endforeach
                     </nav>
-                </div>
-            </aside>
 
-            <div class="dashboard-sidebar-backdrop" data-dashboard-sidebar-backdrop aria-hidden="true"></div>
+                    <aside class="dashboard-mega-preview">
+                        <span class="dashboard-mega-preview-kicker">Konteks Modul</span>
+                        <h3 data-dashboard-mega-preview-title>{{ $dashboardFeaturedItem['title'] ?? 'Ruang Kerja' }}</h3>
+                        <p data-dashboard-mega-preview-description>
+                            {{ $dashboardFeaturedItem['detail'] ?? $dashboardFeaturedItem['description'] ?? 'Pilih modul untuk melihat ringkasan fungsi.' }}
+                        </p>
 
-            <main class="dashboard-main">
-                <div class="dashboard-main-inner">
-                    <section class="dashboard-page-head">
-                        <div>
-                            <span class="dashboard-page-kicker">{{ $dashboardRoleLabel }}</span>
-                            <h1>@yield('page_title', View::yieldContent('title', 'Ruang Kerja'))</h1>
+                        <div class="dashboard-mega-preview-note">
+                            <strong>Guard aktif</strong>
+                            <span>Menu hanya membantu navigasi. Akses final tetap dikunci oleh backend guard, role, permission, session, dan policy.</span>
                         </div>
-                        <div class="dashboard-page-meta">
-                            <span>{{ now()->translatedFormat('d M Y') }}</span>
-                            <span>{{ $dashboardRoleHint }}</span>
-                        </div>
-                    </section>
-
-                    <div class="dashboard-content">
-                        @yield('content')
-                    </div>
-
-                    <footer class="dashboard-footer">
-                        <span>Monitoring UMKM</span>
-                        <span>Internal layout core · backend guard tetap otoritas final</span>
-                    </footer>
+                    </aside>
                 </div>
-            </main>
+            </div>
         </div>
+
+        <div id="dashboard-offcanvas"
+             class="dashboard-offcanvas"
+             data-dashboard-offcanvas
+             aria-hidden="true"
+             aria-label="Menu ruang kerja tablet dan ponsel">
+            <div class="dashboard-offcanvas-panel" role="dialog" aria-modal="true" aria-labelledby="dashboard-offcanvas-title">
+                <div class="dashboard-offcanvas-head">
+                    <div class="dashboard-offcanvas-title">
+                        <span class="dashboard-user-avatar">{{ $dashboardUserInitial }}</span>
+                        <span>
+                            <strong id="dashboard-offcanvas-title">{{ $dashboardRoleLabel }}</strong>
+                            <small>{{ $dashboardRoleHint }}</small>
+                        </span>
+                    </div>
+                    <button type="button"
+                            class="dashboard-icon-button"
+                            data-dashboard-menu-close
+                            aria-label="Tutup menu ruang kerja">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4 6.4 5Z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="dashboard-offcanvas-menu" aria-label="Navigasi internal">
+                    @foreach ($dashboardMenuSections as $section)
+                        <section class="dashboard-offcanvas-section">
+                            <div class="dashboard-menu-cluster-label">{{ $section['label'] ?? 'Menu' }}</div>
+
+                            <div class="dashboard-offcanvas-list">
+                                @foreach (($section['items'] ?? []) as $menuItem)
+                                    @php
+                                        $menuRoute = $menuItem['route'] ?? null;
+                                        $menuPermission = $menuItem['permission'] ?? null;
+                                        $menuIcon = $menuItem['icon'] ?? 'dashboard';
+                                        $routeExists = is_string($menuRoute) && Route::has($menuRoute);
+                                        $permissionAllowed = empty($menuPermission) || (bool) $dashboardUser?->hasPermission($menuPermission);
+                                        $menuEnabled = $routeExists && $permissionAllowed;
+                                        $menuHref = $menuEnabled ? route($menuRoute) : '#';
+                                        $menuActive = $routeExists && is_string($dashboardCurrentRoute) && $dashboardCurrentRoute === $menuRoute;
+                                    @endphp
+
+                                    <a href="{{ $menuHref }}"
+                                       class="dashboard-offcanvas-item {{ $menuActive ? 'is-active' : '' }} {{ $menuEnabled ? '' : 'is-disabled' }}"
+                                       @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif>
+                                        <span class="dashboard-menu-icon">{!! $dashboardIcon($menuIcon) !!}</span>
+                                        <span class="dashboard-menu-copy">
+                                            <strong>{{ $menuItem['title'] ?? 'Menu' }}</strong>
+                                            <small>{{ $menuItem['description'] ?? 'Belum tersedia' }}</small>
+                                        </span>
+                                        @if (! $menuEnabled)
+                                            <span class="dashboard-menu-state">Soon</span>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endforeach
+                </nav>
+            </div>
+
+            <button type="button"
+                    class="dashboard-offcanvas-backdrop"
+                    data-dashboard-offcanvas-backdrop
+                    aria-label="Tutup menu ruang kerja"></button>
+        </div>
+
+        <main class="dashboard-main">
+            <div class="dashboard-main-inner">
+                <section class="dashboard-page-head">
+                    <div>
+                        <span class="dashboard-page-kicker">{{ $dashboardRoleLabel }}</span>
+                        <h1>@yield('page_title', View::yieldContent('title', 'Ruang Kerja'))</h1>
+                    </div>
+                    <div class="dashboard-page-meta">
+                        <span>{{ now()->translatedFormat('d M Y') }}</span>
+                        <span>{{ $dashboardRoleHint }}</span>
+                    </div>
+                </section>
+
+                <div class="dashboard-content">
+                    @yield('content')
+                </div>
+
+                <footer class="dashboard-footer">
+                    <span>Monitoring UMKM</span>
+                    <span>Internal layout core · backend guard tetap otoritas final</span>
+                </footer>
+            </div>
+        </main>
     </div>
 </body>
 </html>
