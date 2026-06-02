@@ -49,19 +49,28 @@ class LoginController extends Controller
                 'event_time' => now(),
             ]);
 
-            if ($this->expectsJson($request)) {
-                return response()->json([
-                    'ok' => false,
-                    'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
-                    'errors' => [
-                        $identifierField => ['Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.'],
-                    ],
-                ]);
-            }
+            return $this->manualLoginFailureResponse(
+                $request,
+                $identifierField,
+                'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.'
+            );
+        }
 
-            return back()->withErrors([
-                $identifierField => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
-            ])->onlyInput($identifierField);
+        if ($user->manualLoginIsDisabled()) {
+            SecurityEventLog::query()->create([
+                'actor_user_id' => $user->id,
+                'event_type' => 'manual_login_google_only_blocked',
+                'severity' => 'medium',
+                'event_detail' => 'Manual login blocked because account requires Google provider.',
+                'ip_address' => $request->ip(),
+                'event_time' => now(),
+            ]);
+
+            return $this->manualLoginFailureResponse(
+                $request,
+                $identifierField,
+                'Akun ini menggunakan login Google. Silakan masuk melalui tombol Google.'
+            );
         }
 
         Auth::login($user);
@@ -109,7 +118,8 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        $user->forceFill([            'last_login_at' => now(),
+        $user->forceFill([
+            'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
         ])->save();
 
@@ -316,19 +326,28 @@ class LoginController extends Controller
          */
         $request->session()->regenerate();
 
+        return $this->manualLoginFailureResponse(
+            $request,
+            $request->has('identifier') ? 'identifier' : 'email',
+            $message
+        );
+    }
+
+    private function manualLoginFailureResponse(Request $request, string $identifierField, string $message)
+    {
         if ($this->expectsJson($request)) {
             return response()->json([
                 'ok' => false,
-                'message' => 'Login belum dapat diproses. Periksa kembali identitas dan kata sandi, lalu coba lagi.',
+                'message' => $message,
                 'errors' => [
-                    $request->has('identifier') ? 'identifier' : 'email' => [$message],
+                    $identifierField => [$message],
                 ],
             ]);
         }
 
         return back()->withErrors([
-            $request->has('identifier') ? 'identifier' : 'email' => $message,
-        ])->onlyInput($request->has('identifier') ? 'identifier' : 'email');
+            $identifierField => $message,
+        ])->onlyInput($identifierField);
     }
 
     private function safeIntendedUrlForAccess(Request $request, array $allowedPrefixes): ?string
@@ -348,7 +367,7 @@ class LoginController extends Controller
         foreach ($allowedPrefixes as $prefix) {
             $normalizedPrefix = rtrim($prefix, '/');
 
-            if ($path === $normalizedPrefix || str_starts_with($path, $normalizedPrefix . '/')) {
+            if ($path === $normalizedPrefix || str_starts_with($path, $normalizedPrefix.'/')) {
                 return $intendedUrl;
             }
         }
