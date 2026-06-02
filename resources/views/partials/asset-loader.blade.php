@@ -44,32 +44,32 @@
     ];
 
     $coreCssBase = array_merge([
-        'umkm-theme.css',
+        'foundation/umkm-theme.css',
     ], $coreThemeCss, [
-        'umkm-bootstrap-bridge.css',
-        'umkm-scrollbar.css',
-        'umkm-ui.css',
-        'umkm-buttons.css',
-        'umkm-cards.css',
-        'umkm-badges.css',
-        'umkm-forms.css',
-        'umkm-modals.css',
-        'umkm-toast.css',
-        'umkm-footer.css',
-        'umkm-security.css',
+        'foundation/umkm-bootstrap-bridge.css',
+        'foundation/umkm-scrollbar.css',
+        'foundation/umkm-ui.css',
+        'components/umkm-buttons.css',
+        'components/umkm-cards.css',
+        'components/umkm-badges.css',
+        'components/umkm-forms.css',
+        'components/umkm-modals.css',
+        'components/umkm-toast.css',
+        'components/umkm-footer.css',
+        'security/umkm-security.css',
     ]);
 
     $coreCssModules = [
-        'loader' => 'umkm-loader.css',
-        'readiness' => 'umkm-loader.css',
-        'componentLoader' => 'umkm-loader.css',
-        'tables' => 'umkm-tables.css',
-        'datatables' => 'umkm-datatables.css',
-        'tabulator' => 'umkm-tabulator.css',
-        'map' => 'umkm-map.css',
-        'charts' => 'umkm-charts.css',
-        'echarts' => 'umkm-charts.css',
-        'security' => 'umkm-security.css',
+        'loader' => 'loader/umkm-loader.css',
+        'readiness' => 'loader/umkm-loader.css',
+        'componentLoader' => 'loader/umkm-loader.css',
+        'tables' => 'data/umkm-tables.css',
+        'datatables' => 'data/umkm-datatables.css',
+        'tabulator' => 'data/umkm-tabulator.css',
+        'map' => 'visual/umkm-map.css',
+        'charts' => 'visual/umkm-charts.css',
+        'echarts' => 'visual/umkm-charts.css',
+        'security' => 'security/umkm-security.css',
     ];
 
     $coreJsBase = [
@@ -165,16 +165,16 @@
 
     if ($assetProfile === 'landing') {
         $coreCss = array_merge([
-            'umkm-theme.css',
+            'foundation/umkm-theme.css',
         ], $coreThemeCss, [
-            'umkm-bootstrap-bridge.css',
-            'umkm-scrollbar.css',
-            'umkm-ui.css',
-            'umkm-buttons.css',
-            'umkm-cards.css',
-            'umkm-badges.css',
-            'umkm-footer.css',
-            'umkm-security.css',
+            'foundation/umkm-bootstrap-bridge.css',
+            'foundation/umkm-scrollbar.css',
+            'foundation/umkm-ui.css',
+            'components/umkm-buttons.css',
+            'components/umkm-cards.css',
+            'components/umkm-badges.css',
+            'components/umkm-footer.css',
+            'security/umkm-security.css',
         ]);
 
         $coreJs = [
