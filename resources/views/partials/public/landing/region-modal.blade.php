@@ -1,1 +1,1 @@
-<x-umkm.region-selector-modal mode="analytics" />
+<x-umkm.feedback.region-selector-modal mode="analytics" />

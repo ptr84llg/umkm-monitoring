@@ -58,9 +58,9 @@
                 </div>
             </div>
 
-            <x-umkm.public-note title="Catatan:" class="mx-3 my-3">
+            <x-umkm.public.public-note title="Catatan:" class="mx-3 my-3">
                 Angka dan grafik merupakan hasil agregat data wilayah terpilih. Data rinci hanya tersedia bagi pengguna berizin.
-            </x-umkm.public-note>
+            </x-umkm.public.public-note>
 
             <div class="row g-3 board-preview-grid">
                 <div class="col-12 col-md-6">
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="col-12">
-                    <x-umkm.empty-state class="landing-empty-state" icon-class="landing-empty-icon" data-public-empty-state hidden>
+                    <x-umkm.feedback.empty-state class="landing-empty-state" icon-class="landing-empty-icon" data-public-empty-state hidden>
                         <x-slot:icon>
                             <svg viewBox="0 0 24 24">
                                 <path d="M12 2.75A9.25 9.25 0 1 0 21.25 12 9.26 9.26 0 0 0 12 2.75Zm0 16.5A7.25 7.25 0 1 1 19.25 12 7.26 7.26 0 0 1 12 19.25Zm-1-11h2v5.5h-2V8.25Zm0 7h2v2h-2v-2Z"/>
@@ -131,7 +131,7 @@
                         </x-slot:icon>
                         <strong data-public-empty-title>Data wilayah belum tersedia</strong>
                         <p data-public-empty-message>Belum ada data agregat UMKM untuk wilayah yang dipilih. Pilih wilayah lain atau kembali ke Kota Lubuklinggau untuk melihat preview agregat.</p>
-                    </x-umkm.empty-state>
+                    </x-umkm.feedback.empty-state>
                 </div>
             </div>
 

@@ -4,12 +4,12 @@
                     <div class="card-body p-4 p-xl-5">
                         <div class="row align-items-xl-end g-4 mb-4">
                             <div class="col-12 col-lg-10 col-xl-7 mx-lg-auto mx-xl-0">
-                                <x-umkm.section-pill>
+                                <x-umkm.public.section-pill>
                                     <x-slot:icon>
                                         <svg viewBox="0 0 24 24"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>
                                     </x-slot:icon>
                                     Preview dashboard publik
-                                </x-umkm.section-pill>
+                                </x-umkm.public.section-pill>
 
                                 <h2 class="display-6 fw-bold mt-3 mb-3">
                                     Preview informasi UMKM tampil dalam visual yang lebih hidup

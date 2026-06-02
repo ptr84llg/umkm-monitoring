@@ -21,33 +21,33 @@
                     <div class="col-12 col-lg-10 col-xl-5 ms-xl-auto mx-lg-auto mx-xl-0">
                         <div class="row g-3 footer-feature-grid">
                             <div class="col-12 col-sm-4">
-                                <x-umkm.footer-feature title="Data" description="Profil usaha tertata">
+                                <x-umkm.navigation.footer-feature title="Data" description="Profil usaha tertata">
                                     <x-slot:icon>
                                         <svg viewBox="0 0 24 24">
                                             <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 5h8V6H8v2Zm0 5h8v-2H8v2Zm0 5h5v-2H8v2Z"/>
                                         </svg>
                                     </x-slot:icon>
-                                </x-umkm.footer-feature>
+                                </x-umkm.navigation.footer-feature>
                             </div>
 
                             <div class="col-12 col-sm-4">
-                                <x-umkm.footer-feature title="Analitik" description="Grafik dan indikator">
+                                <x-umkm.navigation.footer-feature title="Analitik" description="Grafik dan indikator">
                                     <x-slot:icon>
                                         <svg viewBox="0 0 24 24">
                                             <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
                                         </svg>
                                     </x-slot:icon>
-                                </x-umkm.footer-feature>
+                                </x-umkm.navigation.footer-feature>
                             </div>
 
                             <div class="col-12 col-sm-4">
-                                <x-umkm.footer-feature title="Wilayah" description="Peta sebaran">
+                                <x-umkm.navigation.footer-feature title="Wilayah" description="Peta sebaran">
                                     <x-slot:icon>
                                         <svg viewBox="0 0 24 24">
                                             <path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
                                         </svg>
                                     </x-slot:icon>
-                                </x-umkm.footer-feature>
+                                </x-umkm.navigation.footer-feature>
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
 
         <div class="row g-3 footer-shell">
             <div class="col-12 col-lg-10 col-xl-4 mx-lg-auto mx-xl-0">
-                <x-umkm.footer-column title="Navigasi">
+                <x-umkm.navigation.footer-column title="Navigasi">
                     <x-slot:icon>
                         <svg viewBox="0 0 24 24">
                             <path d="M4 5h16v3H4V5Zm0 5h16v3H4v-3Zm0 5h10v3H4v-3Z"/>
@@ -65,38 +65,38 @@
                     </x-slot:icon>
 
                     <div class="d-grid gap-2">
-                        <x-umkm.footer-link :href="url('/')">
+                        <x-umkm.navigation.footer-link :href="url('/')">
                             <x-slot:icon>
                                 <svg viewBox="0 0 24 24">
                                     <path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3Z"/>
                                 </svg>
                             </x-slot:icon>
                             Beranda
-                        </x-umkm.footer-link>
+                        </x-umkm.navigation.footer-link>
 
-                        <x-umkm.footer-link :href="url('/#dashboard')">
+                        <x-umkm.navigation.footer-link :href="url('/#dashboard')">
                             <x-slot:icon>
                                 <svg viewBox="0 0 24 24">
                                     <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
                                 </svg>
                             </x-slot:icon>
                             Preview Visual
-                        </x-umkm.footer-link>
+                        </x-umkm.navigation.footer-link>
 
-                        <x-umkm.footer-link :href="url('/#ringkasan')">
+                        <x-umkm.navigation.footer-link :href="url('/#ringkasan')">
                             <x-slot:icon>
                                 <svg viewBox="0 0 24 24">
                                     <path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/>
                                 </svg>
                             </x-slot:icon>
                             Ringkasan Sistem
-                        </x-umkm.footer-link>
+                        </x-umkm.navigation.footer-link>
                     </div>
-                </x-umkm.footer-column>
+                </x-umkm.navigation.footer-column>
             </div>
 
             <div class="col-12 col-lg-10 col-xl-4 mx-lg-auto mx-xl-0">
-                <x-umkm.footer-column title="Akses">
+                <x-umkm.navigation.footer-column title="Akses">
                     <x-slot:icon>
                         <svg viewBox="0 0 24 24">
                             <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8h16v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 0 1 6 0v3H9Z"/>
@@ -111,20 +111,20 @@
                               data-login-class="footer-link"
                               data-login-variant="footer"></span>
 
-                        <x-umkm.footer-link :href="url('/#cta')">
+                        <x-umkm.navigation.footer-link :href="url('/#cta')">
                             <x-slot:icon>
                                 <svg viewBox="0 0 24 24">
                                     <path d="M13 5h8v2h-8V5ZM3 4h8v8H3V4Zm2 2v4h4V6H5Zm8 4h8v2h-8v-2Zm0 5h8v2h-8v-2ZM3 14h8v6H3v-6Zm2 2v2h4v-2H5Z"/>
                                 </svg>
                             </x-slot:icon>
                             Panduan Akses
-                        </x-umkm.footer-link>
+                        </x-umkm.navigation.footer-link>
                     </div>
-                </x-umkm.footer-column>
+                </x-umkm.navigation.footer-column>
             </div>
 
             <div class="col-12 col-lg-10 col-xl-4 mx-lg-auto mx-xl-0">
-                <x-umkm.footer-column title="Informasi" class="footer-note">
+                <x-umkm.navigation.footer-column title="Informasi" class="footer-note">
                     <x-slot:icon>
                         <svg viewBox="0 0 24 24">
                             <path d="M11 17h2v-6h-2v6Zm0-8h2V7h-2v2Zm1-7a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/>
@@ -135,7 +135,7 @@
                         Tampilan publik ini menyediakan gambaran umum sistem. Akses data dan ruang kerja internal
                         dilakukan melalui akun yang terdaftar agar pemantauan tetap terkontrol dan aman.
                     </p>
-                </x-umkm.footer-column>
+                </x-umkm.navigation.footer-column>
             </div>
         </div>
 

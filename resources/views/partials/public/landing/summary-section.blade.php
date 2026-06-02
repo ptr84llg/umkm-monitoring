@@ -5,12 +5,12 @@
                         <div class="row align-items-xl-center g-4 g-xl-5">
                             <div class="col-12 col-lg-10 col-xl-5 mx-lg-auto mx-xl-0">
                                 <div class="summary-copy">
-                                    <x-umkm.section-pill>
+                                    <x-umkm.public.section-pill>
                                         <x-slot:icon>
                                             <svg viewBox="0 0 24 24"><path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/></svg>
                                         </x-slot:icon>
                                         Ringkasan sistem
-                                    </x-umkm.section-pill>
+                                    </x-umkm.public.section-pill>
 
                                     <h2 class="display-6 fw-bold mt-3 mb-3">
                                         Data tersusun, Visual Analitik Interaktif, Keputusan mudah terarah
