@@ -22,6 +22,16 @@
 
 @php
     $landingDashboardUrl = route('login');
+    $googlePublicIdentity = session('auth.google.public_identity');
+    $hasGooglePublicIdentity = is_array($googlePublicIdentity) && ! empty($googlePublicIdentity['identity_id']);
+    $googlePublicName = trim((string) ($googlePublicIdentity['provider_name'] ?? 'Akun Google'));
+    $googlePublicEmail = (string) ($googlePublicIdentity['provider_email'] ?? '');
+    $googlePublicMaskedEmail = 'akses publik terbatas';
+
+    if (str_contains($googlePublicEmail, '@')) {
+        [$googlePublicEmailName, $googlePublicEmailDomain] = explode('@', $googlePublicEmail, 2);
+        $googlePublicMaskedEmail = substr($googlePublicEmailName, 0, 1).str_repeat('*', max(3, strlen($googlePublicEmailName) - 1)).'@'.$googlePublicEmailDomain;
+    }
 
     if (auth()->check()) {
         $landingUser = auth()->user();
@@ -156,6 +166,21 @@
 
                 <div class="col-4 col-xl-4">
                     <div class="landing-nav-actions d-flex align-items-center justify-content-end gap-2">
+                        @if ($hasGooglePublicIdentity)
+                            <span class="landing-google-public-bell"
+                                  role="status"
+                                  aria-live="polite"
+                                  title="Akses publik Google aktif. Dashboard internal belum tersedia.">
+                                <span class="landing-google-public-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24"><path d="M12 22a2.8 2.8 0 0 0 2.68-2h-5.36A2.8 2.8 0 0 0 12 22Zm8-5h-1.5V11a6.51 6.51 0 0 0-5-6.32V3a1.5 1.5 0 0 0-3 0v1.68A6.51 6.51 0 0 0 5.5 11v6H4v2h16v-2Zm-3.5 0h-9V11a4.5 4.5 0 1 1 9 0v6Z"/></svg>
+                                </span>
+                                <span class="landing-google-public-copy">
+                                    <strong>Akses publik</strong>
+                                    <small>Google</small>
+                                </span>
+                                <span class="landing-google-public-dot" aria-hidden="true"></span>
+                            </span>
+                        @endif
                         <button type="button"
                                 class="landing-location-chip is-checking"
                                 data-location-status-chip

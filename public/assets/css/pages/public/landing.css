@@ -2294,3 +2294,94 @@ html[data-location-gate="checking"] .location-gate-retry {
     }
 }
 
+
+/* AUTH-1J PUBLIC LIMITED GOOGLE IDENTITY BELL START */
+.landing-google-public-bell {
+    position: relative;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: .52rem;
+    max-width: 170px;
+    border: 1px solid rgba(var(--umkm-accent-rgb), .24);
+    border-radius: var(--umkm-radius-pill);
+    padding: .34rem .68rem;
+    color: var(--umkm-accent-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
+        rgba(255, 247, 237, .92);
+    box-shadow: var(--umkm-shadow-xs);
+    font-weight: 850;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.landing-google-public-icon {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-accent-dark);
+    background: var(--umkm-accent-soft);
+}
+
+.landing-google-public-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.landing-google-public-copy {
+    display: grid;
+    gap: .05rem;
+    min-width: 0;
+    text-align: left;
+}
+
+.landing-google-public-copy strong,
+.landing-google-public-copy small {
+    display: block;
+    overflow: hidden;
+    max-width: 96px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.landing-google-public-copy strong {
+    color: currentColor;
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.landing-google-public-copy small {
+    color: var(--umkm-muted);
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.landing-google-public-dot {
+    position: absolute;
+    top: .28rem;
+    right: .34rem;
+    width: .52rem;
+    height: .52rem;
+    border-radius: var(--umkm-radius-pill);
+    background: var(--umkm-danger);
+    box-shadow: 0 0 0 .18rem rgba(var(--umkm-danger-rgb), .14);
+}
+
+@media (max-width: 1199.98px) {
+    .landing-google-public-bell {
+        width: 38px;
+        max-width: 38px;
+        justify-content: center;
+        padding-inline: .34rem;
+    }
+
+    .landing-google-public-copy {
+        display: none;
+    }
+}
+/* AUTH-1J PUBLIC LIMITED GOOGLE IDENTITY BELL END */
