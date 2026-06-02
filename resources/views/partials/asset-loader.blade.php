@@ -70,6 +70,7 @@
         'charts' => 'visual/umkm-charts.css',
         'echarts' => 'visual/umkm-charts.css',
         'security' => 'security/umkm-security.css',
+        'internalLayout' => 'layout/umkm-internal-shell.css',
     ];
 
     $coreJsBase = [
@@ -92,6 +93,7 @@
         'modal' => 'feedback/umkm-modal.js',
         'locationGate' => 'location/umkm-location-gate.js',
         'session' => 'security/umkm-session.js',
+        'internalLayout' => 'layout/umkm-internal-shell.js',
         'datatables' => 'data/umkm-datatables.js',
         'tabulator' => 'data/umkm-tabulator.js',
         'wizard' => 'forms/umkm-wizard.js',

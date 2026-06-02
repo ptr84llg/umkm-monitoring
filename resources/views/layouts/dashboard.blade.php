@@ -3,16 +3,11 @@
 
     $assetProfile = $assetProfile ?? 'full';
 
-    $pageCss = array_values(array_unique(array_merge($pageCss ?? [], [
-        'dashboard/dashboard-shell.css',
-    ])));
 
-    $pageJs = array_values(array_unique(array_merge($pageJs ?? [], [
-        'dashboard/dashboard-shell.js',
-    ])));
 
     $assetModules = array_values(array_unique(array_merge($assetModules ?? [], [
         'session',
+        'internalLayout',
     ])));
 
     $dashboardUser = auth()->user();
