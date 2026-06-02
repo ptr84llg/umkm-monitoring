@@ -73,32 +73,32 @@
     ];
 
     $coreJsBase = [
-        'umkm-ui.js',
-        'umkm-ajax.js',
-        'umkm-security.js',
-        'umkm-modal.js',
-        'umkm-confirm.js',
-        'umkm-toast.js',
-        'umkm-forms.js',
+        'foundation/umkm-ui.js',
+        'request/umkm-ajax.js',
+        'security/umkm-security.js',
+        'feedback/umkm-modal.js',
+        'feedback/umkm-confirm.js',
+        'feedback/umkm-toast.js',
+        'forms/umkm-forms.js',
     ];
 
     $coreJsModules = [
-        'ajax' => 'umkm-ajax.js',
-        'security' => 'umkm-security.js',
-        'loader' => 'umkm-loader.js',
-        'componentLoader' => 'umkm-component-loader.js',
-        'readiness' => 'umkm-readiness.js',
-        'location' => 'umkm-location.js',
-        'modal' => 'umkm-modal.js',
-        'locationGate' => 'umkm-location-gate.js',
-        'session' => 'umkm-session.js',
-        'datatables' => 'umkm-datatables.js',
-        'tabulator' => 'umkm-tabulator.js',
-        'wizard' => 'umkm-wizard.js',
-        'map' => 'umkm-map.js',
-        'charts' => 'umkm-charts.js',
-        'echarts' => 'umkm-echarts.js',
-        'vue' => 'umkm-vue.js',
+        'ajax' => 'request/umkm-ajax.js',
+        'security' => 'security/umkm-security.js',
+        'loader' => 'loader/umkm-loader.js',
+        'componentLoader' => 'loader/umkm-component-loader.js',
+        'readiness' => 'loader/umkm-readiness.js',
+        'location' => 'location/umkm-location.js',
+        'modal' => 'feedback/umkm-modal.js',
+        'locationGate' => 'location/umkm-location-gate.js',
+        'session' => 'security/umkm-session.js',
+        'datatables' => 'data/umkm-datatables.js',
+        'tabulator' => 'data/umkm-tabulator.js',
+        'wizard' => 'forms/umkm-wizard.js',
+        'map' => 'visual/umkm-map.js',
+        'charts' => 'visual/umkm-charts.js',
+        'echarts' => 'visual/umkm-echarts.js',
+        'vue' => 'integration/umkm-vue.js',
     ];
 
     $moduleDependencies = [
@@ -178,9 +178,9 @@
         ]);
 
         $coreJs = [
-            'umkm-ui.js',
-            'umkm-ajax.js',
-            'umkm-security.js',
+            'foundation/umkm-ui.js',
+            'request/umkm-ajax.js',
+            'security/umkm-security.js',
         ];
     } elseif ($assetProfile === 'base') {
         $coreCss = $coreCssBase;
