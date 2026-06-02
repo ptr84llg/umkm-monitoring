@@ -107,7 +107,7 @@ class GoogleOAuthController extends Controller
                 'Google OAuth pending link created for user_id='.$matchedUser->id
             );
 
-            return redirect()->route('login')->with('status', 'Email Google cocok dengan akun terdaftar. Konfirmasi tautkan Google akan diaktifkan pada tahap berikutnya.');
+            return redirect()->route('login.google.link.confirm');
         }
 
         $identity = $identityService->storePublicLimitedGoogleIdentity($stagedIdentity, $request);
@@ -127,6 +127,89 @@ class GoogleOAuthController extends Controller
         );
 
         return redirect('/')->with('status', 'Akun Google dikenali sebagai akses publik terbatas. Dashboard internal belum tersedia.');
+    }
+
+    public function confirm(Request $request)
+    {
+        $pending = $this->validPendingIdentity($request);
+
+        if (! $pending) {
+            $request->session()->forget(self::PENDING_SESSION_KEY);
+
+            return redirect()->route('login')->with('status', 'Sesi tautkan Google tidak tersedia atau sudah kedaluwarsa.');
+        }
+
+        return view('pages.auth.google-link-confirm', [
+            'pendingEmail' => $this->maskEmail((string) ($pending['staged_identity']['provider_email'] ?? '')),
+            'pendingName' => (string) ($pending['staged_identity']['provider_name'] ?? 'Akun Google'),
+            'expiresAt' => (string) ($pending['expires_at'] ?? ''),
+        ]);
+    }
+
+    public function link(Request $request, OAuthIdentityService $identityService, AuditLogger $auditLogger)
+    {
+        $pending = $this->validPendingIdentity($request);
+
+        if (! $pending) {
+            $request->session()->forget(self::PENDING_SESSION_KEY);
+
+            return redirect()->route('login')->with('status', 'Sesi tautkan Google tidak tersedia atau sudah kedaluwarsa.');
+        }
+
+        $user = User::query()->find((int) $pending['user_id']);
+
+        if (! $user || ! $user->isActive()) {
+            $request->session()->forget(self::PENDING_SESSION_KEY);
+
+            $this->logGoogleEvent(
+                $request,
+                'google_oauth_pending_link_user_invalid',
+                'medium',
+                'Google OAuth pending link blocked because user is missing or inactive.'
+            );
+
+            return redirect()->route('login')->with('status', 'Tautkan Google belum dapat diproses.');
+        }
+
+        try {
+            $identity = $identityService->linkGoogleToInternalUser($user, $pending['staged_identity'], $request);
+        } catch (Throwable) {
+            $request->session()->forget(self::PENDING_SESSION_KEY);
+
+            $this->logGoogleEvent(
+                $request,
+                'google_oauth_internal_link_failed',
+                'medium',
+                'Google OAuth internal link failed.'
+            );
+
+            return redirect()->route('login')->with('status', 'Tautkan Google belum dapat diproses.');
+        }
+
+        $request->session()->forget(self::PENDING_SESSION_KEY);
+
+        $this->logGoogleEvent(
+            $request,
+            'google_oauth_internal_link_completed',
+            'medium',
+            'Google OAuth internal link completed for user_id='.$user->id
+        );
+
+        return $this->loginInternalUser($request, $auditLogger, $user, $identity);
+    }
+
+    public function cancel(Request $request, OAuthIdentityService $identityService)
+    {
+        $identityService->cancelPendingSession($request, self::PENDING_SESSION_KEY);
+
+        $this->logGoogleEvent(
+            $request,
+            'google_oauth_pending_link_cancelled',
+            'low',
+            'Google OAuth pending link cancelled by user.'
+        );
+
+        return redirect()->route('login')->with('status', 'Proses tautkan Google dibatalkan.');
     }
 
     private function loginInternalUser(Request $request, AuditLogger $auditLogger, User $user, AuthOAuthIdentity $identity)
@@ -235,6 +318,33 @@ class GoogleOAuthController extends Controller
         ];
     }
 
+    private function validPendingIdentity(Request $request): ?array
+    {
+        $pending = $request->session()->get(self::PENDING_SESSION_KEY);
+
+        if (! is_array($pending)) {
+            return null;
+        }
+
+        if (empty($pending['staged_identity']) || ! is_array($pending['staged_identity'])) {
+            return null;
+        }
+
+        if (empty($pending['user_id']) || empty($pending['expires_at'])) {
+            return null;
+        }
+
+        try {
+            if (now()->greaterThan(\Illuminate\Support\Carbon::parse((string) $pending['expires_at']))) {
+                return null;
+            }
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $pending;
+    }
+
     private function googleUserToArray($googleUser): array
     {
         return [
@@ -244,6 +354,19 @@ class GoogleOAuthController extends Controller
             'name' => $googleUser->getName() ?: $googleUser->getNickname(),
             'avatar' => $googleUser->getAvatar(),
         ];
+    }
+
+    private function maskEmail(string $email): string
+    {
+        if (! str_contains($email, '@')) {
+            return 'email Google';
+        }
+
+        [$name, $domain] = explode('@', $email, 2);
+
+        $visible = substr($name, 0, 1);
+
+        return $visible.str_repeat('*', max(3, strlen($name) - 1)).'@'.$domain;
     }
 
     private function safeIntendedUrlForAccess(Request $request, array $allowedPrefixes): ?string

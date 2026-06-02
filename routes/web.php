@@ -138,6 +138,28 @@ Route::middleware('guest')->group(function () {
     Route::get('/login/google/callback', [GoogleOAuthController::class, 'callback'])
         ->middleware('location.gate')
         ->name('login.google.callback');
+
+    Route::get('/login/google/link', [GoogleOAuthController::class, 'confirm'])
+        ->middleware('location.gate')
+        ->name('login.google.link.confirm');
+
+    Route::post('/login/google/link', [GoogleOAuthController::class, 'link'])
+        ->middleware([
+            'throttle:login',
+            'safe.errors',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('login.google.link');
+
+    Route::post('/login/google/cancel', [GoogleOAuthController::class, 'cancel'])
+        ->middleware([
+            'throttle:login',
+            'safe.errors',
+            'location.gate',
+            'log.internal.api',
+        ])
+        ->name('login.google.cancel');
 });
 
 Route::middleware('guest')->group(function () {
