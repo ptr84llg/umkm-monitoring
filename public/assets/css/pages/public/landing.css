@@ -2385,3 +2385,172 @@ html[data-location-gate="checking"] .location-gate-retry {
     }
 }
 /* AUTH-1J PUBLIC LIMITED GOOGLE IDENTITY BELL END */
+/* AUTH-1K Public Google Landing Guard */
+.landing-google-public-bell {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: .52rem;
+    max-width: 174px;
+    border: 1px solid rgba(var(--umkm-accent-rgb), .22);
+    border-radius: var(--umkm-radius-pill);
+    padding: .34rem .68rem;
+    color: var(--umkm-accent-dark);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
+        rgba(255, 247, 237, .90);
+    box-shadow: var(--umkm-shadow-xs);
+    font-weight: 850;
+    line-height: 1.1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform .2s ease, border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+
+.landing-google-public-bell:hover,
+.landing-google-public-bell:focus-visible {
+    color: var(--umkm-accent-dark);
+    transform: translateY(-1px);
+    border-color: rgba(var(--umkm-accent-rgb), .34);
+    background: #ffffff;
+    box-shadow: var(--umkm-shadow-sm);
+}
+
+.landing-google-public-icon {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-accent-dark);
+    background: var(--umkm-accent-soft);
+}
+
+.landing-google-public-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.landing-google-public-copy {
+    display: grid;
+    gap: .05rem;
+    min-width: 0;
+    text-align: left;
+}
+
+.landing-google-public-copy strong,
+.landing-google-public-copy small {
+    display: block;
+    overflow: hidden;
+    max-width: 96px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.landing-google-public-copy strong {
+    color: currentColor;
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.landing-google-public-copy small {
+    color: var(--umkm-muted);
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.landing-google-public-dot {
+    width: .5rem;
+    height: .5rem;
+    flex: 0 0 .5rem;
+    border-radius: var(--umkm-radius-pill);
+    background: var(--umkm-accent);
+    box-shadow: 0 0 0 .22rem rgba(var(--umkm-accent-rgb), .14);
+}
+
+.landing-google-public-modal .modal-content {
+    border-radius: var(--umkm-radius-xl);
+    background:
+        radial-gradient(circle at 100% 0%, var(--umkm-accent-soft), transparent 34%),
+        #ffffff;
+    box-shadow: 0 24px 72px rgba(var(--umkm-ink-rgb), .18);
+}
+
+.landing-google-public-modal-title {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .85rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.landing-google-public-modal-title p {
+    color: var(--umkm-accent-dark);
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.landing-google-public-modal-title h2 {
+    color: var(--umkm-ink);
+    font-size: 1.08rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.landing-google-public-modal-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--umkm-radius-lg);
+    color: var(--umkm-accent-dark);
+    background: var(--umkm-accent-soft);
+}
+
+.landing-google-public-modal-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+.landing-google-public-modal-summary {
+    display: grid;
+    gap: .12rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(var(--umkm-accent-rgb), .16);
+    border-radius: var(--umkm-radius-lg);
+    padding: .9rem 1rem;
+    background: rgba(255, 247, 237, .76);
+}
+
+.landing-google-public-modal-summary strong,
+.landing-google-public-modal-summary span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.landing-google-public-modal-summary strong {
+    color: var(--umkm-ink);
+    font-weight: 950;
+}
+
+.landing-google-public-modal-summary span {
+    color: var(--umkm-muted);
+    font-size: .86rem;
+    font-weight: 800;
+}
+
+.landing-google-public-modal-note {
+    margin-top: 1rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    border-radius: var(--umkm-radius-lg);
+    padding: .85rem 1rem;
+    color: var(--umkm-muted-strong);
+    background: var(--umkm-primary-softer);
+    font-size: .9rem;
+    line-height: 1.55;
+}

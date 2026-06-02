@@ -102,6 +102,12 @@
         return Boolean(root && root.dataset.authenticated === 'true');
     }
 
+    function isGooglePublicLimitedLanding() {
+        const root = rootElement();
+
+        return Boolean(root && root.dataset.googlePublicLimited === 'true');
+    }
+
     function getDashboardUrl() {
         const root = rootElement();
 
@@ -178,7 +184,8 @@
 
     function renderLoginLinks(allowed) {
         const authenticated = isAuthenticatedLanding();
-        const canRender = allowed || authenticated;
+        const publicLimited = isGooglePublicLimitedLanding();
+        const canRender = (allowed || authenticated) && !publicLimited;
 
         qsa(DEFAULT_SELECTORS.loginMount).forEach(function (mount) {
             const existing = mount.querySelector('[data-location-created-login]');

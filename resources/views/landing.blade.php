@@ -134,7 +134,7 @@
         ],
     ]"
 />
-<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-dashboard-url="{{ $landingDashboardUrl }}" data-authenticated="{{ auth()->check() ? 'true' : 'false' }}" data-location-gate-verify-url="{{ route('public.location-gate.verify') }}" data-location-gate-clear-url="{{ route('public.location-gate.clear') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
+<div class="umkm-landing" data-location-gate-root data-login-url="{{ route('login') }}" data-dashboard-url="{{ $landingDashboardUrl }}" data-authenticated="{{ auth()->check() ? 'true' : 'false' }}" data-google-public-limited="{{ ($hasGooglePublicIdentity && ! auth()->check()) ? 'true' : 'false' }}" data-google-public-name="{{ e($googlePublicName) }}" data-google-public-email="{{ e($googlePublicMaskedEmail) }}" data-location-gate-verify-url="{{ route('public.location-gate.verify') }}" data-location-gate-clear-url="{{ route('public.location-gate.clear') }}" data-location-client-ip="{{ request()->ip() }}" data-location-client-user-agent="{{ request()->userAgent() ?? 'Tidak terbaca' }}">
     <div class="landing-gradient gradient-a" data-parallax="0.08"></div>
     <div class="landing-gradient gradient-b" data-parallax="0.12"></div>
 
@@ -167,10 +167,14 @@
                 <div class="col-4 col-xl-4">
                     <div class="landing-nav-actions d-flex align-items-center justify-content-end gap-2">
                         @if ($hasGooglePublicIdentity)
-                            <span class="landing-google-public-bell"
-                                  role="status"
-                                  aria-live="polite"
-                                  title="Akses publik Google aktif. Dashboard internal belum tersedia.">
+                            <button type="button"
+                                    class="landing-google-public-bell"
+                                    data-google-public-info-open
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#landingGooglePublicModal"
+                                    aria-controls="landingGooglePublicModal"
+                                    aria-expanded="false"
+                                    title="Akses publik Google aktif. Klik untuk melihat keterangan.">
                                 <span class="landing-google-public-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24"><path d="M12 22a2.8 2.8 0 0 0 2.68-2h-5.36A2.8 2.8 0 0 0 12 22Zm8-5h-1.5V11a6.51 6.51 0 0 0-5-6.32V3a1.5 1.5 0 0 0-3 0v1.68A6.51 6.51 0 0 0 5.5 11v6H4v2h16v-2Zm-3.5 0h-9V11a4.5 4.5 0 1 1 9 0v6Z"/></svg>
                                 </span>
@@ -179,7 +183,7 @@
                                     <small>Google</small>
                                 </span>
                                 <span class="landing-google-public-dot" aria-hidden="true"></span>
-                            </span>
+                            </button>
                         @endif
                         <button type="button"
                                 class="landing-location-chip is-checking"
@@ -218,6 +222,49 @@
     </header>
 
     <x-umkm.feedback.location-gate-modal />
+    @if ($hasGooglePublicIdentity)
+        <div class="modal fade landing-google-public-modal"
+             id="landingGooglePublicModal"
+             tabindex="-1"
+             aria-labelledby="landingGooglePublicModalTitle"
+             aria-hidden="true"
+             data-google-public-info-modal>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="landing-google-public-modal-title">
+                            <span class="landing-google-public-modal-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12 22a2.8 2.8 0 0 0 2.68-2h-5.36A2.8 2.8 0 0 0 12 22Zm8-5h-1.5V11a6.51 6.51 0 0 0-5-6.32V3a1.5 1.5 0 0 0-3 0v1.68A6.51 6.51 0 0 0 5.5 11v6H4v2h16v-2Zm-3.5 0h-9V11a4.5 4.5 0 1 1 9 0v6Z"/></svg>
+                            </span>
+                            <div>
+                                <p class="mb-1">Akses publik Google aktif</p>
+                                <h2 class="modal-title" id="landingGooglePublicModalTitle">Akun belum tertaut ke pengguna internal</h2>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body pt-3">
+                        <div class="landing-google-public-modal-summary">
+                            <strong>{{ $googlePublicName }}</strong>
+                            <span>{{ $googlePublicMaskedEmail }}</span>
+                        </div>
+                        <p class="mb-0">
+                            Akun Google ini hanya membuka akses publik terbatas pada halaman landing. Dashboard internal,
+                            ruang kerja, dan fitur pengelolaan data belum tersedia karena akun Google tersebut belum
+                            tertaut dengan akun internal sistem.
+                        </p>
+                        <div class="landing-google-public-modal-note" role="note">
+                            Untuk masuk ke ruang kerja, gunakan akun internal yang sudah terdaftar atau minta admin
+                            menautkan akun Google dengan pengguna internal yang sesuai.
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Saya mengerti</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="landing-component-shell landing-region-modal-mount"
          data-region-modal-mount
