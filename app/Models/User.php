@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+
+
+use App\Models\Auth\AuthOAuthIdentity;
+use App\Models\Access\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
