@@ -1483,3 +1483,36 @@ body.layout-auth {
     }
 }
 /* AUTH-1J GOOGLE LOGIN BUTTON END */
+/* AUTH-1J GOOGLE LINK CONFIRM CSP CLEANUP START */
+.auth-google-link-page .auth-google-link-card {
+    max-width: 42rem;
+}
+
+.auth-google-link-page .auth-google-link-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: 0 0 2.4rem;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary-dark);
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 12px 24px rgba(var(--umkm-ink-rgb), .08);
+    font-size: 1rem;
+    font-weight: 950;
+    line-height: 1;
+}
+
+@media (max-width: 575.98px) {
+    .auth-google-link-page .auth-google-link-card {
+        max-width: 100%;
+    }
+
+    .auth-google-link-page .auth-google-link-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        flex-basis: 2.25rem;
+    }
+}
+/* AUTH-1J GOOGLE LINK CONFIRM CSP CLEANUP END */

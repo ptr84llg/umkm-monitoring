@@ -136,7 +136,6 @@ Route::middleware('guest')->group(function () {
         ->name('login.google.redirect');
 
     Route::get('/login/google/callback', [GoogleOAuthController::class, 'callback'])
-        ->middleware('location.gate')
         ->name('login.google.callback');
 
     Route::get('/login/google/link', [GoogleOAuthController::class, 'confirm'])

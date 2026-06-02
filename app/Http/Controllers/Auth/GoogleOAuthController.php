@@ -10,6 +10,7 @@ use App\Services\Audit\AuditLogger;
 use App\Services\Auth\OAuthIdentityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Throwable;
 
@@ -48,12 +49,14 @@ class GoogleOAuthController extends Controller
 
         try {
             $googleUser = Socialite::driver('google')->user();
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logGoogleCallbackException($request, $exception);
+
             $this->logGoogleEvent(
                 $request,
                 'google_oauth_callback_failed',
                 'medium',
-                'Google OAuth callback failed before identity resolution.'
+                'Google OAuth callback failed before identity resolution. exception_class='.$exception::class
             );
 
             return redirect()->route('login')->with('status', 'Login Google belum dapat diproses. Silakan coba lagi.');
@@ -422,6 +425,27 @@ class GoogleOAuthController extends Controller
         return str_starts_with($url, $request->getSchemeAndHttpHost());
     }
 
+    private function logGoogleCallbackException(Request $request, Throwable $exception): void
+    {
+        try {
+            Log::warning('Google OAuth callback failed before identity resolution.', [
+                'exception_class' => $exception::class,
+                'exception_code' => $exception->getCode(),
+                'exception_message' => substr($exception->getMessage(), 0, 240),
+                'route' => optional($request->route())->getName(),
+                'path' => $request->path(),
+                'has_code_query' => $request->query->has('code'),
+                'has_state_query' => $request->query->has('state'),
+                'session_has_state' => $request->session()->has('state'),
+                'google_redirect_configured' => (bool) config('services.google.redirect'),
+                'google_client_id_configured' => (bool) config('services.google.client_id'),
+                'ip_address' => $request->ip(),
+                'user_agent_hash' => hash('sha256', (string) $request->userAgent()),
+            ]);
+        } catch (Throwable) {
+            // Diagnostic logging failure must not expose implementation details.
+        }
+    }
     private function logGoogleEvent(Request $request, string $eventType, string $severity, string $detail): void
     {
         try {

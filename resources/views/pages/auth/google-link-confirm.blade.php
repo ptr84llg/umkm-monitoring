@@ -29,7 +29,7 @@
                     </span>
                 </a>
 
-                <div class="card border-0 shadow-sm auth-login-card mx-auto" style="max-width: 42rem;">
+                <div class="card border-0 shadow-sm auth-login-card mx-auto auth-google-link-card">
                     <div class="card-body p-4 p-xl-5">
                         <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                             <div>
@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="rounded-4 p-3 border bg-light-subtle d-flex align-items-center gap-3">
-                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white shadow-sm fw-bold" style="width: 2.4rem; height: 2.4rem; color: #0b6f61;">G</span>
+                            <span class="auth-google-link-avatar" aria-hidden="true">G</span>
                             <span>
                                 <strong class="d-block">{{ $pendingName }}</strong>
                                 <small class="d-block text-muted">{{ $pendingEmail }}</small>
