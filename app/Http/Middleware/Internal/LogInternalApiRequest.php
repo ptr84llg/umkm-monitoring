@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware\Internal;
 
-use App\Models\ApiRequestLog;
+use App\Models\Audit\ApiRequestLog;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

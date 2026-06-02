@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware\Security;
 
-use App\Models\SecurityEventLog;
+use App\Models\Audit\SecurityEventLog;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

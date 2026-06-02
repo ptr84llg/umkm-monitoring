@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Region;
+use App\Models\Reference\Region;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;

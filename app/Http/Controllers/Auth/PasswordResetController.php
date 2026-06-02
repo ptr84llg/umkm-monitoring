@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\SecurityEventLog;
+use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use App\Services\Auth\LoginOtpService;
 use Illuminate\Auth\Events\PasswordReset;

@@ -2,8 +2,8 @@
 
 namespace App\Services\Auth;
 
-use App\Models\AuthOtpChallenge;
-use App\Models\SecurityEventLog;
+use App\Models\Auth\AuthOtpChallenge;
+use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

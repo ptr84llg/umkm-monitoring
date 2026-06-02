@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuthOAuthIdentity;
-use App\Models\SecurityEventLog;
+use App\Models\Auth\AuthOAuthIdentity;
+use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Services\Auth\OAuthIdentityService;

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Region;
-use App\Models\SecurityEventLog;
+use App\Models\Reference\Region;
+use App\Models\Audit\SecurityEventLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

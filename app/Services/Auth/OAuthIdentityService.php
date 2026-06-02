@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-use App\Models\AuthOAuthIdentity;
+use App\Models\Auth\AuthOAuthIdentity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
