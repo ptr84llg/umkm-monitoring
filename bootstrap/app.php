@@ -16,23 +16,23 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\EnsureRole::class,
-            'permission' => \App\Http\Middleware\EnsurePermission::class,
-            'validate.internal.origin' => \App\Http\Middleware\ValidateInternalOrigin::class,
-            'validate.internal.referer' => \App\Http\Middleware\ValidateInternalReferer::class,
-            'validate.fetch.metadata' => \App\Http\Middleware\ValidateFetchMetadata::class,
-            'log.internal.api' => \App\Http\Middleware\LogInternalApiRequest::class,
-            'secure.headers' => \App\Http\Middleware\SecureHeaders::class,
-            'anti.bot' => \App\Http\Middleware\AntiBotGuard::class,
-            'safe.errors' => \App\Http\Middleware\SafeErrorResponder::class,
-            'validate.umkm.internal.request' => \App\Http\Middleware\EnsureUmkmInternalRequest::class,
-            'location.gate' => \App\Http\Middleware\EnsureLocationGateVerified::class,
+            'role' => \App\Http\Middleware\Access\EnsureRole::class,
+            'permission' => \App\Http\Middleware\Access\EnsurePermission::class,
+            'validate.internal.origin' => \App\Http\Middleware\Security\ValidateInternalOrigin::class,
+            'validate.internal.referer' => \App\Http\Middleware\Security\ValidateInternalReferer::class,
+            'validate.fetch.metadata' => \App\Http\Middleware\Security\ValidateFetchMetadata::class,
+            'log.internal.api' => \App\Http\Middleware\Internal\LogInternalApiRequest::class,
+            'secure.headers' => \App\Http\Middleware\Security\SecureHeaders::class,
+            'anti.bot' => \App\Http\Middleware\Security\AntiBotGuard::class,
+            'safe.errors' => \App\Http\Middleware\Security\SafeErrorResponder::class,
+            'validate.umkm.internal.request' => \App\Http\Middleware\Internal\EnsureUmkmInternalRequest::class,
+            'location.gate' => \App\Http\Middleware\Location\EnsureLocationGateVerified::class,
         ]);
 
         $middleware->redirectGuestsTo('/');
 
         $middleware->web(append: [
-            \App\Http\Middleware\SecureHeaders::class,
+            \App\Http\Middleware\Security\SecureHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

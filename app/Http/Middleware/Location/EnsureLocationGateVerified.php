@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\Location;
 
 use App\Models\SecurityEventLog;
 use Closure;
