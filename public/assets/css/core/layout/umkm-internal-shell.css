@@ -703,6 +703,7 @@
     position: fixed;
     inset: 0;
     z-index: 1060;
+    isolation: isolate;
     pointer-events: none;
 }
 
@@ -712,6 +713,7 @@
 
 .dashboard-offcanvas-panel {
     position: absolute;
+    z-index: 2;
     top: 0;
     left: 0;
     width: min(23rem, calc(100vw - 2rem));
