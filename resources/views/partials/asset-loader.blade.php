@@ -71,6 +71,7 @@
         'echarts' => 'visual/umkm-charts.css',
         'security' => 'security/umkm-security.css',
         'internalLayout' => 'layout/umkm-internal-shell.css',
+        'themeManager' => 'components/umkm-theme-manager.css',
     ];
 
     $coreJsBase = [

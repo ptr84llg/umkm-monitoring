@@ -92,9 +92,9 @@
                     ],
                     [
                         'title' => 'Governance',
-                        'description' => 'Setting, keamanan, audit',
-                        'detail' => 'Pengaturan sistem, keamanan, audit log, dan tata kelola operasional sistem.',
-                        'route' => null,
+                        'description' => 'Setting, theme, keamanan, audit',
+                        'detail' => 'Pengaturan sistem, theme, keamanan, audit log, dan tata kelola operasional sistem.',
+                        'route' => 'admin-utama.governance.settings',
                         'permission' => 'system.manage',
                         'icon' => 'settings',
                     ],

@@ -13,11 +13,13 @@ use App\Models\Reference\KbliReference;
 use App\Models\Reference\RegionReference;
 use App\Models\User;
 use App\Services\AdminUtama\AdminAuditService;
+use App\Services\System\ThemeService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AdminUtamaController extends Controller
 {
-    public function dashboard()
+    public function dashboard(ThemeService $themeService)
     {
         $data = [
             'users' => User::query()->count(),
@@ -64,9 +66,9 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'governance',
                 'title' => 'Governance',
-                'description' => 'Pengaturan sistem, keamanan, audit, dan kesiapan tata kelola.',
-                'status' => 'Skeleton',
-                'route_name' => null,
+                'description' => 'Pengaturan sistem, keamanan, audit, theme, dan kesiapan tata kelola.',
+                'status' => 'Theme Aktif',
+                'route_name' => 'admin-utama.governance.settings',
                 'permission' => 'system.manage',
                 'icon' => 'settings',
             ],
@@ -90,21 +92,13 @@ class AdminUtamaController extends Controller
             ],
         ];
 
-        $themeOptions = [
-            ['key' => 'blue', 'label' => 'Blue', 'file' => 'umkm-theme-blue.css'],
-            ['key' => 'green', 'label' => 'Green', 'file' => 'umkm-theme-green.css'],
-            ['key' => 'maroon', 'label' => 'Maroon', 'file' => 'umkm-theme-maroon.css'],
-            ['key' => 'gold', 'label' => 'Gold', 'file' => 'umkm-theme-gold.css'],
-            ['key' => 'gradient-1', 'label' => 'Gradient 1', 'file' => 'umkm-theme-gradient-1.css'],
-            ['key' => 'gradient-2', 'label' => 'Gradient 2', 'file' => 'umkm-theme-gradient-2.css'],
-            ['key' => 'gradient-3', 'label' => 'Gradient 3', 'file' => 'umkm-theme-gradient-3.css'],
-        ];
+        $themeOptions = $themeService->options();
 
         $governanceNotes = [
             'Menu Admin Utama mengikuti role dan permission; UI bukan pengunci akhir.',
             'Backend guard tetap menjadi otoritas final untuk semua akses.',
             'Perubahan konfigurasi, konten, ekspor, dan akses sensitif wajib diaudit.',
-            'Theme switching belum diaktifkan pada tahap ini dan akan menjadi batch terpisah.',
+            'Theme management aktif melalui Governance / Pengaturan Sistem dengan allowlist backend.',
         ];
 
         return view('pages.admin-utama.dashboard', compact(
@@ -144,9 +138,46 @@ class AdminUtamaController extends Controller
         ]);
     }
 
-    public function settings()
+    public function settings(ThemeService $themeService)
     {
-        return view('pages.admin-utama.governance.settings');
+        $themeOptions = $themeService->options();
+        $activeThemeKey = $themeService->activeKey();
+        $activeThemeLabel = collect($themeOptions)->firstWhere('key', $activeThemeKey)['label'] ?? 'Green';
+
+        return view('pages.admin-utama.governance.settings', [
+            'assetModules' => ['themeManager'],
+            'themeOptions' => $themeOptions,
+            'activeThemeKey' => $activeThemeKey,
+            'activeThemeLabel' => $activeThemeLabel,
+        ]);
+    }
+
+    public function updateTheme(
+        Request $request,
+        ThemeService $themeService,
+        AdminAuditService $audit
+    ) {
+        $payload = $request->validate([
+            'theme_key' => [
+                'required',
+                'string',
+                Rule::in($themeService->allowedKeys()),
+            ],
+        ]);
+
+        $before = $themeService->activeKey();
+        $result = $themeService->setActiveTheme($payload['theme_key'], $request->user());
+
+        $audit->logManagementChange(
+            $request,
+            'system.theme.update',
+            'system_setting',
+            null,
+            ['active_theme' => $before],
+            ['active_theme' => $result['after']]
+        );
+
+        return back()->with('status', 'Theme sistem berhasil diperbarui.');
     }
 
     public function kbliReferences()

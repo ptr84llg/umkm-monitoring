@@ -287,5 +287,21 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [AdminUtamaController::class, 'dashboard'])
                 ->middleware('permission:dashboard.view.executive')
                 ->name('dashboard');
-        });
+
+            Route::get('/governance/settings', [AdminUtamaController::class, 'settings'])
+                ->middleware('permission:system.manage')
+                ->name('governance.settings');
+
+            Route::post('/governance/settings/theme', [AdminUtamaController::class, 'updateTheme'])
+                ->middleware([
+                    'permission:system.manage',
+                    'throttle:internal-sensitive',
+                    'safe.errors',
+                    'validate.umkm.internal.request',
+                    'validate.internal.origin',
+                    'validate.internal.referer',
+                    'validate.fetch.metadata',
+                    'log.internal.api',
+                ])
+                ->name('governance.settings.theme');        });
 });
