@@ -177,6 +177,14 @@ class AdminUtamaController extends Controller
             ['active_theme' => $result['after']]
         );
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Theme sistem berhasil diperbarui.',
+                'theme_key' => $result['after'],
+            ]);
+        }
+
         return back()->with('status', 'Theme sistem berhasil diperbarui.');
     }
 

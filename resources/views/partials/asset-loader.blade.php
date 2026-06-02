@@ -95,6 +95,7 @@
         'locationGate' => 'location/umkm-location-gate.js',
         'session' => 'security/umkm-session.js',
         'internalLayout' => 'layout/umkm-internal-shell.js',
+        'themeManager' => 'components/umkm-theme-manager.js',
         'datatables' => 'data/umkm-datatables.js',
         'tabulator' => 'data/umkm-tabulator.js',
         'wizard' => 'forms/umkm-wizard.js',
