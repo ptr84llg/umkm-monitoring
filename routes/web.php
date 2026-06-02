@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LandingPreviewController;
 use App\Http\Controllers\Api\Public\LandingRegionController;
 use App\Http\Controllers\Api\Public\LocationGateController;
+use App\Http\Controllers\Auth\GoogleOAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -129,6 +130,14 @@ Route::middleware('guest')->group(function () {
             'log.internal.api',
         ])
         ->name('login.store');
+
+    Route::get('/login/google', [GoogleOAuthController::class, 'redirect'])
+        ->middleware('location.gate')
+        ->name('login.google.redirect');
+
+    Route::get('/login/google/callback', [GoogleOAuthController::class, 'callback'])
+        ->middleware('location.gate')
+        ->name('login.google.callback');
 });
 
 Route::middleware('guest')->group(function () {
