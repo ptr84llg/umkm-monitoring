@@ -120,6 +120,22 @@
                                         </div>
                                     @endif
 
+                                    <div class="auth-google-entry">
+                                        <a href="{{ route('login.google.redirect') }}" class="auth-google-button" aria-label="Masuk dengan akun Google">
+                                            <span class="auth-google-icon" aria-hidden="true">G</span>
+                                            <span class="auth-google-copy">
+                                                <strong>Masuk dengan Google</strong>
+                                                <small>Tautkan atau gunakan akun Google terverifikasi</small>
+                                            </span>
+                                            <span class="auth-google-arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24"><path d="M13.2 5.2 20 12l-6.8 6.8-1.4-1.4 4.4-4.4H4v-2h12.2l-4.4-4.4 1.4-1.4Z"/></svg>
+                                            </span>
+                                        </a>
+                                    </div>
+
+                                    <div class="auth-login-divider" aria-hidden="true">
+                                        <span>atau masuk manual</span>
+                                    </div>
                                     <form data-umkm-auth-login-form method="POST" action="{{ route('login.store') }}" data-auth-login-form novalidate>
                                         @csrf
 

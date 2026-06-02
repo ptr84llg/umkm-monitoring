@@ -1334,3 +1334,152 @@ body.layout-auth {
     margin-top: 1rem;
 }
 /* AUTH-1F-OTP-RESEND-NO-COOLDOWN-ACTION END */
+
+/* AUTH-1J GOOGLE LOGIN BUTTON START */
+.auth-google-entry {
+    margin-bottom: 1rem;
+}
+
+.auth-google-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .86rem;
+    width: 100%;
+    min-height: 4.28rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .15);
+    border-radius: 1.15rem;
+    padding: .88rem 1rem;
+    color: var(--umkm-ink);
+    text-decoration: none;
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-primary-soft), transparent 42%),
+        rgba(255, 255, 255, .88);
+    box-shadow: 0 16px 34px rgba(var(--umkm-ink-rgb), .065);
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease,
+        color .18s ease;
+}
+
+.auth-google-button:hover,
+.auth-google-button:focus-visible {
+    color: var(--umkm-ink);
+    border-color: rgba(var(--umkm-primary-rgb), .28);
+    background:
+        radial-gradient(circle at 0% 0%, var(--umkm-primary-soft), transparent 36%),
+        rgba(255, 255, 255, .96);
+    box-shadow: 0 22px 42px rgba(var(--umkm-primary-rgb), .15);
+    transform: translateY(-1px);
+}
+
+.auth-google-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.45rem;
+    height: 2.45rem;
+    flex: 0 0 2.45rem;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary-dark);
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .95), transparent 44%),
+        var(--umkm-primary-soft);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .8),
+        0 10px 22px rgba(var(--umkm-primary-rgb), .12);
+    font-size: 1.08rem;
+    font-weight: 950;
+    letter-spacing: -.05em;
+}
+
+.auth-google-copy {
+    display: grid;
+    gap: .08rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+    line-height: 1.16;
+}
+
+.auth-google-copy strong {
+    color: var(--umkm-ink);
+    font-size: .94rem;
+    font-weight: 950;
+}
+
+.auth-google-copy small {
+    color: var(--umkm-muted);
+    font-size: .75rem;
+    font-weight: 750;
+    line-height: 1.32;
+}
+
+.auth-google-arrow {
+    display: inline-grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    flex: 0 0 1.9rem;
+    border-radius: var(--umkm-radius-pill);
+    color: var(--umkm-primary);
+    background: rgba(var(--umkm-primary-rgb), .08);
+    transition: transform .18s ease, background .18s ease;
+}
+
+.auth-google-arrow svg {
+    width: 1.04rem;
+    height: 1.04rem;
+    fill: currentColor;
+}
+
+.auth-google-button:hover .auth-google-arrow,
+.auth-google-button:focus-visible .auth-google-arrow {
+    transform: translateX(2px);
+    background: var(--umkm-primary-soft);
+}
+
+.auth-login-divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .78rem;
+    margin: .82rem 0 1rem;
+    color: var(--umkm-muted);
+    font-size: .76rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.auth-login-divider::before,
+.auth-login-divider::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(var(--umkm-primary-rgb), .13);
+}
+
+.auth-login-divider span {
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .auth-google-button {
+        align-items: flex-start;
+        min-height: 4rem;
+        padding: .82rem .86rem;
+    }
+
+    .auth-google-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        flex-basis: 2.25rem;
+    }
+
+    .auth-google-arrow {
+        display: none;
+    }
+}
+/* AUTH-1J GOOGLE LOGIN BUTTON END */
