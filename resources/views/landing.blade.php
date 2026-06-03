@@ -143,7 +143,14 @@
             <div class="row align-items-center g-2 w-100 landing-header-row">
                 <div class="col-8 col-xl-4">
                     <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="Monitoring UMKM">
-                        <span class="landing-brand-mark">MU</span>
+                        <span class="landing-brand-mark system-brand-mark" aria-hidden="true">
+                            <img class="system-brand-image landing-brand-image"
+                                 src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                 alt=""
+                                 width="44"
+                                 height="44"
+                                 loading="eager">
+                        </span>
                         <span class="landing-brand-text">
                             <strong>Monitoring UMKM</strong>
                             <small>Visual Analitik Interaktif</small>
@@ -286,7 +293,14 @@
                href="{{ url('/') }}"
                data-menu-link
                aria-label="Monitoring UMKM">
-                <span class="landing-brand-mark">MU</span>
+                <span class="landing-brand-mark system-brand-mark" aria-hidden="true">
+                            <img class="system-brand-image landing-brand-image"
+                                 src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                 alt=""
+                                 width="44"
+                                 height="44"
+                                 loading="eager">
+                        </span>
                 <span class="landing-brand-text">
                     <strong id="landingMobileOffcanvasLabel">Monitoring UMKM</strong>
                     <small>Visual Analitik Interaktif</small>

@@ -22,7 +22,14 @@
         <div class="card border-0 auth-shell auth-google-link-shell">
             <div class="card-body p-4 p-xl-5">
                 <a href="{{ url('/') }}" class="d-inline-flex align-items-center gap-3 text-decoration-none auth-brand-link mb-4" aria-label="Kembali ke Beranda Monitoring UMKM">
-                    <span class="auth-brand-mark">MU</span>
+                    <span class="auth-brand-mark system-brand-mark" aria-hidden="true">
+                                <img class="system-brand-image auth-brand-image"
+                                     src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                     alt=""
+                                     width="44"
+                                     height="44"
+                                     loading="eager">
+                            </span>
                     <span class="auth-brand-text">
                         <strong class="d-block">Monitoring UMKM</strong>
                         <small class="d-block">Tautkan Akun Google</small>

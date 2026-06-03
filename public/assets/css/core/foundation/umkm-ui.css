@@ -283,3 +283,35 @@ img.umkm-system-logo,
     width: 2.15rem;
     height: 2.15rem;
 }
+
+/* SYSTEMBRAND-1B: visible public and auth brand logo placement */
+.landing-brand-mark.system-brand-mark,
+.auth-brand-mark.system-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(var(--umkm-primary-rgb), .045)),
+        rgba(255, 255, 255, .82);
+    box-shadow:
+        0 .55rem 1.25rem rgba(var(--umkm-primary-rgb), .10),
+        inset 0 0 0 1px rgba(255, 255, 255, .62);
+}
+
+.landing-brand-mark.system-brand-mark,
+.auth-brand-mark.system-brand-mark {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 2.75rem;
+    border-radius: var(--umkm-radius-md);
+}
+
+.landing-brand-image,
+.auth-brand-image {
+    display: block;
+    width: 2.15rem;
+    height: 2.15rem;
+    object-fit: contain;
+}

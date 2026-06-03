@@ -28,7 +28,14 @@
                 <div class="row g-2 align-items-center">
                     <div class="col-12 col-lg-6 mx-lg-auto">
                         <a href="{{ route('login') }}" class="d-inline-flex align-items-center gap-3 text-decoration-none auth-brand-link mb-4">
-                            <span class="auth-brand-mark">MU</span>
+                            <span class="auth-brand-mark system-brand-mark" aria-hidden="true">
+                                <img class="system-brand-image auth-brand-image"
+                                     src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                     alt=""
+                                     width="44"
+                                     height="44"
+                                     loading="eager">
+                            </span>
                             <span class="auth-brand-text">
                                 <strong class="d-block">Monitoring UMKM</strong>
                                 <small class="d-block">Pengaturan Ulang Password</small>
