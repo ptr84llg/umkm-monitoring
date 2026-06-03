@@ -1090,3 +1090,34 @@
 .dashboard-shell[data-scroll-state="scrolling"] .dashboard-topbar:focus-within {
     opacity: 1;
 }
+
+/* BOOTSTRAPFIRST-GLOBAL-1A: internal shell non-mega hooks */
+.dashboard-brand-copy,
+.dashboard-user-copy,
+.dashboard-mega-trigger-copy,
+.dashboard-offcanvas-title span,
+.dashboard-menu-copy,
+.dashboard-mega-submenu-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dashboard-topbar-inner,
+.dashboard-topbar-start,
+.dashboard-topbar-actions,
+.dashboard-brand,
+.dashboard-user-chip,
+.dashboard-floating-panel-header,
+.dashboard-logout-form {
+    min-width: 0;
+}
+
+.dashboard-floating-panel,
+.dashboard-user-chip,
+.dashboard-topbar-link,
+.dashboard-logout-btn,
+.dashboard-icon-button,
+.dashboard-mega-trigger {
+    color: var(--umkm-ink);
+}

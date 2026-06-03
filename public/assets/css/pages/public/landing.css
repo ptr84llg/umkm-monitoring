@@ -2554,3 +2554,50 @@ html[data-location-gate="checking"] .location-gate-retry {
     font-size: .9rem;
     line-height: 1.55;
 }
+
+/* BOOTSTRAPFIRST-GLOBAL-1A: landing visual hooks */
+.landing-brand-mark,
+.landing-location-chip-icon,
+.mobile-canvas-link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.board-source-info {
+    display: flex;
+    align-items: center;
+    gap: .58rem;
+}
+
+.board-source-kicker,
+.board-source-info strong {
+    display: block;
+}
+
+.board-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .9rem;
+}
+
+.preview-region-stats,
+.preview-progress {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-region-stats div,
+.preview-progress div,
+.preview-progress span {
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-head-badges,
+.landing-menu,
+.landing-nav-actions,
+.mobile-canvas-menu.list-group {
+    min-width: 0;
+}

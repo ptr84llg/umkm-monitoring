@@ -1516,3 +1516,74 @@ body.layout-auth {
     }
 }
 /* AUTH-1J GOOGLE LINK CONFIRM CSP CLEANUP END */
+
+/* BOOTSTRAPFIRST-GLOBAL-1A: auth visual hooks */
+.auth-brand-mark,
+.auth-security-icon,
+.auth-location-orbit,
+.auth-action-icon,
+.auth-action-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-security-list.list-group,
+.auth-integrity-strip,
+.auth-location-reading-actions,
+.auth-recovery-row,
+.auth-return-row {
+    min-width: 0;
+}
+
+.auth-otp-timer-grid,
+.auth-otp-code-grid {
+    display: flex;
+    align-items: stretch;
+}
+
+.auth-otp-timer-grid {
+    flex-wrap: wrap;
+}
+
+.auth-otp-timer-card {
+    flex: 1 1 12rem;
+}
+
+.auth-otp-code-grid {
+    flex-wrap: nowrap;
+}
+
+.auth-otp-digit {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.auth-login-premium .auth-location-reading {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+}
+
+.auth-login-premium .auth-location-orbit {
+    flex: 0 0 46px;
+}
+
+.auth-login-premium .auth-location-reading-copy {
+    flex: 1 1 18rem;
+}
+
+.auth-login-premium .auth-location-reading-actions {
+    flex: 1 1 100%;
+}
+
+@media (max-width: 575.98px) {
+    .auth-otp-code-grid {
+        gap: .42rem;
+    }
+
+    .auth-login-premium .auth-location-reading {
+        align-items: flex-start;
+    }
+}
