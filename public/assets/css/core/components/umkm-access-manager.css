@@ -1,1 +1,435 @@
-.umkm-access-management{display:grid;gap:1rem}.umkm-access-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:center;padding:1.15rem;border:1px solid var(--umkm-line-soft);border-radius:1.35rem;background:radial-gradient(circle at 0% 0%,rgba(var(--umkm-primary-rgb),.10),transparent 32rem),rgba(255,255,255,.72);box-shadow:0 .75rem 2rem rgba(var(--umkm-ink-rgb),.05)}.umkm-access-hero h2,.umkm-access-card-head h3,.umkm-access-section-card h3{margin:0;color:var(--umkm-ink);font-weight:900;letter-spacing:-.035em}.umkm-access-hero p,.umkm-access-section-card p,.umkm-access-security-note span{margin:.45rem 0 0;color:var(--umkm-muted);line-height:1.7}.umkm-access-kicker{display:inline-flex;margin-bottom:.25rem;color:var(--umkm-primary);font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.umkm-access-guard-card{display:grid;gap:.15rem;max-width:18rem;padding:.95rem 1rem;border:1px solid rgba(var(--umkm-primary-rgb),.16);border-radius:1.15rem;background:rgba(var(--umkm-primary-rgb),.07)}.umkm-access-guard-card small,.umkm-access-guard-card span{color:var(--umkm-muted);font-size:.78rem}.umkm-access-guard-card strong{color:var(--umkm-primary-dark);font-size:1rem;font-weight:900}.umkm-access-stat-grid,.umkm-access-section-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.85rem}.umkm-access-stat-card,.umkm-access-section-card,.umkm-access-security-note{border:1px solid var(--umkm-line-soft);border-radius:1.2rem;background:rgba(255,255,255,.72);box-shadow:0 .65rem 1.6rem rgba(var(--umkm-ink-rgb),.04)}.umkm-access-stat-card{display:grid;gap:.25rem;padding:1rem}.umkm-access-stat-card span{color:var(--umkm-muted);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.umkm-access-stat-card strong{color:var(--umkm-ink);font-size:1.55rem;font-weight:950;letter-spacing:-.05em}.umkm-access-stat-card small{color:var(--umkm-muted);line-height:1.45}.umkm-access-section-card{display:grid;gap:.55rem;padding:1rem}.umkm-access-section-status,.umkm-access-soft-badge,.umkm-access-badge{display:inline-flex;align-items:center;width:fit-content;min-height:1.8rem;padding:.25rem .55rem;border-radius:var(--umkm-radius-pill);font-size:.72rem;font-weight:800}.umkm-access-section-status,.umkm-access-soft-badge{color:var(--umkm-primary-dark);background:rgba(var(--umkm-primary-rgb),.10)}.umkm-access-grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.umkm-access-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:.85rem}.umkm-access-table{margin-bottom:0}.umkm-access-table th{color:var(--umkm-muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}.umkm-access-table td{color:var(--umkm-ink);font-size:.88rem;vertical-align:middle}.umkm-access-badge.is-success{color:#166534;background:rgba(34,197,94,.13)}.umkm-access-badge.is-info{color:var(--umkm-primary-dark);background:rgba(var(--umkm-primary-rgb),.11)}.umkm-access-badge.is-muted{color:var(--umkm-muted-strong);background:rgba(var(--umkm-ink-rgb),.055)}.umkm-access-role-list,.umkm-access-module-list,.umkm-access-timeline{display:grid;gap:.6rem}.umkm-access-role-item,.umkm-access-module-item,.umkm-access-timeline-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.75rem;border:1px solid var(--umkm-line-soft);border-radius:1rem;background:rgba(255,255,255,.56)}.umkm-access-role-item>div,.umkm-access-timeline-item>div{display:grid;gap:.15rem}.umkm-access-role-item strong,.umkm-access-module-item strong,.umkm-access-timeline-item strong,.umkm-access-security-note strong{color:var(--umkm-ink);font-weight:900}.umkm-access-role-item span,.umkm-access-timeline-item small{color:var(--umkm-muted);font-size:.82rem}.umkm-access-module-item span{color:var(--umkm-muted-strong);font-weight:800}.umkm-access-timeline-item{justify-content:flex-start}.umkm-access-dot{flex:0 0 auto;width:.65rem;height:.65rem;border-radius:999px;background:var(--umkm-primary);box-shadow:0 0 0 .25rem rgba(var(--umkm-primary-rgb),.12)}.umkm-access-security-note{display:grid;gap:.35rem;padding:1rem;background:rgba(var(--umkm-primary-rgb),.06)}@media(max-width:1199.98px){.umkm-access-stat-grid,.umkm-access-section-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:991.98px){.umkm-access-hero,.umkm-access-grid-two{grid-template-columns:1fr}.umkm-access-guard-card{max-width:none}}@media(max-width:575.98px){.umkm-access-stat-grid,.umkm-access-section-grid{grid-template-columns:1fr}.umkm-access-card-head,.umkm-access-role-item,.umkm-access-module-item{align-items:flex-start;flex-direction:column}}
+/*
+|--------------------------------------------------------------------------
+| UMKM Access Manager
+|--------------------------------------------------------------------------
+| Core component CSS for Admin Utama Access Management foundation/detail.
+|--------------------------------------------------------------------------
+*/
+
+.umkm-access-management {
+    display: grid;
+    gap: 1rem;
+}
+
+.umkm-access-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.15rem;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(var(--umkm-primary-rgb), .10), transparent 32rem),
+        rgba(255, 255, 255, .72);
+    box-shadow: 0 .75rem 2rem rgba(var(--umkm-ink-rgb), .05);
+}
+
+.umkm-access-hero h2,
+.umkm-access-card-head h3,
+.umkm-access-section-card h3 {
+    margin: 0;
+    color: var(--umkm-ink);
+    font-weight: 900;
+    letter-spacing: -.035em;
+}
+
+.umkm-access-hero p,
+.umkm-access-section-card p,
+.umkm-access-security-note span,
+.umkm-access-card-description {
+    margin: .45rem 0 0;
+    color: var(--umkm-muted);
+    line-height: 1.7;
+}
+
+.umkm-access-card-description {
+    max-width: 60rem;
+    font-size: .9rem;
+}
+
+.umkm-access-kicker {
+    display: inline-flex;
+    margin-bottom: .25rem;
+    color: var(--umkm-primary);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.umkm-access-guard-card {
+    display: grid;
+    gap: .15rem;
+    max-width: 18rem;
+    padding: .95rem 1rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.15rem;
+    background: rgba(var(--umkm-primary-rgb), .07);
+}
+
+.umkm-access-guard-card small,
+.umkm-access-guard-card span {
+    color: var(--umkm-muted);
+    font-size: .78rem;
+}
+
+.umkm-access-guard-card strong {
+    color: var(--umkm-primary-dark);
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.umkm-access-stat-grid,
+.umkm-access-section-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .85rem;
+}
+
+.umkm-access-stat-card,
+.umkm-access-section-card,
+.umkm-access-security-note {
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, .72);
+    box-shadow: 0 .65rem 1.6rem rgba(var(--umkm-ink-rgb), .04);
+}
+
+.umkm-access-stat-card {
+    display: grid;
+    gap: .25rem;
+    padding: 1rem;
+}
+
+.umkm-access-stat-card span {
+    color: var(--umkm-muted);
+    font-size: .78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.umkm-access-stat-card strong {
+    color: var(--umkm-ink);
+    font-size: 1.55rem;
+    font-weight: 950;
+    letter-spacing: -.05em;
+}
+
+.umkm-access-stat-card small {
+    color: var(--umkm-muted);
+    line-height: 1.45;
+}
+
+.umkm-access-section-card {
+    display: grid;
+    gap: .55rem;
+    padding: 1rem;
+}
+
+.umkm-access-section-status,
+.umkm-access-soft-badge,
+.umkm-access-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 1.8rem;
+    padding: .25rem .55rem;
+    border-radius: var(--umkm-radius-pill);
+    font-size: .72rem;
+    font-weight: 800;
+}
+
+.umkm-access-section-status,
+.umkm-access-soft-badge {
+    color: var(--umkm-primary-dark);
+    background: rgba(var(--umkm-primary-rgb), .10);
+}
+
+.umkm-access-grid-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.umkm-access-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: .85rem;
+}
+
+.umkm-access-filter {
+    display: grid;
+    grid-template-columns: minmax(16rem, 1.4fr) minmax(10rem, .8fr) minmax(12rem, .9fr) minmax(11rem, .8fr) auto;
+    gap: .75rem;
+    align-items: end;
+    margin-bottom: 1rem;
+    padding: .85rem;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, .60);
+}
+
+.umkm-access-filter label {
+    display: block;
+    margin-bottom: .35rem;
+    color: var(--umkm-muted-strong);
+    font-size: .76rem;
+    font-weight: 900;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.umkm-access-filter .form-control,
+.umkm-access-filter .form-select {
+    border-color: var(--umkm-line-soft);
+    border-radius: .9rem;
+    color: var(--umkm-ink);
+    background-color: rgba(255, 255, 255, .82);
+}
+
+.umkm-access-filter-actions {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.umkm-access-table {
+    margin-bottom: 0;
+}
+
+.umkm-access-table th {
+    color: var(--umkm-muted);
+    font-size: .76rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.umkm-access-table td {
+    color: var(--umkm-ink);
+    font-size: .88rem;
+    vertical-align: middle;
+}
+
+.umkm-access-account-table td {
+    min-width: 8rem;
+}
+
+.umkm-access-account-cell {
+    display: grid;
+    gap: .1rem;
+}
+
+.umkm-access-account-cell strong {
+    color: var(--umkm-ink);
+    font-weight: 900;
+}
+
+.umkm-access-account-cell span,
+.umkm-access-account-cell small {
+    color: var(--umkm-muted);
+    overflow-wrap: anywhere;
+}
+
+.umkm-access-role-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.umkm-access-badge.is-success {
+    color: #166534;
+    background: rgba(34, 197, 94, .13);
+}
+
+.umkm-access-badge.is-info {
+    color: var(--umkm-primary-dark);
+    background: rgba(var(--umkm-primary-rgb), .11);
+}
+
+.umkm-access-badge.is-warning {
+    color: #92400e;
+    background: rgba(245, 158, 11, .14);
+}
+
+.umkm-access-badge.is-muted {
+    color: var(--umkm-muted-strong);
+    background: rgba(var(--umkm-ink-rgb), .055);
+}
+
+.umkm-access-role-list,
+.umkm-access-module-list,
+.umkm-access-timeline {
+    display: grid;
+    gap: .6rem;
+}
+
+.umkm-access-role-item,
+.umkm-access-module-item,
+.umkm-access-timeline-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .75rem;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .56);
+}
+
+.umkm-access-role-item > div,
+.umkm-access-timeline-item > div {
+    display: grid;
+    gap: .15rem;
+}
+
+.umkm-access-role-item strong,
+.umkm-access-module-item strong,
+.umkm-access-timeline-item strong,
+.umkm-access-security-note strong {
+    color: var(--umkm-ink);
+    font-weight: 900;
+}
+
+.umkm-access-role-item span,
+.umkm-access-timeline-item small {
+    color: var(--umkm-muted);
+    font-size: .82rem;
+}
+
+.umkm-access-module-item span {
+    color: var(--umkm-muted-strong);
+    font-weight: 800;
+}
+
+.umkm-access-timeline-item {
+    justify-content: flex-start;
+}
+
+.umkm-access-dot {
+    flex: 0 0 auto;
+    width: .65rem;
+    height: .65rem;
+    border-radius: 999px;
+    background: var(--umkm-primary);
+    box-shadow: 0 0 0 .25rem rgba(var(--umkm-primary-rgb), .12);
+}
+
+.umkm-access-security-note {
+    display: grid;
+    gap: .35rem;
+    padding: 1rem;
+    background: rgba(var(--umkm-primary-rgb), .06);
+}
+
+.umkm-access-security-note.is-compact {
+    margin-top: 1rem;
+    box-shadow: none;
+}
+
+.umkm-access-detail-modal {
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1.25rem;
+    color: var(--umkm-ink);
+    background:
+        radial-gradient(circle at 0% 0%, rgba(var(--umkm-primary-rgb), .10), transparent 18rem),
+        rgba(255, 255, 255, .96);
+    box-shadow: var(--umkm-shadow-md);
+}
+
+.umkm-access-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.umkm-access-detail-grid > div,
+.umkm-access-detail-roles {
+    display: grid;
+    gap: .2rem;
+    padding: .85rem;
+    border: 1px solid var(--umkm-line-soft);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .65);
+}
+
+.umkm-access-detail-grid span,
+.umkm-access-detail-roles > span {
+    color: var(--umkm-muted);
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.umkm-access-detail-grid strong {
+    color: var(--umkm-ink);
+    overflow-wrap: anywhere;
+}
+
+.umkm-access-detail-roles {
+    margin-top: .75rem;
+}
+
+.umkm-access-pagination {
+    margin-top: 1rem;
+}
+
+.umkm-access-pagination nav {
+    margin-bottom: 0;
+}
+
+@media (max-width: 1199.98px) {
+    .umkm-access-stat-grid,
+    .umkm-access-section-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .umkm-access-filter {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .umkm-access-filter-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .umkm-access-hero,
+    .umkm-access-grid-two {
+        grid-template-columns: 1fr;
+    }
+
+    .umkm-access-guard-card {
+        max-width: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .umkm-access-stat-grid,
+    .umkm-access-section-grid,
+    .umkm-access-filter,
+    .umkm-access-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .umkm-access-card-head,
+    .umkm-access-role-item,
+    .umkm-access-module-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .umkm-access-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .umkm-access-filter-actions .btn {
+        width: 100%;
+    }
+}

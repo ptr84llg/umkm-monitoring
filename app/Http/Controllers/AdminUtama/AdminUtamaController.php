@@ -113,7 +113,7 @@ class AdminUtamaController extends Controller
     }
 
 
-    public function accessIndex()
+    public function accessIndex(Request $request)
     {
         $rolePermissionCount = Schema::hasTable('role_permissions')
             ? DB::table('role_permissions')->count()
@@ -123,11 +123,88 @@ class AdminUtamaController extends Controller
             ? DB::table('user_roles')->count()
             : 0;
 
+        $filters = [
+            'q' => trim((string) $request->query('q', '')),
+            'status' => (string) $request->query('status', 'all'),
+            'role' => (string) $request->query('role', 'all'),
+            'auth' => (string) $request->query('auth', 'all'),
+        ];
+
+        if (! in_array($filters['status'], ['all', 'active', 'inactive'], true)) {
+            $filters['status'] = 'all';
+        }
+
+        if (! in_array($filters['auth'], ['all', 'google_linked', 'manual_only', 'google_required'], true)) {
+            $filters['auth'] = 'all';
+        }
+
+        $roleOptions = Role::query()
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'description', 'is_active']);
+
+        if ($filters['role'] !== 'all' && ! $roleOptions->contains('code', $filters['role'])) {
+            $filters['role'] = 'all';
+        }
+
+        $accountsQuery = User::query()
+            ->with(['roles' => fn ($query) => $query->select('roles.id', 'roles.code', 'roles.name')])
+            ->select([
+                'id',
+                'name',
+                'email',
+                'username',
+                'auth_provider_required',
+                'manual_login_disabled_at',
+                'google_linked_at',
+                'is_active',
+                'last_login_at',
+                'created_at',
+            ])
+            ->latest('id');
+
+        if ($filters['q'] !== '') {
+            $keyword = $filters['q'];
+
+            $accountsQuery->where(function ($query) use ($keyword): void {
+                $query->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('email', 'like', '%' . $keyword . '%')
+                    ->orWhere('username', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($filters['status'] === 'active') {
+            $accountsQuery->where('is_active', true);
+        } elseif ($filters['status'] === 'inactive') {
+            $accountsQuery->where('is_active', false);
+        }
+
+        if ($filters['role'] !== 'all') {
+            $accountsQuery->whereHas('roles', fn ($query) => $query->where('roles.code', $filters['role']));
+        }
+
+        if ($filters['auth'] === 'google_linked') {
+            $accountsQuery->whereNotNull('google_linked_at');
+        } elseif ($filters['auth'] === 'manual_only') {
+            $accountsQuery->whereNull('google_linked_at')
+                ->whereNull('manual_login_disabled_at');
+        } elseif ($filters['auth'] === 'google_required') {
+            $accountsQuery->where('auth_provider_required', User::AUTH_PROVIDER_GOOGLE)
+                ->whereNotNull('manual_login_disabled_at');
+        }
+
+        $accounts = $accountsQuery
+            ->paginate(12)
+            ->withQueryString();
+
         $accessStats = [
             'users_total' => User::query()->count(),
             'users_active' => User::query()->where('is_active', true)->count(),
             'users_inactive' => User::query()->where('is_active', false)->count(),
             'users_google_linked' => User::query()->whereNotNull('google_linked_at')->count(),
+            'users_google_required' => User::query()
+                ->where('auth_provider_required', User::AUTH_PROVIDER_GOOGLE)
+                ->whereNotNull('manual_login_disabled_at')
+                ->count(),
             'roles_total' => Role::query()->count(),
             'roles_active' => Role::query()->where('is_active', true)->count(),
             'permissions_total' => Permission::query()->count(),
@@ -137,15 +214,8 @@ class AdminUtamaController extends Controller
             'audit_logs' => AuditLog::query()->count(),
         ];
 
-        $recentUsers = User::query()
-            ->latest()
-            ->limit(8)
-            ->get(['id', 'name', 'email', 'is_active', 'google_linked_at', 'last_login_at']);
-
-        $roleSummary = Role::query()
-            ->withCount('permissions')
-            ->orderBy('code')
-            ->get(['id', 'code', 'name', 'description', 'is_active']);
+        $roleSummary = $roleOptions
+            ->loadCount('permissions');
 
         $permissionModules = Permission::query()
             ->select('module', DB::raw('COUNT(*) as total'))
@@ -156,7 +226,7 @@ class AdminUtamaController extends Controller
         $recentSecurityEvents = SecurityEventLog::query()
             ->latest('event_time')
             ->limit(6)
-            ->get(['id', 'event_type', 'severity', 'ip_address', 'event_time']);
+            ->get(['id', 'event_type', 'severity', 'event_time']);
 
         $recentAuditLogs = AuditLog::query()
             ->latest('event_time')
@@ -167,8 +237,8 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'accounts',
                 'title' => 'Akun Pengguna',
-                'status' => 'Read-only foundation',
-                'description' => 'Melihat akun internal dan status akses dasar tanpa aksi perubahan pada batch awal.',
+                'status' => 'Read-only detail',
+                'description' => 'Melihat daftar akun, role terhubung, status aktif, Google-linked, dan login terakhir tanpa membuka aksi perubahan.',
             ],
             [
                 'key' => 'roles',
@@ -186,13 +256,13 @@ class AdminUtamaController extends Controller
                 'key' => 'assignment',
                 'title' => 'Assignment',
                 'status' => 'Coming next',
-                'description' => 'Assignment user-role dan role-permission akan memakai modal konfirmasi, AJAX internal, dan audit.',
+                'description' => 'Assignment user-role dan role-permission belum dibuka. Tahap ini hanya menampilkan relasi akun-role.',
             ],
             [
                 'key' => 'sessions',
                 'title' => 'Sesi & Perangkat',
                 'status' => 'Coming next',
-                'description' => 'Pemantauan sesi, perangkat, revoke session, dan riwayat login dibuat setelah struktur read-only aman.',
+                'description' => 'Pemantauan sesi, perangkat, revoke session, dan riwayat login dibuat setelah detail akun read-only aman.',
             ],
             [
                 'key' => 'audit',
@@ -205,12 +275,14 @@ class AdminUtamaController extends Controller
         return view('pages.admin-utama.access.index', [
             'assetModules' => ['accessManager'],
             'accessStats' => $accessStats,
-            'recentUsers' => $recentUsers,
+            'accounts' => $accounts,
+            'roleOptions' => $roleOptions,
             'roleSummary' => $roleSummary,
             'permissionModules' => $permissionModules,
             'recentSecurityEvents' => $recentSecurityEvents,
             'recentAuditLogs' => $recentAuditLogs,
             'accessSections' => $accessSections,
+            'filters' => $filters,
         ]);
     }
     public function accounts()
