@@ -194,3 +194,63 @@ body::-webkit-scrollbar-thumb:hover {
         height: 7px;
     }
 }
+
+/* INTERNALLAYOUT-UI3: root themeable scrollbar variables */
+:root,
+:root[data-umkm-theme],
+html[data-umkm-theme],
+[data-umkm-theme] {
+    --umkm-scrollbar-track: rgba(var(--umkm-primary-rgb), .075);
+    --umkm-scrollbar-track-strong: rgba(var(--umkm-primary-rgb), .105);
+    --umkm-scrollbar-thumb: rgba(var(--umkm-primary-rgb), .52);
+    --umkm-scrollbar-thumb-hover: rgba(var(--umkm-primary-rgb), .82);
+    --umkm-scrollbar-thumb-soft: rgba(var(--umkm-primary-rgb), .34);
+}
+
+html,
+body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--umkm-scrollbar-thumb) var(--umkm-scrollbar-track);
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background:
+        linear-gradient(180deg, rgba(var(--umkm-primary-rgb), .065), rgba(var(--umkm-ink-rgb), .025));
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.umkm-scrollbar::-webkit-scrollbar-thumb,
+.umkm-scrollbar-soft::-webkit-scrollbar-thumb,
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb,
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb,
+.offcanvas-body::-webkit-scrollbar-thumb,
+.dropdown-menu::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb,
+.mobile-canvas-panel::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(180deg, var(--umkm-scrollbar-thumb-hover), var(--umkm-scrollbar-thumb)) !important;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.umkm-scrollbar::-webkit-scrollbar-thumb:hover,
+.umkm-scrollbar-soft::-webkit-scrollbar-thumb:hover,
+.umkm-scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, rgba(var(--umkm-primary-rgb), .92), rgba(var(--umkm-primary-rgb), .58)) !important;
+}
+
+.umkm-scrollbar-soft,
+.modal-dialog-scrollable .modal-body,
+.offcanvas-body,
+.dropdown-menu,
+.table-responsive,
+.mobile-canvas-panel {
+    scrollbar-color: var(--umkm-scrollbar-thumb-soft) transparent;
+}
+
+.umkm-scrollbar-modal {
+    scrollbar-color: var(--umkm-scrollbar-thumb) var(--umkm-scrollbar-track-strong);
+}

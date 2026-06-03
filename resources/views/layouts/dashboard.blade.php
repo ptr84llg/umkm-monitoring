@@ -18,6 +18,13 @@
     $dashboardRoleLabel = 'Pengguna';
     $dashboardRoleHint = 'Ruang kerja internal';
 
+    $dashboardServerNow = now();
+    $dashboardServerTimezone = (string) config('app.timezone', 'Asia/Jakarta');
+    $dashboardServerEpochMs = $dashboardServerNow->getTimestamp() * 1000;
+    $dashboardServerOffset = $dashboardServerNow->format('P');
+    $dashboardServerDateLabel = $dashboardServerNow->translatedFormat('l, d F Y');
+    $dashboardServerTimeLabel = $dashboardServerNow->format('H:i:s');
+
     if ($dashboardUser?->hasRole('admin_utama')) {
         $dashboardRoleKey = 'admin_utama';
         $dashboardRoleLabel = 'Admin Utama';
@@ -251,6 +258,82 @@
     $dashboardMenuItems = collect($dashboardMenuSections)->flatMap(fn ($section) => $section['items'] ?? [])->values();
     $dashboardFeaturedItem = $dashboardMenuItems->first(fn ($item) => ! empty($item['route']) && is_string($item['route']) && Route::has($item['route'])) ?? $dashboardMenuItems->first();
 
+    $dashboardSubmenuFor = function (array $menuItem) use ($dashboardRoleKey): array {
+        $title = mb_strtolower((string) ($menuItem['title'] ?? ''));
+
+        $submenuMap = [
+            'dashboard' => [
+                ['title' => 'Ringkasan Kendali', 'description' => 'Ikhtisar kondisi utama sesuai ruang kerja pengguna.', 'state' => 'Aktif'],
+                ['title' => 'Status Kesiapan', 'description' => 'Informasi ringkas kesiapan data, modul, dan aktivitas penting.', 'state' => 'Ringkasan'],
+                ['title' => 'Arah Tindak Lanjut', 'description' => 'Petunjuk awal untuk masuk ke modul pengelolaan berikutnya.', 'state' => 'Navigasi'],
+            ],
+            'akses' => [
+                ['title' => 'Akun Pengguna', 'description' => 'Identitas akun, status akses, dan koneksi login pengguna.', 'state' => 'Read-only'],
+                ['title' => 'Peran', 'description' => 'Kelompok kewenangan yang membedakan cakupan kerja pengguna.', 'state' => 'Matriks'],
+                ['title' => 'Izin Akses', 'description' => 'Izin tindakan per modul yang menjadi dasar pembatasan akses.', 'state' => 'PBAC'],
+                ['title' => 'Penetapan Akses', 'description' => 'Relasi akun, role, dan permission untuk pengaturan akses bertingkat.', 'state' => 'Terjadwal'],
+                ['title' => 'Sesi & Perangkat', 'description' => 'Pemantauan akses perangkat dan sesi login pengguna.', 'state' => 'Terjadwal'],
+                ['title' => 'Audit Akses', 'description' => 'Jejak aktivitas penting yang terkait dengan akses pengguna.', 'state' => 'Pratinjau'],
+            ],
+            'referensi' => [
+                ['title' => 'Wilayah', 'description' => 'Provinsi, kabupaten/kota, kecamatan, dan kelurahan/desa.', 'state' => 'Terjadwal'],
+                ['title' => 'KBLI', 'description' => 'Klasifikasi bidang usaha untuk pengelompokan UMKM.', 'state' => 'Terjadwal'],
+                ['title' => 'Kategori Usaha', 'description' => 'Referensi pendukung untuk segmentasi dan pelaporan.', 'state' => 'Terjadwal'],
+            ],
+            'governance' => [
+                ['title' => 'Pengaturan Sistem', 'description' => 'Konfigurasi umum dan kebijakan operasional sistem.', 'state' => 'Aktif'],
+                ['title' => 'Tema Sistem', 'description' => 'Pemilihan tampilan visual yang berlaku pada ruang kerja internal.', 'state' => 'Aktif'],
+                ['title' => 'Keamanan', 'description' => 'Pengaturan pembatasan akses dan kesiapan guard.', 'state' => 'Terjaga'],
+                ['title' => 'Audit Tata Kelola', 'description' => 'Jejak perubahan konfigurasi penting.', 'state' => 'Terkontrol'],
+            ],
+            'publikasi' => [
+                ['title' => 'Pengumuman', 'description' => 'Informasi resmi yang dapat ditampilkan kepada publik.', 'state' => 'Terjadwal'],
+                ['title' => 'Narasi Sistem', 'description' => 'Konten penjelasan sistem yang aman untuk pengguna umum.', 'state' => 'Terjadwal'],
+                ['title' => 'Konten Terpublikasi', 'description' => 'Materi yang sudah melalui sanitasi dan persetujuan.', 'state' => 'Terjadwal'],
+            ],
+            'validasi' => [
+                ['title' => 'Instrumen Survei', 'description' => 'Daftar instrumen pengumpulan penilaian dan masukan.', 'state' => 'Terjadwal'],
+                ['title' => 'Validator Ahli', 'description' => 'Akses validasi untuk ahli sistem informasi, visualisasi, dan keamanan.', 'state' => 'Terjadwal'],
+                ['title' => 'Hasil Validasi', 'description' => 'Ringkasan hasil penilaian yang sudah dikirim.', 'state' => 'Terjadwal'],
+            ],
+            'data umkm' => [
+                ['title' => 'Profil UMKM', 'description' => 'Identitas usaha, legalitas, kategori, dan status data.', 'state' => 'Terjadwal'],
+                ['title' => 'Validasi Data', 'description' => 'Pemeriksaan usulan dan perubahan data UMKM.', 'state' => 'Terjadwal'],
+                ['title' => 'Pembinaan', 'description' => 'Catatan pendampingan dan tindak lanjut wilayah.', 'state' => 'Terjadwal'],
+            ],
+            'analitik' => [
+                ['title' => 'Grafik Kinerja', 'description' => 'Visualisasi perkembangan usaha dan indikator utama.', 'state' => 'Terjadwal'],
+                ['title' => 'Peta Sebaran', 'description' => 'Distribusi lokasi UMKM berbasis wilayah.', 'state' => 'Terjadwal'],
+                ['title' => 'Filter Wilayah', 'description' => 'Penyaringan data berdasarkan cakupan kewenangan.', 'state' => 'Terjadwal'],
+            ],
+            'laporan' => [
+                ['title' => 'Ringkasan Eksekutif', 'description' => 'Laporan singkat untuk pimpinan dan evaluasi program.', 'state' => 'Terjadwal'],
+                ['title' => 'Tren Wilayah', 'description' => 'Perkembangan data berdasarkan wilayah dan kategori.', 'state' => 'Terjadwal'],
+            ],
+            'profil usaha' => [
+                ['title' => 'Identitas Usaha', 'description' => 'Data dasar usaha yang dapat diajukan untuk validasi.', 'state' => 'Terjadwal'],
+                ['title' => 'Lokasi Usaha', 'description' => 'Wilayah dan titik lokasi sesuai ketentuan validasi.', 'state' => 'Terjadwal'],
+                ['title' => 'Legalitas', 'description' => 'Nomor dan dokumen pendukung usaha.', 'state' => 'Terjadwal'],
+            ],
+            'pelaporan' => [
+                ['title' => 'Kinerja Usaha', 'description' => 'Pelaporan perkembangan usaha secara berkala.', 'state' => 'Terjadwal'],
+                ['title' => 'Transaksi', 'description' => 'Informasi transaksi sesuai format yang disediakan.', 'state' => 'Terjadwal'],
+            ],
+            'instrumen' => [
+                ['title' => 'Daftar Instrumen', 'description' => 'Instrumen penilaian yang ditugaskan kepada validator.', 'state' => 'Aktif'],
+                ['title' => 'Form Penilaian', 'description' => 'Pengisian penilaian sesuai bidang keahlian.', 'state' => 'Terkontrol'],
+            ],
+            'riwayat' => [
+                ['title' => 'Penilaian Tersimpan', 'description' => 'Riwayat hasil validasi yang sudah dikirim.', 'state' => 'Tersimpan'],
+                ['title' => 'Status Submit', 'description' => 'Informasi penguncian hasil penilaian.', 'state' => 'Terkontrol'],
+            ],
+        ];
+
+        return $submenuMap[$title] ?? [
+            ['title' => 'Ringkasan Menu', 'description' => (string) ($menuItem['detail'] ?? $menuItem['description'] ?? 'Cakupan menu mengikuti kewenangan pengguna.'), 'state' => 'Info'],
+        ];
+    };
+
     $dashboardRoleBadgeClass = [
         'admin_utama' => 'dashboard-role-admin-utama',
         'admin_dinas' => 'dashboard-role-admin-dinas',
@@ -272,6 +355,77 @@
             default => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/></svg>',
         };
     };
+
+    $dashboardMenuDisplay = function (array $menuItem): array {
+        $originalTitle = (string) ($menuItem['title'] ?? 'Menu');
+        $key = mb_strtolower($originalTitle);
+
+        $titleMap = [
+            'dashboard' => 'Dasbor',
+            'akses' => 'Akses',
+            'referensi' => 'Referensi',
+            'governance' => 'Tata Kelola',
+            'publikasi' => 'Publikasi',
+            'validasi' => 'Validasi',
+            'data umkm' => 'Data UMKM',
+            'analitik' => 'Analitik',
+            'laporan' => 'Laporan',
+            'profil usaha' => 'Profil Usaha',
+            'pelaporan' => 'Pelaporan',
+            'instrumen' => 'Instrumen',
+            'riwayat' => 'Riwayat',
+        ];
+
+        $descriptionMap = [
+            'dashboard' => 'Ringkasan kendali, status, dan kesiapan ruang kerja.',
+            'akses' => 'Akun, peran, izin akses, sesi, dan audit pengguna.',
+            'referensi' => 'Wilayah, KBLI, kategori, dan data pendukung UMKM.',
+            'governance' => 'Pengaturan sistem, tema, keamanan, dan tata kelola.',
+            'publikasi' => 'Pengumuman, narasi publik, dan konten informasi.',
+            'validasi' => 'Instrumen survei, validator ahli, dan hasil penilaian.',
+            'data umkm' => 'Profil, legalitas, lokasi, dan status data UMKM.',
+            'analitik' => 'Grafik, peta, indikator, dan ringkasan kinerja.',
+            'laporan' => 'Laporan ringkas dan informasi evaluasi sesuai kewenangan.',
+            'profil usaha' => 'Identitas, lokasi, legalitas, dan data usaha.',
+            'pelaporan' => 'Pelaporan berkala perkembangan dan aktivitas usaha.',
+            'instrumen' => 'Instrumen penilaian sesuai bidang validasi.',
+            'riwayat' => 'Riwayat submit dan hasil penilaian yang tersimpan.',
+        ];
+
+        $detailMap = [
+            'dashboard' => 'Menu dasbor membantu pengguna melihat ringkasan kondisi ruang kerja, status kesiapan modul, dan arah tindak lanjut sesuai kewenangan.',
+            'akses' => 'Menu akses digunakan untuk membaca struktur akun, peran, izin akses, relasi kewenangan, sesi/perangkat, dan audit akses secara terkontrol.',
+            'referensi' => 'Menu referensi memuat data dasar yang menjadi acuan klasifikasi, wilayah, kategori, dan pengelompokan informasi UMKM.',
+            'governance' => 'Menu tata kelola digunakan untuk mengelola pengaturan sistem, tema tampilan, kebijakan keamanan, dan jejak perubahan konfigurasi penting.',
+            'publikasi' => 'Menu publikasi digunakan untuk menyiapkan informasi, pengumuman, dan narasi sistem yang aman untuk ditampilkan kepada pengguna.',
+            'validasi' => 'Menu validasi digunakan untuk mengelola instrumen, akses validator ahli, proses penilaian, dan ringkasan hasil validasi.',
+            'data umkm' => 'Menu data UMKM digunakan untuk melihat dan mengelola cakupan informasi usaha sesuai kewenangan wilayah dan status validasi.',
+            'analitik' => 'Menu analitik membantu membaca indikator, visualisasi, peta sebaran, dan ringkasan kinerja UMKM.',
+            'laporan' => 'Menu laporan menyajikan ringkasan informasi untuk evaluasi, pemantauan, dan pengambilan keputusan sesuai peran pengguna.',
+            'profil usaha' => 'Menu profil usaha digunakan oleh pelaku UMKM untuk melihat dan mengajukan pembaruan informasi usaha yang perlu divalidasi.',
+            'pelaporan' => 'Menu pelaporan digunakan untuk menyampaikan perkembangan usaha sesuai format dan periode yang ditentukan.',
+            'instrumen' => 'Menu instrumen digunakan validator untuk membaca dan mengisi penilaian sesuai bidang keahlian.',
+            'riwayat' => 'Menu riwayat membantu validator melihat hasil penilaian dan status submit yang telah tersimpan.',
+        ];
+
+        $displayTitle = $titleMap[$key] ?? $originalTitle;
+        $description = $descriptionMap[$key] ?? (string) ($menuItem['description'] ?? 'Cakupan menu mengikuti kewenangan pengguna.');
+        $detail = $detailMap[$key] ?? (string) ($menuItem['detail'] ?? $description);
+
+        return [
+            'title' => $displayTitle,
+            'description' => $description,
+            'detail' => $detail,
+        ];
+    };
+
+    $dashboardFeaturedDisplay = is_array($dashboardFeaturedItem ?? null)
+        ? $dashboardMenuDisplay($dashboardFeaturedItem)
+        : [
+            'title' => 'Ruang Kerja',
+            'description' => 'Pilih menu untuk melihat cakupan kerja.',
+            'detail' => 'Pilih menu untuk melihat cakupan kerja dan informasi singkat.',
+        ];
 @endphp
 <!doctype html>
 <html lang="id" data-umkm-theme="{{ $activeTheme ?? 'green' }}">
@@ -403,92 +557,165 @@
                     data-dashboard-mega-backdrop
                     aria-label="Tutup menu sistem"></button>
 
-            <div class="dashboard-mega-panel" role="dialog" aria-modal="false" aria-label="Mega menu sistem">
-                <div class="dashboard-mega-grid">
-                    <aside class="dashboard-mega-context">
-                        <div class="dashboard-mega-role-card">
-                            <span class="dashboard-user-avatar">{{ $dashboardUserInitial }}</span>
-                            <div>
-                                <strong>{{ $dashboardRoleLabel }}</strong>
-                                <small>{{ $dashboardRoleHint }}</small>
+            <div class="dashboard-mega-panel"
+                 role="dialog"
+                 aria-modal="false"
+                 aria-label="Mega menu sistem"
+                 data-dashboard-server-panel
+                 data-server-epoch-ms="{{ $dashboardServerEpochMs }}"
+                 data-server-timezone="{{ $dashboardServerTimezone }}"
+                 data-server-offset="{{ $dashboardServerOffset }}">
+                <div class="container-fluid px-0">
+                    <div class="row g-3 align-items-stretch dashboard-mega-bootstrap-row">
+                        <div class="col-12 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm dashboard-mega-card dashboard-mega-clock-panel">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <span class="dashboard-user-avatar flex-shrink-0">{{ $dashboardUserInitial }}</span>
+                                        <div class="min-w-0">
+                                            <div class="fw-bold text-truncate">{{ $dashboardRoleLabel }}</div>
+                                            <small class="text-muted d-block text-truncate">{{ $dashboardRoleHint }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="rounded-4 p-3 dashboard-mega-clock-card dashboard-mega-clock-card-compact">
+                                        <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                            <span class="dashboard-mega-clock-kicker">Waktu Server</span>
+                                            <span class="badge rounded-pill dashboard-mega-soft-badge">Aktif</span>
+                                        </div>
+                                        <strong class="dashboard-mega-clock d-block" data-dashboard-server-clock>{{ $dashboardServerTimeLabel }}</strong>
+                                        <small class="dashboard-mega-date d-block" data-dashboard-server-date>{{ $dashboardServerDateLabel }}</small>
+
+                                        <div class="row g-2 mt-2 dashboard-mega-clock-meta">
+                                            <div class="col-12">
+                                                <div class="border rounded-3 p-2 bg-white bg-opacity-50">
+                                                    <span class="d-block">Server</span>
+                                                    <strong class="d-block">{{ $dashboardServerTimezone }}</strong>
+                                                    <small>UTC{{ $dashboardServerOffset }}</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="border rounded-3 p-2 bg-white bg-opacity-50">
+                                                    <span class="d-block">Perangkat</span>
+                                                    <strong class="d-block" data-dashboard-local-timezone>Mendeteksi...</strong>
+                                                    <small data-dashboard-local-offset>Zona lokal</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="border rounded-3 p-2 bg-white bg-opacity-50">
+                                                    <span class="d-block">Selisih zonasi</span>
+                                                    <strong class="d-block" data-dashboard-time-difference>Memeriksa waktu lokal...</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="dashboard-mega-context-copy">
-                            <span>Ruang Kerja</span>
-                            <h2>Menu internal berbasis peran</h2>
-                            <p>
-                                Struktur layout tetap sama untuk seluruh pengguna internal. Yang berbeda hanya isi menu,
-                                permission, dan konten sesuai role.
-                            </p>
-                        </div>
+                        <div class="col-12 col-xl-3">
+                            <nav class="card h-100 border-0 shadow-sm dashboard-mega-card" aria-label="Menu utama ruang kerja">
+                                <div class="card-body p-3">
+                                    <div class="mb-3">
+                                        <span class="dashboard-mega-section-label">Menu Utama</span>
+                                        <small class="text-muted d-block mt-1">Pilih area kerja sesuai kewenangan.</small>
+                                    </div>
 
-                        <div class="dashboard-mega-context-badges">
-                            @foreach ($dashboardMenuSections as $section)
-                                <span>{{ $section['label'] ?? 'Menu' }}</span>
-                            @endforeach
-                        </div>
-                    </aside>
+                                    <div class="list-group list-group-flush dashboard-mega-main-list">
+                                        @foreach ($dashboardMenuItems as $menuItem)
+                                            @php
+                                                $menuRoute = $menuItem['route'] ?? null;
+                                                $menuPermission = $menuItem['permission'] ?? null;
+                                                $menuIcon = $menuItem['icon'] ?? 'dashboard';
+                                                $routeExists = is_string($menuRoute) && Route::has($menuRoute);
+                                                $permissionAllowed = empty($menuPermission) || (bool) $dashboardUser?->hasPermission($menuPermission);
+                                                $menuEnabled = $routeExists && $permissionAllowed;
+                                                $menuHref = $menuEnabled ? route($menuRoute) : '#';
+                                                $menuActive = $routeExists && is_string($dashboardCurrentRoute) && $dashboardCurrentRoute === $menuRoute;
+                                                $menuSubmenus = $dashboardSubmenuFor($menuItem);
+                                                $menuDisplay = $dashboardMenuDisplay($menuItem);
+                                            @endphp
 
-                    <nav class="dashboard-mega-modules" aria-label="Modul ruang kerja">
-                        @foreach ($dashboardMenuSections as $section)
-                            <section class="dashboard-mega-section">
-                                <div class="dashboard-mega-section-head">
-                                    <span>{{ $section['label'] ?? 'Menu' }}</span>
-                                    <small>{{ $section['summary'] ?? 'Modul internal' }}</small>
+                                            <a href="{{ $menuHref }}"
+                                               class="list-group-item list-group-item-action border-0 rounded-3 mb-2 px-2 py-2 dashboard-mega-main-item {{ $menuActive ? 'active is-active' : '' }} {{ $menuEnabled ? '' : 'disabled is-disabled' }}"
+                                               data-dashboard-mega-item
+                                               data-menu-title="{{ $menuDisplay['title'] ?? 'Menu' }}"
+                                               data-menu-description="{{ $menuDisplay['description'] ?? 'Belum tersedia' }}"
+                                               data-menu-detail="{{ $menuDisplay['detail'] ?? $menuDisplay['description'] ?? 'Belum tersedia' }}"
+                                               data-menu-status="{{ $menuEnabled ? 'Tersedia' : 'Dalam penyiapan' }}"
+                                               data-menu-submenus="{{ base64_encode(json_encode($menuSubmenus, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) }}"
+                                               @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif>
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <span class="dashboard-menu-icon flex-shrink-0">{!! $dashboardIcon($menuIcon) !!}</span>
+                                                    <span class="min-w-0 flex-grow-1">
+                                                        <strong class="d-block text-truncate">{{ $menuDisplay['title'] ?? 'Menu' }}</strong>
+                                                        <small class="d-block text-muted text-truncate">{{ $menuDisplay['description'] ?? 'Belum tersedia' }}</small>
+                                                    </span>
+                                                    @if (! $menuEnabled)
+                                                        <span class="badge rounded-pill dashboard-mega-soft-badge flex-shrink-0">Soon</span>
+                                                    @endif
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
                                 </div>
+                            </nav>
+                        </div>
 
-                                <div class="dashboard-mega-list">
-                                    @foreach (($section['items'] ?? []) as $menuItem)
-                                        @php
-                                            $menuRoute = $menuItem['route'] ?? null;
-                                            $menuPermission = $menuItem['permission'] ?? null;
-                                            $menuIcon = $menuItem['icon'] ?? 'dashboard';
-                                            $routeExists = is_string($menuRoute) && Route::has($menuRoute);
-                                            $permissionAllowed = empty($menuPermission) || (bool) $dashboardUser?->hasPermission($menuPermission);
-                                            $menuEnabled = $routeExists && $permissionAllowed;
-                                            $menuHref = $menuEnabled ? route($menuRoute) : '#';
-                                            $menuActive = $routeExists && is_string($dashboardCurrentRoute) && $dashboardCurrentRoute === $menuRoute;
-                                        @endphp
+                        <div class="col-12 col-xl-3">
+                            <section class="card h-100 border-0 shadow-sm dashboard-mega-card" aria-label="Submenu dari menu terpilih">
+                                <div class="card-body p-3">
+                                    <div class="mb-3">
+                                        <span class="dashboard-mega-section-label">Submenu</span>
+                                        <small class="text-muted d-block mt-1" data-dashboard-mega-submenu-title>{{ $dashboardFeaturedDisplay['title'] ?? 'Ruang Kerja' }}</small>
+                                    </div>
 
-                                        <a href="{{ $menuHref }}"
-                                           class="dashboard-mega-item {{ $menuActive ? 'is-active' : '' }} {{ $menuEnabled ? '' : 'is-disabled' }}"
-                                           data-dashboard-mega-item
-                                           data-menu-title="{{ $menuItem['title'] ?? 'Menu' }}"
-                                           data-menu-description="{{ $menuItem['description'] ?? 'Belum tersedia' }}"
-                                           data-menu-detail="{{ $menuItem['detail'] ?? $menuItem['description'] ?? 'Belum tersedia' }}"
-                                           @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif>
-                                            <span class="dashboard-menu-icon">{!! $dashboardIcon($menuIcon) !!}</span>
-                                            <span class="dashboard-menu-copy">
-                                                <strong>{{ $menuItem['title'] ?? 'Menu' }}</strong>
-                                                <small>{{ $menuItem['description'] ?? 'Belum tersedia' }}</small>
-                                            </span>
-                                            @if (! $menuEnabled)
-                                                <span class="dashboard-menu-state">Soon</span>
-                                            @endif
-                                        </a>
-                                    @endforeach
+                                    <div class="list-group list-group-flush dashboard-mega-submenu-list" data-dashboard-mega-submenu-list>
+                                        @foreach ($dashboardSubmenuFor($dashboardFeaturedItem ?? []) as $submenu)
+                                            <div class="list-group-item border rounded-3 mb-2 p-2 dashboard-mega-submenu-row">
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <span class="dashboard-mega-submenu-symbol flex-shrink-0" aria-hidden="true">•</span>
+                                                    <div class="min-w-0 flex-grow-1">
+                                                        <div class="d-flex align-items-center justify-content-between gap-2">
+                                                            <strong class="d-block text-truncate">{{ $submenu['title'] ?? 'Submenu' }}</strong>
+                                                            <span class="badge rounded-pill dashboard-mega-soft-badge flex-shrink-0">{{ $submenu['state'] ?? 'Info' }}</span>
+                                                        </div>
+                                                        <small class="text-muted d-block dashboard-mega-two-line">{{ $submenu['description'] ?? 'Cakupan menu mengikuti kewenangan pengguna.' }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </section>
-                        @endforeach
-                    </nav>
-
-                    <aside class="dashboard-mega-preview">
-                        <span class="dashboard-mega-preview-kicker">Konteks Modul</span>
-                        <h3 data-dashboard-mega-preview-title>{{ $dashboardFeaturedItem['title'] ?? 'Ruang Kerja' }}</h3>
-                        <p data-dashboard-mega-preview-description>
-                            {{ $dashboardFeaturedItem['detail'] ?? $dashboardFeaturedItem['description'] ?? 'Pilih modul untuk melihat ringkasan fungsi.' }}
-                        </p>
-
-                        <div class="dashboard-mega-preview-note">
-                            <strong>Guard aktif</strong>
-                            <span>Menu hanya membantu navigasi. Akses final tetap dikunci oleh backend guard, role, permission, session, dan policy.</span>
                         </div>
-                    </aside>
+
+                        <div class="col-12 col-xl-3">
+                            <aside class="card h-100 border-0 shadow-sm dashboard-mega-card dashboard-mega-preview-card">
+                                <div class="card-body p-3">
+                                    <span class="dashboard-mega-section-label">Konteks Menu</span>
+                                    <h3 class="h4 fw-bold mt-3 mb-3" data-dashboard-mega-preview-title>{{ $dashboardFeaturedDisplay['title'] ?? 'Ruang Kerja' }}</h3>
+                                    <p class="text-muted mb-3" data-dashboard-mega-preview-description>
+                                        {{ $dashboardFeaturedDisplay['detail'] ?? $dashboardFeaturedDisplay['description'] ?? 'Pilih menu untuk melihat cakupan kerja dan informasi singkat.' }}
+                                    </p>
+
+                                    <div class="d-flex flex-wrap gap-2 mb-3 dashboard-mega-preview-scope" data-dashboard-mega-preview-scope>
+                                        @foreach ($dashboardSubmenuFor($dashboardFeaturedItem ?? []) as $submenu)
+                                            <span class="badge rounded-pill dashboard-mega-scope-badge">{{ $submenu['title'] ?? 'Cakupan' }}</span>
+                                        @endforeach
+                                    </div>
+
+                                    <div class="border rounded-4 p-3 dashboard-mega-preview-note dashboard-mega-preview-scope-note" data-dashboard-mega-preview-note>
+                                        <strong class="d-block mb-1">Cakupan penggunaan</strong>
+                                        <span class="text-muted d-block">Gunakan menu ini untuk memahami ruang kerja, cakupan data, dan informasi yang dapat dikelola sesuai peran pengguna.</span>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
         <div id="dashboard-offcanvas"
              class="dashboard-offcanvas"
              data-dashboard-offcanvas
@@ -536,8 +763,8 @@
                                        @if (! $menuEnabled) aria-disabled="true" tabindex="-1" @endif>
                                         <span class="dashboard-menu-icon">{!! $dashboardIcon($menuIcon) !!}</span>
                                         <span class="dashboard-menu-copy">
-                                            <strong>{{ $menuItem['title'] ?? 'Menu' }}</strong>
-                                            <small>{{ $menuItem['description'] ?? 'Belum tersedia' }}</small>
+                                            <strong>{{ $menuDisplay['title'] ?? 'Menu' }}</strong>
+                                            <small>{{ $menuDisplay['description'] ?? 'Belum tersedia' }}</small>
                                         </span>
                                         @if (! $menuEnabled)
                                             <span class="dashboard-menu-state">Soon</span>
