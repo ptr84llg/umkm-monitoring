@@ -595,12 +595,12 @@ body.layout-auth {
 }
 /* AUTH-1F-OTP-UX FINALIZE START */
 .auth-otp-timer-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
     gap: .72rem;
     margin-bottom: 1.1rem;
 }
-
 .auth-otp-timer-card {
     min-height: 4.2rem;
     padding: .82rem .9rem;
@@ -629,13 +629,12 @@ body.layout-auth {
     line-height: 1.15;
     margin-top: .18rem;
 }
-
 .auth-otp-code-grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
     gap: .54rem;
 }
-
 .auth-otp-digit {
     width: 100%;
     min-height: 3.65rem;
@@ -675,15 +674,20 @@ body.layout-auth {
 }
 
 @media (max-width: 575.98px) {
-    .auth-otp-timer-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .auth-otp-code-grid {
-        gap: .42rem;
-    }
-
-    .auth-otp-digit {
+.auth-otp-timer-grid {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: .72rem;
+    margin-bottom: 1.1rem;
+}
+.auth-otp-code-grid {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: .54rem;
+}
+.auth-otp-digit {
         min-height: 3.1rem;
         border-radius: .86rem;
         font-size: 1.12rem;
@@ -966,15 +970,11 @@ body.layout-auth {
     color: var(--login-primary-dark);
     font-weight: 900;
 }
-
 .auth-login-premium .auth-location-reading {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    grid-template-areas:
-        'icon copy'
-        'icon actions';
+    display: flex;
     align-items: center;
-    gap: .7rem .95rem;
+    gap: .95rem;
+    flex-wrap: wrap;
     min-height: auto;
     margin-bottom: 1.15rem;
     border: 1px solid rgba(var(--umkm-primary-rgb), .16);
@@ -985,24 +985,20 @@ body.layout-auth {
         linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
     box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
 }
-
 .auth-login-premium .auth-location-reading::after {
     height: 2px;
 }
-
 .auth-login-premium .auth-location-orbit {
-    grid-area: icon;
     width: 46px;
     height: 46px;
+    flex: 0 0 46px;
     align-self: center;
 }
-
 .auth-login-premium .auth-location-reading-copy {
-    grid-area: copy;
+    flex: 1 1 18rem;
     min-width: 0;
     width: 100%;
 }
-
 .auth-login-premium .auth-location-reading-copy strong {
     display: block;
     max-width: 100%;
@@ -1025,17 +1021,15 @@ body.layout-auth {
     overflow-wrap: normal;
     word-break: normal;
 }
-
 .auth-login-premium .auth-location-reading-actions {
-    grid-area: actions;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: .5rem;
+    flex: 1 1 100%;
     flex-wrap: wrap;
     min-width: 0;
 }
-
 .auth-login-premium .auth-location-attempt {
     border: 1px solid rgba(var(--umkm-primary-rgb), .12);
     border-radius: 999px;
@@ -1223,25 +1217,37 @@ body.layout-auth {
         align-items: flex-start;
         padding: .78rem;
     }
-
-    .auth-login-premium .auth-location-reading {
-        grid-template-columns: 42px minmax(0, 1fr);
-        gap: .65rem .75rem;
-        padding: .85rem;
-        border-radius: 1.05rem;
-    }
-
-    .auth-login-premium .auth-location-orbit {
-        width: 42px;
-        height: 42px;
-    }
-
-    .auth-login-premium .auth-location-reading-actions {
-        grid-column: 1 / -1;
-        justify-content: stretch;
-    }
-
-    .auth-login-premium .auth-location-attempt,
+.auth-login-premium .auth-location-reading {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+    min-height: auto;
+    margin-bottom: 1.15rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--umkm-primary-rgb), .12), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+    box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
+}
+.auth-login-premium .auth-location-orbit {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    align-self: center;
+}
+.auth-login-premium .auth-location-reading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+.auth-login-premium .auth-location-attempt,
     .auth-login-premium .auth-location-button {
         flex: 1 1 auto;
         text-align: center;
@@ -1272,21 +1278,34 @@ body.layout-auth {
 /* FEEDBACK-CORE-1C LOGIN FEEDBACK INTEGRATION START */
 /* Scope: visual stability for login status panel only. No security or AJAX rule changes. */
 .auth-login-premium .auth-location-reading {
-    min-height: 7.85rem;
-    align-content: center;
-}
-
-.auth-login-premium .auth-location-reading-copy {
-    min-height: 2.85rem;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+    min-height: auto;
+    margin-bottom: 1.15rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--umkm-primary-rgb), .12), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+    box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
 }
-
+.auth-login-premium .auth-location-reading-copy {
+    flex: 1 1 18rem;
+    min-width: 0;
+    width: 100%;
+}
 .auth-login-premium .auth-location-reading-actions {
-    min-height: 2.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
 }
-
 .auth-login-premium .auth-location-reading-copy strong,
 .auth-login-premium .auth-location-reading-copy small {
     overflow-wrap: anywhere;
@@ -1297,17 +1316,35 @@ body.layout-auth {
 }
 
 @media (max-width: 575.98px) {
-    .auth-login-premium .auth-location-reading {
-        min-height: 9.25rem;
-    }
-
-    .auth-login-premium .auth-location-reading-copy {
-        min-height: 3.35rem;
-    }
-
-    .auth-login-premium .auth-location-reading-actions {
-        min-height: 2.75rem;
-    }
+.auth-login-premium .auth-location-reading {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+    min-height: auto;
+    margin-bottom: 1.15rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--umkm-primary-rgb), .12), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+    box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
+}
+.auth-login-premium .auth-location-reading-copy {
+    flex: 1 1 18rem;
+    min-width: 0;
+    width: 100%;
+}
+.auth-login-premium .auth-location-reading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
+}
 }
 /* FEEDBACK-CORE-1C LOGIN FEEDBACK INTEGRATION END */
 
@@ -1540,18 +1577,91 @@ body.layout-auth {
 .auth-otp-code-grid {
     display: flex;
     align-items: stretch;
+    flex-wrap: nowrap;
+    gap: .54rem;
 }
-
 .auth-otp-timer-grid {
+    display: flex;
+    align-items: stretch;
     flex-wrap: wrap;
+    gap: .72rem;
+    margin-bottom: 1.1rem;
 }
-
 .auth-otp-timer-card {
     flex: 1 1 12rem;
 }
-
 .auth-otp-code-grid {
+    display: flex;
+    align-items: stretch;
     flex-wrap: nowrap;
+    gap: .54rem;
+}
+.auth-otp-digit {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.auth-login-premium .auth-location-reading {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+    min-height: auto;
+    margin-bottom: 1.15rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--umkm-primary-rgb), .12), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+    box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
+}
+.auth-login-premium .auth-location-orbit {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    align-self: center;
+}
+.auth-login-premium .auth-location-reading-copy {
+    flex: 1 1 18rem;
+    min-width: 0;
+    width: 100%;
+}
+.auth-login-premium .auth-location-reading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+@media (max-width: 575.98px) {
+.auth-otp-code-grid {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: .54rem;
+}
+.auth-login-premium .auth-location-reading {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    flex-wrap: wrap;
+    min-height: auto;
+    margin-bottom: 1.15rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .16);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 0 0, rgba(var(--umkm-primary-rgb), .12), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+    box-shadow: 0 18px 42px rgba(var(--umkm-ink-rgb), .075);
+}
+}
+
+/* THEMEABLEBOOTSTRAP-1B: auth grid cleanup final layer */
+.auth-otp-timer-card {
+    flex: 1 1 12rem;
 }
 
 .auth-otp-digit {
@@ -1559,26 +1669,11 @@ body.layout-auth {
     min-width: 0;
 }
 
-.auth-login-premium .auth-location-reading {
-    display: flex;
-    align-items: center;
-    gap: .95rem;
-    flex-wrap: wrap;
-}
-
-.auth-login-premium .auth-location-orbit {
-    flex: 0 0 46px;
-}
-
-.auth-login-premium .auth-location-reading-copy {
-    flex: 1 1 18rem;
-}
-
-.auth-login-premium .auth-location-reading-actions {
-    flex: 1 1 100%;
-}
-
 @media (max-width: 575.98px) {
+    .auth-otp-timer-grid {
+        flex-direction: column;
+    }
+
     .auth-otp-code-grid {
         gap: .42rem;
     }
