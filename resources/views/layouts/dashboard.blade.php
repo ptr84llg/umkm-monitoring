@@ -437,6 +437,7 @@
     <meta name="umkm-client" content="dashboard">
     <meta name="umkm-security-profile" content="{{ $assetProfile }}">
     <title>@yield('title', 'Ruang Kerja | Monitoring UMKM')</title>
+    @include('partials.brand-icons')
     @include('partials.asset-loader')
 </head>
 <body class="layout-dashboard"
@@ -451,7 +452,14 @@
             <div class="dashboard-topbar-inner">
                 <div class="dashboard-topbar-start">
                     <a class="dashboard-brand" href="{{ $dashboardHomeUrl }}" aria-label="Ruang Kerja Monitoring UMKM">
-                        <span class="dashboard-brand-mark">MU</span>
+                        <span class="dashboard-brand-mark system-brand-mark" aria-hidden="true">
+                            <img class="system-brand-image dashboard-brand-image"
+                                 src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                 alt=""
+                                 width="40"
+                                 height="40"
+                                 loading="eager">
+                        </span>
                         <span class="dashboard-brand-copy">
                             <strong>Ruang Kerja</strong>
                             <small>Monitoring UMKM</small>

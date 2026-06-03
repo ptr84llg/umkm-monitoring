@@ -217,3 +217,69 @@
         padding: 1.15rem;
     }
 }
+/* SYSTEMBRAND-1A: selected monitoring UMKM logo system-wide hooks */
+.umkm-system-logo-mark,
+.dashboard-brand-logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .10), rgba(255, 255, 255, .82));
+}
+
+.umkm-system-logo-mark img,
+.dashboard-brand-logo-mark img,
+.dashboard-brand-mark img,
+.auth-brand-mark img,
+.landing-brand-mark img,
+.brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+img.umkm-system-logo,
+.umkm-system-logo {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* SYSTEMBRAND-1A-FIX2: selected system brand image hook */
+.system-brand-mark,
+.dashboard-brand-mark.system-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.system-brand-image,
+.dashboard-brand-image {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.dashboard-brand-mark.system-brand-mark {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
+    border-radius: 1rem;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(var(--umkm-primary-rgb), .045)),
+        rgba(255, 255, 255, .82);
+    box-shadow:
+        0 .45rem 1rem rgba(var(--umkm-primary-rgb), .08),
+        inset 0 0 0 1px rgba(255, 255, 255, .62);
+}
+
+.dashboard-brand-mark.system-brand-mark .system-brand-image {
+    width: 2.15rem;
+    height: 2.15rem;
+}
