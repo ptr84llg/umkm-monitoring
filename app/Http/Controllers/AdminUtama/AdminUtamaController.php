@@ -15,6 +15,8 @@ use App\Models\User;
 use App\Services\AdminUtama\AdminAuditService;
 use App\Services\System\ThemeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class AdminUtamaController extends Controller
@@ -49,8 +51,8 @@ class AdminUtamaController extends Controller
                 'key' => 'access',
                 'title' => 'Akses',
                 'description' => 'Akun, role, permission, sesi, dan pembatasan akses pengguna.',
-                'status' => 'Skeleton',
-                'route_name' => null,
+                'status' => 'Foundation',
+                'route_name' => 'admin-utama.access.index',
                 'permission' => 'access.manage',
                 'icon' => 'shield',
             ],
@@ -110,6 +112,107 @@ class AdminUtamaController extends Controller
         ));
     }
 
+
+    public function accessIndex()
+    {
+        $rolePermissionCount = Schema::hasTable('role_permissions')
+            ? DB::table('role_permissions')->count()
+            : 0;
+
+        $userRoleCount = Schema::hasTable('user_roles')
+            ? DB::table('user_roles')->count()
+            : 0;
+
+        $accessStats = [
+            'users_total' => User::query()->count(),
+            'users_active' => User::query()->where('is_active', true)->count(),
+            'users_inactive' => User::query()->where('is_active', false)->count(),
+            'users_google_linked' => User::query()->whereNotNull('google_linked_at')->count(),
+            'roles_total' => Role::query()->count(),
+            'roles_active' => Role::query()->where('is_active', true)->count(),
+            'permissions_total' => Permission::query()->count(),
+            'role_permissions' => $rolePermissionCount,
+            'user_roles' => $userRoleCount,
+            'security_events' => SecurityEventLog::query()->count(),
+            'audit_logs' => AuditLog::query()->count(),
+        ];
+
+        $recentUsers = User::query()
+            ->latest()
+            ->limit(8)
+            ->get(['id', 'name', 'email', 'is_active', 'google_linked_at', 'last_login_at']);
+
+        $roleSummary = Role::query()
+            ->withCount('permissions')
+            ->orderBy('code')
+            ->get(['id', 'code', 'name', 'description', 'is_active']);
+
+        $permissionModules = Permission::query()
+            ->select('module', DB::raw('COUNT(*) as total'))
+            ->groupBy('module')
+            ->orderBy('module')
+            ->get();
+
+        $recentSecurityEvents = SecurityEventLog::query()
+            ->latest('event_time')
+            ->limit(6)
+            ->get(['id', 'event_type', 'severity', 'ip_address', 'event_time']);
+
+        $recentAuditLogs = AuditLog::query()
+            ->latest('event_time')
+            ->limit(6)
+            ->get(['id', 'action', 'target_type', 'target_id', 'event_time']);
+
+        $accessSections = [
+            [
+                'key' => 'accounts',
+                'title' => 'Akun Pengguna',
+                'status' => 'Read-only foundation',
+                'description' => 'Melihat akun internal dan status akses dasar tanpa aksi perubahan pada batch awal.',
+            ],
+            [
+                'key' => 'roles',
+                'title' => 'Role',
+                'status' => 'Read-only matrix',
+                'description' => 'Melihat role resmi sistem dan jumlah permission yang terhubung.',
+            ],
+            [
+                'key' => 'permissions',
+                'title' => 'Permission',
+                'status' => 'Read-only grouping',
+                'description' => 'Melihat permission berdasarkan modul sebagai dasar PBAC.',
+            ],
+            [
+                'key' => 'assignment',
+                'title' => 'Assignment',
+                'status' => 'Coming next',
+                'description' => 'Assignment user-role dan role-permission akan memakai modal konfirmasi, AJAX internal, dan audit.',
+            ],
+            [
+                'key' => 'sessions',
+                'title' => 'Sesi & Perangkat',
+                'status' => 'Coming next',
+                'description' => 'Pemantauan sesi, perangkat, revoke session, dan riwayat login dibuat setelah struktur read-only aman.',
+            ],
+            [
+                'key' => 'audit',
+                'title' => 'Audit Akses',
+                'status' => 'Read-only preview',
+                'description' => 'Melihat jejak event keamanan dan audit akses sebagai dasar tata kelola.',
+            ],
+        ];
+
+        return view('pages.admin-utama.access.index', [
+            'assetModules' => ['accessManager'],
+            'accessStats' => $accessStats,
+            'recentUsers' => $recentUsers,
+            'roleSummary' => $roleSummary,
+            'permissionModules' => $permissionModules,
+            'recentSecurityEvents' => $recentSecurityEvents,
+            'recentAuditLogs' => $recentAuditLogs,
+            'accessSections' => $accessSections,
+        ]);
+    }
     public function accounts()
     {
         return view('pages.admin-utama.access.accounts', [

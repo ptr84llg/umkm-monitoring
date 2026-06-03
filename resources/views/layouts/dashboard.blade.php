@@ -77,8 +77,8 @@
                     [
                         'title' => 'Akses',
                         'description' => 'Akun, role, permission',
-                        'detail' => 'Pengelolaan akun internal, role, permission, dan pembatasan akses berbasis kewenangan.',
-                        'route' => null,
+                        'detail' => 'Pengelolaan akun internal, role, permission, sesi/perangkat, dan audit akses berbasis kewenangan.',
+                        'route' => 'admin-utama.access.index',
                         'permission' => 'access.manage',
                         'icon' => 'shield',
                     ],

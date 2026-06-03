@@ -288,6 +288,10 @@ Route::middleware('auth')->group(function () {
                 ->middleware('permission:dashboard.view.executive')
                 ->name('dashboard');
 
+            Route::get('/access', [AdminUtamaController::class, 'accessIndex'])
+                ->middleware('permission:access.manage')
+                ->name('access.index');
+
             Route::get('/governance/settings', [AdminUtamaController::class, 'settings'])
                 ->middleware('permission:system.manage')
                 ->name('governance.settings');
