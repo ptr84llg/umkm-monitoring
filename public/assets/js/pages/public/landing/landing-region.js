@@ -128,6 +128,48 @@
         Landing.setText(S.regionModalCurrent, Landing.cleanRegionLabel(text || 'Kota Lubuklinggau'));
     }
 
+
+    // PUBLICLANDING-REDESIGN-1B: region modal resilience
+    function fallbackDistrictRegions() {
+        return [
+            { code: '16.73.01', name: 'Lubuk Linggau Barat I', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.02', name: 'Lubuk Linggau Barat II', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.03', name: 'Lubuk Linggau Timur I', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.04', name: 'Lubuk Linggau Timur II', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.05', name: 'Lubuk Linggau Selatan I', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.06', name: 'Lubuk Linggau Selatan II', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.07', name: 'Lubuk Linggau Utara I', level: 'district', is_virtual: false, has_public_umkm_data: true },
+            { code: '16.73.08', name: 'Lubuk Linggau Utara II', level: 'district', is_virtual: false, has_public_umkm_data: true }
+        ];
+    }
+
+    function applyRegionContextFallback(error) {
+        Landing.regionState.context = Landing.DEFAULT_CONTEXT;
+        Landing.regionState.districts = fallbackDistrictRegions();
+        Landing.regionState.villages = [];
+        Landing.regionState.contextLoaded = true;
+
+        fillLockedSelect(Landing.qs(S.provinceSelect), Landing.regionState.context.province);
+        fillLockedSelect(Landing.qs(S.citySelect), Landing.regionState.context.city);
+        fillDistricts(
+            Landing.qs(S.districtSelect),
+            Landing.regionState.context.options.district_all,
+            Landing.regionState.districts
+        );
+        fillVillages(
+            Landing.qs(S.villageSelect),
+            Landing.regionState.context.options.village_all,
+            [],
+            true
+        );
+
+        setModalCurrent(Landing.regionState.applied.label || 'Kota Lubuklinggau');
+        setRegionAlert('Mode preview wilayah aktif. Daftar kecamatan memakai fallback public-safe karena konteks wilayah belum dapat dimuat penuh.');
+
+        Landing.log('warn', 'landing region context fallback applied', {
+            message: error && error.message ? error.message : 'region context fallback'
+        });
+    }
     function releaseRegionModalFocus(shell) {
         if (window.UMKM.modal && typeof window.UMKM.modal.releaseFocus === 'function') {
             window.UMKM.modal.releaseFocus(shell, S.regionModalOpen);
@@ -159,7 +201,7 @@
         });
     }
 
-    Landing.openRegionModal = function () {
+    Landing.openRegionModal = async function () {
         const shell = Landing.qs(S.regionModalShell);
 
         if (!shell) {
@@ -167,7 +209,7 @@
         }
 
         setRegionAlert('');
-        Landing.ensureRegionContext();
+        await Landing.ensureRegionContext();
         bindRegionModalFocusGuard(shell);
 
         if (window.UMKM.modal && typeof window.UMKM.modal.rememberTrigger === 'function') {
@@ -328,7 +370,11 @@
             setModalCurrent(district.name);
         } catch (error) {
             fillVillages(villageSelect, Landing.regionState.context.options?.village_all, [], true);
-            setRegionAlert(error.message || 'Desa/kelurahan tidak dapat dimuat.');
+            setModalCurrent(district.name);
+            setRegionAlert('Kelurahan rinci belum tersedia. Preview kecamatan tetap dapat diterapkan.');
+            Landing.log('warn', 'landing village fallback applied', {
+                message: error.message || 'village children failed'
+            });
         } finally {
             setRegionLoading(false);
         }
@@ -813,5 +859,174 @@
                 Landing.closeRegionModal();
             });
         }
+    };
+
+    // PUBLICLANDING-REDESIGN-1C: final clickable modal override
+    function forceRegionModalInteractive(shell) {
+        if (!shell) {
+            return;
+        }
+
+        shell.removeAttribute('inert');
+        shell.removeAttribute('aria-hidden');
+        shell.style.pointerEvents = 'auto';
+
+        const dialog = shell.querySelector('.modal-dialog');
+        const panel = Landing.qs(S.regionModalPanel);
+
+        if (dialog) {
+            dialog.style.pointerEvents = 'auto';
+        }
+
+        if (panel) {
+            panel.style.pointerEvents = 'auto';
+        }
+    }
+
+    Landing.openRegionModal = function (event) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+        }
+
+        const shell = Landing.qs(S.regionModalShell);
+
+        if (!shell) {
+            return;
+        }
+
+        setRegionAlert('');
+        forceRegionModalInteractive(shell);
+
+        if (window.UMKM.modal && typeof window.UMKM.modal.rememberTrigger === 'function') {
+            window.UMKM.modal.rememberTrigger(shell, document.activeElement);
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(shell, {
+                backdrop: true,
+                keyboard: true,
+                focus: false
+            }).show();
+        } else {
+            shell.hidden = false;
+            shell.classList.add('show');
+            shell.style.display = 'block';
+            shell.setAttribute('aria-modal', 'true');
+            shell.removeAttribute('aria-hidden');
+            document.body.classList.add('is-region-modal-open');
+        }
+
+        window.setTimeout(function () {
+            forceRegionModalInteractive(shell);
+        }, 0);
+
+        Promise.resolve(Landing.ensureRegionContext())
+            .catch(function (error) {
+                if (typeof applyRegionContextFallback === 'function') {
+                    applyRegionContextFallback(error);
+                    return;
+                }
+
+                setRegionAlert(error && error.message ? error.message : 'Konteks wilayah tidak dapat dimuat.');
+            })
+            .finally(function () {
+                setRegionLoading(false);
+                forceRegionModalInteractive(shell);
+            });
+    };
+
+    // PUBLICLANDING-REDESIGN-1E: core modal restore override
+    function restoreCoreRegionModalState(shell) {
+        if (!shell) {
+            return;
+        }
+
+        shell.removeAttribute('inert');
+        shell.style.pointerEvents = '';
+
+        const dialog = shell.querySelector('.modal-dialog');
+        const panel = Landing.qs(S.regionModalPanel);
+
+        if (dialog) {
+            dialog.style.pointerEvents = '';
+        }
+
+        if (panel) {
+            panel.style.pointerEvents = '';
+        }
+    }
+
+    Landing.openRegionModal = function (event) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+        }
+
+        const shell = Landing.qs(S.regionModalShell);
+
+        if (!shell) {
+            return;
+        }
+
+        setRegionAlert('');
+        restoreCoreRegionModalState(shell);
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(shell, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            }).show();
+        } else {
+            shell.hidden = false;
+            shell.classList.add('show');
+            shell.style.display = 'block';
+            shell.setAttribute('aria-modal', 'true');
+            shell.removeAttribute('aria-hidden');
+            document.body.classList.add('is-region-modal-open');
+        }
+
+        Promise.resolve(Landing.ensureRegionContext())
+            .catch(function (error) {
+                if (typeof applyRegionContextFallback === 'function') {
+                    applyRegionContextFallback(error);
+                    return;
+                }
+
+                setRegionAlert(error && error.message ? error.message : 'Konteks wilayah tidak dapat dimuat.');
+            })
+            .finally(function () {
+                setRegionLoading(false);
+                restoreCoreRegionModalState(shell);
+            });
+    };
+
+    Landing.closeRegionModal = function () {
+        if (Landing.regionState.loading) {
+            setRegionLoading(false);
+        }
+
+        const shell = Landing.qs(S.regionModalShell);
+
+        if (!shell) {
+            return;
+        }
+
+        restoreCoreRegionModalState(shell);
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            const modal = window.bootstrap.Modal.getInstance(shell);
+
+            if (modal) {
+                modal.hide();
+                return;
+            }
+        }
+
+        shell.hidden = true;
+        shell.classList.remove('show');
+        shell.style.display = '';
+        shell.setAttribute('aria-hidden', 'true');
+        shell.removeAttribute('aria-modal');
+        document.body.classList.remove('is-region-modal-open');
     };
 })();

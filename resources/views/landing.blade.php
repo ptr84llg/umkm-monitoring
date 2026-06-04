@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @php
+    $showPublicFooter = false;
     $assetProfile = 'landing';
     $assetModules = ['locationGate', 'session', 'readiness'];
     $vendorJs = [
@@ -32,6 +33,10 @@
         [$googlePublicEmailName, $googlePublicEmailDomain] = explode('@', $googlePublicEmail, 2);
         $googlePublicMaskedEmail = substr($googlePublicEmailName, 0, 1).str_repeat('*', max(3, strlen($googlePublicEmailName) - 1)).'@'.$googlePublicEmailDomain;
     }
+
+    $landingHeroLogo = file_exists(public_path('assets/img/brand/umkm-monitoring-icon-512.png'))
+        ? asset('assets/img/brand/umkm-monitoring-icon-512.png')
+        : asset('assets/img/brand/umkm-monitoring-icon-64.png');
 
     if (auth()->check()) {
         $landingUser = auth()->user();
@@ -153,7 +158,7 @@
     <header class="landing-header navbar navbar-expand-xl fixed-top" data-landing-header>
         <div class="container-fluid px-3 px-lg-4">
             <div class="row align-items-center g-2 w-100 landing-header-row">
-                <div class="col-8 col-xl-3">
+                <div class="col-8 col-xl-4">
                     <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="Monitoring UMKM">
                         <span class="landing-brand-mark system-brand-mark" aria-hidden="true">
                             <img class="system-brand-image landing-brand-image"
@@ -170,25 +175,16 @@
                     </a>
                 </div>
 
-                <div class="col-xl-5 d-none d-xl-flex justify-content-center">
+                <div class="col-xl-4 d-none d-xl-flex justify-content-center">
                     <nav class="landing-menu d-inline-flex align-items-center gap-2" aria-label="Menu utama">
                         <a class="btn btn-light btn-sm landing-menu-link is-active" href="#beranda">Beranda</a>
                         <a class="btn btn-light btn-sm landing-menu-link" href="#peta-umkm">Peta UMKM</a>
                         <a class="btn btn-light btn-sm landing-menu-link" href="#statistik">Statistik</a>
-                        <a class="btn btn-light btn-sm landing-menu-link" href="#cta">Pendaftaran</a>
-                        <a class="btn btn-light btn-sm landing-menu-link" href="#informasi">Tentang</a>
                     </nav>
                 </div>
 
                 <div class="col-4 col-xl-4">
                     <div class="landing-nav-actions d-flex align-items-center justify-content-end gap-2">
-                        <form class="landing-search d-none d-xl-flex" role="search" aria-label="Pencarian publik">
-                            <span class="landing-search-icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24"><path d="m21 19.6-5.2-5.2a7.2 7.2 0 1 0-1.4 1.4l5.2 5.2L21 19.6ZM4.8 10.2a5.4 5.4 0 1 1 10.8 0 5.4 5.4 0 0 1-10.8 0Z"/></svg>
-                            </span>
-                            <input class="form-control form-control-sm" type="search" placeholder="Cari data, kategori, atau lokasi..." aria-label="Cari data UMKM">
-                        </form>
-
                         @if ($hasGooglePublicIdentity)
                             <button type="button"
                                     class="landing-google-public-bell"
@@ -344,10 +340,6 @@
                     <span class="mobile-canvas-link-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/></svg></span>
                     <span>Statistik</span>
                 </a>
-                <a class="list-group-item list-group-item-action mobile-canvas-link d-flex align-items-center gap-3" href="#cta" data-menu-link>
-                    <span class="mobile-canvas-link-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L17.8 7 12 9.7 6.2 7 12 4.3ZM5 8.6l6 2.8v7.9l-6-3.4V8.6Zm8 10.7v-7.9l6-2.8v7.3l-6 3.4Z"/></svg></span>
-                    <span>Pendaftaran</span>
-                </a>
 
                 <span data-login-mount
                       data-login-key="mobile-login"
@@ -369,17 +361,36 @@
         <section class="hero-section public-analytics-hero pt-2 pt-xl-3 pb-5">
             <div class="container-fluid px-3 px-lg-4">
                 <div class="row align-items-center g-4 g-xxl-5">
-                    <div class="col-12 col-xxl-5">
-                        <div class="hero-copy reveal">
-                            <span class="landing-eyebrow">Selamat datang di</span>
+                    <div class="col-12 col-xl-5">
+                        <div class="hero-identity-area reveal">
+                            <div class="hero-logo-stage">
+                                <img src="{{ $landingHeroLogo }}"
+                                     alt=""
+                                     width="512"
+                                     height="512"
+                                     loading="eager">
+                            </div>
+                            <span class="landing-eyebrow">Portal Monitoring UMKM</span>
                             <h1 class="display-3 fw-bold mt-2 mb-3">Dashboard UMKM Lubuklinggau</h1>
                             <p class="lead mb-0">
-                                Pantau sebaran, tren, kategori, dan ringkasan UMKM secara publik melalui portal visual analitik
+                                Pantau sebaran, tren, kategori, dan ringkasan UMKM melalui portal visual analitik
                                 yang informatif, aman, dan mudah dibaca.
                             </p>
+                            <div class="d-flex flex-wrap gap-3 mt-4">
+                                <a class="btn btn-outline-light btn-lg landing-outline-btn" href="#peta-umkm">Lihat Peta UMKM</a>
+                                <span data-login-mount
+                                      data-login-key="hero-login"
+                                      data-login-label="Login"
+                                      data-dashboard-label="Ruang Kerja"
+                                      data-login-class="btn btn-primary btn-lg landing-main-btn"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                            <div class="row g-3 mt-4 hero-stat-row">
-                                <div class="col-6 col-lg-3 col-xxl-6">
+                    <div class="col-12 col-xl-7">
+                        <div class="hero-aggregate-area reveal reveal-delay-1">
+                            <div class="row g-3 hero-stat-row">
+                                <div class="col-6 col-lg-3">
                                     <article class="card h-100 border-0 hero-stat-card">
                                         <div class="card-body">
                                             <span class="hero-stat-icon is-green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V7l7-4 7 4v14h-5v-6H8v6H3Zm16 0V9h2v12h-2Z"/></svg></span>
@@ -389,7 +400,7 @@
                                         </div>
                                     </article>
                                 </div>
-                                <div class="col-6 col-lg-3 col-xxl-6">
+                                <div class="col-6 col-lg-3">
                                     <article class="card h-100 border-0 hero-stat-card">
                                         <div class="card-body">
                                             <span class="hero-stat-icon is-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg></span>
@@ -399,20 +410,20 @@
                                         </div>
                                     </article>
                                 </div>
-                                <div class="col-6 col-lg-3 col-xxl-6">
+                                <div class="col-6 col-lg-3">
                                     <article class="card h-100 border-0 hero-stat-card">
                                         <div class="card-body">
-                                            <span class="hero-stat-icon is-gold" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 7h-8.4L9.7 4.7A2 2 0 0 0 8.2 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/></svg></span>
+                                            <span class="hero-stat-icon is-gold" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 5.4 5h13.2L20 10.5V12a3 3 0 0 1-5 2.24A3 3 0 0 1 12 15a3 3 0 0 1-3-0.76A3 3 0 0 1 4 12v-1.5ZM6 16h12v5H6v-5Zm2 2v1h8v-1H8Z"/></svg></span>
                                             <small>Kategori dominan</small>
                                             <strong>Kuliner</strong>
                                             <span>38,6%</span>
                                         </div>
                                     </article>
                                 </div>
-                                <div class="col-6 col-lg-3 col-xxl-6">
+                                <div class="col-6 col-lg-3">
                                     <article class="card h-100 border-0 hero-stat-card">
                                         <div class="card-body">
-                                            <span class="hero-stat-icon is-purple" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V5h7v16H4Zm9 0V3h7v18h-7ZM6 9h3V7H6v2Zm0 4h3v-2H6v2Zm0 4h3v-2H6v2Zm9-8h3V7h-3v2Zm0 4h3v-2h-3v2Zm0 4h3v-2h-3v2Z"/></svg></span>
+                                            <span class="hero-stat-icon is-purple" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 8 4-8 4-8-4 8-4Zm-6.5 7.2L12 13.5l6.5-3.3L20 11l-8 4-8-4 1.5-.8Zm0 4L12 17.5l6.5-3.3L20 15l-8 4-8-4 1.5-.8Z"/></svg></span>
                                             <small>Wilayah aktif</small>
                                             <strong>72</strong>
                                             <span>Kelurahan</span>
@@ -420,23 +431,55 @@
                                     </article>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="col-12 col-xxl-7" id="peta-umkm">
-                        <div class="landing-component-shell landing-hero-board-shell"
-                             data-umkm-component="landing-hero-preview-board"
-                             data-umkm-component-url="{{ route('public.landing-components.hero-preview-board') }}"
-                             data-umkm-component-load-on="readiness-hidden"
-                             data-umkm-component-loading-text="Memuat peta dashboard publik..."
-                             aria-live="polite">
-                            <div class="card border-0 board-window landing-component-skeleton">
-                                <div class="card-body p-4">
-                                    <div class="umkm-inline-loader">
-                                        <span class="umkm-inline-spinner" aria-hidden="true"></span>
-                                        <span class="umkm-inline-loader-text">Menyiapkan peta dashboard publik...</span>
+                            <div class="card border-0 hero-insight-card mt-3">
+                                <div class="card-body">
+                                    <div>
+                                        <span>Data diperbarui</span>
+                                        <strong>04 Juni 2026</strong>
+                                    </div>
+                                    <div>
+                                        <span>Mode publik</span>
+                                        <strong>Agregat & Public-safe</strong>
+                                    </div>
+                                    <div>
+                                        <span>Cakupan</span>
+                                        <strong>Kota Lubuklinggau</strong>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="peta-umkm" class="map-section py-5">
+            <div class="container-fluid px-3 px-lg-4">
+                <div class="row align-items-end g-3 mb-4">
+                    <div class="col-12 col-xl-7">
+                        <span class="landing-eyebrow">Peta UMKM</span>
+                        <h2 class="display-6 fw-bold mt-2 mb-2">Sebaran UMKM Kota Lubuklinggau</h2>
+                        <p class="lead mb-0">Peta menampilkan sebaran publik dalam bentuk agregat, tanpa membuka data sensitif.</p>
+                    </div>
+                    <div class="col-12 col-xl-auto ms-xl-auto">
+                        <button type="button" class="btn btn-primary map-section-region-btn" data-region-open data-region-modal-open>
+                            Pilih Wilayah Preview
+                        </button>
+                    </div>
+                </div>
+
+                <div class="landing-component-shell landing-hero-board-shell"
+                     data-umkm-component="landing-hero-preview-board"
+                     data-umkm-component-url="{{ route('public.landing-components.hero-preview-board') }}"
+                     data-umkm-component-load-on="readiness-hidden"
+                     data-umkm-component-loading-text="Memuat peta dashboard publik..."
+                     aria-live="polite">
+                    <div class="card border-0 board-window landing-component-skeleton">
+                        <div class="card-body p-4">
+                            <div class="umkm-inline-loader">
+                                <span class="umkm-inline-spinner" aria-hidden="true"></span>
+                                <span class="umkm-inline-loader-text">Menyiapkan peta dashboard publik...</span>
                             </div>
                         </div>
                     </div>
@@ -463,25 +506,6 @@
             </div>
         </section>
 
-        <section id="informasi"
-                 class="summary-section py-5 landing-component-shell"
-                 data-umkm-component="landing-summary-section"
-                 data-umkm-component-url="{{ route('public.landing-components.summary-section') }}"
-                 data-umkm-component-load-on="readiness-hidden"
-                 data-umkm-component-loading-text="Memuat ringkasan manfaat sistem..."
-                 aria-live="polite">
-            <div class="container-fluid px-3 px-lg-4">
-                <div class="card border-0 landing-component-skeleton">
-                    <div class="card-body p-4 p-xl-5">
-                        <div class="umkm-inline-loader">
-                            <span class="umkm-inline-spinner" aria-hidden="true"></span>
-                            <span class="umkm-inline-loader-text">Memuat ringkasan manfaat sistem...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section id="cta"
                  class="cta-section py-5 landing-component-shell"
                  data-umkm-component="landing-cta-section"
@@ -500,6 +524,74 @@
                 </div>
             </div>
         </section>
+        <footer class="landing-footer landing-footer-proper py-5">
+            <div class="container-fluid px-3 px-lg-4">
+                <div class="card border-0 landing-footer-shell">
+                    <div class="card-body p-4 p-xl-5">
+                        <div class="row g-4 g-xl-5">
+                            <div class="col-12 col-xl-4">
+                                <div class="landing-footer-brand-panel h-100">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <span class="landing-footer-logo" aria-hidden="true">
+                                            <img src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
+                                                 alt=""
+                                                 width="48"
+                                                 height="48"
+                                                 loading="lazy">
+                                        </span>
+                                        <div>
+                                            <strong>Monitoring UMKM</strong>
+                                            <small>Kota Lubuklinggau</small>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0">
+                                        Portal visual analitik publik untuk membaca sebaran, tren, dan ringkasan UMKM
+                                        secara agregat, informatif, dan public-safe.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6 col-xl-2">
+                                <div class="landing-footer-column">
+                                    <h3>Navigasi</h3>
+                                    <a href="#beranda">Beranda</a>
+                                    <a href="#peta-umkm">Peta UMKM</a>
+                                    <a href="#statistik">Statistik</a>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6 col-xl-2">
+                                <div class="landing-footer-column">
+                                    <h3>Akses</h3>
+                                    <a href="#cta">Aktivasi Akun</a>
+                                    <a href="#peta-umkm">Preview Wilayah</a>
+                                    <a href="#statistik">Ringkasan Data</a>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-xl-4">
+                                <div class="landing-footer-info-panel">
+                                    <h3>Informasi Publik</h3>
+                                    <p class="mb-0">
+                                        Informasi publik disajikan sebagai ringkasan umum. Data rinci, koordinat presisi,
+                                        validasi, ekspor, dan pengelolaan hanya tersedia melalui ruang kerja berwenang.
+                                    </p>
+                                    <div class="landing-footer-badges">
+                                        <span>Agregat</span>
+                                        <span>Public-safe</span>
+                                        <span>Visual Analitik</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="landing-footer-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-2 mt-3">
+                    <span>© 2026 Monitoring UMKM Kota Lubuklinggau.</span>
+                    <span>Visual Analitik Interaktif</span>
+                </div>
+            </div>
+        </footer>
     </main>
 
     <button type="button" class="to-top-button" data-to-top aria-label="Kembali ke atas">

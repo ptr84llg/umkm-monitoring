@@ -6,12 +6,6 @@
                 <h2 class="display-6 fw-bold mt-2 mb-2">Pusat Analitik & Wawasan Interaktif</h2>
                 <p class="lead mb-0">Jelajahi data dan temukan insight untuk mendukung pembinaan, promosi, dan monitoring UMKM.</p>
             </div>
-            <div class="col-12 col-xl-auto ms-xl-auto">
-                <button type="button" class="btn btn-outline-dark public-report-btn">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3h2v10.2l3.6-3.6L18 11l-6 6-6-6 1.4-1.4 3.6 3.6V3Zm-6 16h14v2H5v-2Z"/></svg>
-                    <span>Unduh Laporan</span>
-                </button>
-            </div>
         </div>
     </div>
 
@@ -79,11 +73,11 @@
                         <span class="badge rounded-pill text-bg-light">2022–2026</span>
                     </div>
                     <div class="mini-line-chart" aria-hidden="true">
-                        <span style="--x: 8%; --y: 72%;">4.120</span>
-                        <span style="--x: 28%; --y: 60%;">4.650</span>
-                        <span style="--x: 48%; --y: 48%;">5.210</span>
-                        <span style="--x: 68%; --y: 34%;">5.980</span>
-                        <span style="--x: 88%; --y: 16%;">6.879</span>
+                        <span class="mini-point point-01">4.120</span>
+                        <span class="mini-point point-02">4.650</span>
+                        <span class="mini-point point-03">5.210</span>
+                        <span class="mini-point point-04">5.980</span>
+                        <span class="mini-point point-05">6.879</span>
                     </div>
                     <small class="text-muted">Data hingga Juni 2026</small>
                 </div>
@@ -98,19 +92,31 @@
                         <span class="badge rounded-pill text-bg-light">Top wilayah</span>
                     </div>
                     <div class="bar-list">
-                        @foreach ([
-                            ['n' => 'Lubuklinggau Timur I', 'v' => '1.254', 'w' => 92],
-                            ['n' => 'Lubuklinggau Barat I', 'v' => '1.102', 'w' => 80],
-                            ['n' => 'Lubuklinggau Selatan I', 'v' => '1.021', 'w' => 72],
-                            ['n' => 'Lubuklinggau Utara II', 'v' => '889', 'w' => 64],
-                            ['n' => 'Lubuklinggau Timur II', 'v' => '792', 'w' => 56],
-                        ] as $row)
-                            <div class="bar-item">
-                                <span>{{ $row['n'] }}</span>
-                                <strong>{{ $row['v'] }}</strong>
-                                <i style="--w: {{ $row['w'] }}%;"></i>
-                            </div>
-                        @endforeach
+                        <div class="bar-item">
+                            <span>Lubuklinggau Timur I</span>
+                            <strong>1.254</strong>
+                            <i class="bar-fill bar-w-92" aria-hidden="true"></i>
+                        </div>
+                        <div class="bar-item">
+                            <span>Lubuklinggau Barat I</span>
+                            <strong>1.102</strong>
+                            <i class="bar-fill bar-w-80" aria-hidden="true"></i>
+                        </div>
+                        <div class="bar-item">
+                            <span>Lubuklinggau Selatan I</span>
+                            <strong>1.021</strong>
+                            <i class="bar-fill bar-w-72" aria-hidden="true"></i>
+                        </div>
+                        <div class="bar-item">
+                            <span>Lubuklinggau Utara II</span>
+                            <strong>889</strong>
+                            <i class="bar-fill bar-w-64" aria-hidden="true"></i>
+                        </div>
+                        <div class="bar-item">
+                            <span>Lubuklinggau Timur II</span>
+                            <strong>792</strong>
+                            <i class="bar-fill bar-w-56" aria-hidden="true"></i>
+                        </div>
                     </div>
                 </div>
             </article>
