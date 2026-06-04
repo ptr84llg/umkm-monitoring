@@ -38,6 +38,10 @@
         ? asset('assets/img/brand/umkm-monitoring-icon-512.png')
         : asset('assets/img/brand/umkm-monitoring-icon-64.png');
 
+    $publicLandingSummary = $publicLandingSummary ?? \App\Support\PublicLanding\PublicLandingData::summary();
+    $publicLandingHeroCards = $publicLandingHeroCards ?? \App\Support\PublicLanding\PublicLandingData::heroCards();
+    $publicLandingFooterMetrics = $publicLandingFooterMetrics ?? \App\Support\PublicLanding\PublicLandingData::footerMetrics();
+
     if (auth()->check()) {
         $landingUser = auth()->user();
 
@@ -402,11 +406,11 @@
 								<div class="card-body">
 									<div>
 										<span>Cakupan</span>
-										<strong>Kota Lubuklinggau</strong>
+										<strong>{{ $publicLandingSummary['coverage_label'] ?? 'Kota Lubuklinggau' }}</strong>
 									</div>
 									<div class="ms-auto">
 										<span>Data diperbarui</span>
-										<strong>04 Juni 2026</strong>
+										<strong>{{ $publicLandingSummary['updated_at_label'] ?? 'Belum tersedia' }}</strong>
 									</div>
 								</div>
 							</div>
@@ -427,70 +431,32 @@
 					</div>
 
                     <div class="col-12 col-xl-5">
+
                         <div class="hero-aggregate-area reveal reveal-delay-1">
                             <div class="row g-3 hero-stat-row">
-                                <div class="col-12 col-lg-6">
-                                    <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
-                                        <div class="card-body">
-                                            <div class="hero-stat-top">
-                                                <span class="hero-stat-icon is-green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V7l7-4 7 4v14h-5v-6H8v6H3Zm16 0V9h2v12h-2Z"/></svg></span>
-                                                <span class="hero-stat-chip">Data agregat</span>
+                                @foreach ($publicLandingHeroCards as $card)
+                                    <div class="col-12 col-lg-6">
+                                        <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
+                                            <div class="card-body">
+                                                <div class="hero-stat-top">
+                                                    <span class="hero-stat-icon {{ $card['icon_class'] ?? '' }}" aria-hidden="true">
+                                                        <svg viewBox="0 0 24 24"><path d="{{ $card['icon_path'] ?? '' }}"/></svg>
+                                                    </span>
+                                                    <span class="hero-stat-chip">{{ $card['chip'] ?? 'Public-safe' }}</span>
+                                                </div>
+                                                <small>{{ $card['label'] ?? 'Ringkasan' }}</small>
+                                                <strong>{{ $card['value'] ?? '—' }}</strong>
+                                                <span>{{ $card['context'] ?? '' }}</span>
+                                                <div class="stat-progress"><i class="stat-progress-fill {{ $card['progress_class'] ?? 'w-0' }}"></i></div>
+                                                <div class="stat-card-foot">
+                                                    <span>{{ $card['foot_label'] ?? 'Data agregat' }}</span>
+                                                    <b>{{ $card['foot_value'] ?? '' }}</b>
+                                                </div>
                                             </div>
-                                            <small>Total UMKM</small>
-                                            <strong>6.879</strong>
-                                            <span>Unit usaha tercatat</span>
-                                            <div class="stat-progress"><i class="stat-progress-fill w-84"></i></div>
-                                            <div class="stat-card-foot"><span>Data dari JSON</span><b>+8,4%</b></div>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
-                                        <div class="card-body">
-                                            <div class="hero-stat-top">
-                                                <span class="hero-stat-icon is-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg></span>
-                                                <span class="hero-stat-chip">Public-safe</span>
-                                            </div>
-                                            <small>Terpetakan</small>
-                                            <strong>6.412</strong>
-                                            <span>93,2% dari total</span>
-                                            <div class="stat-progress"><i class="stat-progress-fill w-93"></i></div>
-                                            <div class="stat-card-foot"><span>Unit terpetakan</span><b>+7,2%</b></div>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
-                                        <div class="card-body">
-                                            <div class="hero-stat-top">
-                                                <span class="hero-stat-icon is-gold" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10.5 5.4 5h13.2L20 10.5V12a3 3 0 0 1-5 2.24A3 3 0 0 1 12 15a3 3 0 0 1-3-0.76A3 3 0 0 1 4 12v-1.5ZM6 16h12v5H6v-5Zm2 2v1h8v-1H8Z"/></svg></span>
-                                                <span class="hero-stat-chip">Kategori</span>
-                                            </div>
-                                            <small>Kategori dominan</small>
-                                            <strong>Kuliner</strong>
-                                            <span>38,6% dari total</span>
-                                            <div class="stat-progress"><i class="stat-progress-fill w-39"></i></div>
-                                            <div class="stat-card-foot"><span>Kategori terbanyak</span><b>Insight</b></div>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
-                                        <div class="card-body">
-                                            <div class="hero-stat-top">
-                                                <span class="hero-stat-icon is-purple" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 8 4-8 4-8-4 8-4Zm-6.5 7.2L12 13.5l6.5-3.3L20 11l-8 4-8-4 1.5-.8Zm0 4L12 17.5l6.5-3.3L20 15l-8 4-8-4 1.5-.8Z"/></svg></span>
-                                                <span class="hero-stat-chip">Wilayah</span>
-                                            </div>
-                                            <small>Wilayah aktif</small>
-                                            <strong>72</strong>
-                                            <span>Kelurahan memiliki data</span>
-                                            <div class="stat-progress"><i class="stat-progress-fill w-100"></i></div>
-                                            <div class="stat-card-foot"><span>Cakupan wilayah</span><b>100%</b></div>
-                                        </div>
-                                    </article>
-                                </div>
+                                        </article>
+                                    </div>
+                                @endforeach
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -624,9 +590,9 @@
                                         literasi data UMKM.
                                     </p>
                                     <div class="footer-coverage-metrics">
-                                        <span><b>72</b><small>Kelurahan aktif</small></span>
-                                        <span><b>6.412</b><small>UMKM terpetakan</small></span>
-                                        <span><b>100%</b><small>Wilayah tercakup</small></span>
+                                        @foreach ($publicLandingFooterMetrics as $metric)
+                                            <span><b>{{ $metric['value'] ?? '—' }}</b><small>{{ $metric['label'] ?? 'Data agregat' }}</small></span>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>

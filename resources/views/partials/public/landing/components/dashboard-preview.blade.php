@@ -1,3 +1,7 @@
+@php
+    $publicLandingAnalytics = $publicLandingAnalytics ?? \App\Support\PublicLanding\PublicLandingData::analytics();
+@endphp
+
 <div class="container-fluid px-3 px-lg-4">
     <div class="analytics-section-head reveal mb-4">
         <div class="row align-items-end g-3">
@@ -82,12 +86,12 @@
                         <span class="badge rounded-pill text-bg-light">Agregat</span>
                     </div>
                     <div class="donut-visual mx-auto my-3" aria-hidden="true">
-                        <span>6.879<small>Total UMKM</small></span>
+                        <span>{{ $publicLandingAnalytics['scale']['total'] ?? '—' }}<small>Total UMKM</small></span>
                     </div>
                     <div class="analytics-legend">
-                        <span><i class="is-mikro"></i>Mikro <strong>56,5%</strong></span>
-                        <span><i class="is-kecil"></i>Kecil <strong>29,5%</strong></span>
-                        <span><i class="is-menengah"></i>Menengah <strong>14,0%</strong></span>
+                        @foreach (($publicLandingAnalytics['scale']['items'] ?? []) as $item)
+                            <span><i class="{{ $item['class'] ?? '' }}"></i>{{ $item['label'] ?? 'Skala' }} <strong>{{ $item['percent'] ?? '—' }}</strong></span>
+                        @endforeach
                     </div>
                 </div>
             </article>
@@ -101,13 +105,11 @@
                         <span class="badge rounded-pill text-bg-light">2022–2026</span>
                     </div>
                     <div class="mini-line-chart" aria-hidden="true">
-                        <span class="mini-point point-01">4.120</span>
-                        <span class="mini-point point-02">4.650</span>
-                        <span class="mini-point point-03">5.210</span>
-                        <span class="mini-point point-04">5.980</span>
-                        <span class="mini-point point-05">6.879</span>
+                        @foreach (($publicLandingAnalytics['trend_points'] ?? []) as $point)
+                            <span class="mini-point {{ $point['class'] ?? '' }}">{{ $point['value'] ?? '—' }}</span>
+                        @endforeach
                     </div>
-                    <small class="text-muted">Data hingga Juni 2026</small>
+                    <small class="text-muted">Data hingga {{ $publicLandingAnalytics['updated_at_label'] ?? 'periode terakhir' }}</small>
                 </div>
             </article>
         </div>
@@ -119,12 +121,16 @@
                         <h3>Distribusi per Kecamatan</h3>
                         <span class="badge rounded-pill text-bg-light">Top wilayah</span>
                     </div>
+
                     <div class="bar-list">
-                        <div class="bar-item">
-                            <span>Lubuklinggau Timur I</span>
-                            <strong>1.254</strong>
-                            <i class="bar-fill bar-w-92" aria-hidden="true"></i>
-                        </div>
+                        @foreach (($publicLandingAnalytics['districts'] ?? []) as $district)
+                            <div class="bar-item">
+                                <span>{{ $district['label'] ?? 'Wilayah' }}</span>
+                                <strong>{{ $district['value'] ?? '—' }}</strong>
+                                <i class="bar-fill {{ $district['bar_class'] ?? 'bar-w-56' }}" aria-hidden="true"></i>
+                            </div>
+                        @endforeach
+                    </div>
                         <div class="bar-item">
                             <span>Lubuklinggau Barat I</span>
                             <strong>1.102</strong>

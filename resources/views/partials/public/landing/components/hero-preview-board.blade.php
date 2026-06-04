@@ -1,10 +1,14 @@
+@php
+    $publicLandingMap = $publicLandingMap ?? \App\Support\PublicLanding\PublicLandingData::mapPreview();
+@endphp
+
 <div class="hero-board public-map-board reveal reveal-delay-1" data-tilt-card>
     <div class="card border-0 board-window public-map-window">
         <div class="card-body p-0">
             <div class="public-map-toolbar d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <span>Peta Sebaran publik</span>
-                    <strong data-public-region-source>Kota Lubuklinggau</strong>
+                    <strong data-public-region-source>{{ $publicLandingMap['region_label'] ?? 'Kota Lubuklinggau' }}</strong>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>
@@ -47,9 +51,9 @@
                 <span class="map-zone-label zone-c">Utara</span>
                 <span class="map-zone-label zone-d">Selatan</span>
 
-                <span class="map-cluster cluster-a" aria-hidden="true"><strong>128</strong></span>
-                <span class="map-cluster cluster-b" aria-hidden="true"><strong>96</strong></span>
-                <span class="map-cluster cluster-c" aria-hidden="true"><strong>74</strong></span>
+                @foreach (($publicLandingMap['clusters'] ?? []) as $cluster)
+                    <span class="map-cluster {{ $cluster['class'] ?? '' }}" aria-hidden="true"><strong>{{ $cluster['value'] ?? '—' }}</strong></span>
+                @endforeach
 
                 <div class="public-map-legend">
                     <span><i class="is-mikro"></i>Mikro</span>
@@ -59,7 +63,7 @@
             </div>
 
             <div class="public-map-footer d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
-                <span>Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.</span>
+                <span>{{ $publicLandingMap['note'] ?? 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.' }}</span>
             </div>
         </div>
     </div>

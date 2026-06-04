@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\SessionKeepAliveController;
+use App\Support\PublicLanding\PublicLandingData;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,7 +34,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', fn () => view('pages.public.landing.index'));
+Route::get('/', fn () => view('pages.public.landing.index', [
+    'publicLandingSummary' => PublicLandingData::summary(),
+    'publicLandingHeroCards' => PublicLandingData::heroCards(),
+    'publicLandingFooterMetrics' => PublicLandingData::footerMetrics(),
+]));
 
 Route::prefix('api/public/landing-components')
     ->name('public.landing-components.')
