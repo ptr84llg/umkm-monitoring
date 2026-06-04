@@ -12,15 +12,15 @@
     <meta name="umkm-security-profile" content="{{ $assetProfile ?? 'public' }}">
     <meta name="umkm-active-theme" content="{{ $activeTheme }}">
     <title>@yield('title', 'Monitoring UMKM | Visual Analitik Interaktif')</title>
-    @include('partials.brand-icons')
-    @include('partials.asset-loader')
+    @include('partials.system.brand-icons')
+    @include('partials.system.asset-loader')
 </head>
 <body class="layout-public">
     <main>
         @yield('content')
     </main>
 
-    @includeWhen(($showPublicFooter ?? true), 'partials.public-footer')
+    @includeWhen(($showPublicFooter ?? true), 'partials.public.shared.public-footer')
 </body>
 </html>
 

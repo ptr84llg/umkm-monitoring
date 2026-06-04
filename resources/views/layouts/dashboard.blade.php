@@ -437,8 +437,8 @@
     <meta name="umkm-client" content="dashboard">
     <meta name="umkm-security-profile" content="{{ $assetProfile }}">
     <title>@yield('title', 'Ruang Kerja | Monitoring UMKM')</title>
-    @include('partials.brand-icons')
-    @include('partials.asset-loader')
+    @include('partials.system.brand-icons')
+    @include('partials.system.asset-loader')
 </head>
 <body class="layout-dashboard"
       data-dashboard-shell

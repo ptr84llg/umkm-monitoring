@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', fn () => view('landing'));
+Route::get('/', fn () => view('pages.public.landing.index'));
 
 Route::prefix('api/public/landing-components')
     ->name('public.landing-components.')

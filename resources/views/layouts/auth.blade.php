@@ -12,8 +12,8 @@
     <meta name="umkm-security-profile" content="{{ $assetProfile ?? 'auth' }}">
     <meta name="umkm-active-theme" content="{{ $activeTheme }}">
     <title>@yield('title', 'Login Internal | Monitoring UMKM')</title>
-    @include('partials.brand-icons')
-    @include('partials.asset-loader')
+    @include('partials.system.brand-icons')
+    @include('partials.system.asset-loader')
 </head>
 <body class="layout-auth">
     <main class="auth-main" id="mainContent">

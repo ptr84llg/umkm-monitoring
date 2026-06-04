@@ -11,7 +11,7 @@ class LandingComponentController extends Controller
     {
         return $this->component(
             'landing-hero-preview-board',
-            'partials.public.landing.hero-preview-board'
+            'partials.public.landing.components.hero-preview-board'
         );
     }
 
@@ -19,7 +19,7 @@ class LandingComponentController extends Controller
     {
         return $this->component(
             'landing-dashboard-preview',
-            'partials.public.landing.dashboard-preview'
+            'partials.public.landing.components.dashboard-preview'
         );
     }
 
@@ -28,7 +28,7 @@ class LandingComponentController extends Controller
     {
         return $this->component(
             'landing-cta-section',
-            'partials.public.landing.cta-section'
+            'partials.public.landing.components.cta-section'
         );
     }
 
@@ -36,7 +36,7 @@ class LandingComponentController extends Controller
     {
         return $this->component(
             'landing-region-modal',
-            'partials.public.landing.region-modal'
+            'partials.public.landing.components.region-modal'
         );
     }
 
