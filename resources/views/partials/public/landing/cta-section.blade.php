@@ -24,7 +24,7 @@
                               data-login-label="Aktifkan Akun UMKM"
                               data-dashboard-label="Buka Ruang Kerja"
                               data-login-class="btn btn-success btn-lg cta-button"></span>
-                        <a class="btn btn-outline-light btn-lg cta-outline-button" href="#peta-umkm">Jelajahi Peta UMKM</a>
+                        <a class="btn btn-outline-light btn-lg cta-outline-button" href="#peta-umkm">Jelajahi Peta Sebaran</a>
                     </div>
                 </div>
             </div>

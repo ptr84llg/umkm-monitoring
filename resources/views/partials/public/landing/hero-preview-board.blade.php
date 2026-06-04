@@ -3,12 +3,13 @@
         <div class="card-body p-0">
             <div class="public-map-toolbar d-flex align-items-center justify-content-between gap-3">
                 <div>
-                    <span>Peta UMKM publik</span>
+                    <span>Peta Sebaran publik</span>
                     <strong data-public-region-source>Kota Lubuklinggau</strong>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>
-                        Pilih Wilayah
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Z"/></svg>
+                        <span>Pilih Wilayah</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-light public-map-filter" data-region-open data-region-modal-open aria-label="Filter wilayah">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"/></svg>
