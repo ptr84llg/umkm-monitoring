@@ -51,11 +51,7 @@ Route::prefix('api/public/landing-components')
 
         Route::get('/dashboard-preview', [LandingComponentController::class, 'dashboardPreview'])
             ->name('dashboard-preview');
-
-        Route::get('/summary-section', [LandingComponentController::class, 'summarySection'])
-            ->name('summary-section');
-
-        Route::get('/cta-section', [LandingComponentController::class, 'ctaSection'])
+Route::get('/cta-section', [LandingComponentController::class, 'ctaSection'])
             ->name('cta-section');
 
         Route::get('/region-modal', [LandingComponentController::class, 'regionModal'])

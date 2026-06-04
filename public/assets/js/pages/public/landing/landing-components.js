@@ -53,7 +53,7 @@
             return;
         }
 
-        if (detail.component === 'landing-summary-section' || detail.component === 'landing-cta-section') {
+        if (detail.component === 'landing-cta-section') {
             Landing.initRevealAnimation?.();
             Landing.refreshLocationGateMounts();
         }

@@ -23,13 +23,6 @@ class LandingComponentController extends Controller
         );
     }
 
-    public function summarySection(): JsonResponse
-    {
-        return $this->component(
-            'landing-summary-section',
-            'partials.public.landing.summary-section'
-        );
-    }
 
     public function ctaSection(): JsonResponse
     {
