@@ -95,6 +95,9 @@
                 loading = document.createElement('div');
                 loading.className = 'landing-region-loading';
                 loading.dataset.regionLoading = 'true';
+                loading.setAttribute('role', 'status');
+                loading.setAttribute('aria-live', 'polite');
+                loading.hidden = true;
                 loading.textContent = 'Memuat data wilayah...';
 
                 const form = modal.querySelector('.landing-region-form');
@@ -105,6 +108,7 @@
             }
 
             loading.textContent = message || 'Memuat data wilayah...';
+            loading.hidden = !Landing.regionState.loading;
         }
 
         if (applyButton) {
@@ -112,7 +116,6 @@
             applyButton.classList.toggle('is-disabled', Landing.regionState.loading);
         }
     }
-
     function setRegionAlert(message) {
         const alert = Landing.qs(S.regionModalAlert);
 
@@ -711,6 +714,50 @@
         }
     }
 
+    // PUBLICLANDING-UI-2D: automatically sync public filter fields from applied region selection.
+    function ensurePublicFilterOption(select, value, label) {
+        if (!select) {
+            return;
+        }
+
+        const safeValue = value || '';
+        const safeLabel = label || 'Semua';
+        let option = Array.from(select.options).find(function (item) {
+            return item.value === safeValue;
+        });
+
+        if (!option) {
+            option = document.createElement('option');
+            option.value = safeValue;
+            select.appendChild(option);
+        }
+
+        option.textContent = safeLabel;
+        select.value = safeValue;
+    }
+
+    function syncPublicFiltersFromSelection(selection) {
+        const districtFilter = document.getElementById('filter-kecamatan');
+        const villageFilter = document.getElementById('filter-kelurahan');
+
+        if (!selection) {
+            ensurePublicFilterOption(districtFilter, '', 'Semua');
+            ensurePublicFilterOption(villageFilter, '', 'Semua');
+            return;
+        }
+
+        const districtValue = selection.district?.code || '';
+        const districtLabel = selection.district?.name || 'Semua';
+        const villageValue = selection.village?.code || '';
+        const villageLabel = selection.village?.name || 'Semua';
+
+        ensurePublicFilterOption(districtFilter, districtValue, districtLabel);
+        ensurePublicFilterOption(villageFilter, villageValue, villageLabel);
+
+        if (villageFilter) {
+            villageFilter.disabled = !districtValue;
+        }
+    }
     Landing.applyPreviewResponse = function (selection, response) {
         const safeSelection = Object.assign({}, Landing.DEFAULT_SELECTION, selection || {});
         const preview = response?.preview || {};
@@ -723,6 +770,7 @@
         Landing.setText(S.publicRegionSource, label);
         Landing.setText(S.publicChartRegion, label);
         Landing.setText(S.regionModalCurrent, label);
+        syncPublicFiltersFromSelection(safeSelection);
         Landing.setText(S.publicWatchedLabel, preview.watched || 'Belum tersedia');
         Landing.setText(S.publicDominantLabel, preview.dominant || 'Belum tersedia');
 
