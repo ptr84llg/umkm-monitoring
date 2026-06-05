@@ -8,7 +8,7 @@
             <div class="public-map-toolbar d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <span>Peta Sebaran publik</span>
-                    <strong data-public-region-source>{{ $publicLandingMap['region_label'] ?? 'Kota Lubuklinggau' }}</strong>
+                    <strong>Kota Lubuklinggau, Sumatera Selatan</strong>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>
@@ -68,3 +68,4 @@
         </div>
     </div>
 </div>
+

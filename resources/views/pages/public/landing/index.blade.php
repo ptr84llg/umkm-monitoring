@@ -406,9 +406,9 @@
 								<div class="card-body">
 									<div>
 										<span>Cakupan</span>
-										<strong>{{ $publicLandingSummary['coverage_label'] ?? 'Kota Lubuklinggau' }}</strong>
+										<strong data-public-coverage-label>{{ $publicLandingSummary['coverage_label'] ?? 'Kota Lubuklinggau' }}</strong>
 									</div>
-									<div class="ms-auto">
+									<div class="col ms-auto">
 										<span>Data diperbarui</span>
 										<strong>{{ $publicLandingSummary['updated_at_label'] ?? 'Belum tersedia' }}</strong>
 									</div>
@@ -471,7 +471,7 @@
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6-2-6 2v15l6-2 6 2 6-2V4l-6 2Zm-1 12.6-4-1.3V5.4l4 1.3v11.9Z"/></svg>
                             <span>Peta Sebaran</span>
                         </span>
-                        <h2 class="display-6 fw-bold mt-2 mb-2">Peta Sebaran UMKM Kota Lubuklinggau</h2>
+                        <h2 class="display-6 fw-bold mt-2 mb-2">Peta Sebaran UMKM</h2>
                         <p class="lead mb-0">Peta menampilkan sebaran publik dalam bentuk agregat, tanpa membuka data sensitif.</p>
                     </div>
                     
@@ -612,3 +612,4 @@
     </button>
 </div>
 @endsection
+

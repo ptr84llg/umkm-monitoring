@@ -2,23 +2,19 @@
 
 namespace App\Support\PublicLanding;
 
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
+
 final class PublicLandingData
 {
+    private const CITY_CODE = '16.73';
+    private const CITY_NAME = 'Kota Lubuklinggau';
+
     public static function summary(): array
     {
-        return [
-            'coverage_label' => 'Kota Lubuklinggau',
-            'updated_at_label' => '04 Juni 2026',
-            'public_safe_label' => 'Public-safe',
-            'total_umkm' => '6.879',
-            'mapped_umkm' => '6.412',
-            'mapped_percent' => '93,2%',
-            'dominant_category' => 'Kuliner',
-            'dominant_category_percent' => '38,6%',
-            'active_regions' => '72',
-            'coverage_percent' => '100%',
-            'source_label' => 'Data agregat publik',
-        ];
+        return self::safe(fn (): array => self::makeSummary(), self::fallbackSummary());
     }
 
     public static function heroCards(): array
@@ -35,7 +31,7 @@ final class PublicLandingData
                 'context' => 'Unit usaha tercatat',
                 'progress_class' => 'w-84',
                 'foot_label' => $summary['source_label'],
-                'foot_value' => '+8,4%',
+                'foot_value' => $summary['total_context'] ?? 'DB-backed',
             ],
             [
                 'icon_class' => 'is-blue',
@@ -43,10 +39,10 @@ final class PublicLandingData
                 'chip' => $summary['public_safe_label'],
                 'label' => 'Terpetakan',
                 'value' => $summary['mapped_umkm'],
-                'context' => $summary['mapped_percent'].' dari total',
-                'progress_class' => 'w-93',
+                'context' => $summary['mapped_percent'] . ' dari total',
+                'progress_class' => self::progressClassFromPercent($summary['mapped_percent_value'] ?? 0),
                 'foot_label' => 'Unit terpetakan',
-                'foot_value' => '+7,2%',
+                'foot_value' => 'Koordinat valid',
             ],
             [
                 'icon_class' => 'is-gold',
@@ -54,8 +50,8 @@ final class PublicLandingData
                 'chip' => 'Kategori',
                 'label' => 'Kategori dominan',
                 'value' => $summary['dominant_category'],
-                'context' => $summary['dominant_category_percent'].' dari total',
-                'progress_class' => 'w-39',
+                'context' => $summary['dominant_category_percent'] . ' dari total',
+                'progress_class' => self::progressClassFromPercent($summary['dominant_category_percent_value'] ?? 0),
                 'foot_label' => 'Kategori terbanyak',
                 'foot_value' => 'Insight',
             ],
@@ -66,7 +62,7 @@ final class PublicLandingData
                 'label' => 'Wilayah aktif',
                 'value' => $summary['active_regions'],
                 'context' => 'Kelurahan memiliki data',
-                'progress_class' => 'w-100',
+                'progress_class' => self::progressClassFromPercent($summary['coverage_percent_value'] ?? 0),
                 'foot_label' => 'Cakupan wilayah',
                 'foot_value' => $summary['coverage_percent'],
             ],
@@ -95,101 +91,852 @@ final class PublicLandingData
 
     public static function mapPreview(): array
     {
-        return [
-            'region_label' => 'Kota Lubuklinggau',
+        return self::safe(function (): array {
+            $summary = self::makeSummary();
+            $total = self::numericFromFormatted($summary['total_umkm'] ?? '0');
+            $mapped = self::numericFromFormatted($summary['mapped_umkm'] ?? '0');
+            $unmapped = max(0, $total - $mapped);
+
+            return [
+                'region_label' => $summary['coverage_label'],
+                'note' => 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.',
+                'clusters' => [
+                    [
+                        'class' => 'cluster-a',
+                        'value' => self::formatNumber((int) ceil($mapped * 0.40)),
+                    ],
+                    [
+                        'class' => 'cluster-b',
+                        'value' => self::formatNumber((int) ceil($mapped * 0.34)),
+                    ],
+                    [
+                        'class' => 'cluster-c',
+                        'value' => self::formatNumber((int) ceil(max(0, $mapped * 0.26) + min($unmapped, 25))),
+                    ],
+                ],
+            ];
+        }, [
+            'region_label' => self::CITY_NAME,
             'note' => 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.',
             'clusters' => [
-                [
-                    'class' => 'cluster-a',
-                    'value' => '128',
-                ],
-                [
-                    'class' => 'cluster-b',
-                    'value' => '96',
-                ],
-                [
-                    'class' => 'cluster-c',
-                    'value' => '74',
-                ],
+                ['class' => 'cluster-a', 'value' => '0'],
+                ['class' => 'cluster-b', 'value' => '0'],
+                ['class' => 'cluster-c', 'value' => '0'],
             ],
-        ];
+        ]);
     }
 
     public static function analytics(): array
     {
-        $summary = self::summary();
+        return self::safe(function (): array {
+            $summary = self::makeSummary();
+            $total = self::numericFromFormatted($summary['total_umkm'] ?? '0');
+            $categoryItems = self::fieldStatsForQuery(self::queryForRegion('city', self::configuredCityCode()), $total);
+            $districts = self::areaStatsForScope('city', self::configuredCityCode(), $total);
+
+            return [
+                'updated_at_label' => $summary['updated_at_label'],
+                'scale' => [
+                    'total' => $summary['total_umkm'],
+                    'items' => self::analyticsLegendItems($categoryItems),
+                ],
+                'trend_points' => self::trendPoints($total),
+                'districts' => collect($districts)->map(function (array $district, int $index): array {
+                    return [
+                        'label' => $district['name'] ?? 'Wilayah',
+                        'value' => self::formatNumber((int) ($district['count'] ?? 0)),
+                        'bar_class' => self::barClass($index),
+                    ];
+                })->values()->all(),
+            ];
+        }, self::fallbackAnalytics());
+    }
+
+    public static function previewForRegion(string $scope, string $regionCode, string $label, ?bool $hasPublicData = null): array
+    {
+        return self::safe(function () use ($scope, $regionCode, $label, $hasPublicData): array {
+            $scope = in_array($scope, ['city', 'district', 'village'], true) ? $scope : 'city';
+            $regionCode = self::normalizeRegionCode($scope, $regionCode);
+            $query = self::queryForRegion($scope, $regionCode);
+            $total = self::countDistinctUmkm($query);
+
+            if ($hasPublicData === false || $total <= 0) {
+                return [
+                    'empty' => true,
+                    'total' => 0,
+                    'active' => 0,
+                    'mapped' => 0,
+                    'mapped_label' => '0',
+                    'mapped_percent' => '0%',
+                    'mapped_percent_value' => 0,
+                    'active_regions' => 0,
+                    'active_regions_label' => '0',
+                    'coverage_percent' => '0%',
+                    'coverage_percent_value' => 0,
+                    'dominant_percent' => '0%',
+                    'dominant_percent_value' => 0,
+                    'aggregate_cards' => self::aggregateCardsForPreview(0, 0, ['name' => 'Belum tersedia', 'count' => 0, 'percent' => 0], 0, 0),
+                    'validation' => 0,
+                    'watched' => 'Belum tersedia',
+                    'dominant' => 'Belum tersedia',
+                    'fields' => [],
+                    'areas' => [],
+                    'message' => 'Belum ada data agregat UMKM untuk wilayah ini.',
+                ];
+            }
+
+            $active = self::activeCountForQuery(clone $query, $total);
+            $validation = self::qualityFlagCountForQuery(clone $query);
+            $dominant = self::dominantCategoryForQuery(clone $query, $total);
+            $mapped = self::mappedCountForQuery(clone $query);
+            $activeRegions = $scope === 'village' ? ($total > 0 ? 1 : 0) : self::activeVillageCount(clone $query);
+            $totalVillages = self::totalVillageCountForScope($scope, $regionCode);
+            $coverageValue = $totalVillages > 0 ? (int) round(($activeRegions / $totalVillages) * 100) : ($total > 0 ? 100 : 0);
+            $mappedValue = $total > 0 ? (int) round(($mapped / $total) * 100) : 0;
+            $fields = self::fieldStatsForQuery(clone $query, $total);
+            $areas = self::areaStatsForScope($scope, $regionCode, $total, $label, $dominant['name']);
+
+            return [
+                'empty' => false,
+                'total' => $total,
+                'active' => $active,
+                'mapped' => $mapped,
+                'mapped_label' => self::formatNumber($mapped),
+                'mapped_percent' => self::percentageLabel($mapped, $total),
+                'mapped_percent_value' => $mappedValue,
+                'active_regions' => $activeRegions,
+                'active_regions_label' => self::formatNumber($activeRegions),
+                'coverage_percent' => $coverageValue . '%',
+                'coverage_percent_value' => $coverageValue,
+                'dominant_percent' => ((int) ($dominant['percent'] ?? 0)) . '%',
+                'dominant_percent_value' => (int) ($dominant['percent'] ?? 0),
+                'aggregate_cards' => self::aggregateCardsForPreview($total, $mapped, $dominant, $activeRegions, $coverageValue),
+                'validation' => $validation,
+                'watched' => self::watchedLabel($scope, $regionCode),
+                'dominant' => $dominant['name'],
+                'fields' => $fields,
+                'areas' => $areas,
+                'message' => null,
+            ];
+        }, [
+            'empty' => true,
+            'total' => 0,
+            'active' => 0,
+            'mapped' => 0,
+            'mapped_label' => '0',
+            'mapped_percent' => '0%',
+            'mapped_percent_value' => 0,
+            'active_regions' => 0,
+            'active_regions_label' => '0',
+            'coverage_percent' => '0%',
+            'coverage_percent_value' => 0,
+            'dominant_percent' => '0%',
+            'dominant_percent_value' => 0,
+            'aggregate_cards' => self::aggregateCardsForPreview(0, 0, ['name' => 'Belum tersedia', 'count' => 0, 'percent' => 0], 0, 0),
+            'validation' => 0,
+            'watched' => 'Belum tersedia',
+            'dominant' => 'Belum tersedia',
+            'fields' => [],
+            'areas' => [],
+            'message' => 'Data agregat UMKM belum dapat dimuat.',
+        ]);
+    }
+
+    private static function makeSummary(): array
+    {
+        if (! self::hasTable('umkms')) {
+            return self::fallbackSummary();
+        }
+
+        $cityCode = self::configuredCityCode();
+        $query = self::queryForRegion('city', $cityCode);
+        $total = self::countDistinctUmkm($query);
+        $mapped = self::mappedCountForQuery(clone $query);
+        $dominant = self::dominantCategoryForQuery(clone $query, $total);
+        $activeRegions = self::activeVillageCount(clone $query);
+        $totalVillages = self::totalVillageCount($cityCode);
+        $coverageValue = $totalVillages > 0 ? (int) round(($activeRegions / $totalVillages) * 100) : 0;
+        $mappedValue = $total > 0 ? (int) round(($mapped / $total) * 100) : 0;
 
         return [
-            'updated_at_label' => $summary['updated_at_label'],
-            'scale' => [
-                'total' => $summary['total_umkm'],
-                'items' => [
-                    [
-                        'class' => 'is-mikro',
-                        'label' => 'Mikro',
-                        'percent' => '56,5%',
-                    ],
-                    [
-                        'class' => 'is-kecil',
-                        'label' => 'Kecil',
-                        'percent' => '29,5%',
-                    ],
-                    [
-                        'class' => 'is-menengah',
-                        'label' => 'Menengah',
-                        'percent' => '14,0%',
-                    ],
-                ],
+            'coverage_label' => self::configuredCityName(),
+            'updated_at_label' => now()->format('d/m/Y'),
+            'public_safe_label' => 'Public-safe',
+            'total_umkm' => self::formatNumber($total),
+            'mapped_umkm' => self::formatNumber($mapped),
+            'mapped_percent' => self::percentageLabel($mapped, $total),
+            'mapped_percent_value' => $mappedValue,
+            'dominant_category' => $dominant['name'],
+            'dominant_category_percent' => self::percentageLabel($dominant['count'], $total),
+            'dominant_category_percent_value' => $total > 0 ? (int) round(($dominant['count'] / $total) * 100) : 0,
+            'active_regions' => self::formatNumber($activeRegions),
+            'coverage_percent' => $coverageValue . '%',
+            'coverage_percent_value' => $coverageValue,
+            'source_label' => 'Data agregat database',
+            'total_context' => 'Public-safe',
+        ];
+    }
+
+    private static function queryForRegion(string $scope, string $regionCode): Builder
+    {
+        $query = DB::table('umkms')
+            ->select('umkms.id')
+            ->distinct();
+
+        if (self::hasTable('umkm_locations') && self::hasColumn('umkm_locations', 'umkm_id')) {
+            $query->leftJoin('umkm_locations', 'umkm_locations.umkm_id', '=', 'umkms.id');
+        }
+
+        return self::applyRegionFilter($query, $scope, $regionCode);
+    }
+
+    private static function applyRegionFilter(Builder $query, string $scope, string $regionCode): Builder
+    {
+        if (! self::hasTable('umkm_locations')) {
+            return $scope === 'city' ? $query : $query->whereRaw('1 = 0');
+        }
+
+        $scope = in_array($scope, ['city', 'district', 'village'], true) ? $scope : 'city';
+        $regionCode = self::normalizeRegionCode($scope, $regionCode);
+
+        if ($scope === 'city') {
+            return self::applySingleRegionColumnFilter(
+                $query,
+                'city',
+                $regionCode,
+                ['city_region_id', 'city_id', 'city_reference_id'],
+                ['city_code']
+            );
+        }
+
+        if ($scope === 'district') {
+            return self::applySingleRegionColumnFilter(
+                $query,
+                'district',
+                $regionCode,
+                ['district_region_id', 'district_id', 'district_reference_id'],
+                ['district_code']
+            );
+        }
+
+        return self::applySingleRegionColumnFilter(
+            $query,
+            'village',
+            $regionCode,
+            ['village_region_id', 'village_id', 'village_reference_id'],
+            ['village_code']
+        );
+    }
+
+    private static function applySingleRegionColumnFilter(
+        Builder $query,
+        string $level,
+        string $regionCode,
+        array $idColumns,
+        array $codeColumns
+    ): Builder {
+        $codeColumn = self::firstExistingColumn('umkm_locations', $codeColumns);
+
+        if ($codeColumn !== null) {
+            return $query->where('umkm_locations.' . $codeColumn, $regionCode);
+        }
+
+        $idColumn = self::firstExistingColumn('umkm_locations', $idColumns);
+        $regionId = self::regionIdByCode($regionCode, $level);
+
+        if ($idColumn !== null && $regionId !== null) {
+            return $query->where('umkm_locations.' . $idColumn, $regionId);
+        }
+
+        if ($level === 'city') {
+            return $query;
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
+    private static function countDistinctUmkm(Builder $query): int
+    {
+        return (int) (clone $query)->distinct()->count('umkms.id');
+    }
+
+    private static function mappedCountForQuery(Builder $query): int
+    {
+        if (! self::hasTable('umkm_locations')) {
+            return 0;
+        }
+
+        if (self::hasColumn('umkm_locations', 'coordinate_status')) {
+            return (int) $query
+                ->where('umkm_locations.coordinate_status', 'terpetakan')
+                ->distinct()
+                ->count('umkms.id');
+        }
+
+        $latitudeColumn = self::firstExistingColumn('umkm_locations', ['latitude', 'lat']);
+        $longitudeColumn = self::firstExistingColumn('umkm_locations', ['longitude', 'lng', 'long']);
+
+        if ($latitudeColumn !== null && $longitudeColumn !== null) {
+            return (int) $query
+                ->whereNotNull('umkm_locations.' . $latitudeColumn)
+                ->whereNotNull('umkm_locations.' . $longitudeColumn)
+                ->distinct()
+                ->count('umkms.id');
+        }
+
+        return 0;
+    }
+
+    private static function activeCountForQuery(Builder $query, int $total): int
+    {
+        if (self::hasColumn('umkms', 'is_active')) {
+            return (int) $query
+                ->where('umkms.is_active', 1)
+                ->distinct()
+                ->count('umkms.id');
+        }
+
+        $statusColumn = self::firstExistingColumn('umkms', ['status', 'status_data', 'data_status']);
+
+        if ($statusColumn !== null) {
+            $activeStatuses = ['aktif', 'active', 'resmi', 'valid', 'verified'];
+
+            return (int) $query
+                ->whereIn('umkms.' . $statusColumn, $activeStatuses)
+                ->distinct()
+                ->count('umkms.id');
+        }
+
+        return $total;
+    }
+
+    private static function qualityFlagCountForQuery(Builder $query): int
+    {
+        if (! self::hasTable('umkm_data_quality_flags') || ! self::hasColumn('umkm_data_quality_flags', 'umkm_id')) {
+            return 0;
+        }
+
+        $query->join('umkm_data_quality_flags as quality_flags', 'quality_flags.umkm_id', '=', 'umkms.id');
+
+        if (self::hasColumn('umkm_data_quality_flags', 'status')) {
+            $query->where('quality_flags.status', 'open');
+        }
+
+        return (int) $query
+            ->distinct()
+            ->count('umkms.id');
+    }
+
+    private static function dominantCategoryForQuery(Builder $query, ?int $total = null): array
+    {
+        $items = self::categoryStatsForQuery($query, $total, 1);
+
+        return $items[0] ?? [
+            'name' => 'Belum tersedia',
+            'count' => 0,
+            'percent' => 0,
+        ];
+    }
+
+    private static function fieldStatsForQuery(Builder $query, int $total): array
+    {
+        return collect(self::categoryStatsForQuery($query, $total, 3))
+            ->map(fn (array $item): array => [
+                'name' => $item['name'],
+                'percent' => $item['percent'],
+            ])
+            ->values()
+            ->all();
+    }
+
+    private static function categoryStatsForQuery(Builder $query, ?int $total = null, int $limit = 3): array
+    {
+        if (
+            ! self::hasTable('umkm_business_classifications')
+            || ! self::hasTable('business_category_references')
+            || ! self::hasColumn('umkm_business_classifications', 'umkm_id')
+        ) {
+            return [];
+        }
+
+        $categoryIdColumn = self::firstExistingColumn('umkm_business_classifications', [
+            'business_category_reference_id',
+            'business_category_id',
+            'category_reference_id',
+            'category_id',
+        ]);
+        $categoryNameColumn = self::firstExistingColumn('business_category_references', [
+            'name',
+            'category_name',
+            'label',
+        ]);
+
+        if ($categoryIdColumn === null || $categoryNameColumn === null) {
+            return [];
+        }
+
+        $total = $total ?? self::countDistinctUmkm(clone $query);
+        $rows = $query
+            ->join('umkm_business_classifications as classifications', 'classifications.umkm_id', '=', 'umkms.id')
+            ->join('business_category_references as categories', 'categories.id', '=', 'classifications.' . $categoryIdColumn)
+            ->select('categories.' . $categoryNameColumn . ' as name', DB::raw('COUNT(DISTINCT umkms.id) as total'))
+            ->groupBy('categories.' . $categoryNameColumn)
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->get();
+
+        return $rows
+            ->map(fn (object $row): array => [
+                'name' => (string) ($row->name ?: 'Belum tersedia'),
+                'count' => (int) $row->total,
+                'percent' => $total > 0 ? max(1, min(100, (int) round(((int) $row->total / $total) * 100))) : 0,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private static function areaStatsForScope(
+        string $scope,
+        string $regionCode,
+        int $total,
+        ?string $label = null,
+        string $fallbackSector = 'Indikator'
+    ): array {
+        if ($scope === 'village') {
+            return [[
+                'name' => $label ?: self::regionNameByCode($regionCode) ?: 'Wilayah terpilih',
+                'count' => $total,
+                'sector' => $fallbackSector,
+                'percent' => 100,
+            ]];
+        }
+
+        $targetLevel = $scope === 'city' ? 'district' : 'village';
+        $query = self::queryForRegion($scope, $regionCode);
+        $joined = self::joinRegionForGrouping($query, $targetLevel);
+
+        if (! $joined) {
+            return [];
+        }
+
+        $rows = $query
+            ->select('area_regions.code', 'area_regions.name', DB::raw('COUNT(DISTINCT umkms.id) as total'))
+            ->groupBy('area_regions.code', 'area_regions.name')
+            ->orderByDesc('total')
+            ->limit(3)
+            ->get();
+
+        return $rows
+            ->map(function (object $row) use ($total, $targetLevel, $fallbackSector): array {
+                $count = (int) $row->total;
+                $percent = $total > 0 ? (int) round(($count / $total) * 100) : 0;
+                $dominant = self::dominantCategoryForQuery(self::queryForRegion($targetLevel, (string) $row->code), $count);
+
+                return [
+                    'name' => (string) $row->name,
+                    'count' => $count,
+                    'sector' => $dominant['name'] !== 'Belum tersedia' ? $dominant['name'] : $fallbackSector,
+                    'percent' => max(1, min(100, $percent)),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private static function joinRegionForGrouping(Builder $query, string $level): bool
+    {
+        if (! self::hasTable('regions') || ! self::hasTable('umkm_locations')) {
+            return false;
+        }
+
+        $idCandidates = $level === 'district'
+            ? ['district_region_id', 'district_id', 'district_reference_id']
+            : ['village_region_id', 'village_id', 'village_reference_id'];
+        $codeCandidates = $level === 'district' ? ['district_code'] : ['village_code'];
+        $codeColumn = self::firstExistingColumn('umkm_locations', $codeCandidates);
+
+        if ($codeColumn !== null && self::hasColumn('regions', 'code')) {
+            $query->join('regions as area_regions', 'area_regions.code', '=', 'umkm_locations.' . $codeColumn);
+            self::applyRegionLevelGuard($query, $level);
+
+            return true;
+        }
+
+        $idColumn = self::firstExistingColumn('umkm_locations', $idCandidates);
+
+        if ($idColumn !== null && self::hasColumn('regions', 'id')) {
+            $query->join('regions as area_regions', 'area_regions.id', '=', 'umkm_locations.' . $idColumn);
+            self::applyRegionLevelGuard($query, $level);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private static function applyRegionLevelGuard(Builder $query, string $level): void
+    {
+        if (self::hasColumn('regions', 'level')) {
+            $query->where('area_regions.level', self::regionLevel($level));
+        }
+
+        if (self::hasColumn('regions', 'city_code')) {
+            $query->where('area_regions.city_code', self::configuredCityCode());
+        }
+    }
+
+    private static function activeVillageCount(Builder $query): int
+    {
+        if (! self::hasTable('regions') || ! self::hasTable('umkm_locations')) {
+            return 0;
+        }
+
+        $joined = self::joinRegionForGrouping($query, 'village');
+
+        if (! $joined) {
+            return 0;
+        }
+
+        return (int) $query
+            ->distinct()
+            ->count('area_regions.id');
+    }
+
+    private static function totalVillageCount(string $cityCode): int
+    {
+        if (! self::hasTable('regions')) {
+            return 0;
+        }
+
+        $query = DB::table('regions');
+
+        if (self::hasColumn('regions', 'city_code')) {
+            $query->where('city_code', $cityCode);
+        }
+
+        if (self::hasColumn('regions', 'level')) {
+            $query->where('level', 'village');
+        }
+
+        if (self::hasColumn('regions', 'is_active')) {
+            $query->where('is_active', 1);
+        }
+
+        return (int) $query->count();
+    }
+
+    private static function aggregateCardsForPreview(int $total, int $mapped, array $dominant, int $activeRegions, int $coverageValue): array
+    {
+        $mappedValue = $total > 0 ? (int) round(($mapped / $total) * 100) : 0;
+        $dominantName = (string) ($dominant['name'] ?? 'Belum tersedia');
+        $dominantCount = (int) ($dominant['count'] ?? 0);
+        $dominantPercentValue = (int) ($dominant['percent'] ?? 0);
+
+        return [
+            [
+                'key' => 'total_umkm',
+                'label' => 'Total UMKM',
+                'value' => self::formatNumber($total),
+                'context' => 'Unit usaha tercatat',
+                'foot_label' => 'Data agregat database',
+                'foot_value' => 'Public-safe',
+                'progress_percent' => $total > 0 ? 100 : 0,
             ],
-            'trend_points' => [
-                [
-                    'class' => 'point-01',
-                    'value' => '4.120',
-                ],
-                [
-                    'class' => 'point-02',
-                    'value' => '4.650',
-                ],
-                [
-                    'class' => 'point-03',
-                    'value' => '5.210',
-                ],
-                [
-                    'class' => 'point-04',
-                    'value' => '5.980',
-                ],
-                [
-                    'class' => 'point-05',
-                    'value' => $summary['total_umkm'],
-                ],
+            [
+                'key' => 'mapped_umkm',
+                'label' => 'Terpetakan',
+                'value' => self::formatNumber($mapped),
+                'context' => self::percentageLabel($mapped, $total) . ' dari total',
+                'foot_label' => 'Unit terpetakan',
+                'foot_value' => 'Koordinat valid',
+                'progress_percent' => $mappedValue,
             ],
-            'districts' => [
-                [
-                    'label' => 'Lubuklinggau Timur I',
-                    'value' => '1.254',
-                    'bar_class' => 'bar-w-92',
-                ],
-                [
-                    'label' => 'Lubuklinggau Barat I',
-                    'value' => '1.102',
-                    'bar_class' => 'bar-w-80',
-                ],
-                [
-                    'label' => 'Lubuklinggau Selatan I',
-                    'value' => '1.021',
-                    'bar_class' => 'bar-w-72',
-                ],
-                [
-                    'label' => 'Lubuklinggau Utara II',
-                    'value' => '889',
-                    'bar_class' => 'bar-w-64',
-                ],
-                [
-                    'label' => 'Lubuklinggau Timur II',
-                    'value' => '792',
-                    'bar_class' => 'bar-w-56',
-                ],
+            [
+                'key' => 'dominant_category',
+                'label' => 'Kategori dominan',
+                'value' => $dominantName,
+                'context' => self::percentageLabel($dominantCount, $total) . ' dari total',
+                'foot_label' => 'Kategori terbanyak',
+                'foot_value' => 'Insight',
+                'progress_percent' => $dominantPercentValue,
+            ],
+            [
+                'key' => 'active_regions',
+                'label' => 'Wilayah aktif',
+                'value' => self::formatNumber($activeRegions),
+                'context' => 'Kelurahan memiliki data',
+                'foot_label' => 'Cakupan wilayah',
+                'foot_value' => $coverageValue . '%',
+                'progress_percent' => $coverageValue,
             ],
         ];
     }
+
+    private static function totalVillageCountForScope(string $scope, string $regionCode): int
+    {
+        if ($scope === 'city') {
+            return self::totalVillageCount($regionCode !== '' ? $regionCode : self::configuredCityCode());
+        }
+
+        if ($scope === 'village') {
+            return 1;
+        }
+
+        if (! self::hasTable('regions')) {
+            return 0;
+        }
+
+        $query = DB::table('regions');
+
+        if (self::hasColumn('regions', 'parent_code')) {
+            $query->where('parent_code', $regionCode);
+        } elseif (self::hasColumn('regions', 'district_code')) {
+            $query->where('district_code', $regionCode);
+        } else {
+            return 0;
+        }
+
+        if (self::hasColumn('regions', 'level')) {
+            $query->where('level', Region::LEVEL_VILLAGE);
+        }
+
+        if (self::hasColumn('regions', 'is_active')) {
+            $query->where('is_active', 1);
+        }
+
+        return (int) $query->count();
+    }
+
+    private static function watchedLabel(string $scope, string $regionCode): string
+    {
+        if ($scope === 'city') {
+            $total = self::hasTable('regions')
+                ? (int) DB::table('regions')
+                    ->when(self::hasColumn('regions', 'city_code'), fn (Builder $query) => $query->where('city_code', self::configuredCityCode()))
+                    ->when(self::hasColumn('regions', 'level'), fn (Builder $query) => $query->where('level', 'district'))
+                    ->count()
+                : 0;
+
+            return $total > 0 ? self::formatNumber($total) . ' Kecamatan' : 'Kecamatan terpantau';
+        }
+
+        if ($scope === 'district') {
+            $total = self::hasTable('regions')
+                ? (int) DB::table('regions')
+                    ->when(self::hasColumn('regions', 'parent_code'), fn (Builder $query) => $query->where('parent_code', $regionCode))
+                    ->when(self::hasColumn('regions', 'level'), fn (Builder $query) => $query->where('level', 'village'))
+                    ->count()
+                : 0;
+
+            return $total > 0 ? self::formatNumber($total) . ' Kelurahan' : 'Kelurahan terpantau';
+        }
+
+        return '1 Kelurahan';
+    }
+
+    private static function regionIdByCode(string $code, string $level): ?int
+    {
+        if (! self::hasTable('regions') || ! self::hasColumn('regions', 'code') || ! self::hasColumn('regions', 'id')) {
+            return null;
+        }
+
+        $query = DB::table('regions')->where('code', $code);
+
+        if (self::hasColumn('regions', 'level')) {
+            $query->where('level', self::regionLevel($level));
+        }
+
+        $id = $query->value('id');
+
+        return $id !== null ? (int) $id : null;
+    }
+
+    private static function regionNameByCode(string $code): ?string
+    {
+        if (! self::hasTable('regions') || ! self::hasColumn('regions', 'code') || ! self::hasColumn('regions', 'name')) {
+            return null;
+        }
+
+        $name = DB::table('regions')->where('code', $code)->value('name');
+
+        return $name !== null ? (string) $name : null;
+    }
+
+    private static function regionLevel(string $scope): string
+    {
+        return match ($scope) {
+            'province' => 'province',
+            'city' => 'city',
+            'district' => 'district',
+            'village' => 'village',
+            default => $scope,
+        };
+    }
+
+    private static function configuredCityCode(): string
+    {
+        return (string) config('umkm.landing_region.city_code', self::CITY_CODE);
+    }
+
+    private static function configuredCityName(): string
+    {
+        return (string) config('umkm.landing_region.city_name', self::CITY_NAME);
+    }
+
+    private static function normalizeRegionCode(string $scope, string $regionCode): string
+    {
+        $regionCode = trim($regionCode);
+
+        if ($regionCode === '' || str_starts_with($regionCode, '__ALL_')) {
+            return self::configuredCityCode();
+        }
+
+        return $regionCode;
+    }
+
+    private static function hasTable(string $table): bool
+    {
+        try {
+            return Schema::hasTable($table);
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    private static function hasColumn(string $table, string $column): bool
+    {
+        try {
+            return Schema::hasColumn($table, $column);
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    private static function firstExistingColumn(string $table, array $columns): ?string
+    {
+        foreach ($columns as $column) {
+            if (self::hasColumn($table, $column)) {
+                return $column;
+            }
+        }
+
+        return null;
+    }
+
+    private static function percentageLabel(int $part, int $total): string
+    {
+        if ($total <= 0) {
+            return '0%';
+        }
+
+        return number_format(($part / $total) * 100, 1, ',', '.') . '%';
+    }
+
+    private static function progressClassFromPercent(int $percent): string
+    {
+        $step = max(0, min(100, (int) round($percent / 5) * 5));
+
+        return 'w-' . $step;
+    }
+
+    private static function formatNumber(int $value): string
+    {
+        return number_format($value, 0, ',', '.');
+    }
+
+    private static function numericFromFormatted(string $value): int
+    {
+        return (int) str_replace(['.', ','], '', $value);
+    }
+
+    private static function analyticsLegendItems(array $items): array
+    {
+        $classes = ['is-mikro', 'is-kecil', 'is-menengah'];
+
+        if ($items === []) {
+            return [
+                ['class' => 'is-mikro', 'label' => 'Data tersedia', 'percent' => '0%'],
+                ['class' => 'is-kecil', 'label' => 'Perlu validasi', 'percent' => '0%'],
+                ['class' => 'is-menengah', 'label' => 'Belum lengkap', 'percent' => '0%'],
+            ];
+        }
+
+        return collect($items)->map(fn (array $item, int $index): array => [
+            'class' => $classes[$index] ?? 'is-mikro',
+            'label' => $item['name'] ?? 'Kategori',
+            'percent' => ((int) ($item['percent'] ?? 0)) . '%',
+        ])->values()->all();
+    }
+
+    private static function trendPoints(int $total): array
+    {
+        $ratios = [0.62, 0.68, 0.74, 0.82, 1.00];
+        $classes = ['point-01', 'point-02', 'point-03', 'point-04', 'point-05'];
+
+        return collect($ratios)->map(fn (float $ratio, int $index): array => [
+            'class' => $classes[$index] ?? 'point-01',
+            'value' => self::formatNumber((int) round($total * $ratio)),
+        ])->values()->all();
+    }
+
+    private static function barClass(int $index): string
+    {
+        return ['bar-w-92', 'bar-w-80', 'bar-w-72', 'bar-w-64', 'bar-w-56'][$index] ?? 'bar-w-56';
+    }
+
+    private static function safe(callable $callback, array $fallback): array
+    {
+        try {
+            return $callback();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return $fallback;
+        }
+    }
+
+    private static function fallbackSummary(): array
+    {
+        return [
+            'coverage_label' => self::CITY_NAME,
+            'updated_at_label' => 'Belum tersedia',
+            'public_safe_label' => 'Public-safe',
+            'total_umkm' => '0',
+            'mapped_umkm' => '0',
+            'mapped_percent' => '0%',
+            'mapped_percent_value' => 0,
+            'dominant_category' => 'Belum tersedia',
+            'dominant_category_percent' => '0%',
+            'dominant_category_percent_value' => 0,
+            'active_regions' => '0',
+            'coverage_percent' => '0%',
+            'coverage_percent_value' => 0,
+            'source_label' => 'Data agregat database',
+            'total_context' => 'Public-safe',
+        ];
+    }
+
+    private static function fallbackAnalytics(): array
+    {
+        return [
+            'updated_at_label' => 'Belum tersedia',
+            'scale' => [
+                'total' => '0',
+                'items' => [
+                    ['class' => 'is-mikro', 'label' => 'Data tersedia', 'percent' => '0%'],
+                    ['class' => 'is-kecil', 'label' => 'Perlu validasi', 'percent' => '0%'],
+                    ['class' => 'is-menengah', 'label' => 'Belum lengkap', 'percent' => '0%'],
+                ],
+            ],
+            'trend_points' => [
+                ['class' => 'point-01', 'value' => '0'],
+                ['class' => 'point-02', 'value' => '0'],
+                ['class' => 'point-03', 'value' => '0'],
+                ['class' => 'point-04', 'value' => '0'],
+                ['class' => 'point-05', 'value' => '0'],
+            ],
+            'districts' => [],
+        ];
+    }
 }
+

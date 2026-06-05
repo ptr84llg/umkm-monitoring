@@ -22,7 +22,7 @@
                 <div class="filter-sync-title">
                     <strong>Kontrol Data Publik</strong>
                     <p class="mb-0">Filter otomatis mengikuti konteks wilayah preview yang diterapkan pada Peta Sebaran.</p>
-                    <small class="filter-sync-context">Konteks aktif: <b data-public-region-source>Kota Lubuklinggau</b></small>
+                    <small class="filter-sync-context">Konteks aktif: <b data-public-active-context-label>Kota Lubuklinggau</b></small>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
             <article class="card h-100 border-0 analytics-card reveal">
                 <div class="card-body">
                     <div class="analytics-card-head">
-                        <h3>Komposisi Skala Usaha</h3>
+                        <h3>Komposisi Kategori Usaha</h3>
                         <span class="badge rounded-pill text-bg-light">Agregat</span>
                     </div>
                     <div class="donut-visual mx-auto my-3" aria-hidden="true">
@@ -90,7 +90,7 @@
                     </div>
                     <div class="analytics-legend">
                         @foreach (($publicLandingAnalytics['scale']['items'] ?? []) as $item)
-                            <span><i class="{{ $item['class'] ?? '' }}"></i>{{ $item['label'] ?? 'Skala' }} <strong>{{ $item['percent'] ?? '—' }}</strong></span>
+                            <span><i class="{{ $item['class'] ?? '' }}"></i>{{ $item['label'] ?? 'Kategori' }} <strong>{{ $item['percent'] ?? '—' }}</strong></span>
                         @endforeach
                     </div>
                 </div>
@@ -101,8 +101,8 @@
             <article class="card h-100 border-0 analytics-card reveal reveal-delay-1">
                 <div class="card-body">
                     <div class="analytics-card-head">
-                        <h3>Tren Pertumbuhan UMKM</h3>
-                        <span class="badge rounded-pill text-bg-light">2022–2026</span>
+                        <h3>Status Keterpetaan Data</h3>
+                        <span class="badge rounded-pill text-bg-light">Public-safe</span>
                     </div>
                     <div class="mini-line-chart" aria-hidden="true">
                         @foreach (($publicLandingAnalytics['trend_points'] ?? []) as $point)
@@ -155,3 +155,4 @@
         </div>
     </div>
 </div>
+
