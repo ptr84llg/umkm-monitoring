@@ -212,7 +212,7 @@ final class PublicLandingRegionGeometry
             ->all();
 
         $counts = self::umkmCountsByRegionCodes($codes, $level);
-        $max = max(0, ...array_values($counts));
+        $max = $counts === [] ? 0 : max(array_values($counts));
 
         return collect($features)
             ->map(function (array $feature) use ($counts, $max): array {

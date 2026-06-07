@@ -6,7 +6,8 @@
 
     const state = {
         map: null,
-        dataLayer: null,
+        districtLayer: null,
+        villageLayer: null,
         googleReady: null,
         loading: false,
         eventsBound: false,
@@ -14,10 +15,10 @@
         geometryReady: false,
         interactionReady: false,
         hoveredCode: null,
-        activeCode: null,
-        lastPayload: null,
-        pendingDirectSelection: null,
-        pendingDirectSelectionUntil: 0,
+        activeDistrictCode: '',
+        activeVillageCode: '',
+        lastDistrictPayload: null,
+        lastVillagePayload: null,
         suppressMapRenderUntil: 0
     };
 
@@ -56,19 +57,37 @@
         if (element) element.textContent = text == null ? '' : String(text);
     }
 
-    function setLoadingState() {
+    function setLoadingState(message) {
+        state.loading = true;
         state.geometryReady = false;
         state.interactionReady = false;
         state.hoveredCode = null;
         setReadyFlag(false);
         hideHoverPanel();
-        setStatus('Memuat peta wilayah aktif...', 'loading');
+        setStatus(message || 'Memuat peta wilayah aktif...', 'loading');
 
-        if (!state.lastPayload) {
+        if (!state.lastDistrictPayload && !state.lastVillagePayload) {
             setText('[data-public-region-map-feature-count]', '0');
             setText('[data-public-region-map-total-umkm]', '0');
             setText('[data-public-region-map-density-max]', '0');
         }
+    }
+
+    function setReadyState() {
+        state.loading = false;
+        state.geometryReady = true;
+        state.interactionReady = true;
+        setReadyFlag(true);
+        refreshLayerStyle();
+    }
+
+    function setFailedState(error, fallbackMessage) {
+        state.loading = false;
+        state.geometryReady = Boolean(state.lastDistrictPayload || state.lastVillagePayload);
+        state.interactionReady = state.mapReady === true && state.geometryReady === true;
+        setReadyFlag(state.interactionReady);
+        refreshLayerStyle();
+        setStatus(error && error.message ? error.message : (fallbackMessage || 'Peta wilayah belum dapat dimuat.'), 'warning');
     }
 
     function endpoint() {
@@ -147,9 +166,10 @@
         return '#e2e8f0';
     }
 
-    function densityOpacity(level, active, hovered) {
-        if (hovered) return 0.74;
-        if (active) return 0.70;
+    function densityOpacity(level, active, hovered, context) {
+        if (hovered) return 0.78;
+        if (active) return 0.72;
+        if (context) return 0.22;
 
         const value = String(level || 'empty');
 
@@ -171,26 +191,50 @@
         return state.suppressMapRenderUntil && Date.now() < state.suppressMapRenderUntil;
     }
 
-    function featureStyle(feature) {
+    function districtStyle(feature) {
         const code = String(feature.getProperty('region_code') || '');
-        const active = Boolean(feature.getProperty('active')) || code === state.activeCode;
+        const active = code !== '' && code === state.activeDistrictCode;
         const hovered = isInteractionReady() && code !== '' && code === state.hoveredCode;
         const level = String(feature.getProperty('density_level') || 'empty');
 
         return {
             fillColor: active ? '#f97316' : densityColor(level),
-            fillOpacity: densityOpacity(level, active, hovered),
+            fillOpacity: densityOpacity(level, false, hovered, active),
             strokeColor: active ? '#ea580c' : (hovered ? '#0f172a' : '#1e293b'),
-            strokeOpacity: active || hovered ? 0.98 : 0.62,
-            strokeWeight: active ? 2.8 : (hovered ? 2.35 : 1.2),
-            clickable: isInteractionReady()
+            strokeOpacity: active || hovered ? 0.98 : 0.54,
+            strokeWeight: active ? 3.1 : (hovered ? 2.35 : 1.1),
+            clickable: isInteractionReady(),
+            zIndex: active ? 30 : 10
+        };
+    }
+
+    function villageStyle(feature) {
+        const code = String(feature.getProperty('region_code') || '');
+        const active = code !== '' && code === state.activeVillageCode;
+        const hovered = isInteractionReady() && code !== '' && code === state.hoveredCode;
+        const level = String(feature.getProperty('density_level') || 'empty');
+
+        return {
+            fillColor: active ? '#f97316' : densityColor(level),
+            fillOpacity: densityOpacity(level, active, hovered, false),
+            strokeColor: active ? '#ea580c' : (hovered ? '#0f172a' : '#1e293b'),
+            strokeOpacity: active || hovered ? 0.98 : 0.68,
+            strokeWeight: active ? 3.1 : (hovered ? 2.35 : 1.25),
+            clickable: isInteractionReady(),
+            zIndex: active ? 80 : 50
         };
     }
 
     function refreshLayerStyle() {
-        if (!state.dataLayer) return;
-        state.dataLayer.revertStyle();
-        state.dataLayer.setStyle(featureStyle);
+        if (state.districtLayer) {
+            state.districtLayer.revertStyle();
+            state.districtLayer.setStyle(districtStyle);
+        }
+
+        if (state.villageLayer) {
+            state.villageLayer.revertStyle();
+            state.villageLayer.setStyle(villageStyle);
+        }
     }
 
     function initMap() {
@@ -216,33 +260,51 @@
             }
 
             state.map = new maps.Map(canvas, options);
-            state.dataLayer = new maps.Data({ map: state.map });
+            state.districtLayer = new maps.Data({ map: state.map });
+            state.villageLayer = new maps.Data({ map: state.map });
             state.mapReady = true;
-            state.dataLayer.setStyle(featureStyle);
 
-            state.dataLayer.addListener('mouseover', function (event) {
-                if (!isInteractionReady()) return;
-
-                state.hoveredCode = String(event.feature.getProperty('region_code') || '');
-                state.dataLayer.revertStyle();
-                state.dataLayer.overrideStyle(event.feature, featureStyle(event.feature));
-                showHoverPanel(event.feature);
-            });
-
-            state.dataLayer.addListener('mouseout', function () {
-                if (!state.dataLayer) return;
-
-                state.hoveredCode = null;
-                refreshLayerStyle();
-                hideHoverPanel();
-            });
-
-            state.dataLayer.addListener('click', function (event) {
-                if (!isInteractionReady()) return;
-                activateFeature(event.feature);
-            });
+            state.districtLayer.setStyle(districtStyle);
+            state.villageLayer.setStyle(villageStyle);
+            bindDataLayerEvents(state.districtLayer, 'district');
+            bindDataLayerEvents(state.villageLayer, 'village');
 
             return state.map;
+        });
+    }
+
+    function bindDataLayerEvents(layer, level) {
+        if (!layer) return;
+
+        layer.addListener('mouseover', function (event) {
+            if (!isInteractionReady()) return;
+
+            state.hoveredCode = String(event.feature.getProperty('region_code') || '');
+            refreshLayerStyle();
+
+            if (level === 'district') {
+                state.districtLayer.overrideStyle(event.feature, districtStyle(event.feature));
+            } else {
+                state.villageLayer.overrideStyle(event.feature, villageStyle(event.feature));
+            }
+
+            showHoverPanel(event.feature);
+        });
+
+        layer.addListener('mouseout', function () {
+            state.hoveredCode = null;
+            refreshLayerStyle();
+            hideHoverPanel();
+        });
+
+        layer.addListener('click', function (event) {
+            if (!isInteractionReady()) return;
+
+            if (level === 'district') {
+                activateDistrictFeature(event.feature);
+            } else {
+                activateVillageFeature(event.feature);
+            }
         });
     }
 
@@ -281,15 +343,14 @@
         return 'belum ada data';
     }
 
-    function clearLayer() {
-        if (!state.dataLayer) return;
+    function clearLayer(layer) {
+        if (!layer) return;
 
-        state.dataLayer.forEach(function (feature) {
-            state.dataLayer.remove(feature);
+        layer.forEach(function (feature) {
+            layer.remove(feature);
         });
 
         state.hoveredCode = null;
-        state.activeCode = null;
         hideHoverPanel();
     }
 
@@ -299,18 +360,25 @@
         });
     }
 
-    function fitToLayer() {
-        if (!state.map || !state.dataLayer || !(window.google && window.google.maps)) return;
+    function layerBounds(layer) {
+        if (!layer || !(window.google && window.google.maps)) return null;
 
         const bounds = new window.google.maps.LatLngBounds();
         let count = 0;
 
-        state.dataLayer.forEach(function (feature) {
+        layer.forEach(function (feature) {
             extendBoundsFromGeometry(bounds, feature.getGeometry());
             count += 1;
         });
 
-        if (count > 0 && !bounds.isEmpty()) {
+        return count > 0 && !bounds.isEmpty() ? bounds : null;
+    }
+
+    function fitLayer(layer) {
+        if (!state.map) return;
+
+        const bounds = layerBounds(layer);
+        if (bounds) {
             state.map.fitBounds(bounds, 28);
         }
     }
@@ -426,30 +494,29 @@
         return normalized;
     }
 
-    function selectionHasSpecificRegion(selection) {
-        return Boolean(selection && (
-            (selection.district && selection.district.code) ||
-            (selection.village && selection.village.code)
-        ));
-    }
-
-    function selectionForRender(input) {
-        const normalized = normalizeSelectionForMap(input || currentSelection());
-        const pending = state.pendingDirectSelection;
-
-        if (pending && Date.now() < state.pendingDirectSelectionUntil) {
-            if (!selectionHasSpecificRegion(normalized) && selectionHasSpecificRegion(pending)) {
-                return pending;
-            }
-        }
-
-        return normalized;
-    }
-
     function selectionActiveCode(selection) {
         if (selection && selection.village && selection.village.code) return String(selection.village.code);
         if (selection && selection.district && selection.district.code) return String(selection.district.code);
         return '';
+    }
+
+    function districtGeometrySelection(selection) {
+        const safe = normalizeSelectionForMap(selection);
+
+        if (!safe.district || !safe.district.code) {
+            return normalizeSelectionForMap({ scope: 'city' });
+        }
+
+        return normalizeSelectionForMap({
+            scope: 'district',
+            district: safe.district,
+            district_code: safe.district.code,
+            district_name: safe.district.name,
+            districtAll: false,
+            villageAll: true,
+            village: null,
+            label: 'Kecamatan ' + (safe.district.name || safe.district.code)
+        });
     }
 
     function queryFromSelection(selection) {
@@ -526,13 +593,29 @@
         setText('[data-public-region-map-scope]', scopeLabel);
         setText('[data-public-region-map-total-umkm]', total);
 
-        if (state.lastPayload && state.lastPayload.summary) {
-            const summary = state.lastPayload.summary || {};
+        const payload = state.lastVillagePayload || state.lastDistrictPayload;
+        if (payload && payload.summary) {
+            const summary = payload.summary || {};
             const visibleLevel = summary.visible_level === 'village' ? 'Kelurahan' : 'Kecamatan';
             setText('[data-public-region-map-feature-count]', String(summary.feature_count || 0));
             setText('[data-public-region-map-visible-level]', visibleLevel);
             setText('[data-public-region-map-density-max]', summary.max_umkm_text || '0');
         }
+    }
+
+    function findFeatureByCode(layer, code) {
+        if (!layer || !code) return null;
+
+        let found = null;
+        layer.forEach(function (feature) {
+            if (found) return;
+
+            if (String(feature.getProperty('region_code') || '') === String(code)) {
+                found = feature;
+            }
+        });
+
+        return found;
     }
 
     function selectionFromFeature(feature) {
@@ -568,7 +651,7 @@
         }
 
         if (level === 'village') {
-            const districtCode = String(feature.getProperty('district_code') || feature.getProperty('parent_code') || '');
+            const districtCode = String(feature.getProperty('district_code') || feature.getProperty('parent_code') || state.activeDistrictCode || '');
             const districtName = String(feature.getProperty('district_name') || districtCode || 'Kecamatan');
 
             selection.district = districtCode ? {
@@ -592,38 +675,11 @@
         return normalizeSelectionForMap(selection);
     }
 
-    function activateFeature(feature) {
-        const selection = selectionFromFeature(feature);
-        if (!selection) return;
-
-        state.pendingDirectSelection = selection;
-        state.pendingDirectSelectionUntil = Date.now() + 3000;
-        state.suppressMapRenderUntil = Date.now() + 2500;
-        state.activeCode = selectionActiveCode(selection);
-        hideHoverPanel();
-        updatePanelFromSelection(selection, feature);
-        state.geometryReady = true;
-        state.interactionReady = true;
-        setReadyFlag(true);
-        refreshLayerStyle();
-        setStatus('Wilayah aktif: ' + selection.label + '. Data landing sedang disesuaikan.', 'success');
+    function applySelectionFromMap(selection) {
+        state.suppressMapRenderUntil = Date.now() + 5000;
 
         if (typeof Landing.applyRegionSelection === 'function') {
-            Promise.resolve(Landing.applyRegionSelection(selection))
-                .then(function () {
-                    state.pendingDirectSelection = null;
-                    state.pendingDirectSelectionUntil = 0;
-                    state.interactionReady = state.mapReady === true && state.geometryReady === true;
-                    setReadyFlag(state.interactionReady);
-                    refreshLayerStyle();
-                    setStatus('Wilayah aktif: ' + selection.label + '. Klik wilayah lain untuk mengganti filter.', 'success');
-                })
-                .catch(function (error) {
-                    setStatus(error && error.message ? error.message : 'Wilayah belum dapat diaktifkan dari peta.', 'warning');
-                    state.interactionReady = state.geometryReady === true && state.mapReady === true;
-                    setReadyFlag(state.interactionReady);
-                });
-            return;
+            return Promise.resolve(Landing.applyRegionSelection(selection));
         }
 
         document.dispatchEvent(new CustomEvent('umkm:landing-region:changed', {
@@ -633,61 +689,144 @@
             }
         }));
 
-        state.pendingDirectSelection = null;
-        state.pendingDirectSelectionUntil = 0;
-        setStatus('Wilayah aktif: ' + selection.label + '. Klik wilayah lain untuk mengganti filter.', 'success');
+        return Promise.resolve();
     }
 
-    function renderGeometry(selection) {
-        if (state.loading) return;
+    function loadDistrictLayer() {
+        return requestGeometry({ scope: 'city' }).then(function (payload) {
+            clearLayer(state.districtLayer);
+            state.lastDistrictPayload = payload;
+            state.districtLayer.addGeoJson(payload.geometry);
+            return payload;
+        });
+    }
 
-        const renderSelection = selectionForRender(selection);
+    function loadVillageLayer(selection) {
+        const districtSelection = districtGeometrySelection(selection);
 
-        state.loading = true;
-        setLoadingState();
+        if (!districtSelection.district || !districtSelection.district.code) {
+            clearLayer(state.villageLayer);
+            state.lastVillagePayload = null;
+            return Promise.resolve(null);
+        }
 
-        initMap()
-            .then(function () { return requestGeometry(renderSelection); })
-            .then(function (payload) {
-                clearLayer();
-                state.lastPayload = payload;
-                state.dataLayer.addGeoJson(payload.geometry);
-                state.activeCode = activeRegionCodeFromPayload(payload) || selectionActiveCode(renderSelection);
-                fitToLayer();
-                updatePanel(payload);
-                state.geometryReady = true;
-                state.interactionReady = true;
-                state.pendingDirectSelection = null;
-                state.pendingDirectSelectionUntil = 0;
-                setReadyFlag(true);
-                refreshLayerStyle();
-                setStatus('Peta siap. Arahkan kursor ke wilayah untuk melihat ringkasan, atau klik wilayah untuk mengaktifkan filter.', 'success');
-            })
+        return requestGeometry(districtSelection).then(function (payload) {
+            clearLayer(state.villageLayer);
+            state.lastVillagePayload = payload;
+            state.villageLayer.addGeoJson(payload.geometry);
+            return payload;
+        });
+    }
+
+    function activateDistrictFeature(feature) {
+        const selection = selectionFromFeature(feature);
+        if (!selection || !selection.district || !selection.district.code) return;
+
+        hideHoverPanel();
+        setLoadingState('Memuat kelurahan dalam ' + selection.label + '...');
+
+        state.activeDistrictCode = selection.district.code;
+        state.activeVillageCode = '';
+        refreshLayerStyle();
+
+        Promise.all([
+            applySelectionFromMap(selection).catch(function () { return null; }),
+            loadVillageLayer(selection)
+        ]).then(function (results) {
+            const villagePayload = results[1];
+
+            setReadyState();
+
+            if (villagePayload) {
+                updatePanel(villagePayload);
+                fitLayer(state.villageLayer);
+            } else if (state.lastDistrictPayload) {
+                updatePanel(state.lastDistrictPayload);
+                fitLayer(state.districtLayer);
+            }
+
+            refreshLayerStyle();
+            setStatus('Wilayah aktif: ' + selection.label + '. Peta menampilkan kelurahan dalam kecamatan ini.', 'success');
+        }).catch(function (error) {
+            setFailedState(error, 'Kelurahan dalam kecamatan belum dapat dimuat.');
+        }).finally(function () {
+            state.suppressMapRenderUntil = 0;
+        });
+    }
+
+    function activateVillageFeature(feature) {
+        const selection = selectionFromFeature(feature);
+        if (!selection || !selection.village || !selection.village.code) return;
+
+        hideHoverPanel();
+
+        if (selection.district && selection.district.code) {
+            state.activeDistrictCode = selection.district.code;
+        }
+
+        state.activeVillageCode = selection.village.code;
+        refreshLayerStyle();
+        updatePanelFromSelection(selection, feature);
+        setStatus('Wilayah aktif: ' + selection.label + '. Kelurahan lain tetap ditampilkan sebagai pembanding.', 'success');
+
+        applySelectionFromMap(selection)
             .catch(function (error) {
-                state.geometryReady = false;
-                state.interactionReady = false;
-                setReadyFlag(false);
-
-                if (state.lastPayload) {
-                    updatePanel(state.lastPayload);
-                }
-
-                setStatus(error && error.message ? error.message : 'Peta wilayah belum dapat dimuat.', 'warning');
+                setStatus(error && error.message ? error.message : 'Wilayah belum dapat diaktifkan dari peta.', 'warning');
             })
             .finally(function () {
-                state.loading = false;
+                state.suppressMapRenderUntil = 0;
+                setReadyState();
             });
     }
 
-    function activeRegionCodeFromPayload(payload) {
-        const features = payload && payload.geometry && Array.isArray(payload.geometry.features)
-            ? payload.geometry.features
-            : [];
-        const activeFeature = features.find(function (feature) {
-            return feature && feature.properties && feature.properties.active === true;
-        });
+    function renderFromSelection(selection) {
+        if (state.loading) return;
 
-        return activeFeature && activeFeature.properties ? String(activeFeature.properties.region_code || '') : '';
+        const normalized = normalizeSelectionForMap(selection || currentSelection());
+        setLoadingState('Memuat peta wilayah aktif...');
+
+        initMap()
+            .then(function () {
+                return loadDistrictLayer();
+            })
+            .then(function (districtPayload) {
+                state.activeDistrictCode = normalized.district && normalized.district.code ? normalized.district.code : '';
+                state.activeVillageCode = normalized.village && normalized.village.code ? normalized.village.code : '';
+
+                if (normalized.scope === 'district' || normalized.scope === 'village') {
+                    return loadVillageLayer(normalized).then(function (villagePayload) {
+                        setReadyState();
+
+                        if (villagePayload) {
+                            updatePanel(villagePayload);
+                            fitLayer(state.villageLayer);
+                        } else {
+                            updatePanel(districtPayload);
+                            fitLayer(state.districtLayer);
+                        }
+
+                        if (normalized.scope === 'village') {
+                            const feature = findFeatureByCode(state.villageLayer, normalized.village.code);
+                            updatePanelFromSelection(normalized, feature);
+                            setStatus('Wilayah aktif: ' + normalized.label + '. Kelurahan lain tetap ditampilkan sebagai pembanding.', 'success');
+                        } else {
+                            setStatus('Wilayah aktif: ' + normalized.label + '. Peta menampilkan kelurahan dalam kecamatan ini.', 'success');
+                        }
+
+                        refreshLayerStyle();
+                    });
+                }
+
+                clearLayer(state.villageLayer);
+                state.lastVillagePayload = null;
+                setReadyState();
+                updatePanel(districtPayload);
+                fitLayer(state.districtLayer);
+                setStatus('Peta siap. Arahkan kursor ke wilayah untuk melihat ringkasan, atau klik kecamatan untuk membuka kelurahan.', 'success');
+            })
+            .catch(function (error) {
+                setFailedState(error, 'Peta wilayah belum dapat dimuat.');
+            });
     }
 
     function selectionFromAggregatePayload() {
@@ -728,12 +867,12 @@
 
     function scheduleInitialRender() {
         window.setTimeout(function () {
-            renderGeometry(currentSelection());
+            renderFromSelection(currentSelection());
         }, 350);
 
         window.setTimeout(function () {
             if (shouldRetryInitialMap()) {
-                renderGeometry(currentSelection());
+                renderFromSelection(currentSelection());
             }
         }, 1400);
     }
@@ -750,12 +889,12 @@
 
             document.addEventListener('umkm:landing-region:changed', function (event) {
                 if (shouldSuppressMapRender()) return;
-                renderGeometry(event.detail ? event.detail.selection : currentSelection());
+                renderFromSelection(event.detail ? event.detail.selection : currentSelection());
             });
 
             document.addEventListener('umkm:landing-aggregate:ready', function () {
                 if (shouldSuppressMapRender()) return;
-                renderGeometry(currentSelection());
+                renderFromSelection(currentSelection());
             });
 
             document.addEventListener('umkm:component-loader:loaded', function (event) {
