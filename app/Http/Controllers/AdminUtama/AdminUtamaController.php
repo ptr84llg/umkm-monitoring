@@ -9,8 +9,9 @@ use App\Models\Access\Role;
 use App\Models\Audit\ApiRequestLog;
 use App\Models\Audit\AuditLog;
 use App\Models\Audit\SecurityEventLog;
-use App\Models\Reference\KbliReference;
-use App\Models\Reference\RegionReference;
+use App\Models\Reference\BusinessCategoryReference;
+use App\Models\Reference\BusinessTypeReference;
+use App\Models\Reference\Region;
 use App\Models\User;
 use App\Services\AdminUtama\AdminAuditService;
 use App\Services\System\ThemeService;
@@ -33,8 +34,9 @@ class AdminUtamaController extends Controller
         $systemSnapshot = [
             'api_logs' => ApiRequestLog::query()->count(),
             'audit_logs' => AuditLog::query()->count(),
-            'kbli_references' => KbliReference::query()->count(),
-            'region_references' => RegionReference::query()->count(),
+            'business_category_references' => BusinessCategoryReference::query()->count(),
+            'business_type_references' => BusinessTypeReference::query()->count(),
+            'regions' => Region::query()->count(),
         ];
 
         $menuGroups = [
@@ -59,7 +61,7 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'reference',
                 'title' => 'Referensi',
-                'description' => 'Wilayah, KBLI, kategori, dan referensi pendukung data UMKM.',
+                'description' => 'Wilayah, kategori usaha lokal, jenis usaha lokal, dan referensi pendukung data UMKM.',
                 'status' => 'Skeleton',
                 'route_name' => null,
                 'permission' => 'reference.manage',
@@ -363,23 +365,13 @@ class AdminUtamaController extends Controller
         return back()->with('status', 'Theme sistem berhasil diperbarui.');
     }
 
-    public function kbliReferences()
-    {
-        return view('pages.admin-utama.master-data.kbli', [
-            'kbli' => KbliReference::query()
-                ->latest()
-                ->limit(50)
-                ->get(['id', 'kbli_code', 'title', 'is_active']),
-        ]);
-    }
-
     public function regions()
     {
         return view('pages.admin-utama.master-data.regions', [
-            'regions' => RegionReference::query()
-                ->latest()
+            'regions' => Region::query()
+                ->latest('id')
                 ->limit(50)
-                ->get(['id', 'region_code', 'region_name', 'region_level', 'is_active']),
+                ->get(['id', 'code', 'name', 'level', 'parent_code', 'is_active']),
         ]);
     }
 

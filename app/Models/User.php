@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-
-
-use App\Models\Auth\AuthOAuthIdentity;
 use App\Models\Access\Role;
+use App\Models\Auth\AuthDeviceSession;
+use App\Models\Auth\AuthOAuthIdentity;
+use App\Models\Auth\UserDevice;
+use App\Models\Auth\UserIdentityCredential;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'username',
+        'email_verified_at',
         'password',
         'auth_provider_required',
         'manual_login_disabled_at',
@@ -28,6 +31,11 @@ class User extends Authenticatable
         'is_active',
         'last_login_at',
         'last_login_ip',
+        'current_device_id',
+        'current_device_fingerprint_hash',
+        'last_login_user_agent_hash',
+        'last_login_device_label',
+        'last_login_browser_label',
     ];
 
     protected $hidden = [
@@ -55,6 +63,26 @@ class User extends Authenticatable
     public function oauthIdentities(): HasMany
     {
         return $this->hasMany(AuthOAuthIdentity::class);
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    public function currentDevice(): BelongsTo
+    {
+        return $this->belongsTo(UserDevice::class, 'current_device_id');
+    }
+
+    public function deviceSessions(): HasMany
+    {
+        return $this->hasMany(AuthDeviceSession::class);
+    }
+
+    public function identityCredentials(): HasMany
+    {
+        return $this->hasMany(UserIdentityCredential::class);
     }
 
     public function hasRole(string $role): bool

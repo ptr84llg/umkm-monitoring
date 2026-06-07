@@ -48,7 +48,10 @@ _ide_helper.php
 
 /bootstrap/cache/*.php
 
-/database
+/database/*
+!/database/migrations/
+/database/migrations/*
+!/database/migrations/2026_06_07_000001_sync_final_umkm_database_schema.php
 
 Homestead.json
 Homestead.yaml

@@ -1,3 +1,41 @@
 @extends('layouts.dashboard')
-@section('title','Lokasi Usaha')
-@section('content')<x-umkm.data-display.card><form method="POST" action="{{ route('admin-dinas.location.proposal',$umkm) }}">@csrf <x-umkm.forms.form-select name="province_region_id" label="Provinsi"><option value="">Pilih</option>@foreach($provinces as $p)<option value="{{ $p->id }}">{{ $p->region_name }}</option>@endforeach</x-umkm.forms.form-select><x-umkm.forms.form-select name="city_region_id" label="Kabupaten/Kota"><option value="">Pilih</option></x-umkm.forms.form-select><x-umkm.forms.form-select name="district_region_id" label="Kecamatan"><option value="">Pilih</option></x-umkm.forms.form-select><x-umkm.forms.form-select name="village_region_id" label="Kelurahan/Desa"><option value="">Pilih</option></x-umkm.forms.form-select><x-umkm.forms.form-textarea name="address_detail" label="Alamat Detail"/><x-umkm.forms.form-input name="latitude" label="Latitude"/><x-umkm.forms.form-input name="longitude" label="Longitude"/><button class="btn btn-primary">Ajukan Perubahan Lokasi</button></form></x-umkm.data-display.card>@endsection
+@section('title', 'Lokasi Usaha')
+@section('content')
+    <x-umkm.data-display.card>
+        <form method="POST" action="{{ route('admin-dinas.location.proposal', $umkm) }}">
+            @csrf
+            <x-umkm.forms.form-select name="province_region_id" label="Provinsi">
+                <option value="">Pilih</option>
+                @foreach ($provinces as $province)
+                    <option value="{{ $province->id }}">{{ $province->name }}</option>
+                @endforeach
+            </x-umkm.forms.form-select>
+
+            <x-umkm.forms.form-select name="city_region_id" label="Kabupaten/Kota">
+                <option value="">Pilih</option>
+                @foreach ($cities as $city)
+                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                @endforeach
+            </x-umkm.forms.form-select>
+
+            <x-umkm.forms.form-select name="district_region_id" label="Kecamatan">
+                <option value="">Pilih</option>
+                @foreach ($districts as $district)
+                    <option value="{{ $district->id }}">{{ $district->name }}</option>
+                @endforeach
+            </x-umkm.forms.form-select>
+
+            <x-umkm.forms.form-select name="village_region_id" label="Kelurahan/Desa">
+                <option value="">Pilih</option>
+                @foreach ($villages as $village)
+                    <option value="{{ $village->id }}">{{ $village->name }}</option>
+                @endforeach
+            </x-umkm.forms.form-select>
+
+            <x-umkm.forms.form-textarea name="address_detail" label="Alamat Detail" />
+            <x-umkm.forms.form-input name="latitude" label="Latitude" />
+            <x-umkm.forms.form-input name="longitude" label="Longitude" />
+            <button class="btn btn-primary">Ajukan Perubahan Lokasi</button>
+        </form>
+    </x-umkm.data-display.card>
+@endsection

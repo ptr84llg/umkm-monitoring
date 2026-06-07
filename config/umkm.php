@@ -17,6 +17,13 @@ return [
         'coordinate_precision' => (int) env('LOCATION_GATE_COORDINATE_PRECISION', 6),
     ],
 
+    'data' => [
+        'public_statuses' => array_filter(array_map('trim', explode(',', (string) env('UMKM_PUBLIC_DATA_STATUSES', 'resmi,terbatas')))),
+        'operational_statuses' => array_filter(array_map('trim', explode(',', (string) env('UMKM_OPERATIONAL_DATA_STATUSES', 'resmi,terbatas')))),
+        'classification_source' => env('UMKM_CLASSIFICATION_SOURCE', 'umkm_business_classifications'),
+        'region_source' => env('UMKM_REGION_SOURCE', 'regions'),
+    ],
+
     'landing_region' => [
         'enabled' => (bool) env('LANDING_REGION_ENABLE_PUBLIC_SAFE_API', true),
         'province_code' => env('LANDING_REGION_PROVINCE_CODE', '16'),

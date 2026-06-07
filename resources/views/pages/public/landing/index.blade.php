@@ -13,6 +13,7 @@
         'public/landing/landing-navigation.js',
         'public/landing/landing-chart.js',
         'public/landing/landing-region.js',
+        'public/landing/landing-aggregate-cards.js',
         'public/landing/landing-location-bridge.js',
         'public/landing/landing-components.js',
         'public/landing/landing-boot.js',
@@ -22,6 +23,8 @@
 @section('title', 'SISFODA UMKM Visual Analitik Interaktif | Kota Lubuklinggau')
 
 @php
+    use Illuminate\Support\Facades\Route;
+
     $landingDashboardUrl = route('login');
     $googlePublicIdentity = session('auth.google.public_identity');
     $hasGooglePublicIdentity = is_array($googlePublicIdentity) && ! empty($googlePublicIdentity['identity_id']);
@@ -40,25 +43,64 @@
 
     $publicLandingSummary = $publicLandingSummary ?? \App\Support\PublicLanding\PublicLandingData::summary();
     $publicLandingHeroCards = $publicLandingHeroCards ?? \App\Support\PublicLanding\PublicLandingData::heroCards();
+    // PublicLanding-AggregateCards-1C-PATCH2 placeholders: DOM awal tidak membawa angka/kategori/persen agregat nyata.
+    $publicLandingAggregateCardKeys = ['total_umkm', 'mapped_umkm', 'dominant_category', 'active_regions'];
+    $publicLandingHeroCards = collect($publicLandingHeroCards ?? [])->values()->map(function ($card, $index) use ($publicLandingAggregateCardKeys) {
+        $aggregateKey = $publicLandingAggregateCardKeys[$index] ?? ('aggregate_card_'.$index);
+
+        return array_merge($card, [
+            'key' => $aggregateKey,
+            'aggregate_key' => $aggregateKey,
+            'label' => 'Memuat agregat',
+            'title' => 'Memuat agregat',
+            'name' => 'Memuat agregat',
+            'value' => '—',
+            'value_text' => '—',
+            'metric' => '—',
+            'count' => '—',
+            'total' => '—',
+            'number' => '—',
+            'description' => 'Mengambil agregat publik...',
+            'context' => 'Mengambil agregat publik...',
+            'caption' => 'Mengambil agregat publik...',
+            'meta' => 'Menunggu sinkronisasi',
+            'badge' => 'Menunggu data',
+            'percent' => 'Menunggu sinkronisasi',
+            'percent_text' => 'Menunggu sinkronisasi',
+            'footer_label' => '',
+            'footer_value' => '',
+            'trend' => '',
+            'progress' => 0,
+            'progress_percent' => 0,
+            'ready' => false,
+        ]);
+    })->all();
     $publicLandingFooterMetrics = $publicLandingFooterMetrics ?? \App\Support\PublicLanding\PublicLandingData::footerMetrics();
 
     if (auth()->check()) {
         $landingUser = auth()->user();
 
-        if ($landingUser?->hasRole('admin_utama')) {
-            $landingDashboardUrl = route('admin-utama.dashboard');
-        } elseif ($landingUser?->hasRole('admin_dinas')) {
-            $landingDashboardUrl = route('admin-dinas.dashboard');
-        } elseif ($landingUser?->hasRole('kepala_dinas')) {
-            $landingDashboardUrl = route('kepala-dinas.dashboard');
-        } elseif ($landingUser?->hasRole('pelaku_umkm')) {
-            $landingDashboardUrl = route('pelaku-umkm.dashboard');
-        } elseif ($landingUser?->hasRole('validator_ahli')) {
-            $landingDashboardUrl = route('expert.validator.list');
-        } elseif ($landingUser?->hasPermission('dashboard.view.executive')) {
-            $landingDashboardUrl = route('dashboard.interactive');
-        } else {
-            $landingDashboardUrl = url('/');
+        $landingRouteCandidates = [
+            'admin_utama' => 'admin-utama.dashboard',
+            'admin_dinas' => 'admin-dinas.dashboard',
+            'kepala_dinas' => 'kepala-dinas.dashboard',
+            'pelaku_umkm' => 'pelaku-umkm.dashboard',
+            'validator_ahli' => 'expert.validator.list',
+        ];
+
+        foreach ($landingRouteCandidates as $roleCode => $routeName) {
+            if ($landingUser?->hasRole($roleCode) && Route::has($routeName)) {
+                $landingDashboardUrl = route($routeName);
+                break;
+            }
+        }
+
+        if ($landingDashboardUrl === route('login')) {
+            if ($landingUser?->hasPermission('dashboard.view.executive') && Route::has('dashboard.interactive')) {
+                $landingDashboardUrl = route('dashboard.interactive');
+            } else {
+                $landingDashboardUrl = url('/');
+            }
         }
     }
 @endphp
@@ -436,7 +478,7 @@
                             <div class="row g-3 hero-stat-row">
                                 @foreach ($publicLandingHeroCards as $card)
                                     <div class="col-12 col-lg-6">
-                                        <article class="card h-100 border-0 hero-stat-card hero-analytic-card">
+                                        <article class="card h-100 border-0 hero-stat-card hero-analytic-card" data-public-aggregate-card="{{ $card['aggregate_key'] ?? $card['key'] ?? '' }}" data-public-aggregate-ready="false" aria-disabled="true">
                                             <div class="card-body">
                                                 <div class="hero-stat-top">
                                                     <span class="hero-stat-icon {{ $card['icon_class'] ?? '' }}" aria-hidden="true">
@@ -612,4 +654,3 @@
     </button>
 </div>
 @endsection
-

@@ -111,12 +111,16 @@
                             <strong>{{ number_format($systemSnapshot['audit_logs'] ?? 0) }}</strong>
                         </div>
                         <div class="d-flex justify-content-between border-bottom pb-2">
-                            <span class="text-muted">Referensi KBLI</span>
-                            <strong>{{ number_format($systemSnapshot['kbli_references'] ?? 0) }}</strong>
+                            <span class="text-muted">Kategori usaha</span>
+                            <strong>{{ number_format($systemSnapshot['business_category_references'] ?? 0) }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom pb-2">
+                            <span class="text-muted">Jenis usaha</span>
+                            <strong>{{ number_format($systemSnapshot['business_type_references'] ?? 0) }}</strong>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Referensi wilayah</span>
-                            <strong>{{ number_format($systemSnapshot['region_references'] ?? 0) }}</strong>
+                            <strong>{{ number_format($systemSnapshot['regions'] ?? 0) }}</strong>
                         </div>
                     </div>
                 </div>

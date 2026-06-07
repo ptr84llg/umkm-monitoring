@@ -18,8 +18,8 @@ class DashboardApiController extends Controller
         'city_code',
         'district_code',
         'village_code',
-        'kbli_id',
-        'kbli_code',
+        'business_category_id',
+        'business_type_id',
         'legality_status',
         'period_id',
         'business_scale',
@@ -48,7 +48,7 @@ class DashboardApiController extends Controller
 
         return response()->json([
             'data' => [
-                'kbli_composition' => $svc->kbliComposition($filters),
+                'business_classification_composition' => $svc->businessClassificationComposition($filters),
                 'legality_status' => $svc->legalityStatus($filters),
                 'performance_trend' => $svc->performanceTrend($filters),
             ],

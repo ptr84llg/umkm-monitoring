@@ -8,6 +8,7 @@ use App\Services\Audit\AuditLogger;
 use App\Services\Auth\LoginOtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class LoginOtpController extends Controller
 {
@@ -86,7 +87,7 @@ class LoginOtpController extends Controller
 
         $auditLogger->log('login_success', $request, 'users', $user->id);
 
-        $redirectUrl = (string) ($payload['redirect_url'] ?? route('admin-utama.dashboard'));
+        $redirectUrl = (string) ($payload['redirect_url'] ?? $this->fallbackRedirectUrl());
         $request->session()->forget('auth.login_otp');
 
         if ($this->expectsJson($request)) {
@@ -149,7 +150,7 @@ class LoginOtpController extends Controller
         $challenge = $loginOtpService->createLoginChallenge(
             $user,
             $request,
-            (string) ($payload['redirect_url'] ?? route('admin-utama.dashboard')),
+            (string) ($payload['redirect_url'] ?? $this->fallbackRedirectUrl()),
             true
         );
 
@@ -204,5 +205,12 @@ class LoginOtpController extends Controller
         return $request->expectsJson()
             || $request->ajax()
             || $request->header('X-UMKM-Request') === 'internal';
+    }
+
+    private function fallbackRedirectUrl(): string
+    {
+        return Route::has('admin-utama.dashboard')
+            ? route('admin-utama.dashboard')
+            : url('/');
     }
 }

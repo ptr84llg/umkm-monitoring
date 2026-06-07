@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 
 class LoginController extends Controller
 {
@@ -266,6 +267,7 @@ class LoginController extends Controller
             ->filter()
             ->values()
             ->all();
+        $missingRouteRole = null;
 
         if (count($activeRoleCodes) === 0) {
             return [
@@ -278,6 +280,12 @@ class LoginController extends Controller
 
         foreach ($roleAccessMap as $role => $access) {
             if (! in_array($role, $activeRoleCodes, true)) {
+                continue;
+            }
+
+            if (! Route::has($access['route'])) {
+                $missingRouteRole = $role;
+
                 continue;
             }
 
@@ -295,6 +303,15 @@ class LoginController extends Controller
             return [
                 'allowed' => true,
                 'redirect_url' => $intendedUrl ?: route($access['route']),
+            ];
+        }
+
+        if ($missingRouteRole !== null) {
+            return [
+                'allowed' => false,
+                'event_type' => 'manual_login_dashboard_route_inactive_blocked',
+                'event_detail' => "Manual login blocked because dashboard route for role {$missingRouteRole} is not active in current route scope.",
+                'message' => 'Dashboard untuk role akun ini belum diaktifkan pada tahap sistem saat ini.',
             ];
         }
 

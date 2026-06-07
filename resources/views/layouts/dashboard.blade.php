@@ -91,8 +91,8 @@
                     ],
                     [
                         'title' => 'Referensi',
-                        'description' => 'Wilayah, KBLI, master data',
-                        'detail' => 'Pengaturan referensi wilayah, KBLI, dan data dasar pendukung sistem monitoring UMKM.',
+                        'description' => 'Wilayah, klasifikasi lokal, master data',
+                        'detail' => 'Pengaturan referensi wilayah, kategori/jenis usaha lokal, dan data dasar pendukung sistem monitoring UMKM.',
                         'route' => null,
                         'permission' => 'reference.manage',
                         'icon' => 'database',
@@ -277,7 +277,7 @@
             ],
             'referensi' => [
                 ['title' => 'Wilayah', 'description' => 'Provinsi, kabupaten/kota, kecamatan, dan kelurahan/desa.', 'state' => 'Terjadwal'],
-                ['title' => 'KBLI', 'description' => 'Klasifikasi bidang usaha untuk pengelompokan UMKM.', 'state' => 'Terjadwal'],
+                ['title' => 'Klasifikasi Lokal', 'description' => 'Kategori dan jenis usaha lokal sesuai data Dinas.', 'state' => 'Aktif sebagai sumber data'],
                 ['title' => 'Kategori Usaha', 'description' => 'Referensi pendukung untuk segmentasi dan pelaporan.', 'state' => 'Terjadwal'],
             ],
             'governance' => [
@@ -379,7 +379,7 @@
         $descriptionMap = [
             'dashboard' => 'Ringkasan kendali, status, dan kesiapan ruang kerja.',
             'akses' => 'Akun, peran, izin akses, sesi, dan audit pengguna.',
-            'referensi' => 'Wilayah, KBLI, kategori, dan data pendukung UMKM.',
+            'referensi' => 'Wilayah, klasifikasi usaha lokal, kategori, dan data pendukung UMKM.',
             'governance' => 'Pengaturan sistem, tema, keamanan, dan tata kelola.',
             'publikasi' => 'Pengumuman, narasi publik, dan konten informasi.',
             'validasi' => 'Instrumen survei, validator ahli, dan hasil penilaian.',

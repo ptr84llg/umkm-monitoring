@@ -2,6 +2,7 @@
 
 namespace App\Support\PublicLanding;
 
+use App\Models\Reference\Region;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -283,6 +284,8 @@ final class PublicLandingData
             ->select('umkms.id')
             ->distinct();
 
+        self::applyPublicStatusFilter($query);
+
         if (self::hasTable('umkm_locations') && self::hasColumn('umkm_locations', 'umkm_id')) {
             $query->leftJoin('umkm_locations', 'umkm_locations.umkm_id', '=', 'umkms.id');
         }
@@ -399,7 +402,10 @@ final class PublicLandingData
         $statusColumn = self::firstExistingColumn('umkms', ['status', 'status_data', 'data_status']);
 
         if ($statusColumn !== null) {
-            $activeStatuses = ['aktif', 'active', 'resmi', 'valid', 'verified'];
+            $activeStatuses = array_values(array_unique(array_merge(
+                ['aktif', 'active', 'valid', 'verified'],
+                self::publicStatuses()
+            )));
 
             return (int) $query
                 ->whereIn('umkms.' . $statusColumn, $activeStatuses)
@@ -821,6 +827,27 @@ final class PublicLandingData
         }
 
         return null;
+    }
+
+    private static function applyPublicStatusFilter(Builder $query): Builder
+    {
+        $statusColumn = self::firstExistingColumn('umkms', ['status_data', 'status', 'data_status']);
+
+        if ($statusColumn === null) {
+            return $query;
+        }
+
+        return $query->whereIn('umkms.' . $statusColumn, self::publicStatuses());
+    }
+
+    private static function publicStatuses(): array
+    {
+        $statuses = array_values(array_filter(array_map(
+            fn ($status) => trim((string) $status),
+            (array) config('umkm.data.public_statuses', ['resmi', 'terbatas'])
+        )));
+
+        return $statuses === [] ? ['resmi', 'terbatas'] : $statuses;
     }
 
     private static function percentageLabel(int $part, int $total): string

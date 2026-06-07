@@ -11,6 +11,7 @@ use App\Services\Auth\OAuthIdentityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use Throwable;
 
@@ -284,6 +285,7 @@ class GoogleOAuthController extends Controller
             ->filter()
             ->values()
             ->all();
+        $missingRouteRole = null;
 
         if (count($activeRoleCodes) === 0) {
             return [
@@ -295,6 +297,12 @@ class GoogleOAuthController extends Controller
 
         foreach ($roleAccessMap as $role => $access) {
             if (! in_array($role, $activeRoleCodes, true)) {
+                continue;
+            }
+
+            if (! Route::has($access['route'])) {
+                $missingRouteRole = $role;
+
                 continue;
             }
 
@@ -311,6 +319,14 @@ class GoogleOAuthController extends Controller
             return [
                 'allowed' => true,
                 'redirect_url' => $intendedUrl ?: route($access['route']),
+            ];
+        }
+
+        if ($missingRouteRole !== null) {
+            return [
+                'allowed' => false,
+                'event_type' => 'google_login_dashboard_route_inactive_limited',
+                'event_detail' => "Google login recognized role {$missingRouteRole}, but its dashboard route is not active in current route scope.",
             ];
         }
 

@@ -9,20 +9,20 @@ class PublicLandingRegionResolver
 {
     public static function resolve(array $input): array
     {
-        $provinceCode = self::cleanCode($input['province_code'] ?? config('umkm.landing_region.province_code', '16'));
-        $cityCode = self::cleanCode($input['city_code'] ?? config('umkm.landing_region.city_code', '16.73')) ?: '16.73';
-        $districtCode = self::cleanCode($input['district_code'] ?? null);
-        $villageCode = self::cleanCode($input['village_code'] ?? null);
+        $provinceCode = (string) config('umkm.landing_region.province_code', '16');
+        $cityCode = (string) config('umkm.landing_region.city_code', '16.73');
+        $districtCode = self::allowedDistrictCode(self::cleanCode($input['district_code'] ?? null), $cityCode);
+        $villageCode = self::allowedVillageCode(self::cleanCode($input['village_code'] ?? null), $cityCode, $districtCode);
 
         $scope = 'city';
         $regionCode = $cityCode;
 
-        if ($districtCode !== null && self::regionExists($districtCode, ['district', 'kecamatan'])) {
+        if ($districtCode !== null) {
             $scope = 'district';
             $regionCode = $districtCode;
         }
 
-        if ($villageCode !== null && self::regionExists($villageCode, ['village', 'kelurahan', 'desa'])) {
+        if ($villageCode !== null) {
             $scope = 'village';
             $regionCode = $villageCode;
             $districtCode = $districtCode ?: self::parentCode($villageCode);
@@ -120,11 +120,47 @@ class PublicLandingRegionResolver
         return [];
     }
 
-    private static function regionExists(string $code, array $levels): bool
+    private static function allowedDistrictCode(?string $code, string $cityCode): ?string
+    {
+        if ($code === null || ! str_starts_with($code, $cityCode . '.')) {
+            return null;
+        }
+
+        return self::regionExists($code, ['district', 'kecamatan'], $cityCode) ? $code : null;
+    }
+
+    private static function allowedVillageCode(?string $code, string $cityCode, ?string &$districtCode): ?string
+    {
+        if ($code === null || ! str_starts_with($code, $cityCode . '.')) {
+            return null;
+        }
+
+        if (! self::regionExists($code, ['village', 'kelurahan', 'desa'], $cityCode)) {
+            return null;
+        }
+
+        $parentCode = self::parentCode($code);
+
+        if ($parentCode === null || ! str_starts_with($parentCode, $cityCode . '.')) {
+            return null;
+        }
+
+        if ($districtCode !== null && $districtCode !== $parentCode) {
+            return null;
+        }
+
+        $districtCode = $districtCode ?: $parentCode;
+
+        return $code;
+    }
+
+    private static function regionExists(string $code, array $levels, ?string $cityCode = null): bool
     {
         if (! Schema::hasTable('regions') || ! Schema::hasColumn('regions', 'code')) {
-            return preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code) === 1
+            $codeMatches = preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code) === 1
                 || preg_match('/^\d{2}\.\d{2}\.\d{2}\.\d+$/', $code) === 1;
+
+            return $codeMatches && ($cityCode === null || str_starts_with($code, $cityCode . '.'));
         }
 
         $query = DB::table('regions')->where('code', $code);
@@ -134,6 +170,10 @@ class PublicLandingRegionResolver
         if ($levelColumn !== null) {
             $normalized = array_map(fn ($value) => strtolower((string) $value), $levels);
             $query->whereIn(DB::raw('LOWER(' . $levelColumn . ')'), $normalized);
+        }
+
+        if ($cityCode !== null && Schema::hasColumn('regions', 'city_code')) {
+            $query->where('city_code', $cityCode);
         }
 
         return $query->exists();

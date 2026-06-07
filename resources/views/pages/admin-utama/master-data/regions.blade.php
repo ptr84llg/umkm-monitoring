@@ -1,3 +1,29 @@
 @extends('layouts.dashboard')
-@section('title','Admin Utama - regions')
-@section('content')<x-umkm.data-display.table-card><h2 class="h5 text-capitalize">regions</h2><x-umkm.data-display.loading-state /></x-umkm.data-display.table-card>@endsection
+@section('title', 'Admin Utama - Wilayah')
+@section('content')
+    <x-umkm.data-display.table-card>
+        <h2 class="h5 text-capitalize">Wilayah dari tabel regions</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>Level</th>
+                    <th>Parent</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($regions as $region)
+                    <tr>
+                        <td>{{ $region->code }}</td>
+                        <td>{{ $region->name }}</td>
+                        <td>{{ $region->level }}</td>
+                        <td>{{ $region->parent_code ?? '-' }}</td>
+                        <td>{{ $region->is_active ? 'Aktif' : 'Nonaktif' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </x-umkm.data-display.table-card>
+@endsection

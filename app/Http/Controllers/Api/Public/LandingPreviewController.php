@@ -14,6 +14,7 @@ class LandingPreviewController extends Controller
         $payload = PublicLandingAggregateCore::payload($request->only([
             'scope',
             'mode',
+            'detail_card',
             'label',
             'province_code',
             'city_code',
