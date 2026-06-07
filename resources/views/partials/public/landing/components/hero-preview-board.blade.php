@@ -24,6 +24,13 @@
                  aria-label="Peta wilayah aktif UMKM Kota Lubuklinggau">
                 <div class="public-region-map-canvas" data-public-google-region-map-canvas></div>
 
+                <div class="public-region-map-hover-panel" data-public-region-map-hover-panel data-visible="false" hidden aria-live="polite">
+                    <span data-public-region-map-hover-level>Wilayah</span>
+                    <strong data-public-region-map-hover-title>Arahkan kursor ke wilayah</strong>
+                    <small><b data-public-region-map-hover-total>0</b> UMKM operasional</small>
+                    <em>Klik wilayah untuk mengaktifkan filter</em>
+                </div>
+
                 <div class="public-map-legend public-region-map-legend" data-public-region-map-legend data-ready="false" aria-label="Legenda kepadatan UMKM">
                     <span><i class="is-density-low"></i>Kepadatan rendah</span>
                     <span><i class="is-density-medium"></i>Kepadatan sedang</span>
