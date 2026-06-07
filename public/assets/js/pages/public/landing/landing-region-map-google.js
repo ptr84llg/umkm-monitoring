@@ -20,7 +20,10 @@
         lastDistrictPayload: null,
         lastVillagePayload: null,
         suppressMapRenderUntil: 0,
-        lastFeatureClickAt: 0
+        lastFeatureClickAt: 0,
+        mapInfoControl: null,
+        mapActivePanel: null,
+        mapHoverPanel: null
     };
 
     function qs(selector, root) {
@@ -262,6 +265,7 @@
             }
 
             state.map = new maps.Map(canvas, options);
+            ensureMapInfoControls();
             state.districtLayer = new maps.Data({ map: state.map });
             state.villageLayer = new maps.Data({ map: state.map });
             state.mapReady = true;
@@ -322,29 +326,130 @@
         });
     }
 
+    function ensureMapInfoControls() {
+        if (!state.map || !(window.google && window.google.maps)) {
+            return null;
+        }
+
+        if (state.mapInfoControl) {
+            return state.mapInfoControl;
+        }
+
+        const stack = document.createElement('div');
+        stack.className = 'umkm-map-info-stack';
+        stack.setAttribute('aria-live', 'polite');
+
+        const activePanel = document.createElement('div');
+        activePanel.className = 'umkm-map-active-panel';
+        activePanel.dataset.visible = 'true';
+        activePanel.innerHTML = ''
+            + '<div class="umkm-map-info-kicker">Wilayah aktif</div>'
+            + '<div class="umkm-map-info-title" data-map-control-active-title>Kota Lubuklinggau</div>'
+            + '<div class="umkm-map-info-meta">'
+            + '<span data-map-control-active-layer>Layer Kota</span>'
+            + '<span data-map-control-active-total>0 UMKM</span>'
+            + '</div>';
+
+        const hoverPanel = document.createElement('div');
+        hoverPanel.className = 'umkm-map-hover-panel-control';
+        hoverPanel.dataset.visible = 'false';
+        hoverPanel.hidden = true;
+        hoverPanel.innerHTML = ''
+            + '<div class="umkm-map-info-kicker" data-map-control-hover-level>Wilayah</div>'
+            + '<div class="umkm-map-info-title" data-map-control-hover-title>Wilayah</div>'
+            + '<div class="umkm-map-info-meta">'
+            + '<span data-map-control-hover-total>0 UMKM</span>'
+            + '<span>Klik untuk memilih</span>'
+            + '</div>';
+
+        stack.appendChild(activePanel);
+        stack.appendChild(hoverPanel);
+
+        state.mapInfoControl = stack;
+        state.mapActivePanel = activePanel;
+        state.mapHoverPanel = hoverPanel;
+        state.map.controls[window.google.maps.ControlPosition.TOP_LEFT].push(stack);
+
+        return stack;
+    }
+
+    function setPanelText(root, selector, text) {
+        if (!root) return;
+
+        const element = root.querySelector(selector);
+        if (element) {
+            element.textContent = text == null ? '' : String(text);
+        }
+    }
+
+    function umkmText(value) {
+        const text = String(value == null || value === '' ? '0' : value);
+        return text.indexOf('UMKM') >= 0 ? text : text + ' UMKM';
+    }
+
+    function layerLabelFromSelection(selection) {
+        const safe = normalizeSelectionForMap(selection);
+        if (safe.scope === 'village') return 'Kelurahan';
+        if (safe.scope === 'district') return 'Kecamatan';
+        return 'Kota';
+    }
+
+    function updateActiveInfoPanel(selection, totalText) {
+        ensureMapInfoControls();
+
+        const panel = state.mapActivePanel;
+        if (!panel) return;
+
+        const safe = normalizeSelectionForMap(selection || { scope: 'city', label: 'Kota Lubuklinggau' });
+        const title = safe.label || 'Kota Lubuklinggau';
+
+        setPanelText(panel, '[data-map-control-active-title]', title);
+        setPanelText(panel, '[data-map-control-active-layer]', 'Layer ' + layerLabelFromSelection(safe));
+        setPanelText(panel, '[data-map-control-active-total]', umkmText(totalText));
+
+        panel.hidden = false;
+        panel.dataset.visible = 'true';
+    }
+
     function showHoverPanel(feature) {
-        const panel = qs('[data-public-region-map-hover-panel]');
-        if (!panel || !feature) return;
+        if (!feature) return;
+
+        ensureMapInfoControls();
 
         const name = String(feature.getProperty('region_name') || 'Wilayah');
         const level = feature.getProperty('region_level') === 'village' ? 'Kelurahan' : 'Kecamatan';
         const total = String(feature.getProperty('umkm_total_text') || '0');
         const density = densityLabel(feature.getProperty('density_level'));
+        const panel = state.mapHoverPanel || qs('[data-public-region-map-hover-panel]');
 
-        setText('[data-public-region-map-hover-level]', level + ' • ' + density);
-        setText('[data-public-region-map-hover-title]', level + ' ' + name);
-        setText('[data-public-region-map-hover-total]', total);
+        if (!panel) return;
+
+        if (panel === state.mapHoverPanel) {
+            setPanelText(panel, '[data-map-control-hover-level]', level + ' • ' + density);
+            setPanelText(panel, '[data-map-control-hover-title]', level + ' ' + name);
+            setPanelText(panel, '[data-map-control-hover-total]', umkmText(total));
+        } else {
+            setText('[data-public-region-map-hover-level]', level + ' • ' + density);
+            setText('[data-public-region-map-hover-title]', level + ' ' + name);
+            setText('[data-public-region-map-hover-total]', total);
+        }
 
         panel.hidden = false;
         panel.dataset.visible = 'true';
     }
 
     function hideHoverPanel() {
-        const panel = qs('[data-public-region-map-hover-panel]');
-        if (!panel) return;
+        const oldPanel = qs('[data-public-region-map-hover-panel]');
 
-        panel.dataset.visible = 'false';
-        panel.hidden = true;
+        if (oldPanel) {
+            oldPanel.dataset.visible = 'false';
+            oldPanel.hidden = true;
+        }
+
+        if (state.mapHoverPanel) {
+            state.mapHoverPanel.dataset.visible = 'false';
+            state.mapHoverPanel.hidden = true;
+        }
     }
 
     function densityLabel(level) {
@@ -593,8 +698,8 @@
 
     function updatePanel(payload) {
         const summary = payload.summary || {};
-        const selection = payload.selection || {};
-        const visibleLevel = summary.visible_level === 'village' ? 'Kelurahan' : 'Kecamatan';
+        const selection = normalizeSelectionForMap(payload.selection || {});
+        const visibleLevel = layerLabelFromSelection(selection);
         const scopeLabel = selection.scope === 'village'
             ? 'Kelurahan aktif'
             : (selection.scope === 'district' ? 'Kecamatan aktif' : 'Kota aktif');
@@ -605,6 +710,7 @@
         setText('[data-public-region-map-visible-level]', visibleLevel);
         setText('[data-public-region-map-total-umkm]', summary.total_umkm_text || '0');
         setText('[data-public-region-map-density-max]', summary.max_umkm_text || '0');
+        updateActiveInfoPanel(selection, summary.total_umkm_text || '0');
     }
 
     function updatePanelFromSelection(selection, feature) {
@@ -617,13 +723,13 @@
         setText('[data-public-region-map-title]', safe.label || 'Wilayah aktif');
         setText('[data-public-region-map-scope]', scopeLabel);
         setText('[data-public-region-map-total-umkm]', total);
+        setText('[data-public-region-map-visible-level]', layerLabelFromSelection(safe));
+        updateActiveInfoPanel(safe, total);
 
         const payload = state.lastVillagePayload || state.lastDistrictPayload;
         if (payload && payload.summary) {
             const summary = payload.summary || {};
-            const visibleLevel = summary.visible_level === 'village' ? 'Kelurahan' : 'Kecamatan';
             setText('[data-public-region-map-feature-count]', String(summary.feature_count || 0));
-            setText('[data-public-region-map-visible-level]', visibleLevel);
             setText('[data-public-region-map-density-max]', summary.max_umkm_text || '0');
         }
     }

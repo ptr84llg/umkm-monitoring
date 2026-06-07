@@ -3250,3 +3250,81 @@ body.layout-public .umkm-public-footer {
     }
 }
 /* PublicLanding-GoogleMapRegion-1A:END */
+
+/* Public landing Google map information controls */
+.umkm-map-info-stack {
+    display: grid;
+    gap: .55rem;
+    margin: 1rem 0 0 1rem;
+    max-width: min(21rem, calc(100vw - 3rem));
+    pointer-events: none;
+}
+
+.umkm-map-active-panel,
+.umkm-map-hover-panel-control {
+    backdrop-filter: blur(12px);
+    background: rgba(9, 37, 47, .82);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 1rem;
+    box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, .18);
+    color: #f8fafc;
+    min-width: 16rem;
+    padding: .85rem 1rem;
+    pointer-events: none;
+}
+
+.umkm-map-active-panel {
+    background: rgba(2, 44, 34, .84);
+    border-color: rgba(45, 212, 191, .25);
+}
+
+.umkm-map-hover-panel-control {
+    background: rgba(15, 23, 42, .74);
+}
+
+.umkm-map-info-kicker {
+    color: rgba(226, 232, 240, .78);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    line-height: 1.2;
+    margin-bottom: .35rem;
+    text-transform: uppercase;
+}
+
+.umkm-map-info-title {
+    color: #ffffff;
+    font-size: .98rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.umkm-map-info-meta {
+    align-items: center;
+    color: rgba(226, 232, 240, .86);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: .78rem;
+    gap: .4rem .65rem;
+    line-height: 1.35;
+    margin-top: .35rem;
+}
+
+.umkm-map-info-meta span {
+    display: inline-flex;
+    min-width: 0;
+}
+
+@media (max-width: 576px) {
+    .umkm-map-info-stack {
+        margin: .75rem 0 0 .75rem;
+        max-width: calc(100vw - 2rem);
+    }
+
+    .umkm-map-active-panel,
+    .umkm-map-hover-panel-control {
+        border-radius: .85rem;
+        min-width: 13rem;
+        padding: .72rem .82rem;
+    }
+}
