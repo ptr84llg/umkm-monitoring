@@ -212,6 +212,11 @@ final class PublicLandingRegionGeometry
             ->all();
 
         $counts = self::umkmCountsByRegionCodes($codes, $level);
+
+        if ($level === 'village' && array_sum($counts) < 1) {
+            $counts = self::umkmCountsByVillageFeatureFallback($features);
+        }
+
         $max = $counts === [] ? 0 : max(array_values($counts));
 
         return collect($features)
@@ -270,6 +275,172 @@ final class PublicLandingRegionGeometry
             ->pluck('total_count', 'region_code')
             ->map(fn ($value): int => (int) $value)
             ->all();
+    }
+
+    private static function umkmCountsByVillageFeatureFallback(array $features): array
+    {
+        if (
+            $features === []
+            || ! Schema::hasTable('umkms')
+            || ! Schema::hasTable('umkm_locations')
+            || ! Schema::hasTable('regions')
+            || ! Schema::hasColumn('regions', 'id')
+            || ! Schema::hasColumn('regions', 'code')
+        ) {
+            return [];
+        }
+
+        $idColumn = self::firstColumn('umkm_locations', ['village_region_id', 'village_id', 'village_reference_id']);
+
+        if ($idColumn === null) {
+            return [];
+        }
+
+        $nameColumn = self::firstColumn('regions', ['name', 'region_name', 'nama', 'nama_wilayah']);
+        $featureCodeByCandidate = [];
+        $featureCodeByNameDistrict = [];
+        $candidateCodes = [];
+        $districtPrefixes = [];
+
+        foreach ($features as $feature) {
+            $properties = $feature['properties'] ?? [];
+            $featureCode = self::cleanCode((string) ($properties['region_code'] ?? ''));
+
+            if ($featureCode === '') {
+                continue;
+            }
+
+            foreach (self::villageCodeCandidates($properties) as $candidate) {
+                $featureCodeByCandidate[$candidate] = $featureCode;
+                $candidateCodes[] = $candidate;
+            }
+
+            $districtCode = self::cleanCode((string) ($properties['district_code'] ?? ''));
+            $districtNumber = (int) ($properties['district_number'] ?? 0);
+
+            if ($districtCode === '' && $districtNumber > 0) {
+                $districtCode = self::districtCodeFromNumber($districtNumber);
+            }
+
+            if ($districtCode !== '') {
+                $districtPrefixes[] = $districtCode;
+            }
+
+            $nameKey = self::normalizedNameKey((string) ($properties['region_name'] ?? ''));
+
+            if ($nameKey !== '' && $districtCode !== '') {
+                $featureCodeByNameDistrict[$districtCode . '|' . $nameKey] = $featureCode;
+            }
+        }
+
+        $candidateCodes = array_values(array_unique(array_filter($candidateCodes)));
+        $districtPrefixes = array_values(array_unique(array_filter($districtPrefixes)));
+
+        if ($candidateCodes === [] && $featureCodeByNameDistrict === []) {
+            return [];
+        }
+
+        $query = self::baseUmkmQuery()
+            ->join('regions as region_counts', 'region_counts.id', '=', 'umkm_locations.' . $idColumn)
+            ->where(function (Builder $query) use ($candidateCodes, $districtPrefixes): void {
+                if ($candidateCodes !== []) {
+                    $query->whereIn('region_counts.code', $candidateCodes);
+                }
+
+                foreach ($districtPrefixes as $prefix) {
+                    $method = $candidateCodes === [] ? 'where' : 'orWhere';
+                    $query->{$method}('region_counts.code', 'like', $prefix . '.%');
+                }
+            });
+
+        $select = 'region_counts.code as region_code, COUNT(DISTINCT umkms.id) as total_count';
+        $groupBy = ['region_counts.code'];
+
+        if ($nameColumn !== null) {
+            $select .= ', region_counts.' . self::wrap($nameColumn) . ' as region_name';
+            $groupBy[] = 'region_counts.' . $nameColumn;
+        }
+
+        $rows = $query
+            ->selectRaw($select)
+            ->groupBy(...$groupBy)
+            ->get();
+
+        $counts = [];
+
+        foreach ($rows as $row) {
+            $regionCode = self::cleanCode((string) ($row->region_code ?? ''));
+            $targetCode = $featureCodeByCandidate[$regionCode] ?? null;
+
+            if ($targetCode === null && $nameColumn !== null) {
+                foreach ($districtPrefixes as $prefix) {
+                    if ($prefix !== '' && str_starts_with($regionCode, $prefix . '.')) {
+                        $nameKey = self::normalizedNameKey((string) ($row->region_name ?? ''));
+                        $targetCode = $featureCodeByNameDistrict[$prefix . '|' . $nameKey] ?? null;
+
+                        if ($targetCode !== null) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($targetCode === null) {
+                continue;
+            }
+
+            $counts[$targetCode] = ($counts[$targetCode] ?? 0) + (int) ($row->total_count ?? 0);
+        }
+
+        return $counts;
+    }
+
+    private static function villageCodeCandidates(array $properties): array
+    {
+        $districtCode = self::cleanCode((string) ($properties['district_code'] ?? ''));
+        $districtNumber = (int) ($properties['district_number'] ?? 0);
+        $villageNumber = (int) ($properties['village_number'] ?? 0);
+        $regionCode = self::cleanCode((string) ($properties['region_code'] ?? ''));
+
+        if ($districtCode === '' && $districtNumber > 0) {
+            $districtCode = self::districtCodeFromNumber($districtNumber);
+        }
+
+        $candidates = [];
+
+        if ($regionCode !== '') {
+            $candidates[] = $regionCode;
+        }
+
+        if ($districtCode !== '' && $villageNumber > 0) {
+            $candidates[] = $districtCode . '.' . str_pad((string) $villageNumber, 3, '0', STR_PAD_LEFT);
+            $candidates[] = $districtCode . '.' . str_pad((string) $villageNumber, 4, '0', STR_PAD_LEFT);
+
+            if ($villageNumber < 1000) {
+                $candidates[] = $districtCode . '.1' . str_pad((string) $villageNumber, 3, '0', STR_PAD_LEFT);
+            }
+
+            if ($villageNumber < 100) {
+                $candidates[] = $districtCode . '.10' . str_pad((string) $villageNumber, 2, '0', STR_PAD_LEFT);
+            }
+        }
+
+        return array_values(array_unique(array_filter($candidates)));
+    }
+
+    private static function normalizedNameKey(string $name): string
+    {
+        $name = self::cleanName($name);
+
+        if ($name === '') {
+            return '';
+        }
+
+        $name = mb_strtolower($name);
+        $name = preg_replace('/\b(kelurahan|kel\.|kecamatan|kec\.)\b/u', '', $name) ?? $name;
+        $name = preg_replace('/[^a-z0-9]+/u', ' ', $name) ?? $name;
+
+        return trim(preg_replace('/\s+/', ' ', $name) ?? $name);
     }
 
     private static function baseUmkmQuery(): Builder

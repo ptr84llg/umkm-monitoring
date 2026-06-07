@@ -19,7 +19,8 @@
         activeVillageCode: '',
         lastDistrictPayload: null,
         lastVillagePayload: null,
-        suppressMapRenderUntil: 0
+        suppressMapRenderUntil: 0,
+        lastFeatureClickAt: 0
     };
 
     function qs(selector, root) {
@@ -169,7 +170,7 @@
     function densityOpacity(level, active, hovered, context) {
         if (hovered) return 0.78;
         if (active) return 0.72;
-        if (context) return 0.22;
+        if (context) return 0;
 
         const value = String(level || 'empty');
 
@@ -195,14 +196,15 @@
         const code = String(feature.getProperty('region_code') || '');
         const active = code !== '' && code === state.activeDistrictCode;
         const hovered = isInteractionReady() && code !== '' && code === state.hoveredCode;
+        const cityContext = state.activeDistrictCode === '' && state.activeVillageCode === '';
         const level = String(feature.getProperty('density_level') || 'empty');
 
         return {
             fillColor: active ? '#f97316' : densityColor(level),
-            fillOpacity: densityOpacity(level, false, hovered, active),
-            strokeColor: active ? '#ea580c' : (hovered ? '#0f172a' : '#1e293b'),
-            strokeOpacity: active || hovered ? 0.98 : 0.54,
-            strokeWeight: active ? 3.1 : (hovered ? 2.35 : 1.1),
+            fillOpacity: active ? 0 : densityOpacity(level, false, hovered, false),
+            strokeColor: active || cityContext ? '#ea580c' : (hovered ? '#0f172a' : '#1e293b'),
+            strokeOpacity: active || hovered || cityContext ? 0.98 : 0.54,
+            strokeWeight: active ? 3.1 : (hovered ? 2.35 : (cityContext ? 1.6 : 1.1)),
             clickable: isInteractionReady(),
             zIndex: active ? 30 : 10
         };
@@ -269,6 +271,16 @@
             bindDataLayerEvents(state.districtLayer, 'district');
             bindDataLayerEvents(state.villageLayer, 'village');
 
+            state.map.addListener('click', function () {
+                if (!isInteractionReady()) return;
+
+                if (Date.now() - state.lastFeatureClickAt < 250) {
+                    return;
+                }
+
+                resetToCityMode();
+            });
+
             return state.map;
         });
     }
@@ -299,6 +311,8 @@
 
         layer.addListener('click', function (event) {
             if (!isInteractionReady()) return;
+
+            state.lastFeatureClickAt = Date.now();
 
             if (level === 'district') {
                 activateDistrictFeature(event.feature);
@@ -380,6 +394,17 @@
         const bounds = layerBounds(layer);
         if (bounds) {
             state.map.fitBounds(bounds, 28);
+        }
+    }
+
+    function fitFeature(feature) {
+        if (!state.map || !feature || !(window.google && window.google.maps)) return;
+
+        const bounds = new window.google.maps.LatLngBounds();
+        extendBoundsFromGeometry(bounds, feature.getGeometry());
+
+        if (!bounds.isEmpty()) {
+            state.map.fitBounds(bounds, 36);
         }
     }
 
@@ -692,6 +717,52 @@
         return Promise.resolve();
     }
 
+    function resetToCityMode() {
+        if (state.loading) return;
+
+        const selection = normalizeSelectionForMap({ scope: 'city', label: 'Kota Lubuklinggau' });
+
+        hideHoverPanel();
+        setLoadingState('Mengembalikan peta ke mode Kota Lubuklinggau...');
+
+        state.activeDistrictCode = '';
+        state.activeVillageCode = '';
+        state.suppressMapRenderUntil = Date.now() + 5000;
+
+        Promise.resolve()
+            .then(function () {
+                return applySelectionFromMap(selection).catch(function () { return null; });
+            })
+            .then(function () {
+                clearLayer(state.villageLayer);
+                state.lastVillagePayload = null;
+
+                if (state.lastDistrictPayload) {
+                    setReadyState();
+                    updatePanel(state.lastDistrictPayload);
+                    fitLayer(state.districtLayer);
+                    refreshLayerStyle();
+                    setStatus('Peta siap. Arahkan kursor ke wilayah untuk melihat ringkasan, atau klik kecamatan untuk membuka kelurahan.', 'success');
+                    return null;
+                }
+
+                return loadDistrictLayer().then(function (districtPayload) {
+                    setReadyState();
+                    updatePanel(districtPayload);
+                    fitLayer(state.districtLayer);
+                    refreshLayerStyle();
+                    setStatus('Peta siap. Arahkan kursor ke wilayah untuk melihat ringkasan, atau klik kecamatan untuk membuka kelurahan.', 'success');
+                    return null;
+                });
+            })
+            .catch(function (error) {
+                setFailedState(error, 'Peta belum dapat dikembalikan ke mode kota.');
+            })
+            .finally(function () {
+                state.suppressMapRenderUntil = 0;
+            });
+    }
+
     function loadDistrictLayer() {
         return requestGeometry({ scope: 'city' }).then(function (payload) {
             clearLayer(state.districtLayer);
@@ -767,6 +838,7 @@
         state.activeVillageCode = selection.village.code;
         refreshLayerStyle();
         updatePanelFromSelection(selection, feature);
+        fitFeature(feature);
         setStatus('Wilayah aktif: ' + selection.label + '. Kelurahan lain tetap ditampilkan sebagai pembanding.', 'success');
 
         applySelectionFromMap(selection)
