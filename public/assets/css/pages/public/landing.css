@@ -3342,3 +3342,9 @@ body.layout-public .umkm-public-footer {
     background: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, .14);
 }
+/* Public landing map district empty-village warning tint */
+.public-map-legend i.is-empty-village-warning,
+.public-region-map-legend i.is-empty-village-warning {
+    background: linear-gradient(135deg, #3b82f6 0 58%, rgba(239, 68, 68, .86) 59% 100%);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .10);
+}

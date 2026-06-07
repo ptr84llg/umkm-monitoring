@@ -170,6 +170,48 @@
         return '#ef4444';
     }
 
+    function blendHexColor(base, overlay, ratio) {
+        const normalize = function (hex) {
+            const value = String(hex || '').replace('#', '').trim();
+
+            if (value.length === 3) {
+                return value.split('').map(function (char) {
+                    return char + char;
+                }).join('');
+            }
+
+            return value.padEnd(6, '0').slice(0, 6);
+        };
+
+        const baseHex = normalize(base);
+        const overlayHex = normalize(overlay);
+        const safeRatio = Math.max(0, Math.min(1, Number(ratio) || 0));
+        const read = function (hex, start) {
+            return parseInt(hex.slice(start, start + 2), 16);
+        };
+        const mix = function (a, b) {
+            return Math.round(a + ((b - a) * safeRatio));
+        };
+        const channel = function (value) {
+            return value.toString(16).padStart(2, '0');
+        };
+
+        return '#'
+            + channel(mix(read(baseHex, 0), read(overlayHex, 0)))
+            + channel(mix(read(baseHex, 2), read(overlayHex, 2)))
+            + channel(mix(read(baseHex, 4), read(overlayHex, 4)));
+    }
+
+    function districtFillColor(level, hasEmptyVillageWarning, cityContext) {
+        const baseColor = densityColor(level);
+
+        if (cityContext && hasEmptyVillageWarning) {
+            return blendHexColor(baseColor, '#ef4444', 0.20);
+        }
+
+        return baseColor;
+    }
+
     function densityOpacity(level, active, hovered, context) {
         if (hovered) return 0.78;
         if (active) return 0.72;
@@ -201,9 +243,10 @@
         const hovered = isInteractionReady() && code !== '' && code === state.hoveredCode;
         const cityContext = state.activeDistrictCode === '' && state.activeVillageCode === '';
         const level = String(feature.getProperty('density_level') || 'empty');
+        const hasEmptyVillageWarning = Number(feature.getProperty('empty_village_count') || 0) > 0;
 
         return {
-            fillColor: active ? '#f97316' : densityColor(level),
+            fillColor: active ? '#f97316' : districtFillColor(level, hasEmptyVillageWarning, cityContext),
             fillOpacity: active ? 0 : densityOpacity(level, false, hovered, false),
             strokeColor: active || cityContext ? '#ea580c' : (hovered ? '#0f172a' : '#1e293b'),
             strokeOpacity: active || hovered || cityContext ? 0.98 : 0.54,

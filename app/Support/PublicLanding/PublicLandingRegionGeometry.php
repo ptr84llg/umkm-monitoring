@@ -218,9 +218,12 @@ final class PublicLandingRegionGeometry
         }
 
         $max = $counts === [] ? 0 : max(array_values($counts));
+        $emptyVillageStats = $level === 'district'
+            ? self::emptyVillageStatsByDistrictFeatures($features)
+            : [];
 
         return collect($features)
-            ->map(function (array $feature) use ($counts, $max): array {
+            ->map(function (array $feature) use ($counts, $max, $level, $emptyVillageStats): array {
                 $code = (string) ($feature['properties']['region_code'] ?? '');
                 $total = (int) ($counts[$code] ?? 0);
                 $percent = $max > 0 ? round(($total / $max) * 100, 2) : 0.0;
@@ -230,6 +233,18 @@ final class PublicLandingRegionGeometry
                 $feature['properties']['density_percent'] = $percent;
                 $feature['properties']['density_level'] = self::densityLevel($total, $percent);
                 $feature['properties']['has_public_umkm_data'] = $total > 0;
+
+                if ($level === 'district') {
+                    $emptyCount = (int) ($emptyVillageStats[$code]['empty_count'] ?? 0);
+                    $villageCount = (int) ($emptyVillageStats[$code]['village_count'] ?? 0);
+
+                    $feature['properties']['empty_village_count'] = $emptyCount;
+                    $feature['properties']['village_feature_count'] = $villageCount;
+                    $feature['properties']['has_empty_villages'] = $emptyCount > 0;
+                    $feature['properties']['empty_village_warning'] = $emptyCount > 0
+                        ? self::formatNumber($emptyCount) . ' kelurahan tanpa UMKM'
+                        : null;
+                }
 
                 return $feature;
             })
@@ -275,6 +290,90 @@ final class PublicLandingRegionGeometry
             ->pluck('total_count', 'region_code')
             ->map(fn ($value): int => (int) $value)
             ->all();
+    }
+
+    private static function emptyVillageStatsByDistrictFeatures(array $features): array
+    {
+        if ($features === []) {
+            return [];
+        }
+
+        $districtCodes = collect($features)
+            ->map(fn (array $feature): string => self::cleanCode((string) ($feature['properties']['district_code'] ?? $feature['properties']['region_code'] ?? '')))
+            ->filter(fn (string $code): bool => $code !== '')
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($districtCodes === []) {
+            return [];
+        }
+
+        $districtLookup = array_fill_keys($districtCodes, true);
+        $selection = [
+            'scope' => 'city',
+            'city_code' => (string) config('umkm.landing_region.city_code', '16.73'),
+            'city_name' => (string) config('umkm.landing_region.city_name', 'Kota Lubuklinggau'),
+            'district_code' => '',
+            'village_code' => '',
+            'district_number' => 0,
+            'village_number' => 0,
+            'visible_level' => 'district',
+            'label' => (string) config('umkm.landing_region.city_name', 'Kota Lubuklinggau'),
+        ];
+
+        $villageFeatures = array_values(array_filter(
+            self::villageFeatures($selection),
+            function (array $feature) use ($districtLookup): bool {
+                $districtCode = self::cleanCode((string) ($feature['properties']['district_code'] ?? ''));
+
+                return $districtCode !== '' && isset($districtLookup[$districtCode]);
+            }
+        ));
+
+        if ($villageFeatures === []) {
+            return [];
+        }
+
+        $villageCodes = collect($villageFeatures)
+            ->map(fn (array $feature): string => self::cleanCode((string) ($feature['properties']['region_code'] ?? '')))
+            ->filter(fn (string $code): bool => $code !== '')
+            ->unique()
+            ->values()
+            ->all();
+
+        $counts = self::umkmCountsByRegionCodes($villageCodes, 'village');
+
+        if (array_sum($counts) < 1) {
+            $counts = self::umkmCountsByVillageFeatureFallback($villageFeatures);
+        }
+
+        $stats = [];
+
+        foreach ($districtCodes as $districtCode) {
+            $stats[$districtCode] = [
+                'village_count' => 0,
+                'empty_count' => 0,
+            ];
+        }
+
+        foreach ($villageFeatures as $feature) {
+            $properties = $feature['properties'] ?? [];
+            $districtCode = self::cleanCode((string) ($properties['district_code'] ?? ''));
+            $villageCode = self::cleanCode((string) ($properties['region_code'] ?? ''));
+
+            if ($districtCode === '' || ! isset($stats[$districtCode])) {
+                continue;
+            }
+
+            $stats[$districtCode]['village_count']++;
+
+            if ((int) ($counts[$villageCode] ?? 0) < 1) {
+                $stats[$districtCode]['empty_count']++;
+            }
+        }
+
+        return $stats;
     }
 
     private static function umkmCountsByVillageFeatureFallback(array $features): array
