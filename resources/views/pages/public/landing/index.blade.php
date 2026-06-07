@@ -41,8 +41,8 @@
         ? asset('assets/img/brand/umkm-monitoring-icon-512.png')
         : asset('assets/img/brand/umkm-monitoring-icon-64.png');
 
-    $publicLandingSummary = $publicLandingSummary ?? \App\Support\PublicLanding\PublicLandingData::summary();
-    $publicLandingHeroCards = $publicLandingHeroCards ?? \App\Support\PublicLanding\PublicLandingData::heroCards();
+    $publicLandingSummary = [];
+    $publicLandingHeroCards = [[], [], [], []];
     // PublicLanding-AggregateCards-1C-PATCH2 placeholders: DOM awal tidak membawa angka/kategori/persen agregat nyata.
     $publicLandingAggregateCardKeys = ['total_umkm', 'mapped_umkm', 'dominant_category', 'active_regions'];
     $publicLandingHeroCards = collect($publicLandingHeroCards ?? [])->values()->map(function ($card, $index) use ($publicLandingAggregateCardKeys) {
@@ -75,7 +75,7 @@
             'ready' => false,
         ]);
     })->all();
-    $publicLandingFooterMetrics = $publicLandingFooterMetrics ?? \App\Support\PublicLanding\PublicLandingData::footerMetrics();
+    $publicLandingFooterMetrics = [];
 
     if (auth()->check()) {
         $landingUser = auth()->user();
@@ -438,17 +438,14 @@
 								SISFODA UMKM merupakan portal visual analitik berbasis data yang menyajikan informasi sebaran, kategori, dan perkembangan UMKM secara agregat. Informasi ditampilkan secara ringkas, terstruktur, dan aman untuk publik untuk mendukung pemantauan potensi usaha daerah serta pengambilan keputusan berbasis data.
 							</p>
 							<div class="d-flex flex-wrap gap-3 mt-4 hero-action-row">
-								<button type="button" class="btn btn-danger btn-lg landing-main-btn" data-region-open data-region-modal-open>
-									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
-									<span>Pilih Wilayah Preview</span>
-								</button>
+								<span class="public-region-action-mount" data-public-region-action-mount="hero-primary" hidden aria-hidden="true"></span>
 							</div>
 							
 							<div class="card border-0 hero-insight-card my-4">
 								<div class="card-body">
 									<div>
 										<span>Cakupan</span>
-										<strong data-public-coverage-label>{{ $publicLandingSummary['coverage_label'] ?? 'Kota Lubuklinggau' }}</strong>
+										<strong data-public-coverage-label>{{ $publicLandingSummary['coverage_label'] ?? 'Belum dimuat' }}</strong>
 									</div>
 									<div class="col ms-auto">
 										<span>Data diperbarui</span>
@@ -481,7 +478,7 @@
                                         <article class="card h-100 border-0 hero-stat-card hero-analytic-card" data-public-aggregate-card="{{ $card['aggregate_key'] ?? $card['key'] ?? '' }}" data-public-aggregate-ready="false" aria-disabled="true">
                                             <div class="card-body">
                                                 <div class="hero-stat-top">
-                                                    <span class="hero-stat-icon {{ $card['icon_class'] ?? '' }}" aria-hidden="true">
+                                                    <span class="hero-stat-icon {{ $card['icon_class'] ?? '' }}" data-public-aggregate-icon aria-hidden="true">
                                                         <svg viewBox="0 0 24 24"><path d="{{ $card['icon_path'] ?? '' }}"/></svg>
                                                     </span>
                                                     <span class="hero-stat-chip" data-public-aggregate-badge>{{ $card['chip'] ?? 'Aman untuk publik' }}</span>

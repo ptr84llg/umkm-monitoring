@@ -1,5 +1,6 @@
 @php
-    $publicLandingMap = $publicLandingMap ?? \App\Support\PublicLanding\PublicLandingData::mapPreview();
+    // DOM awal tidak membawa data peta riil. Data peta/cluster diisi setelah AJAX wilayah aktif berhasil.
+    $publicLandingMap = [];
 @endphp
 
 <div class="hero-board public-map-board reveal reveal-delay-1" data-tilt-card>
@@ -8,17 +9,9 @@
             <div class="public-map-toolbar d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <span>Peta Sebaran publik</span>
-                    <strong data-public-context-label>Kota Lubuklinggau, Sumatera Selatan</strong>
+                    <strong data-public-context-label>Belum dimuat</strong>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Z"/></svg>
-                        <span>Pilih Wilayah</span>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light public-map-filter" data-region-open data-region-modal-open aria-label="Filter wilayah">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"/></svg>
-                    </button>
-                </div>
+                <div class="d-flex align-items-center gap-2 public-map-toolbar-actions" data-public-region-action-mount="map-toolbar" hidden aria-hidden="true"></div>
             </div>
 
             <div class="public-map-visual" role="img" aria-label="Ilustrasi peta sebaran UMKM Kota Lubuklinggau">
@@ -63,7 +56,7 @@
             </div>
 
             <div class="public-map-footer d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
-                <span>{{ $publicLandingMap['note'] ?? 'Data agregat dan peta bersifat aman untuk publik. Rincian sensitif hanya tersedia bagi pengguna berizin.' }}</span>
+                <span>{{ $publicLandingMap['note'] ?? 'Data peta belum dimuat. Menunggu konteks wilayah aktif.' }}</span>
             </div>
         </div>
     </div>

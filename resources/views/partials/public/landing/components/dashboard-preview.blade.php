@@ -1,5 +1,6 @@
 @php
-    $publicLandingAnalytics = $publicLandingAnalytics ?? \App\Support\PublicLanding\PublicLandingData::analytics();
+    // DOM awal sengaja tidak memuat data agregat riil. Data diisi setelah AJAX wilayah aktif berhasil.
+    $publicLandingAnalytics = [];
 @endphp
 
 <div class="container-fluid px-3 px-lg-4">
@@ -23,8 +24,8 @@
                     <strong>Kontrol Data Publik</strong>
                     <p class="mb-0">Filter otomatis mengikuti konteks wilayah preview yang diterapkan pada Peta Sebaran.</p>
                     <small class="filter-sync-context">
-                        Konteks aktif: <b data-public-active-context-label>Kota Lubuklinggau</b>
-                        <span data-public-watched-label>Kecamatan terpantau</span>
+                        Konteks aktif: <b data-public-active-context-label>Belum dimuat</b>
+                        <span data-public-watched-label>Wilayah belum dimuat</span>
                         <span data-public-dominant-label>Belum tersedia</span>
                     </small>
                 </div>
@@ -106,14 +107,14 @@
                 <div class="card-body">
                     <div class="analytics-card-head">
                         <h3>Status Keterpetaan Data</h3>
-                        <span class="badge rounded-pill text-bg-light">Public-safe</span>
+                        <span class="badge rounded-pill text-bg-light">Aman untuk publik</span>
                     </div>
                     <div class="mini-line-chart" aria-hidden="true" data-public-trend-list>
                         @foreach (($publicLandingAnalytics['trend_points'] ?? []) as $point)
                             <span class="mini-point {{ $point['class'] ?? '' }}">{{ $point['value'] ?? '—' }}</span>
                         @endforeach
                     </div>
-                    <small class="text-muted">Data hingga <span data-public-updated-label>{{ $publicLandingAnalytics['updated_at_label'] ?? 'periode terakhir' }}</span></small>
+                    <small class="text-muted">Data hingga <span data-public-updated-label>{{ $publicLandingAnalytics['updated_at_label'] ?? 'Belum dimuat' }}</span></small>
                 </div>
             </article>
         </div>
@@ -159,4 +160,3 @@
         </div>
     </div>
 </div>
-

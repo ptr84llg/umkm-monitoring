@@ -70,9 +70,48 @@
       return String(element.textContent || '').replace(/\s+/g, ' ').trim() === text;
     }) || null;
   }
-  function ensureTargets(card) {
+
+function aggregateIconMeta(key) {
+    var icons = {
+      total_umkm: {
+        className: 'is-green',
+        path: 'M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 8h2v-4H8v4Zm3 0h2V9h-2v6Zm3 0h2v-2h-2v2Z'
+      },
+      mapped_umkm: {
+        className: 'is-blue',
+        path: 'M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z'
+      },
+      dominant_category: {
+        className: 'is-gold',
+        path: 'M12 3 3 7.5 12 12l9-4.5L12 3Zm-7.5 8.25L12 15.5l7.5-4.25L21 12l-9 5-9-5 1.5-.75Zm0 4L12 19.5l7.5-4.25L21 16l-9 5-9-5 1.5-.75Z'
+      },
+      active_regions: {
+        className: 'is-purple',
+        path: 'M4 5h16v4H4V5Zm0 6h16v4H4v-4Zm0 6h16v2H4v-2Z'
+      }
+    };
+
+    return icons[key] || icons.total_umkm;
+  }
+
+  function clearCardIcon(icon) {
+    if (!icon) return;
+    icon.classList.remove('is-green', 'is-blue', 'is-gold', 'is-purple');
+    icon.innerHTML = '';
+  }
+
+  function renderCardIcon(icon, key) {
+    if (!icon) return;
+    var meta = aggregateIconMeta(key);
+    icon.classList.remove('is-green', 'is-blue', 'is-gold', 'is-purple');
+    icon.classList.add(meta.className);
+    icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + meta.path + '"/></svg>';
+  }
+
+function ensureTargets(card) {
     if (!card) return {};
     var targets = {
+      icon: card.querySelector('[data-public-aggregate-icon], .hero-stat-icon'),
       badge: card.querySelector('[data-public-aggregate-badge]'),
       label: card.querySelector('[data-public-aggregate-label]'),
       value: card.querySelector('[data-public-aggregate-value]'),
@@ -117,7 +156,75 @@
     return targets;
   }
 
+function unmountRegionActions() {
+    var mounts = toArray(document.querySelectorAll('[data-public-region-action-mount]'));
+    mounts.forEach(function (mount) {
+      mount.innerHTML = '';
+      mount.hidden = true;
+      mount.setAttribute('aria-hidden', 'true');
+      mount.removeAttribute('data-public-region-action-ready');
+    });
+  }
+
+function aggregateCardsReadyForRegionActions() {
+    if (!state.ready || state.loading) return false;
+
+    return CARD_KEYS.every(function (key) {
+      var card = cardNode(key);
+      return !!(
+        card &&
+        card.getAttribute('data-public-aggregate-ready') === 'true' &&
+        card.getAttribute('data-public-aggregate-detail') === key &&
+        card.classList.contains('public-aggregate-clickable')
+      );
+    });
+  }
+
+function mountRegionActions() {
+    if (!aggregateCardsReadyForRegionActions()) {
+      unmountRegionActions();
+      return;
+    }
+
+    var mounts = toArray(document.querySelectorAll('[data-public-region-action-mount]'));
+    if (!mounts.length) return;
+
+    mounts.forEach(function (mount) {
+      var type = mount.getAttribute('data-public-region-action-mount');
+      if (!type) return;
+
+      if (mount.getAttribute('data-public-region-action-ready') !== 'true') {
+        if (type === 'hero-primary') {
+          mount.innerHTML = [
+            '<button type="button" class="btn btn-danger btn-lg landing-main-btn" data-region-open data-region-modal-open>',
+            '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>',
+            '  <span>Pilih Wilayah Preview</span>',
+            '</button>'
+          ].join('');
+        }
+
+        if (type === 'map-toolbar') {
+          mount.innerHTML = [
+            '<button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>',
+            '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Z"/></svg>',
+            '  <span>Pilih Wilayah</span>',
+            '</button>',
+            '<button type="button" class="btn btn-sm btn-light public-map-filter" data-region-open data-region-modal-open aria-label="Filter wilayah">',
+            '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"/></svg>',
+            '</button>'
+          ].join('');
+        }
+
+        mount.setAttribute('data-public-region-action-ready', 'true');
+      }
+
+      mount.hidden = false;
+      mount.removeAttribute('aria-hidden');
+    });
+  }
+
 function setInitialNoData() {
+    unmountRegionActions();
     state.loading = false;
     state.ready = false;
     CARD_KEYS.forEach(function (key) {
@@ -131,6 +238,7 @@ function setInitialNoData() {
       card.removeAttribute('data-public-aggregate-detail');
       card.classList.remove('is-ready', 'is-loading', 'public-aggregate-clickable');
       card.classList.add('is-limited');
+      clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Belum dimuat';
       if (targets.value) targets.value.textContent = '—';
       if (targets.context) targets.context.textContent = 'Data belum dimuat. Menunggu konteks wilayah aktif.';
@@ -146,6 +254,7 @@ function setInitialNoData() {
   }
 
 function setLoading() {
+    unmountRegionActions();
     state.loading = true;
     CARD_KEYS.forEach(function (key) {
       var card = cardNode(key);
@@ -156,6 +265,7 @@ function setLoading() {
       card.removeAttribute('data-public-aggregate-detail');
       card.classList.remove('is-ready', 'public-aggregate-clickable');
       card.classList.add('is-loading');
+      clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Memuat';
       if (targets.label) targets.label.textContent = 'Memuat agregat';
       if (targets.value) targets.value.textContent = '—';
@@ -170,6 +280,7 @@ function setLoading() {
     });
   }
   function setError(message) {
+    unmountRegionActions();
     state.loading = false;
     state.ready = false;
     CARD_KEYS.forEach(function (key) {
@@ -181,6 +292,7 @@ function setLoading() {
       card.removeAttribute('data-public-aggregate-detail');
       card.classList.remove('is-ready', 'is-loading', 'public-aggregate-clickable');
       card.classList.add('is-limited');
+      clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Terbatas';
       if (targets.context) targets.context.textContent = message || 'Agregat belum dapat dimuat.';
       if (targets.value) targets.value.textContent = '—';
@@ -206,6 +318,7 @@ function setLoading() {
     card.classList.remove('is-loading', 'is-limited');
     card.classList.add('is-ready', 'public-aggregate-clickable');
     var progress = clampPercent(cardData.progress_percent);
+    renderCardIcon(targets.icon, cardData.key);
     if (targets.badge) targets.badge.textContent = String(cardData.badge || cardData.label || 'Agregat');
     if (targets.label) targets.label.textContent = String(cardData.label || '');
     if (targets.value) targets.value.textContent = String(cardData.value_text ?? cardData.value ?? '0');
@@ -216,7 +329,7 @@ function setLoading() {
       targets.progress.setAttribute('aria-valuenow', String(progress));
     }
     if (targets.footerLabel) targets.footerLabel.textContent = String(cardData.footer_label || 'Data agregat');
-    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Public-safe');
+    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Aman untuk publik');
   }
   function applyPayload(payload) {
     var safe = normalizePayload(payload);
@@ -230,6 +343,7 @@ function setLoading() {
     window.PublicLandingAggregatePayload = safe;
     var cards = payloadCards(safe);
     CARD_KEYS.forEach(function (key) { applyCard(cards[key]); });
+    window.requestAnimationFrame(function () { mountRegionActions(); });
   }
   function loadInitial(retry) {
     if (state.loading) return;
@@ -246,24 +360,24 @@ function setLoading() {
       .then(applyPayload)
       .catch(function (error) { setError(error && error.message ? error.message : 'Agregat belum dapat dimuat.'); });
   }
-  function createModal(cardKey) {
+
+function createModal(cardKey) {
     var modal = document.createElement('div');
-    modal.className = 'modal fade';
+    modal.className = 'modal fade public-aggregate-detail-modal';
     modal.tabIndex = -1;
     modal.setAttribute('aria-hidden', 'true');
     modal.setAttribute('data-public-aggregate-modal', cardKey);
     modal.innerHTML = [
       '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">',
-      '  <div class="modal-content border-0 shadow-lg">',
-      '    <div class="modal-header">',
-      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Memuat rincian agregat</p><h5 class="modal-title mb-0" data-public-aggregate-detail-title>Rincian Agregat</h5></div>',
+      '  <div class="modal-content border-0 shadow-lg rounded-4">',
+      '    <div class="modal-header border-0 pb-2">',
+      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Rincian agregat wilayah</p><h5 class="modal-title mb-0 fw-bold" data-public-aggregate-detail-title>Rincian Agregat</h5></div>',
       '      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>',
       '    </div>',
-      '    <div class="modal-body">',
-      '      <div class="d-flex align-items-center gap-3 py-3" data-public-aggregate-detail-loader><div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div><div class="flex-grow-1"><strong class="d-block">Memuat rincian agregat...</strong><div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated w-75" role="progressbar" aria-label="Memuat"></div></div></div></div>',
-      '      <div data-public-aggregate-detail-content hidden></div>',
+      '    <div class="modal-body pt-2">',
+      '      <div data-public-aggregate-detail-content></div>',
       '    </div>',
-      '    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div>',
+      '    <div class="modal-footer border-0 pt-0"><button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button></div>',
       '  </div>',
       '</div>'
     ].join('');
@@ -271,48 +385,72 @@ function setLoading() {
     modal.addEventListener('hidden.bs.modal', function () { modal.remove(); }, { once: true });
     return modal;
   }
-  function showModal(modal) {
+
+function showModal(modal) {
     if (window.bootstrap && window.bootstrap.Modal) window.bootstrap.Modal.getOrCreateInstance(modal).show();
   }
-  function renderList(items, emptyText) {
-    if (!Array.isArray(items) || items.length === 0) return '<div class="alert alert-light border mb-0">' + escapeHtml(emptyText || 'Data belum tersedia.') + '</div>';
-    return '<div class="list-group list-group-flush border rounded-3 overflow-hidden">' + items.map(function (item) {
-      return '<div class="list-group-item"><div class="d-flex justify-content-between gap-3"><strong>' + escapeHtml(item.label || '-') + '</strong><span class="fw-bold">' + escapeHtml(item.value || '0') + '</span></div><small class="text-muted">' + escapeHtml(item.meta || '') + '</small></div>';
+
+function renderList(items, emptyText) {
+    if (!Array.isArray(items) || items.length === 0) {
+      return '<div class="aggregate-detail-empty">' + escapeHtml(emptyText || 'Data belum tersedia.') + '</div>';
+    }
+
+    return '<div class="aggregate-detail-list">' + items.map(function (item) {
+      return '<div class="aggregate-detail-list-item"><div><strong>' + escapeHtml(item.label || '-') + '</strong><small>' + escapeHtml(item.meta || '') + '</small></div><span>' + escapeHtml(item.value || '0') + '</span></div>';
     }).join('') + '</div>';
   }
-  function renderDetail(modal, detail) {
-    var loader = modal.querySelector('[data-public-aggregate-detail-loader]');
+
+function renderDetail(modal, detail) {
     var content = modal.querySelector('[data-public-aggregate-detail-content]');
     var title = modal.querySelector('[data-public-aggregate-detail-title]');
     var subtitle = modal.querySelector('[data-public-aggregate-detail-subtitle]');
     var summary = Array.isArray(detail.summary) ? detail.summary : [];
     var sections = Array.isArray(detail.sections) ? detail.sections : [];
+    var hero = detail.card || {};
+    var primaryValue = hero.value_text || hero.value || (summary[0] ? summary[0].value : '—');
+    var primaryLabel = hero.label || (summary[0] ? summary[0].label : 'Agregat');
+    var primaryContext = hero.context || hero.percent_text || '';
+
     if (title) title.textContent = detail.title || 'Rincian Agregat';
-    if (subtitle) subtitle.textContent = detail.subtitle || 'Public-safe';
-    if (loader) loader.hidden = true;
+    if (subtitle) subtitle.textContent = detail.subtitle || 'Agregat aman untuk publik';
+
     if (content) {
-      content.innerHTML = '<div class="row g-3 mb-4">' + summary.map(function (item) {
-        return '<div class="col-12 col-md-6"><div class="border rounded-3 p-3 h-100"><small class="text-muted d-block mb-1">' + escapeHtml(item.label || '-') + '</small><strong class="fs-5">' + escapeHtml(item.value || '-') + '</strong></div></div>';
-      }).join('') + '</div>' + sections.map(function (section) {
-        return '<section class="mb-4"><h6 class="fw-bold mb-3">' + escapeHtml(section.title || 'Rincian') + '</h6>' + renderList(section.items, section.empty) + '</section>';
-      }).join('') + '<div class="alert alert-info small mb-0">' + escapeHtml(detail.public_safe_note || 'Rincian yang ditampilkan bersifat agregat aman untuk publik.') + '</div>';
-      content.hidden = false;
+      var summaryHtml = summary.map(function (item) {
+        return '<div class="aggregate-detail-chip"><small>' + escapeHtml(item.label || '-') + '</small><strong>' + escapeHtml(item.value || '-') + '</strong><span>' + escapeHtml(item.meta || '') + '</span></div>';
+      }).join('');
+
+      var sectionsHtml = sections.map(function (section) {
+        return '<section class="aggregate-detail-section"><h6>' + escapeHtml(section.title || 'Rincian') + '</h6>' + renderList(section.items, section.empty) + '</section>';
+      }).join('');
+
+      content.innerHTML = [
+        '<section class="aggregate-detail-hero">',
+        '  <div><span>' + escapeHtml(primaryLabel) + '</span><strong>' + escapeHtml(primaryValue) + '</strong></div>',
+        '  <p>' + escapeHtml(primaryContext || 'Data agregat pada wilayah aktif.') + '</p>',
+        '</section>',
+        '<section class="aggregate-detail-chip-grid">',
+        summaryHtml || '<div class="aggregate-detail-empty">Ringkasan belum tersedia.</div>',
+        '</section>',
+        sectionsHtml,
+        '<div class="aggregate-detail-note">' + escapeHtml(detail.public_safe_note || 'Rincian yang ditampilkan bersifat agregat aman untuk publik.') + '</div>'
+      ].join('');
     }
   }
-  function renderDetailError(modal, message) {
-    var loader = modal.querySelector('[data-public-aggregate-detail-loader]');
+
+function renderDetailError(modal, message) {
     var content = modal.querySelector('[data-public-aggregate-detail-content]');
-    if (loader) loader.hidden = true;
     if (content) {
-      content.innerHTML = '<div class="alert alert-warning mb-0">' + escapeHtml(message || 'Detail agregat belum dapat dimuat.') + '</div>';
-      content.hidden = false;
+      content.innerHTML = '<div class="alert alert-warning mb-0">' + escapeHtml(message || 'Rincian agregat belum dapat dimuat.') + '</div>';
     }
   }
-  function openDetail(cardKey) {
+
+function openDetail(cardKey) {
     var card = cardNode(cardKey);
     if (!card || card.getAttribute('data-public-aggregate-ready') !== 'true') return;
-    var modal = createModal(cardKey);
-    showModal(modal);
+    if (card.getAttribute('data-public-aggregate-detail-loading') === 'true') return;
+
+    card.setAttribute('data-public-aggregate-detail-loading', 'true');
+
     requestJson(query({ detail_card: cardKey }))
       .then(function (payload) {
         var safe = normalizePayload(payload);
@@ -320,11 +458,21 @@ function setLoading() {
         if (!detail) throw new Error('Rincian agregat tidak tersedia.');
         state.payload = safe;
         window.PublicLandingAggregatePayload = safe;
+        var modal = createModal(cardKey);
         renderDetail(modal, detail);
+        showModal(modal);
       })
-      .catch(function (error) { renderDetailError(modal, error && error.message ? error.message : 'Rincian agregat gagal dimuat.'); });
+      .catch(function (error) {
+        var modal = createModal(cardKey);
+        renderDetailError(modal, error && error.message ? error.message : 'Rincian agregat gagal dimuat.');
+        showModal(modal);
+      })
+      .then(function () {
+        card.removeAttribute('data-public-aggregate-detail-loading');
+      });
   }
-  function bindClicks() {
+
+function bindClicks() {
     document.addEventListener('click', function (event) {
       var trigger = event.target && event.target.closest ? event.target.closest('[data-public-aggregate-detail]') : null;
       if (!trigger) return;
