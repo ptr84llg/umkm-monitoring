@@ -17,7 +17,8 @@
         activeCode: null,
         lastPayload: null,
         pendingDirectSelection: null,
-        pendingDirectSelectionUntil: 0
+        pendingDirectSelectionUntil: 0,
+        suppressMapRenderUntil: 0
     };
 
     function qs(selector, root) {
@@ -164,6 +165,10 @@
             && state.geometryReady === true
             && state.interactionReady === true
             && state.loading !== true;
+    }
+
+    function shouldSuppressMapRender() {
+        return state.suppressMapRenderUntil && Date.now() < state.suppressMapRenderUntil;
     }
 
     function featureStyle(feature) {
@@ -520,6 +525,14 @@
         setText('[data-public-region-map-title]', safe.label || 'Wilayah aktif');
         setText('[data-public-region-map-scope]', scopeLabel);
         setText('[data-public-region-map-total-umkm]', total);
+
+        if (state.lastPayload && state.lastPayload.summary) {
+            const summary = state.lastPayload.summary || {};
+            const visibleLevel = summary.visible_level === 'village' ? 'Kelurahan' : 'Kecamatan';
+            setText('[data-public-region-map-feature-count]', String(summary.feature_count || 0));
+            setText('[data-public-region-map-visible-level]', visibleLevel);
+            setText('[data-public-region-map-density-max]', summary.max_umkm_text || '0');
+        }
     }
 
     function selectionFromFeature(feature) {
@@ -585,23 +598,26 @@
 
         state.pendingDirectSelection = selection;
         state.pendingDirectSelectionUntil = Date.now() + 3000;
-        state.interactionReady = false;
+        state.suppressMapRenderUntil = Date.now() + 2500;
         state.activeCode = selectionActiveCode(selection);
-        setReadyFlag(false);
         hideHoverPanel();
-        refreshLayerStyle();
         updatePanelFromSelection(selection, feature);
-        setStatus('Mengaktifkan ' + selection.label + '...', 'loading');
-
-        const finishWithDirectRender = function () {
-            window.setTimeout(function () {
-                renderGeometry(selection);
-            }, 80);
-        };
+        state.geometryReady = true;
+        state.interactionReady = true;
+        setReadyFlag(true);
+        refreshLayerStyle();
+        setStatus('Wilayah aktif: ' + selection.label + '. Data landing sedang disesuaikan.', 'success');
 
         if (typeof Landing.applyRegionSelection === 'function') {
             Promise.resolve(Landing.applyRegionSelection(selection))
-                .then(finishWithDirectRender)
+                .then(function () {
+                    state.pendingDirectSelection = null;
+                    state.pendingDirectSelectionUntil = 0;
+                    state.interactionReady = state.mapReady === true && state.geometryReady === true;
+                    setReadyFlag(state.interactionReady);
+                    refreshLayerStyle();
+                    setStatus('Wilayah aktif: ' + selection.label + '. Klik wilayah lain untuk mengganti filter.', 'success');
+                })
                 .catch(function (error) {
                     setStatus(error && error.message ? error.message : 'Wilayah belum dapat diaktifkan dari peta.', 'warning');
                     state.interactionReady = state.geometryReady === true && state.mapReady === true;
@@ -616,7 +632,10 @@
                 source: 'map'
             }
         }));
-        finishWithDirectRender();
+
+        state.pendingDirectSelection = null;
+        state.pendingDirectSelectionUntil = 0;
+        setStatus('Wilayah aktif: ' + selection.label + '. Klik wilayah lain untuk mengganti filter.', 'success');
     }
 
     function renderGeometry(selection) {
@@ -730,10 +749,12 @@
             state.eventsBound = true;
 
             document.addEventListener('umkm:landing-region:changed', function (event) {
+                if (shouldSuppressMapRender()) return;
                 renderGeometry(event.detail ? event.detail.selection : currentSelection());
             });
 
             document.addEventListener('umkm:landing-aggregate:ready', function () {
+                if (shouldSuppressMapRender()) return;
                 renderGeometry(currentSelection());
             });
 
