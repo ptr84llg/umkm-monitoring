@@ -484,15 +484,16 @@
                                                     <span class="hero-stat-icon {{ $card['icon_class'] ?? '' }}" aria-hidden="true">
                                                         <svg viewBox="0 0 24 24"><path d="{{ $card['icon_path'] ?? '' }}"/></svg>
                                                     </span>
-                                                    <span class="hero-stat-chip">{{ $card['chip'] ?? 'Public-safe' }}</span>
+                                                    <span class="hero-stat-chip" data-public-aggregate-badge>{{ $card['chip'] ?? 'Public-safe' }}</span>
                                                 </div>
-                                                <small>{{ $card['label'] ?? 'Ringkasan' }}</small>
-                                                <strong>{{ $card['value'] ?? '—' }}</strong>
-                                                <span>{{ $card['context'] ?? '' }}</span>
-                                                <div class="stat-progress"><i class="stat-progress-fill {{ $card['progress_class'] ?? 'w-0' }}"></i></div>
+                                                <small data-public-aggregate-label>{{ $card['label'] ?? 'Ringkasan' }}</small>
+                                                <strong data-public-aggregate-value>{{ $card['value'] ?? '—' }}</strong>
+                                                <span data-public-aggregate-context>{{ $card['context'] ?? '' }}</span>
+                                                <span data-public-aggregate-percent>{{ $card['percent_text'] ?? $card['percent'] ?? 'Menunggu sinkronisasi' }}</span>
+                                                <div class="stat-progress"><i class="stat-progress-fill {{ $card['progress_class'] ?? 'w-0' }}" data-public-aggregate-progress></i></div>
                                                 <div class="stat-card-foot">
-                                                    <span>{{ $card['foot_label'] ?? 'Data agregat' }}</span>
-                                                    <b>{{ $card['foot_value'] ?? '' }}</b>
+                                                    <span data-public-aggregate-footer-label>{{ $card['foot_label'] ?? 'Data agregat' }}</span>
+                                                    <b data-public-aggregate-footer-value>{{ $card['foot_value'] ?? '' }}</b>
                                                 </div>
                                             </div>
                                         </article>

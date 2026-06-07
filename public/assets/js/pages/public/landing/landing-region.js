@@ -447,18 +447,75 @@
     }
 
     function fallbackPreviewResponse(selection) {
+        const aggregateCards = [
+            {
+                key: 'total_umkm',
+                label: 'UMKM OPERASIONAL',
+                value: 0,
+                value_text: '0',
+                context: 'Unit usaha operasional',
+                badge: 'Terbatas',
+                percent_text: '0,00% dari cakupan',
+                progress_percent: 0
+            },
+            {
+                key: 'mapped_umkm',
+                label: 'TERPETAKAN',
+                value: 0,
+                value_text: '0',
+                context: 'Unit terpetakan',
+                badge: 'Terbatas',
+                percent_text: '0,00% dari cakupan',
+                progress_percent: 0
+            },
+            {
+                key: 'dominant_category',
+                label: 'KATEGORI DOMINAN',
+                value: 'Belum tersedia',
+                value_text: 'Belum tersedia',
+                context: 'Kategori terbanyak',
+                badge: 'Terbatas',
+                percent_text: '0,00% dari cakupan',
+                progress_percent: 0
+            },
+            {
+                key: 'active_regions',
+                label: 'WILAYAH AKTIF',
+                value: 0,
+                value_text: '0',
+                context: 'Kelurahan memiliki data',
+                badge: 'Terbatas',
+                percent_text: '0,00% wilayah tercakup',
+                progress_percent: 0
+            }
+        ];
+
         return {
+            scope: selection.scope || 'city',
             selection: {
                 scope: selection.scope || 'city',
                 label: Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau'),
                 region_code: selection.village?.code || selection.district?.code || selection.city?.code || '16.73',
                 has_public_umkm_data: selection.hasPublicUmkmData ?? null
             },
+            context_label: Landing.cleanRegionLabel(selection.label || 'Kota Lubuklinggau'),
+            aggregate_cards: aggregateCards,
+            aggregate_card_map: aggregateCards.reduce(function (carry, card) {
+                carry[card.key] = card;
+                return carry;
+            }, {}),
             preview: {
                 empty: true,
                 total: 0,
                 active: 0,
                 validation: 0,
+                mapped: 0,
+                mapped_percent: 0,
+                mapped_percent_text: '0,00%',
+                coverage_percent: '0,00%',
+                coverage_percent_value: 0,
+                active_regions: 0,
+                aggregate_cards: aggregateCards,
                 watched: 'Belum tersedia',
                 dominant: 'Belum tersedia',
                 fields: [],
@@ -487,6 +544,10 @@
         safeSelection.label = label;
         Landing.regionState.applied = safeSelection;
         Landing.regionState.previewLoading = true;
+        setPreviewBusyState(safeSelection);
+        Landing.emit('umkm:landing-preview:loading', {
+            selection: safeSelection
+        });
 
         if (!Landing.ajaxReady()) {
             const fallback = fallbackPreviewResponse(safeSelection);
@@ -572,6 +633,7 @@
         }
 
         container.innerHTML = '';
+        container.classList.remove('is-loading');
 
         if (preview.empty || !preview.fields.length) {
             const empty = document.createElement('div');
@@ -584,6 +646,21 @@
         preview.fields.slice(0, 3).forEach(function (field, index) {
             const percent = Math.max(1, Math.min(100, Math.round(Number(field.percent || 0))));
             const count = Math.max(index === 0 ? 1 : 0, Math.round(Number(preview.total || 0) * (percent / 100)));
+
+            if (container.classList.contains('analytics-legend')) {
+                const row = document.createElement('span');
+                const marker = document.createElement('i');
+                const value = document.createElement('strong');
+
+                marker.className = ['is-mikro', 'is-kecil', 'is-menengah'][index] || 'is-mikro';
+                row.appendChild(marker);
+                row.appendChild(document.createTextNode((field.name || 'Kategori') + ' '));
+                value.textContent = percent + '%';
+                row.appendChild(value);
+                container.appendChild(row);
+                return;
+            }
+
             const row = document.createElement('div');
             const label = document.createElement('span');
             const indicatorName = document.createElement('span');
@@ -656,11 +733,32 @@
         const container = Landing.qs(S.publicAreaList);
         const areas = Array.isArray(preview?.areas) ? preview.areas : [];
 
+        function barWidthClass(percent) {
+            if (percent >= 88) {
+                return 'bar-w-92';
+            }
+
+            if (percent >= 76) {
+                return 'bar-w-80';
+            }
+
+            if (percent >= 68) {
+                return 'bar-w-72';
+            }
+
+            if (percent >= 60) {
+                return 'bar-w-64';
+            }
+
+            return 'bar-w-56';
+        }
+
         if (!container) {
             return;
         }
 
         container.innerHTML = '';
+        container.classList.remove('is-loading');
 
         if (preview?.empty || !areas.length) {
             const empty = document.createElement('div');
@@ -675,14 +773,19 @@
             const name = document.createElement('span');
             const value = document.createElement('strong');
             const sector = document.createElement('small');
+            const bar = document.createElement('i');
+            const percent = Math.max(0, Math.min(100, Number(area.percent || 0)));
 
+            row.className = container.classList.contains('bar-list') ? 'bar-item' : '';
             name.textContent = area.name || 'Wilayah';
             value.textContent = Landing.formatNumber(area.count || 0) + ' UMKM';
-            sector.textContent = (area.sector || 'Indikator') + ' ' + Math.max(0, Math.min(100, Number(area.percent || 0))) + '%';
+            sector.textContent = (area.sector || 'Indikator') + ' ' + percent + '%';
+            bar.className = 'bar-fill ' + barWidthClass(percent);
 
             row.appendChild(name);
             row.appendChild(value);
             row.appendChild(sector);
+            row.appendChild(bar);
             container.appendChild(row);
         });
     }
@@ -752,6 +855,103 @@
             villageFilter.disabled = !districtValue;
         }
     }
+
+    function bindPublicFilterRefresh() {
+        if (Landing.publicFilterRefreshBound === true) {
+            return;
+        }
+
+        Landing.publicFilterRefreshBound = true;
+
+        document.addEventListener('click', function (event) {
+            const button = event.target && event.target.closest
+                ? event.target.closest('[data-public-filter-refresh], .public-filter-btn')
+                : null;
+
+            if (!button) {
+                return;
+            }
+
+            event.preventDefault();
+            Landing.loadPreviewData(Landing.regionState.applied || Object.assign({}, Landing.DEFAULT_SELECTION));
+        });
+    }
+
+    function updateContextTargets(label) {
+        const safeLabel = Landing.cleanRegionLabel(label || 'Kota Lubuklinggau');
+
+        Landing.qsa('[data-public-context-label], [data-public-coverage-label], [data-public-active-context-label]').forEach(function (element) {
+            element.textContent = safeLabel;
+        });
+    }
+
+    function setPreviewBusyState(selection) {
+        const label = Landing.cleanRegionLabel(selection?.label || 'Kota Lubuklinggau');
+
+        updateContextTargets(label);
+        Landing.setText(S.publicRegionSource, label);
+        Landing.setText(S.publicChartRegion, label);
+        Landing.setText(S.regionModalCurrent, label);
+        syncPublicFiltersFromSelection(selection);
+
+        [
+            Landing.qs(S.publicFieldList),
+            Landing.qs(S.publicAreaList)
+        ].forEach(function (container) {
+            if (!container) {
+                return;
+            }
+
+            container.classList.add('is-loading');
+            container.innerHTML = '<div class="preview-empty-inline is-loading"><strong>Memuat agregat wilayah</strong><small>Menyiapkan ringkasan public-safe untuk konteks terpilih.</small></div>';
+        });
+
+        Landing.qsa('[data-public-map-cluster-value]').forEach(function (element) {
+            element.textContent = '—';
+        });
+    }
+
+    function updateAnalyticsSummary(preview, response) {
+        const totalTarget = Landing.qs('[data-public-analytics-total]');
+        const trendTarget = Landing.qs('[data-public-trend-list]');
+        const updatedTarget = Landing.qs('[data-public-updated-label]');
+        const trendPoints = Array.isArray(response?.trend_points) ? response.trend_points : [];
+
+        if (totalTarget) {
+            totalTarget.textContent = Landing.formatNumber(preview?.total || 0);
+        }
+
+        if (updatedTarget) {
+            updatedTarget.textContent = response?.updated_at || 'Belum tersedia';
+        }
+
+        if (trendTarget && trendPoints.length) {
+            trendTarget.innerHTML = '';
+
+            trendPoints.slice(0, 5).forEach(function (point) {
+                const item = document.createElement('span');
+
+                item.className = 'mini-point ' + (point.class || 'point-01');
+                item.textContent = point.value || '0';
+                trendTarget.appendChild(item);
+            });
+        }
+    }
+
+    function updateMapPreview(preview) {
+        const values = Array.isArray(preview?.areas) && preview.areas.length
+            ? preview.areas.slice(0, 3).map(function (area) { return area.count || 0; })
+            : [
+                preview?.mapped || 0,
+                preview?.active_regions || 0,
+                Math.max(0, Number(preview?.total || 0) - Number(preview?.mapped || 0))
+            ];
+
+        Landing.qsa('[data-public-map-cluster-value]').forEach(function (element, index) {
+            element.textContent = Landing.formatNumber(values[index] || 0);
+        });
+    }
+
     Landing.applyPreviewResponse = function (selection, response) {
         const safeSelection = Object.assign({}, Landing.DEFAULT_SELECTION, selection || {});
         const preview = response?.preview || {};
@@ -764,9 +964,12 @@
         Landing.setText(S.publicRegionSource, label);
         Landing.setText(S.publicChartRegion, label);
         Landing.setText(S.regionModalCurrent, label);
+        updateContextTargets(label);
         syncPublicFiltersFromSelection(safeSelection);
         Landing.setText(S.publicWatchedLabel, preview.watched || 'Belum tersedia');
         Landing.setText(S.publicDominantLabel, preview.dominant || 'Belum tersedia');
+        updateAnalyticsSummary(preview, response);
+        updateMapPreview(preview);
 
         const fragments = response?.fragments || {};
 
@@ -820,6 +1023,8 @@
     };
 
     Landing.initRegionModal = function () {
+        bindPublicFilterRefresh();
+
         const shell = Landing.qs(S.regionModalShell);
 
         if (shell && shell.dataset.regionShellBound !== 'true') {
@@ -1072,319 +1277,3 @@
         document.body.classList.remove('is-region-modal-open');
     };
 })();
-
-/* PublicLanding-MapData-1B-FIX3 context-label-binder */
-(function () {
-  'use strict';
-
-  if (window.__umkmPublicLandingContextLabelBinderFix3 === true) {
-    return;
-  }
-
-  window.__umkmPublicLandingContextLabelBinderFix3 = true;
-
-  var endpointNeedles = [
-    'api/public/landing-preview/data',
-    '/api/public/landing-preview/data'
-  ];
-
-  function toArray(value) {
-    return Array.prototype.slice.call(value || []);
-  }
-
-  function cleanText(value) {
-    return String(value || '').replace(/\s+/g, ' ').trim();
-  }
-
-  function normalizeText(value) {
-    return cleanText(value).toUpperCase();
-  }
-
-  function isPreviewEndpoint(resource) {
-    var url = '';
-
-    if (typeof resource === 'string') {
-      url = resource;
-    } else if (resource && typeof resource.url === 'string') {
-      url = resource.url;
-    }
-
-    return endpointNeedles.some(function (needle) {
-      return url.indexOf(needle) !== -1;
-    });
-  }
-
-  function extractContextLabel(payload) {
-    if (!payload || payload.ok !== true || !payload.data) {
-      return '';
-    }
-
-    return cleanText(
-      payload.data.context_label ||
-      (payload.data.selection && (payload.data.selection.context_label || payload.data.selection.label)) ||
-      (payload.data.preview && (payload.data.preview.context_label || payload.data.preview.label)) ||
-      ''
-    );
-  }
-
-  function findElementByExactText(text) {
-    var target = normalizeText(text);
-
-    return toArray(document.querySelectorAll('body *')).filter(function (element) {
-      return normalizeText(element.textContent || '') === target;
-    }).sort(function (a, b) {
-      return (a.textContent || '').length - (b.textContent || '').length;
-    })[0] || null;
-  }
-
-  function findContextContainer(labelElement) {
-    var current = labelElement;
-
-    while (current && current !== document.body && current !== document.documentElement) {
-      var text = normalizeText(current.textContent || '');
-      var isContextBlock = text.indexOf('CAKUPAN') !== -1 || text.indexOf('DATA DIPERBARUI') !== -1 || text.indexOf('KONTEKS AKTIF') !== -1;
-      var hasBlockSignal = current.matches('.card, .card-body, article, section, [class*="card"], [class*="control"], [class*="preview"], [class*="context"], [class*="filter"], [class*="panel"]');
-
-      if (isContextBlock && hasBlockSignal) {
-        return current;
-      }
-
-      current = current.parentElement;
-    }
-
-    return labelElement.parentElement;
-  }
-
-  function updateCakupan(label) {
-    toArray(document.querySelectorAll('[data-public-coverage-label]')).forEach(function (element) {
-      element.textContent = label;
-    });
-  }
-
-  function updateKonteksAktif(label) {
-    toArray(document.querySelectorAll('[data-public-active-context-label]')).forEach(function (element) {
-      element.textContent = label;
-    });
-  }
-
-  function updateKnownContextTargets(label) {
-    toArray(document.querySelectorAll('[data-public-context-label]')).forEach(function (element) {
-      element.textContent = label;
-    });
-  }
-
-  
-// PUBLICLANDING-AGGREGATECORE-1A: explicit aggregate card binding only.
-  function aggregateCoreData(payload) {
-    return payload && payload.data ? payload.data : {};
-  }
-
-  function aggregateCoreCards(payload) {
-    var data = aggregateCoreData(payload);
-    var cards = data.aggregate_cards || (data.preview && data.preview.aggregate_cards) || [];
-
-    if (!Array.isArray(cards) && typeof cards === 'object') {
-      cards = Object.keys(cards).map(function (key) { return cards[key]; });
-    }
-
-    return Array.isArray(cards) ? cards : [];
-  }
-
-  function aggregateCardAliases() {
-    return {
-      total_umkm: ['TOTAL UMKM', 'Total UMKM'],
-      mapped_umkm: ['TERPETAKAN', 'Terpetakan'],
-      dominant_category: ['KATEGORI DOMINAN', 'Kategori Dominan'],
-      active_regions: ['WILAYAH AKTIF', 'Wilayah Aktif']
-    };
-  }
-
-  function findAggregateCardNode(card) {
-    if (!card || !card.key) {
-      return null;
-    }
-
-    var direct = document.querySelector('[data-public-aggregate-card="' + card.key + '"]');
-    if (direct) {
-      return direct;
-    }
-
-    var aliases = aggregateCardAliases()[card.key] || [card.label || ''];
-    var candidates = toArray(document.querySelectorAll('.card, [class*="card"], article'));
-
-    return candidates.find(function (candidate) {
-      var text = normalizeText(candidate.textContent || '').toUpperCase();
-      return aliases.some(function (label) {
-        return label && text.indexOf(normalizeText(label).toUpperCase()) !== -1;
-      });
-    }) || null;
-  }
-
-  function ensureAggregateTargets(cardNode, card) {
-    if (!cardNode || !card || !card.key) {
-      return {};
-    }
-
-    cardNode.setAttribute('data-public-aggregate-card', card.key);
-
-    var selectors = {
-      value: '[data-public-aggregate-value]',
-      context: '[data-public-aggregate-context]',
-      badge: '[data-public-aggregate-badge]',
-      percent: '[data-public-aggregate-percent]',
-      footerLabel: '[data-public-aggregate-footer-label]',
-      footerValue: '[data-public-aggregate-footer-value]',
-      progress: '[data-public-aggregate-progress]'
-    };
-
-    var targets = {};
-    Object.keys(selectors).forEach(function (key) {
-      targets[key] = cardNode.querySelector(selectors[key]);
-    });
-
-    if (!targets.value) {
-      var valueCandidates = toArray(cardNode.querySelectorAll('strong, .display-1, .display-2, .display-3, .display-4, .h1, .h2, .h3'));
-      targets.value = valueCandidates.find(function (node) {
-        var text = normalizeText(node.textContent || '');
-        return text !== normalizeText(card.label || '') && !/^TOTAL UMKM|TERPETAKAN|KATEGORI DOMINAN|WILAYAH AKTIF$/i.test(text);
-      }) || null;
-      if (targets.value) {
-        targets.value.setAttribute('data-public-aggregate-value', '');
-      }
-    }
-
-    if (!targets.context) {
-      targets.context = toArray(cardNode.querySelectorAll('p, small, span')).find(function (node) {
-        var text = normalizeText(node.textContent || '');
-        return text === 'Unit usaha tercatat'
-          || text === 'Unit terpetakan'
-          || text === 'Kategori terbanyak'
-          || text === 'Kelurahan memiliki data';
-      }) || null;
-      if (targets.context) {
-        targets.context.setAttribute('data-public-aggregate-context', '');
-      }
-    }
-
-    if (!targets.percent) {
-      targets.percent = toArray(cardNode.querySelectorAll('span, small, b')).find(function (node) {
-        return (node.textContent || '').indexOf('%') !== -1 && (node.textContent || '').toLowerCase().indexOf('dari') !== -1;
-      }) || null;
-      if (targets.percent) {
-        targets.percent.setAttribute('data-public-aggregate-percent', '');
-      }
-    }
-
-    if (!targets.badge) {
-      targets.badge = cardNode.querySelector('.badge, [class*="badge"]');
-      if (targets.badge) {
-        targets.badge.setAttribute('data-public-aggregate-badge', '');
-      }
-    }
-
-    if (!targets.progress) {
-      targets.progress = cardNode.querySelector('.progress-bar, [class*="progress"] > span, [class*="progress"] > b, [class*="progress"] i');
-      if (targets.progress) {
-        targets.progress.setAttribute('data-public-aggregate-progress', '');
-      }
-    }
-
-    return targets;
-  }
-
-  function applyAggregateCard(card) {
-    var cardNode = findAggregateCardNode(card);
-    var targets = ensureAggregateTargets(cardNode, card);
-
-    if (!cardNode || !targets) {
-      return;
-    }
-
-    if (targets.value) {
-      targets.value.textContent = String(card.value_text ?? card.value ?? '0');
-    }
-
-    if (targets.context) {
-      targets.context.textContent = String(card.context || '');
-    }
-
-    if (targets.percent) {
-      targets.percent.textContent = String(card.percent_text || '');
-    }
-
-    if (targets.badge && card.badge) {
-      targets.badge.textContent = String(card.badge);
-    }
-
-    if (targets.progress) {
-      var progress = Math.max(0, Math.min(100, Number(card.progress_percent || 0)));
-      targets.progress.style.width = progress + '%';
-      targets.progress.setAttribute('aria-valuenow', String(progress));
-    }
-
-    if (targets.footerLabel && card.footer_label) {
-      targets.footerLabel.textContent = String(card.footer_label);
-    }
-
-    if (targets.footerValue && card.footer_value) {
-      targets.footerValue.textContent = String(card.footer_value);
-    }
-  }
-
-  function applyAggregateCoreCards(payload) {
-    aggregateCoreCards(payload).forEach(applyAggregateCard);
-  }
-function applyContextLabel(payload) {
-    var label = extractContextLabel(payload);
-
-    if (label) {
-      updateKnownContextTargets(label);
-      updateCakupan(label);
-      updateKonteksAktif(label);
-    }
-
-    applyAggregateCoreCards(payload);
-
-    document.dispatchEvent(new CustomEvent('umkm:public-landing-context-label-updated', {
-      detail: {
-        label: label,
-        payload: payload
-      }
-    }));
-  }
-
-  window.umkmApplyPublicLandingContextLabel = applyContextLabel;
-
-  if (typeof window.fetch !== 'function') {
-    return;
-  }
-
-  var nativeFetch = window.fetch.bind(window);
-
-  window.fetch = function () {
-    var shouldBind = isPreviewEndpoint(arguments[0]);
-    var responsePromise = nativeFetch.apply(null, arguments);
-
-    if (!shouldBind) {
-      return responsePromise;
-    }
-
-    responsePromise.then(function (response) {
-      if (!response || typeof response.clone !== 'function') {
-        return;
-      }
-
-      response.clone().json().then(function (payload) {
-        window.setTimeout(function () {
-          applyContextLabel(payload);
-        }, 0);
-      }).catch(function () {
-        return null;
-      });
-    }).catch(function () {
-      return null;
-    });
-
-    return responsePromise;
-  };
-}());

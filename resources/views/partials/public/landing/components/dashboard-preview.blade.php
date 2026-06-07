@@ -22,7 +22,11 @@
                 <div class="filter-sync-title">
                     <strong>Kontrol Data Publik</strong>
                     <p class="mb-0">Filter otomatis mengikuti konteks wilayah preview yang diterapkan pada Peta Sebaran.</p>
-                    <small class="filter-sync-context">Konteks aktif: <b data-public-active-context-label>Kota Lubuklinggau</b></small>
+                    <small class="filter-sync-context">
+                        Konteks aktif: <b data-public-active-context-label>Kota Lubuklinggau</b>
+                        <span data-public-watched-label>Kecamatan terpantau</span>
+                        <span data-public-dominant-label>Belum tersedia</span>
+                    </small>
                 </div>
             </div>
 
@@ -68,9 +72,9 @@
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-3 col-xl-auto">
-                    <button type="button" class="btn btn-primary w-100 public-filter-btn">
+                    <button type="button" class="btn btn-primary w-100 public-filter-btn" data-public-filter-refresh>
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z"/></svg>
-                        <span>Terapkan Filter</span>
+                        <span>Sinkronkan Wilayah</span>
                     </button>
                 </div>
             </form>
@@ -86,9 +90,9 @@
                         <span class="badge rounded-pill text-bg-light">Agregat</span>
                     </div>
                     <div class="donut-visual mx-auto my-3" aria-hidden="true">
-                        <span>{{ $publicLandingAnalytics['scale']['total'] ?? '—' }}<small>Total UMKM</small></span>
+                        <span><b data-public-analytics-total>{{ $publicLandingAnalytics['scale']['total'] ?? '—' }}</b><small>UMKM Operasional</small></span>
                     </div>
-                    <div class="analytics-legend">
+                    <div class="analytics-legend" data-public-field-list>
                         @foreach (($publicLandingAnalytics['scale']['items'] ?? []) as $item)
                             <span><i class="{{ $item['class'] ?? '' }}"></i>{{ $item['label'] ?? 'Kategori' }} <strong>{{ $item['percent'] ?? '—' }}</strong></span>
                         @endforeach
@@ -104,12 +108,12 @@
                         <h3>Status Keterpetaan Data</h3>
                         <span class="badge rounded-pill text-bg-light">Public-safe</span>
                     </div>
-                    <div class="mini-line-chart" aria-hidden="true">
+                    <div class="mini-line-chart" aria-hidden="true" data-public-trend-list>
                         @foreach (($publicLandingAnalytics['trend_points'] ?? []) as $point)
                             <span class="mini-point {{ $point['class'] ?? '' }}">{{ $point['value'] ?? '—' }}</span>
                         @endforeach
                     </div>
-                    <small class="text-muted">Data hingga {{ $publicLandingAnalytics['updated_at_label'] ?? 'periode terakhir' }}</small>
+                    <small class="text-muted">Data hingga <span data-public-updated-label>{{ $publicLandingAnalytics['updated_at_label'] ?? 'periode terakhir' }}</span></small>
                 </div>
             </article>
         </div>
@@ -122,7 +126,7 @@
                         <span class="badge rounded-pill text-bg-light">Top wilayah</span>
                     </div>
 
-                    <div class="bar-list">
+                    <div class="bar-list" data-public-area-list>
                         @foreach (($publicLandingAnalytics['districts'] ?? []) as $district)
                             <div class="bar-item">
                                 <span>{{ $district['label'] ?? 'Wilayah' }}</span>

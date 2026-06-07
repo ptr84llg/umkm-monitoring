@@ -8,7 +8,7 @@
             <div class="public-map-toolbar d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <span>Peta Sebaran publik</span>
-                    <strong>Kota Lubuklinggau, Sumatera Selatan</strong>
+                    <strong data-public-context-label>Kota Lubuklinggau, Sumatera Selatan</strong>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-sm btn-light public-map-select" data-region-open data-region-modal-open>
@@ -52,7 +52,7 @@
                 <span class="map-zone-label zone-d">Selatan</span>
 
                 @foreach (($publicLandingMap['clusters'] ?? []) as $cluster)
-                    <span class="map-cluster {{ $cluster['class'] ?? '' }}" aria-hidden="true"><strong>{{ $cluster['value'] ?? '—' }}</strong></span>
+                    <span class="map-cluster {{ $cluster['class'] ?? '' }}" data-public-map-cluster="{{ $loop->index }}" aria-hidden="true"><strong data-public-map-cluster-value>{{ $cluster['value'] ?? '—' }}</strong></span>
                 @endforeach
 
                 <div class="public-map-legend">

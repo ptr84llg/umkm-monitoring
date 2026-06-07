@@ -78,7 +78,9 @@
       value: card.querySelector('[data-public-aggregate-value]'),
       context: card.querySelector('[data-public-aggregate-context]'),
       percent: card.querySelector('[data-public-aggregate-percent]'),
-      progress: card.querySelector('[data-public-aggregate-progress]')
+      progress: card.querySelector('[data-public-aggregate-progress]'),
+      footerLabel: card.querySelector('[data-public-aggregate-footer-label]'),
+      footerValue: card.querySelector('[data-public-aggregate-footer-value]')
     };
     if (!targets.badge) {
       targets.badge = card.querySelector('.badge, [class*="badge"]');
@@ -101,8 +103,16 @@
       if (targets.percent) targets.percent.setAttribute('data-public-aggregate-percent', '');
     }
     if (!targets.progress) {
-      targets.progress = card.querySelector('.progress-bar');
+      targets.progress = card.querySelector('.stat-progress-fill, .progress-bar, [class*="progress"] > span, [class*="progress"] > b, [class*="progress"] > i');
       if (targets.progress) targets.progress.setAttribute('data-public-aggregate-progress', '');
+    }
+    if (!targets.footerLabel) {
+      targets.footerLabel = card.querySelector('.stat-card-foot span');
+      if (targets.footerLabel) targets.footerLabel.setAttribute('data-public-aggregate-footer-label', '');
+    }
+    if (!targets.footerValue) {
+      targets.footerValue = card.querySelector('.stat-card-foot b');
+      if (targets.footerValue) targets.footerValue.setAttribute('data-public-aggregate-footer-value', '');
     }
     return targets;
   }
@@ -123,9 +133,11 @@
       if (targets.context) targets.context.textContent = 'Mengambil agregat publik...';
       if (targets.percent) targets.percent.textContent = 'Menunggu sinkronisasi';
       if (targets.progress) {
-        targets.progress.className = 'progress-bar w-0';
+        targets.progress.className = (targets.progress.classList.contains('stat-progress-fill') ? 'stat-progress-fill ' : 'progress-bar ') + 'w-0';
         targets.progress.setAttribute('aria-valuenow', '0');
       }
+      if (targets.footerLabel) targets.footerLabel.textContent = 'Data agregat';
+      if (targets.footerValue) targets.footerValue.textContent = 'Memuat';
     });
   }
   function setError(message) {
@@ -142,6 +154,14 @@
       card.classList.add('is-limited');
       if (targets.badge) targets.badge.textContent = 'Terbatas';
       if (targets.context) targets.context.textContent = message || 'Agregat belum dapat dimuat.';
+      if (targets.value) targets.value.textContent = '—';
+      if (targets.percent) targets.percent.textContent = 'Menunggu data';
+      if (targets.progress) {
+        targets.progress.className = (targets.progress.classList.contains('stat-progress-fill') ? 'stat-progress-fill ' : 'progress-bar ') + 'w-0';
+        targets.progress.setAttribute('aria-valuenow', '0');
+      }
+      if (targets.footerLabel) targets.footerLabel.textContent = 'Status';
+      if (targets.footerValue) targets.footerValue.textContent = 'Terbatas';
     });
   }
   function applyCard(cardData) {
@@ -163,13 +183,18 @@
     if (targets.context) targets.context.textContent = String(cardData.context || '');
     if (targets.percent) targets.percent.textContent = String(cardData.percent_text || '');
     if (targets.progress) {
-      targets.progress.className = 'progress-bar ' + widthClass(progress);
+      targets.progress.className = (targets.progress.classList.contains('stat-progress-fill') ? 'stat-progress-fill ' : 'progress-bar ') + widthClass(progress);
       targets.progress.setAttribute('aria-valuenow', String(progress));
     }
+    if (targets.footerLabel) targets.footerLabel.textContent = String(cardData.footer_label || 'Data agregat');
+    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Public-safe');
   }
   function applyPayload(payload) {
     var safe = normalizePayload(payload);
-    if (!safe || !safe.data || !safe.data.aggregate_cards) return;
+    if (!safe || !safe.data || !safe.data.aggregate_cards) {
+      setError('Agregat belum tersedia untuk konteks ini.');
+      return;
+    }
     state.payload = safe;
     state.loading = false;
     state.ready = true;
@@ -308,9 +333,12 @@
     loadInitial(0);
   }
   window.umkmApplyPublicLandingAggregateCards = applyPayload;
-  document.addEventListener('umkm:public-landing-context-label-updated', function (event) {
-    var payload = event && event.detail ? event.detail.payload : null;
-    if (payload) applyPayload(payload);
+  document.addEventListener('umkm:landing-preview:loading', function () {
+    setLoading();
+  });
+  document.addEventListener('umkm:landing-region:changed', function (event) {
+    var response = event && event.detail ? event.detail.response : null;
+    if (response) applyPayload(response);
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
