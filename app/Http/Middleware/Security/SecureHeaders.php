@@ -13,11 +13,11 @@ class SecureHeaders
 
         $contentSecurityPolicy = implode('; ', [
             "default-src 'self'",
-            "script-src 'self'",
-            "style-src 'self'",
-            "img-src 'self' data:",
-            "font-src 'self' data:",
-            "connect-src 'self'",
+            "script-src 'self' https://maps.googleapis.com https://maps.gstatic.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "img-src 'self' data: blob: https://maps.googleapis.com https://maps.gstatic.com",
+            "font-src 'self' data: https://fonts.gstatic.com",
+            "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com",
             "frame-ancestors 'none'",
             "object-src 'none'",
             "base-uri 'self'",

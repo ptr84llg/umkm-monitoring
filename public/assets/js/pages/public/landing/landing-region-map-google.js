@@ -325,20 +325,68 @@ function selectionFromAggregatePayload() {
     }
 
 function init() {
-        const container = qs('[data-public-google-region-map]');
-        if (!container) return;
+        let observer = null;
 
-        setStatus('Menunggu data wilayah aktif.', 'info');
+        function bindRegionMapEvents() {
+            if (state.eventsBound === true) {
+                return;
+            }
 
-        document.addEventListener('umkm:landing-region:changed', function (event) {
-            renderGeometry(event.detail ? event.detail.selection : currentSelection());
+            state.eventsBound = true;
+
+            document.addEventListener('umkm:landing-region:changed', function (event) {
+                renderGeometry(event.detail ? event.detail.selection : currentSelection());
+            });
+
+            document.addEventListener('umkm:landing-aggregate:ready', function () {
+                renderGeometry(currentSelection());
+            });
+
+            document.addEventListener('umkm:component-loader:loaded', function (event) {
+                const component = event.detail ? event.detail.component : '';
+                if (component === 'landing-hero-preview-board') {
+                    bootRegionMap();
+                }
+            });
+        }
+
+        function bootRegionMap() {
+            const container = qs('[data-public-google-region-map]');
+            if (!container) {
+                return false;
+            }
+
+            if (container.dataset.publicRegionMapBooted === 'true') {
+                return true;
+            }
+
+            container.dataset.publicRegionMapBooted = 'true';
+            setStatus('Menunggu data wilayah aktif.', 'info');
+            bindRegionMapEvents();
+            scheduleInitialRender();
+
+            if (observer) {
+                observer.disconnect();
+                observer = null;
+            }
+
+            return true;
+        }
+
+        if (bootRegionMap()) {
+            return;
+        }
+
+        bindRegionMapEvents();
+
+        observer = new MutationObserver(function () {
+            bootRegionMap();
         });
 
-        document.addEventListener('umkm:landing-aggregate:ready', function () {
-            renderGeometry(currentSelection());
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
         });
-
-        scheduleInitialRender();
     }
 
 Landing.ready(init);
