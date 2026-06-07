@@ -16,6 +16,7 @@
             <div class="public-map-visual public-region-map-visual"
                  data-public-google-region-map
                  data-map-provider="google"
+                 data-interaction-ready="false"
                  data-google-maps-key="{{ (string) config('umkm.map.google_maps.api_key') }}"
                  data-google-maps-map-id="{{ (string) config('umkm.map.google_maps.map_id') }}"
                  data-region-map-geometry-url="{{ url('/api/public/landing-region-map/geometry') }}"
@@ -23,29 +24,28 @@
                  aria-label="Peta wilayah aktif UMKM Kota Lubuklinggau">
                 <div class="public-region-map-canvas" data-public-google-region-map-canvas></div>
 
-                <div class="public-region-map-state" data-public-region-map-state data-tone="info">
-                    Menunggu data wilayah aktif.
-                </div>
-
-                <aside class="public-region-map-panel" aria-label="Ringkasan peta wilayah aktif">
-                    <span>Peta wilayah aktif</span>
-                    <strong data-public-region-map-title>Belum dimuat</strong>
-                    <small data-public-region-map-scope>Kota/Kecamatan/Kelurahan</small>
-                    <div class="public-region-map-meta">
-                        <span><b data-public-region-map-feature-count>0</b> wilayah tampil</span>
-                        <span>Layer <b data-public-region-map-visible-level>Wilayah</b></span>
-                    </div>
-                </aside>
-
-                <div class="public-map-legend public-region-map-legend">
-                    <span><i class="is-district"></i>Kecamatan</span>
-                    <span><i class="is-village"></i>Kelurahan</span>
+                <div class="public-map-legend public-region-map-legend" data-public-region-map-legend data-ready="false" aria-label="Legenda kepadatan UMKM">
+                    <span><i class="is-density-low"></i>Kepadatan rendah</span>
+                    <span><i class="is-density-medium"></i>Kepadatan sedang</span>
+                    <span><i class="is-density-high"></i>Kepadatan tinggi</span>
                     <span><i class="is-active"></i>Wilayah aktif</span>
                 </div>
             </div>
 
-            <div class="public-map-footer d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
-                <span>{{ $publicLandingMap['note'] ?? 'Data peta belum dimuat. Menunggu konteks wilayah aktif.' }}</span>
+            <div class="public-map-footer public-region-map-footer d-flex flex-column flex-xl-row align-items-xl-center justify-content-xl-between gap-3">
+                <div class="public-region-map-footer-main">
+                    <span class="public-region-map-state" data-public-region-map-state data-tone="info">
+                        Menunggu data wilayah aktif.
+                    </span>
+                    <strong data-public-region-map-title>Belum dimuat</strong>
+                    <small data-public-region-map-scope>Kota/Kecamatan/Kelurahan</small>
+                </div>
+                <div class="public-region-map-meta" aria-label="Ringkasan peta wilayah aktif">
+                    <span><b data-public-region-map-feature-count>0</b> wilayah tampil</span>
+                    <span>Layer <b data-public-region-map-visible-level>Wilayah</b></span>
+                    <span><b data-public-region-map-total-umkm>0</b> UMKM pada layer</span>
+                    <span>Maks. <b data-public-region-map-density-max>0</b> UMKM/wilayah</span>
+                </div>
             </div>
         </div>
     </div>

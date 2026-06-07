@@ -3045,87 +3045,145 @@ body.layout-public .umkm-public-footer {
     z-index: 1;
 }
 
-.public-region-map-state {
-    position: absolute;
-    left: 1rem;
-    top: 1rem;
-    z-index: 3;
-    max-width: min(25rem, calc(100% - 2rem));
-    border-radius: 999px;
-    padding: .5rem .85rem;
-    font-size: .82rem;
-    font-weight: 700;
-    color: #0f172a;
-    background: rgba(255, 255, 255, .92);
-    box-shadow: 0 14px 36px rgba(15, 23, 42, .14);
-    backdrop-filter: blur(10px);
-}
-
-.public-region-map-state[data-tone="success"] {
-    color: #14532d;
-}
-
-.public-region-map-state[data-tone="warning"] {
-    color: #9a3412;
-}
-
-.public-region-map-panel {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 3;
-    width: min(20rem, calc(100% - 2rem));
-    border: 1px solid rgba(15, 23, 42, .08);
-    border-radius: 1.1rem;
-    padding: .9rem 1rem;
-    background: rgba(255, 255, 255, .94);
-    box-shadow: 0 18px 45px rgba(15, 23, 42, .16);
-    backdrop-filter: blur(12px);
-}
-
-.public-region-map-panel span,
-.public-region-map-panel small {
-    display: block;
-    color: #64748b;
-    font-size: .78rem;
-}
-
-.public-region-map-panel strong {
-    display: block;
-    color: #0f172a;
-    font-size: 1.05rem;
-    line-height: 1.25;
-    margin-top: .18rem;
-}
-
-.public-region-map-meta {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .45rem;
-    margin-top: .7rem;
-}
-
-.public-region-map-meta span {
-    border-radius: .75rem;
-    padding: .48rem .55rem;
-    background: rgba(37, 99, 235, .08);
-    color: #334155;
+.public-region-map-visual[data-interaction-ready="true"] .public-region-map-canvas {
+    cursor: pointer;
 }
 
 .public-region-map-legend {
     z-index: 3;
+    transition: opacity .2s ease, transform .2s ease;
 }
 
-.public-region-map-legend .is-district {
-    background: #16a34a;
+.public-region-map-legend[data-ready="false"] {
+    opacity: .62;
 }
 
-.public-region-map-legend .is-village {
-    background: #2563eb;
+.public-region-map-legend[data-ready="false"] span {
+    filter: grayscale(.35);
+}
+
+.public-region-map-legend .is-density-low {
+    background: #93c5fd;
+}
+
+.public-region-map-legend .is-density-medium {
+    background: #3b82f6;
+}
+
+.public-region-map-legend .is-density-high {
+    background: #1d4ed8;
 }
 
 .public-region-map-legend .is-active {
     background: #f97316;
+}
+
+.public-region-map-footer {
+    border-top: 1px solid rgba(15, 23, 42, .08);
+    padding: .95rem 1rem 1rem;
+    color: #334155;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, .08), transparent 20rem),
+        rgba(255, 255, 255, .96);
+}
+
+.public-region-map-footer-main {
+    min-width: min(100%, 22rem);
+}
+
+.public-region-map-state {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: .38rem .68rem;
+    font-size: .78rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #0f172a;
+    background: rgba(15, 23, 42, .06);
+}
+
+.public-region-map-state[data-tone="loading"] {
+    color: #075985;
+    background: rgba(14, 165, 233, .12);
+}
+
+.public-region-map-state[data-tone="success"] {
+    color: #14532d;
+    background: rgba(34, 197, 94, .13);
+}
+
+.public-region-map-state[data-tone="warning"] {
+    color: #9a3412;
+    background: rgba(249, 115, 22, .13);
+}
+
+.public-region-map-footer-main strong,
+.public-region-map-footer-main small {
+    display: block;
+}
+
+.public-region-map-footer-main strong {
+    color: #0f172a;
+    font-size: 1rem;
+    line-height: 1.25;
+    margin-top: .48rem;
+}
+
+.public-region-map-footer-main small {
+    color: #64748b;
+    font-size: .78rem;
+    margin-top: .16rem;
+}
+
+.public-region-map-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .45rem;
+    min-width: min(100%, 36rem);
+}
+
+.public-region-map-meta span {
+    border-radius: .8rem;
+    padding: .5rem .58rem;
+    background: rgba(37, 99, 235, .08);
+    color: #334155;
+    font-size: .78rem;
+    line-height: 1.25;
+}
+
+.public-region-map-meta b {
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.public-region-map-tooltip {
+    display: grid;
+    gap: .18rem;
+    min-width: 10rem;
+}
+
+.public-region-map-tooltip strong {
+    color: #0f172a;
+    font-size: .88rem;
+}
+
+.public-region-map-tooltip span {
+    color: #334155;
+    font-size: .78rem;
+}
+
+.public-region-map-tooltip small {
+    color: #64748b;
+    font-size: .72rem;
+}
+
+@media (max-width: 991.98px) {
+    .public-region-map-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        min-width: 100%;
+    }
 }
 
 @media (max-width: 767.98px) {
@@ -3134,17 +3192,12 @@ body.layout-public .umkm-public-footer {
         min-height: 360px;
     }
 
-    .public-region-map-panel {
-        left: .75rem;
-        right: .75rem;
-        bottom: .75rem;
-        width: auto;
+    .public-region-map-footer {
+        padding: .85rem;
     }
 
-    .public-region-map-state {
-        left: .75rem;
-        top: .75rem;
-        max-width: calc(100% - 1.5rem);
+    .public-region-map-meta {
+        grid-template-columns: 1fr;
     }
 }
 /* PublicLanding-GoogleMapRegion-1A:END */

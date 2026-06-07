@@ -2,7 +2,10 @@
 
 namespace App\Support\PublicLanding;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 final class PublicLandingRegionGeometry
 {
@@ -10,6 +13,7 @@ final class PublicLandingRegionGeometry
     {
         $selection = self::resolveSelection($input);
         $features = self::featuresForSelection($selection);
+        $summary = self::summaryFromFeatures($features, $selection);
 
         return [
             'scope' => $selection['scope'],
@@ -18,14 +22,7 @@ final class PublicLandingRegionGeometry
                 'type' => 'FeatureCollection',
                 'features' => $features,
             ],
-            'summary' => [
-                'feature_count' => count($features),
-                'visible_level' => $selection['visible_level'],
-                'active_label' => $selection['label'],
-                'provider' => 'google',
-                'contains_umkm_precise_coordinates' => false,
-                'contains_raw_geojson_properties' => false,
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -86,7 +83,10 @@ final class PublicLandingRegionGeometry
     private static function featuresForSelection(array $selection): array
     {
         if ($selection['scope'] === 'city') {
-            return self::districtFeatures($selection);
+            return self::enrichFeaturesWithUmkmCounts(
+                self::districtFeatures($selection),
+                'district'
+            );
         }
 
         $features = self::villageFeatures($selection);
@@ -94,18 +94,22 @@ final class PublicLandingRegionGeometry
         if ($selection['scope'] === 'district') {
             $districtNumber = $selection['district_number'];
 
-            return array_values(array_filter($features, function (array $feature) use ($districtNumber) {
+            $features = array_values(array_filter($features, function (array $feature) use ($districtNumber) {
                 return (int) ($feature['properties']['district_number'] ?? 0) === $districtNumber;
             }));
+
+            return self::enrichFeaturesWithUmkmCounts($features, 'village');
         }
 
         $districtNumber = $selection['district_number'];
         $villageNumber = $selection['village_number'];
 
-        return array_values(array_filter($features, function (array $feature) use ($districtNumber, $villageNumber) {
+        $features = array_values(array_filter($features, function (array $feature) use ($districtNumber, $villageNumber) {
             return (int) ($feature['properties']['district_number'] ?? 0) === $districtNumber
                 && (int) ($feature['properties']['village_number'] ?? 0) === $villageNumber;
         }));
+
+        return self::enrichFeaturesWithUmkmCounts($features, 'village');
     }
 
     private static function districtFeatures(array $selection): array
@@ -144,10 +148,14 @@ final class PublicLandingRegionGeometry
             'properties' => [
                 'region_code' => $regionCode,
                 'region_name' => $name,
+                'region_label' => 'Kecamatan ' . $name,
                 'region_level' => 'district',
                 'parent_code' => $selection['city_code'],
+                'district_code' => $regionCode,
+                'district_name' => $name,
                 'district_number' => $districtNumber,
                 'active' => $selection['scope'] === 'district' && $selection['district_number'] === $districtNumber,
+                'selectable' => true,
                 'display_order' => $index + 1,
             ],
             'geometry' => self::normalizeGeometry($geometry),
@@ -168,22 +176,178 @@ final class PublicLandingRegionGeometry
         $districtCode = self::districtCodeFromNumber($districtNumber);
         $regionCode = self::villageCodeFromNumber($districtNumber, $villageNumber);
         $name = self::cleanName((string) ($properties['nm_kelurahan'] ?? 'Kelurahan'));
+        $districtName = self::cleanName((string) ($properties['nm_kecamatan'] ?? $districtCode));
 
         return [
             'type' => 'Feature',
             'properties' => [
                 'region_code' => $regionCode,
                 'region_name' => $name,
+                'region_label' => 'Kelurahan ' . $name,
                 'region_level' => 'village',
                 'parent_code' => $districtCode,
+                'district_code' => $districtCode,
+                'district_name' => $districtName,
+                'village_code' => $regionCode,
+                'village_name' => $name,
                 'district_number' => $districtNumber,
                 'village_number' => $villageNumber,
                 'active' => $selection['scope'] === 'village'
                     && $selection['district_number'] === $districtNumber
                     && $selection['village_number'] === $villageNumber,
+                'selectable' => true,
                 'display_order' => $index + 1,
             ],
             'geometry' => self::normalizeGeometry($geometry),
+        ];
+    }
+
+    private static function enrichFeaturesWithUmkmCounts(array $features, string $level): array
+    {
+        $codes = collect($features)
+            ->map(fn (array $feature): string => (string) ($feature['properties']['region_code'] ?? ''))
+            ->filter(fn (string $code): bool => $code !== '')
+            ->unique()
+            ->values()
+            ->all();
+
+        $counts = self::umkmCountsByRegionCodes($codes, $level);
+        $max = max(0, ...array_values($counts));
+
+        return collect($features)
+            ->map(function (array $feature) use ($counts, $max): array {
+                $code = (string) ($feature['properties']['region_code'] ?? '');
+                $total = (int) ($counts[$code] ?? 0);
+                $percent = $max > 0 ? round(($total / $max) * 100, 2) : 0.0;
+
+                $feature['properties']['umkm_total'] = $total;
+                $feature['properties']['umkm_total_text'] = self::formatNumber($total);
+                $feature['properties']['density_percent'] = $percent;
+                $feature['properties']['density_level'] = self::densityLevel($total, $percent);
+                $feature['properties']['has_public_umkm_data'] = $total > 0;
+
+                return $feature;
+            })
+            ->values()
+            ->all();
+    }
+
+    private static function umkmCountsByRegionCodes(array $codes, string $level): array
+    {
+        $codes = array_values(array_filter(array_unique($codes), fn (string $code): bool => trim($code) !== ''));
+
+        if ($codes === [] || ! Schema::hasTable('umkms') || ! Schema::hasTable('umkm_locations')) {
+            return [];
+        }
+
+        $query = self::baseUmkmQuery();
+
+        $codeColumn = self::firstColumn('umkm_locations', [$level . '_code']);
+
+        if ($codeColumn !== null) {
+            return $query
+                ->whereIn('umkm_locations.' . $codeColumn, $codes)
+                ->selectRaw('umkm_locations.' . self::wrap($codeColumn) . ' as region_code, COUNT(DISTINCT umkms.id) as total_count')
+                ->groupBy('umkm_locations.' . $codeColumn)
+                ->pluck('total_count', 'region_code')
+                ->map(fn ($value): int => (int) $value)
+                ->all();
+        }
+
+        $idColumn = self::firstColumn('umkm_locations', $level === 'district'
+            ? ['district_region_id', 'district_id', 'district_reference_id']
+            : ['village_region_id', 'village_id', 'village_reference_id']);
+
+        if ($idColumn === null || ! Schema::hasTable('regions') || ! Schema::hasColumn('regions', 'id') || ! Schema::hasColumn('regions', 'code')) {
+            return [];
+        }
+
+        return $query
+            ->join('regions as region_counts', 'region_counts.id', '=', 'umkm_locations.' . $idColumn)
+            ->whereIn('region_counts.code', $codes)
+            ->selectRaw('region_counts.code as region_code, COUNT(DISTINCT umkms.id) as total_count')
+            ->groupBy('region_counts.code')
+            ->pluck('total_count', 'region_code')
+            ->map(fn ($value): int => (int) $value)
+            ->all();
+    }
+
+    private static function baseUmkmQuery(): Builder
+    {
+        $query = DB::table('umkms')
+            ->leftJoin('umkm_locations', 'umkm_locations.umkm_id', '=', 'umkms.id');
+
+        return self::applyPublicStatusFilter($query);
+    }
+
+    private static function applyPublicStatusFilter(Builder $query): Builder
+    {
+        if (! Schema::hasColumn('umkms', 'status_data')) {
+            return $query;
+        }
+
+        $statuses = self::publicStatuses();
+
+        if ($statuses === []) {
+            return $query;
+        }
+
+        return $query->whereIn('umkms.status_data', $statuses);
+    }
+
+    private static function publicStatuses(): array
+    {
+        $statuses = array_values(array_filter(array_map(
+            fn ($status) => trim((string) $status),
+            (array) config('umkm.data.public_statuses', ['resmi', 'terbatas'])
+        )));
+
+        return $statuses === [] ? ['resmi', 'terbatas'] : $statuses;
+    }
+
+    private static function densityLevel(int $total, float $percent): string
+    {
+        if ($total < 1) {
+            return 'empty';
+        }
+
+        if ($percent >= 75) {
+            return 'high';
+        }
+
+        if ($percent >= 40) {
+            return 'medium';
+        }
+
+        return 'low';
+    }
+
+    private static function summaryFromFeatures(array $features, array $selection): array
+    {
+        $counts = collect($features)
+            ->map(fn (array $feature): int => (int) ($feature['properties']['umkm_total'] ?? 0))
+            ->values();
+
+        $total = (int) $counts->sum();
+        $max = (int) ($counts->max() ?? 0);
+        $active = collect($features)->first(fn (array $feature): bool => (bool) ($feature['properties']['active'] ?? false));
+        $activeTotal = $active ? (int) ($active['properties']['umkm_total'] ?? 0) : null;
+
+        return [
+            'feature_count' => count($features),
+            'visible_level' => $selection['visible_level'],
+            'active_label' => $selection['label'],
+            'provider' => 'google',
+            'interactive' => true,
+            'contains_umkm_precise_coordinates' => false,
+            'contains_raw_geojson_properties' => false,
+            'contains_umkm_aggregate_counts' => true,
+            'total_umkm_count' => $total,
+            'total_umkm_text' => self::formatNumber($total),
+            'max_umkm_count' => $max,
+            'max_umkm_text' => self::formatNumber($max),
+            'active_umkm_count' => $activeTotal,
+            'active_umkm_text' => $activeTotal === null ? '-' : self::formatNumber($activeTotal),
         ];
     }
 
@@ -221,6 +385,21 @@ final class PublicLandingRegionGeometry
         }
 
         return array_map(fn ($item) => self::normalizeCoordinates($item), $value);
+    }
+
+    private static function firstColumn(string $table, array $candidates): ?string
+    {
+        if (! Schema::hasTable($table)) {
+            return null;
+        }
+
+        foreach ($candidates as $column) {
+            if (Schema::hasColumn($table, $column)) {
+                return $column;
+            }
+        }
+
+        return null;
     }
 
     private static function cleanCode(string $code): string
@@ -268,5 +447,19 @@ final class PublicLandingRegionGeometry
     private static function cleanName(string $name): string
     {
         return trim(preg_replace('/\s+/', ' ', $name) ?? $name);
+    }
+
+    private static function formatNumber(int|float|string $value): string
+    {
+        if (! is_numeric($value)) {
+            return (string) $value;
+        }
+
+        return number_format((float) $value, 0, ',', '.');
+    }
+
+    private static function wrap(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 }
