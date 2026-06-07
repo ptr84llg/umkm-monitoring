@@ -13,45 +13,34 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 public-map-toolbar-actions" data-public-region-action-mount="map-toolbar" hidden aria-hidden="true"></div>
             </div>
+            <div class="public-map-visual public-region-map-visual"
+                 data-public-google-region-map
+                 data-map-provider="google"
+                 data-google-maps-key="{{ (string) config('umkm.map.google_maps.api_key') }}"
+                 data-google-maps-map-id="{{ (string) config('umkm.map.google_maps.map_id') }}"
+                 data-region-map-geometry-url="{{ url('/api/public/landing-region-map/geometry') }}"
+                 role="application"
+                 aria-label="Peta wilayah aktif UMKM Kota Lubuklinggau">
+                <div class="public-region-map-canvas" data-public-google-region-map-canvas></div>
 
-            <div class="public-map-visual" role="img" aria-label="Ilustrasi peta sebaran UMKM Kota Lubuklinggau">
-                <div class="map-line line-a"></div>
-                <div class="map-line line-b"></div>
-                <div class="map-line line-c"></div>
-                <div class="map-boundary"></div>
-                <button class="map-zoom zoom-plus" type="button" aria-label="Perbesar peta">+</button>
-                <button class="map-zoom zoom-minus" type="button" aria-label="Perkecil peta">−</button>
-                <span class="map-marker is-mikro marker-pos-01" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-02" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-03" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-04" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-05" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-06" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-07" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-08" aria-hidden="true"></span>
-                <span class="map-marker is-menengah marker-pos-09" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-10" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-11" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-12" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-13" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-14" aria-hidden="true"></span>
-                <span class="map-marker is-menengah marker-pos-15" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-16" aria-hidden="true"></span>
-                <span class="map-marker is-mikro marker-pos-17" aria-hidden="true"></span>
-                <span class="map-marker is-kecil marker-pos-18" aria-hidden="true"></span>
-                <span class="map-zone-label zone-a">Timur</span>
-                <span class="map-zone-label zone-b">Barat</span>
-                <span class="map-zone-label zone-c">Utara</span>
-                <span class="map-zone-label zone-d">Selatan</span>
+                <div class="public-region-map-state" data-public-region-map-state data-tone="info">
+                    Menunggu data wilayah aktif.
+                </div>
 
-                @foreach (($publicLandingMap['clusters'] ?? []) as $cluster)
-                    <span class="map-cluster {{ $cluster['class'] ?? '' }}" data-public-map-cluster="{{ $loop->index }}" aria-hidden="true"><strong data-public-map-cluster-value>{{ $cluster['value'] ?? '—' }}</strong></span>
-                @endforeach
+                <aside class="public-region-map-panel" aria-label="Ringkasan peta wilayah aktif">
+                    <span>Peta wilayah aktif</span>
+                    <strong data-public-region-map-title>Belum dimuat</strong>
+                    <small data-public-region-map-scope>Kota/Kecamatan/Kelurahan</small>
+                    <div class="public-region-map-meta">
+                        <span><b data-public-region-map-feature-count>0</b> wilayah tampil</span>
+                        <span>Layer <b data-public-region-map-visible-level>Wilayah</b></span>
+                    </div>
+                </aside>
 
-                <div class="public-map-legend">
-                    <span><i class="is-mikro"></i>Mikro</span>
-                    <span><i class="is-kecil"></i>Kecil</span>
-                    <span><i class="is-menengah"></i>Menengah</span>
+                <div class="public-map-legend public-region-map-legend">
+                    <span><i class="is-district"></i>Kecamatan</span>
+                    <span><i class="is-village"></i>Kelurahan</span>
+                    <span><i class="is-active"></i>Wilayah aktif</span>
                 </div>
             </div>
 

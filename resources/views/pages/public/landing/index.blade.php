@@ -13,6 +13,7 @@
         'public/landing/landing-navigation.js',
         'public/landing/landing-chart.js',
         'public/landing/landing-region.js',
+        'public/landing/landing-region-map-google.js',
         'public/landing/landing-aggregate-cards.js',
         'public/landing/landing-location-bridge.js',
         'public/landing/landing-components.js',

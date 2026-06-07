@@ -32,6 +32,10 @@ return [
         'city_name' => env('LANDING_REGION_CITY_NAME', 'Kota Lubuklinggau'),
         'default_scope' => env('LANDING_REGION_DEFAULT_SCOPE', 'city'),
         'max_children' => (int) env('LANDING_REGION_MAX_CHILDREN', 500),
+        'geometry' => [
+            'district_geojson_path' => env('LANDING_REGION_DISTRICT_GEOJSON_PATH', storage_path('app/private/geojson/lubuklinggau/kecamatan.geojson')),
+            'village_geojson_path' => env('LANDING_REGION_VILLAGE_GEOJSON_PATH', storage_path('app/private/geojson/lubuklinggau/kelurahan.geojson')),
+        ],
     ],
 
     'map' => [
@@ -39,6 +43,7 @@ return [
         'google_maps' => [
             'enabled' => (bool) env('GOOGLE_MAPS_ENABLED', false),
             'api_key' => env('GOOGLE_MAPS_API_KEY'),
+            'map_id' => env('GOOGLE_MAPS_MAP_ID'),
         ],
         'leaflet' => [
             'tile_url' => env('LEAFLET_TILE_URL', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
