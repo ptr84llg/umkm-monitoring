@@ -1022,8 +1022,35 @@
         return Landing.loadPreviewData(selection);
     };
 
-    Landing.initRegionModal = function () {
+function bindRegionModalDelegatedOpen() {
+        if (Landing.regionModalDelegatedOpenBound === true) {
+            return;
+        }
+
+        Landing.regionModalDelegatedOpenBound = true;
+
+        document.addEventListener('click', function (event) {
+            const selector = S.regionModalOpen || '[data-region-open], [data-region-modal-open]';
+            const trigger = event.target && event.target.closest
+                ? event.target.closest(selector)
+                : null;
+
+            if (!trigger) {
+                return;
+            }
+
+            if (trigger.dataset && trigger.dataset.regionOpenBound === 'true') {
+                return;
+            }
+
+            event.preventDefault();
+            Landing.openRegionModal(event);
+        });
+    }
+
+Landing.initRegionModal = function () {
         bindPublicFilterRefresh();
+        bindRegionModalDelegatedOpen();
 
         const shell = Landing.qs(S.regionModalShell);
 
