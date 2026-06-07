@@ -32,6 +32,7 @@
                 </div>
 
                 <div class="public-map-legend public-region-map-legend" data-public-region-map-legend data-ready="false" aria-label="Legenda kepadatan UMKM">
+                    <span><i class="is-density-empty"></i>Tanpa UMKM</span>
                     <span><i class="is-density-low"></i>Kepadatan rendah</span>
                     <span><i class="is-density-medium"></i>Kepadatan sedang</span>
                     <span><i class="is-density-high"></i>Kepadatan tinggi</span>

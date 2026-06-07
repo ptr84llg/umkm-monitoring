@@ -3328,3 +3328,17 @@ body.layout-public .umkm-public-footer {
         padding: .72rem .82rem;
     }
 }
+/* Public landing map hierarchy and empty-density legend refinement */
+.umkm-map-info-context {
+    color: rgba(204, 251, 241, .82);
+    font-size: .73rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: .22rem;
+}
+
+.public-map-legend i.is-density-empty,
+.public-region-map-legend i.is-density-empty {
+    background: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .14);
+}

@@ -167,7 +167,7 @@
         if (value === 'medium') return '#3b82f6';
         if (value === 'low') return '#93c5fd';
 
-        return '#e2e8f0';
+        return '#ef4444';
     }
 
     function densityOpacity(level, active, hovered, context) {
@@ -181,7 +181,7 @@
         if (value === 'medium') return 0.50;
         if (value === 'low') return 0.38;
 
-        return 0.20;
+        return 0.42;
     }
 
     function isInteractionReady() {
@@ -344,6 +344,7 @@
         activePanel.dataset.visible = 'true';
         activePanel.innerHTML = ''
             + '<div class="umkm-map-info-kicker">Wilayah aktif</div>'
+            + '<div class="umkm-map-info-context" data-map-control-active-context hidden></div>'
             + '<div class="umkm-map-info-title" data-map-control-active-title>Kota Lubuklinggau</div>'
             + '<div class="umkm-map-info-meta">'
             + '<span data-map-control-active-layer>Layer Kota</span>'
@@ -394,6 +395,93 @@
         return 'Kota';
     }
 
+    function cleanDisplayName(name, prefix) {
+        let value = String(name || '').trim();
+
+        if (!value) return '';
+
+        value = value.replace(new RegExp('^' + prefix + '\\s+', 'i'), '').trim();
+
+        return value;
+    }
+
+    function isCodeLikeName(name, code) {
+        const safeName = String(name || '').trim();
+        const safeCode = String(code || '').trim();
+
+        if (!safeName) return true;
+        if (safeCode && safeName === safeCode) return true;
+
+        return /^(\d{2}\.)+\d+$/u.test(safeName);
+    }
+
+    function districtNameFromLayer(code) {
+        if (!state.districtLayer || !code) return '';
+
+        let found = '';
+
+        state.districtLayer.forEach(function (feature) {
+            if (found) return;
+
+            const featureCode = String(feature.getProperty('district_code') || feature.getProperty('region_code') || '');
+
+            if (featureCode === String(code)) {
+                found = String(feature.getProperty('district_name') || feature.getProperty('region_name') || '');
+            }
+        });
+
+        return found;
+    }
+
+    function districtDisplayName(selection) {
+        const safe = normalizeSelectionForMap(selection);
+        const code = safe.district && safe.district.code ? String(safe.district.code) : '';
+        let name = safe.district && safe.district.name ? String(safe.district.name) : '';
+
+        if (isCodeLikeName(name, code)) {
+            name = districtNameFromLayer(code) || name;
+        }
+
+        return cleanDisplayName(name || code || 'Wilayah', 'Kecamatan');
+    }
+
+    function villageDisplayName(selection) {
+        const safe = normalizeSelectionForMap(selection);
+        const code = safe.village && safe.village.code ? String(safe.village.code) : '';
+        let name = safe.village && safe.village.name ? String(safe.village.name) : '';
+
+        return cleanDisplayName(name || code || 'Wilayah', 'Kelurahan');
+    }
+
+    function activeInfoHierarchy(selection) {
+        const safe = normalizeSelectionForMap(selection || { scope: 'city', label: 'Kota Lubuklinggau' });
+        const cityName = 'Kota Lubuklinggau';
+
+        if (safe.scope === 'village') {
+            const districtName = districtDisplayName(safe);
+            const villageName = villageDisplayName(safe);
+
+            return {
+                context: cityName + (districtName ? ' • Kecamatan ' + districtName : ''),
+                title: 'Kelurahan ' + villageName
+            };
+        }
+
+        if (safe.scope === 'district') {
+            const districtName = districtDisplayName(safe);
+
+            return {
+                context: cityName,
+                title: 'Kecamatan ' + districtName
+            };
+        }
+
+        return {
+            context: '',
+            title: cityName
+        };
+    }
+
     function updateActiveInfoPanel(selection, totalText) {
         ensureMapInfoControls();
 
@@ -401,9 +489,15 @@
         if (!panel) return;
 
         const safe = normalizeSelectionForMap(selection || { scope: 'city', label: 'Kota Lubuklinggau' });
-        const title = safe.label || 'Kota Lubuklinggau';
+        const hierarchy = activeInfoHierarchy(safe);
+        const contextElement = panel.querySelector('[data-map-control-active-context]');
 
-        setPanelText(panel, '[data-map-control-active-title]', title);
+        if (contextElement) {
+            contextElement.textContent = hierarchy.context || '';
+            contextElement.hidden = !hierarchy.context;
+        }
+
+        setPanelText(panel, '[data-map-control-active-title]', hierarchy.title);
         setPanelText(panel, '[data-map-control-active-layer]', 'Layer ' + layerLabelFromSelection(safe));
         setPanelText(panel, '[data-map-control-active-total]', umkmText(totalText));
 
@@ -459,7 +553,7 @@
         if (value === 'medium') return 'kepadatan sedang';
         if (value === 'low') return 'kepadatan rendah';
 
-        return 'belum ada data';
+        return 'tanpa UMKM';
     }
 
     function clearLayer(layer) {
@@ -916,6 +1010,7 @@
 
             if (villagePayload) {
                 updatePanel(villagePayload);
+                updatePanelFromSelection(selection, feature);
                 fitLayer(state.villageLayer);
             } else if (state.lastDistrictPayload) {
                 updatePanel(state.lastDistrictPayload);
@@ -923,7 +1018,7 @@
             }
 
             refreshLayerStyle();
-            setStatus('Wilayah aktif: ' + selection.label + '. Peta menampilkan kelurahan dalam kecamatan ini.', 'success');
+            setStatus('Wilayah aktif: Kecamatan ' + districtDisplayName(selection) + '. Peta menampilkan kelurahan dalam kecamatan ini.', 'success');
         }).catch(function (error) {
             setFailedState(error, 'Kelurahan dalam kecamatan belum dapat dimuat.');
         }).finally(function () {
@@ -945,7 +1040,7 @@
         refreshLayerStyle();
         updatePanelFromSelection(selection, feature);
         fitFeature(feature);
-        setStatus('Wilayah aktif: ' + selection.label + '. Kelurahan lain tetap ditampilkan sebagai pembanding.', 'success');
+        setStatus('Wilayah aktif: Kelurahan ' + villageDisplayName(selection) + '. Kelurahan lain tetap ditampilkan sebagai pembanding.', 'success');
 
         applySelectionFromMap(selection)
             .catch(function (error) {
