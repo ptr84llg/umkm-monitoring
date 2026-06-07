@@ -63,9 +63,8 @@
             </div>
 
             <div class="public-map-footer d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
-                <span>{{ $publicLandingMap['note'] ?? 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.' }}</span>
+                <span>{{ $publicLandingMap['note'] ?? 'Data agregat dan peta bersifat aman untuk publik. Rincian sensitif hanya tersedia bagi pengguna berizin.' }}</span>
             </div>
         </div>
     </div>
 </div>
-

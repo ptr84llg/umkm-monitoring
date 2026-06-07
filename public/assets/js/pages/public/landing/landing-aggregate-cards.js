@@ -116,7 +116,36 @@
     }
     return targets;
   }
-  function setLoading() {
+
+function setInitialNoData() {
+    state.loading = false;
+    state.ready = false;
+    CARD_KEYS.forEach(function (key) {
+      var card = cardNode(key);
+      if (!card) return;
+      var targets = ensureTargets(card);
+      card.setAttribute('data-public-aggregate-ready', 'false');
+      card.setAttribute('aria-disabled', 'true');
+      card.removeAttribute('role');
+      card.removeAttribute('tabindex');
+      card.removeAttribute('data-public-aggregate-detail');
+      card.classList.remove('is-ready', 'is-loading', 'public-aggregate-clickable');
+      card.classList.add('is-limited');
+      if (targets.badge) targets.badge.textContent = 'Belum dimuat';
+      if (targets.value) targets.value.textContent = '—';
+      if (targets.context) targets.context.textContent = 'Data belum dimuat. Menunggu konteks wilayah aktif.';
+      if (targets.percent) targets.percent.textContent = '0,00%';
+      if (targets.progress) {
+        targets.progress.style.width = '0%';
+        targets.progress.className = targets.progress.className.replace(/progress-w-\d+/g, '').trim();
+        targets.progress.classList.add('progress-w-0');
+      }
+      if (targets.footerLabel) targets.footerLabel.textContent = 'Status';
+      if (targets.footerValue) targets.footerValue.textContent = 'Data belum dimuat';
+    });
+  }
+
+function setLoading() {
     state.loading = true;
     CARD_KEYS.forEach(function (key) {
       var card = cardNode(key);
@@ -227,11 +256,11 @@
       '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">',
       '  <div class="modal-content border-0 shadow-lg">',
       '    <div class="modal-header">',
-      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Memuat detail agregat</p><h5 class="modal-title mb-0" data-public-aggregate-detail-title>Detail Agregat</h5></div>',
+      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Memuat rincian agregat</p><h5 class="modal-title mb-0" data-public-aggregate-detail-title>Rincian Agregat</h5></div>',
       '      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>',
       '    </div>',
       '    <div class="modal-body">',
-      '      <div class="d-flex align-items-center gap-3 py-3" data-public-aggregate-detail-loader><div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div><div class="flex-grow-1"><strong class="d-block">Mengambil data agregat...</strong><div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated w-75" role="progressbar" aria-label="Memuat"></div></div></div></div>',
+      '      <div class="d-flex align-items-center gap-3 py-3" data-public-aggregate-detail-loader><div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div><div class="flex-grow-1"><strong class="d-block">Memuat rincian agregat...</strong><div class="progress mt-2"><div class="progress-bar progress-bar-striped progress-bar-animated w-75" role="progressbar" aria-label="Memuat"></div></div></div></div>',
       '      <div data-public-aggregate-detail-content hidden></div>',
       '    </div>',
       '    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div>',
@@ -258,15 +287,15 @@
     var subtitle = modal.querySelector('[data-public-aggregate-detail-subtitle]');
     var summary = Array.isArray(detail.summary) ? detail.summary : [];
     var sections = Array.isArray(detail.sections) ? detail.sections : [];
-    if (title) title.textContent = detail.title || 'Detail Agregat';
+    if (title) title.textContent = detail.title || 'Rincian Agregat';
     if (subtitle) subtitle.textContent = detail.subtitle || 'Public-safe';
     if (loader) loader.hidden = true;
     if (content) {
       content.innerHTML = '<div class="row g-3 mb-4">' + summary.map(function (item) {
         return '<div class="col-12 col-md-6"><div class="border rounded-3 p-3 h-100"><small class="text-muted d-block mb-1">' + escapeHtml(item.label || '-') + '</small><strong class="fs-5">' + escapeHtml(item.value || '-') + '</strong></div></div>';
       }).join('') + '</div>' + sections.map(function (section) {
-        return '<section class="mb-4"><h6 class="fw-bold mb-3">' + escapeHtml(section.title || 'Detail') + '</h6>' + renderList(section.items, section.empty) + '</section>';
-      }).join('') + '<div class="alert alert-info small mb-0">' + escapeHtml(detail.public_safe_note || 'Detail yang ditampilkan bersifat agregat public-safe.') + '</div>';
+        return '<section class="mb-4"><h6 class="fw-bold mb-3">' + escapeHtml(section.title || 'Rincian') + '</h6>' + renderList(section.items, section.empty) + '</section>';
+      }).join('') + '<div class="alert alert-info small mb-0">' + escapeHtml(detail.public_safe_note || 'Rincian yang ditampilkan bersifat agregat aman untuk publik.') + '</div>';
       content.hidden = false;
     }
   }
@@ -288,12 +317,12 @@
       .then(function (payload) {
         var safe = normalizePayload(payload);
         var detail = safe && safe.data ? safe.data.detail_card : null;
-        if (!detail) throw new Error('Detail agregat tidak tersedia.');
+        if (!detail) throw new Error('Rincian agregat tidak tersedia.');
         state.payload = safe;
         window.PublicLandingAggregatePayload = safe;
         renderDetail(modal, detail);
       })
-      .catch(function (error) { renderDetailError(modal, error && error.message ? error.message : 'Detail agregat gagal dimuat.'); });
+      .catch(function (error) { renderDetailError(modal, error && error.message ? error.message : 'Rincian agregat gagal dimuat.'); });
   }
   function bindClicks() {
     document.addEventListener('click', function (event) {
@@ -327,6 +356,7 @@
     window.UMKM.ajax.__publicAggregateCardsWrapped = true;
   }
   function boot() {
+    setInitialNoData();
     CARD_KEYS.forEach(function (key) { ensureTargets(cardNode(key)); });
     bindClicks();
     wrapAjaxWhenReady(0);
