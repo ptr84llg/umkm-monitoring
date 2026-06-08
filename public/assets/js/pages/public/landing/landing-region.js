@@ -383,6 +383,148 @@
         }
     }
 
+    function regionCode(region) {
+        return region && region.code ? String(region.code) : '';
+    }
+
+    function isRealRegion(region) {
+        const code = regionCode(region);
+
+        return code !== '' && !region.isVirtual && !region.is_virtual && !code.startsWith('__');
+    }
+
+    function findRegionByCode(regions, code, fallback) {
+        const safeCode = String(code || '');
+
+        if (!safeCode) {
+            return fallback || null;
+        }
+
+        const found = (regions || []).find(function (region) {
+            return String(region.code || '') === safeCode;
+        });
+
+        if (found) {
+            return found;
+        }
+
+        if (fallback) {
+            return {
+                code: fallback.code || safeCode,
+                name: fallback.name || fallback.label || safeCode,
+                level: fallback.level || '',
+                is_virtual: fallback.is_virtual === true || fallback.isVirtual === true,
+                isVirtual: fallback.isVirtual === true || fallback.is_virtual === true,
+                has_public_umkm_data: fallback.has_public_umkm_data,
+                hasPublicUmkmData: fallback.hasPublicUmkmData
+            };
+        }
+
+        return {
+            code: safeCode,
+            name: safeCode,
+            level: '',
+            is_virtual: false,
+            isVirtual: false,
+            has_public_umkm_data: null,
+            hasPublicUmkmData: null
+        };
+    }
+
+    function ensureSelectRegionOption(select, region) {
+        if (!select || !region || !region.code) {
+            return;
+        }
+
+        const code = String(region.code);
+        const exists = Array.from(select.options).some(function (option) {
+            return option.value === code;
+        });
+
+        if (!exists) {
+            select.appendChild(createOption(region));
+        }
+
+        select.value = code;
+    }
+
+    async function syncRegionModalControlsFromAppliedSelection(selection) {
+        if (!Landing.regionState.contextLoaded || !Landing.regionState.context) {
+            return;
+        }
+
+        const districtSelect = Landing.qs(S.districtSelect);
+        const villageSelect = Landing.qs(S.villageSelect);
+
+        if (!districtSelect || !villageSelect) {
+            return;
+        }
+
+        const context = Landing.regionState.context;
+        const safeSelection = Object.assign({}, Landing.DEFAULT_SELECTION, selection || {});
+        const appliedDistrict = isRealRegion(safeSelection.district) ? safeSelection.district : null;
+        const appliedVillage = isRealRegion(safeSelection.village) ? safeSelection.village : null;
+        const allDistrict = context.options?.district_all || Landing.DEFAULT_CONTEXT.options.district_all;
+        const allVillage = context.options?.village_all || Landing.DEFAULT_CONTEXT.options.village_all;
+
+        fillLockedSelect(Landing.qs(S.provinceSelect), context.province || Landing.DEFAULT_CONTEXT.province);
+        fillLockedSelect(Landing.qs(S.citySelect), context.city || Landing.DEFAULT_CONTEXT.city);
+
+        if (!districtSelect.options.length) {
+            fillDistricts(districtSelect, allDistrict, Landing.regionState.districts || []);
+        }
+
+        if (!appliedDistrict) {
+            districtSelect.value = allDistrict.code;
+            Landing.regionState.villages = [];
+            fillVillages(villageSelect, allVillage, [], true);
+            setModalCurrent('Kota Lubuklinggau');
+            setRegionAlert('');
+            return;
+        }
+
+        const district = findRegionByCode(Landing.regionState.districts || [], appliedDistrict.code, appliedDistrict);
+        ensureSelectRegionOption(districtSelect, district);
+        districtSelect.value = district.code;
+
+        try {
+            setRegionLoading(true, 'Menyinkronkan pilihan wilayah...');
+            setRegionAlert('');
+
+            const villageData = await loadChildren(district.code, 'village');
+            const villageAll = villageData.all_option || allVillage;
+
+            Landing.regionState.villages = villageData.regions || [];
+
+            fillVillages(
+                villageSelect,
+                villageAll,
+                Landing.regionState.villages,
+                false
+            );
+
+            if (appliedVillage) {
+                const village = findRegionByCode(Landing.regionState.villages || [], appliedVillage.code, appliedVillage);
+                ensureSelectRegionOption(villageSelect, village);
+                villageSelect.value = village.code;
+                setModalCurrent(village.name || safeSelection.label || district.name);
+                return;
+            }
+
+            villageSelect.value = villageAll.code;
+            setModalCurrent(district.name || safeSelection.label || 'Kecamatan terpilih');
+        } catch (error) {
+            Landing.regionState.villages = [];
+            fillVillages(villageSelect, allVillage, [], true);
+            setModalCurrent(district.name || safeSelection.label || 'Kecamatan terpilih');
+            setRegionAlert('Kelurahan rinci belum tersedia. Preview kecamatan tetap dapat diterapkan.');
+            Landing.log('warn', 'landing modal selection sync fallback applied', {
+                message: error && error.message ? error.message : 'modal selection sync failed'
+            });
+        } finally {
+            setRegionLoading(false);
+        }
+    }
     Landing.getAppliedSelection = function () {
         const district = selectedOption(Landing.qs(S.districtSelect));
         const village = selectedOption(Landing.qs(S.villageSelect));
@@ -1260,13 +1402,17 @@ Landing.initRegionModal = function () {
         }
 
         Promise.resolve(Landing.ensureRegionContext())
+            .then(function () {
+                return syncRegionModalControlsFromAppliedSelection(Landing.regionState.applied || Landing.DEFAULT_SELECTION);
+            })
             .catch(function (error) {
                 if (typeof applyRegionContextFallback === 'function') {
                     applyRegionContextFallback(error);
-                    return;
+                    return syncRegionModalControlsFromAppliedSelection(Landing.regionState.applied || Landing.DEFAULT_SELECTION);
                 }
 
                 setRegionAlert(error && error.message ? error.message : 'Konteks wilayah tidak dapat dimuat.');
+                return null;
             })
             .finally(function () {
                 setRegionLoading(false);
