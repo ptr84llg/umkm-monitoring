@@ -46,6 +46,7 @@ final class PublicLandingMetricQuery
             'aggregate_cards' => array_values($cards),
             'aggregate_card_map' => $cards,
             'preview' => self::preview($total, $mapped, $mappedPercent, $activeRegions, $regionDenominator, $coverage, $dominant),
+            'analytics' => self::analyticsPayload($context, self::cloneQuery($base), $total),
             'fields' => self::fields($total, $mappedPercent, $coverage, $dominant),
             'areas' => [],
             'watched' => [
@@ -363,7 +364,396 @@ final class PublicLandingMetricQuery
         ];
     }
 
+    private static function analyticsPayload(array $context, Builder $base, int $total): array
+    {
+        $businessStructure = self::businessStructureAnalytics($base, $total);
+        $marketing = self::marketingAnalytics($base, $total);
+        $readiness = self::dataReadinessAnalytics($base, $total);
+        $areaComparison = self::areaComparisonAnalytics($context, $base);
+
+        return [
+            'context' => self::analyticsContext($context),
+            'business_structure' => $businessStructure,
+            'marketing' => $marketing,
+            'data_readiness' => $readiness,
+            'area_comparison' => $areaComparison,
+            'decision_notes' => [
+                'recommendations' => self::decisionRecommendations($readiness, $marketing),
+            ],
+        ];
+    }
+
+    private static function analyticsContext(array $context): array
+    {
+        return [
+            'scope' => (string) ($context['scope'] ?? 'city'),
+            'label' => (string) ($context['label'] ?? 'Kota Lubuklinggau'),
+            'city' => [
+                'code' => (string) ($context['region']['city_code'] ?? config('umkm.landing_region.city_code', '16.73')),
+                'name' => (string) ($context['region']['city_name'] ?? config('umkm.landing_region.city_name', 'Kota Lubuklinggau')),
+            ],
+            'district' => ((string) ($context['region']['district_code'] ?? '')) !== '' ? [
+                'code' => (string) ($context['region']['district_code'] ?? ''),
+                'name' => (string) ($context['region']['district_name'] ?? ''),
+            ] : null,
+            'village' => ((string) ($context['region']['village_code'] ?? '')) !== '' ? [
+                'code' => (string) ($context['region']['village_code'] ?? ''),
+                'name' => (string) ($context['region']['village_name'] ?? ''),
+            ] : null,
+        ];
+    }
+
+    private static function businessStructureAnalytics(Builder $base, int $total): array
+    {
+        $categories = self::businessCategoryAnalyticsRows($base, $total);
+        $types = self::businessTypeAnalyticsRows($base, $total);
+
+        return [
+            'total_umkm' => $total,
+            'dominant_category' => $categories[0]['name'] ?? 'Belum tersedia',
+            'dominant_type' => $types[0]['name'] ?? 'Belum tersedia',
+            'categories' => $categories,
+            'types' => $types,
+        ];
+    }
+
+    private static function businessCategoryAnalyticsRows(Builder $base, int $total): array
+    {
+        if (
+            ! Schema::hasTable('umkm_business_classifications')
+            || ! Schema::hasTable('business_category_references')
+            || ! Schema::hasColumn('umkm_business_classifications', 'umkm_id')
+            || ! Schema::hasColumn('umkm_business_classifications', 'business_category_id')
+        ) {
+            return [];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('umkm_business_classifications as analytics_classifications', 'analytics_classifications.umkm_id', '=', 'umkms.id')
+            ->join('business_category_references as analytics_categories', 'analytics_categories.id', '=', 'analytics_classifications.business_category_id');
+
+        self::applyClassificationGuards($query, 'analytics_classifications');
+        self::applyReferenceActiveGuard($query, 'business_category_references', 'analytics_categories');
+
+        return $query
+            ->select(
+                'analytics_categories.id',
+                'analytics_categories.name',
+                DB::raw('COUNT(DISTINCT umkms.id) as total_count')
+            )
+            ->groupBy('analytics_categories.id', 'analytics_categories.name')
+            ->orderByDesc('total_count')
+            ->orderBy('analytics_categories.name')
+            ->limit(12)
+            ->get()
+            ->map(fn (object $row): array => [
+                'id' => (int) $row->id,
+                'name' => (string) ($row->name ?: 'Belum tersedia'),
+                'total' => (int) $row->total_count,
+                'percentage' => self::percent((int) $row->total_count, $total),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private static function businessTypeAnalyticsRows(Builder $base, int $total): array
+    {
+        if (
+            ! Schema::hasTable('umkm_business_classifications')
+            || ! Schema::hasTable('business_type_references')
+            || ! Schema::hasTable('business_category_references')
+            || ! Schema::hasColumn('umkm_business_classifications', 'umkm_id')
+            || ! Schema::hasColumn('umkm_business_classifications', 'business_type_id')
+            || ! Schema::hasColumn('umkm_business_classifications', 'business_category_id')
+        ) {
+            return [];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('umkm_business_classifications as analytics_type_classifications', 'analytics_type_classifications.umkm_id', '=', 'umkms.id')
+            ->join('business_type_references as analytics_types', 'analytics_types.id', '=', 'analytics_type_classifications.business_type_id')
+            ->leftJoin('business_category_references as analytics_type_categories', 'analytics_type_categories.id', '=', 'analytics_type_classifications.business_category_id');
+
+        self::applyClassificationGuards($query, 'analytics_type_classifications');
+        self::applyReferenceActiveGuard($query, 'business_type_references', 'analytics_types');
+        self::applyReferenceActiveGuard($query, 'business_category_references', 'analytics_type_categories');
+
+        return $query
+            ->select(
+                'analytics_types.id',
+                'analytics_types.name',
+                DB::raw("COALESCE(analytics_type_categories.name, 'Belum tersedia') as category_name"),
+                DB::raw('COUNT(DISTINCT umkms.id) as total_count')
+            )
+            ->groupBy('analytics_types.id', 'analytics_types.name', 'analytics_type_categories.name')
+            ->orderByDesc('total_count')
+            ->orderBy('analytics_types.name')
+            ->limit(15)
+            ->get()
+            ->map(fn (object $row): array => [
+                'id' => (int) $row->id,
+                'name' => (string) ($row->name ?: 'Belum tersedia'),
+                'category_name' => (string) ($row->category_name ?: 'Belum tersedia'),
+                'total' => (int) $row->total_count,
+                'percentage' => self::percent((int) $row->total_count, $total),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private static function marketingAnalytics(Builder $base, int $total): array
+    {
+        if (
+            ! Schema::hasTable('umkm_baseline_profiles')
+            || ! Schema::hasTable('marketing_method_references')
+            || ! Schema::hasColumn('umkm_baseline_profiles', 'umkm_id')
+            || ! Schema::hasColumn('umkm_baseline_profiles', 'marketing_method_id')
+        ) {
+            return [
+                'dominant_method' => 'Belum tersedia',
+                'methods' => [],
+            ];
+        }
+
+        $query = self::cloneQuery($base)
+            ->leftJoin('umkm_baseline_profiles as analytics_baseline', 'analytics_baseline.umkm_id', '=', 'umkms.id')
+            ->leftJoin('marketing_method_references as analytics_marketing_methods', 'analytics_marketing_methods.id', '=', 'analytics_baseline.marketing_method_id');
+
+        self::applyReferenceActiveGuard($query, 'marketing_method_references', 'analytics_marketing_methods');
+
+        $rows = $query
+            ->select(
+                DB::raw("COALESCE(analytics_marketing_methods.name, 'Belum tersedia') as name"),
+                DB::raw('COUNT(DISTINCT umkms.id) as total_count')
+            )
+            ->groupBy(DB::raw("COALESCE(analytics_marketing_methods.name, 'Belum tersedia')"))
+            ->orderByDesc('total_count')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (object $row): array => [
+                'name' => (string) ($row->name ?: 'Belum tersedia'),
+                'total' => (int) $row->total_count,
+                'percentage' => self::percent((int) $row->total_count, $total),
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'dominant_method' => $rows[0]['name'] ?? 'Belum tersedia',
+            'methods' => $rows,
+        ];
+    }
+
+    private static function dataReadinessAnalytics(Builder $base, int $total): array
+    {
+        $mapped = self::countDistinctUmkm(
+            self::cloneQuery($base)
+                ->where('umkm_locations.coordinate_status', 'terpetakan')
+                ->whereNotNull('umkm_locations.latitude')
+                ->whereNotNull('umkm_locations.longitude')
+        );
+
+        $needsValidation = Schema::hasColumn('umkm_locations', 'coordinate_status')
+            ? self::countDistinctUmkm(
+                self::cloneQuery($base)->where('umkm_locations.coordinate_status', 'perlu_validasi')
+            )
+            : 0;
+
+        $missingDistrict = Schema::hasColumn('umkm_locations', 'district_region_id')
+            ? self::countDistinctUmkm(self::cloneQuery($base)->whereNull('umkm_locations.district_region_id'))
+            : 0;
+
+        $missingVillage = Schema::hasColumn('umkm_locations', 'village_region_id')
+            ? self::countDistinctUmkm(self::cloneQuery($base)->whereNull('umkm_locations.village_region_id'))
+            : 0;
+
+        return [
+            'location' => [
+                'total_umkm' => $total,
+                'mapped_total' => $mapped,
+                'unmapped_total' => max(0, $total - $mapped),
+                'needs_validation_total' => $needsValidation,
+                'missing_district_total' => $missingDistrict,
+                'missing_village_total' => $missingVillage,
+                'mapped_percentage' => self::percent($mapped, $total),
+            ],
+            'quality_notes' => self::qualityNoteAnalyticsRows($base),
+        ];
+    }
+
+    private static function qualityNoteAnalyticsRows(Builder $base): array
+    {
+        if (
+            ! Schema::hasTable('umkm_data_quality_flags')
+            || ! Schema::hasColumn('umkm_data_quality_flags', 'umkm_id')
+        ) {
+            return [];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('umkm_data_quality_flags as analytics_quality_flags', 'analytics_quality_flags.umkm_id', '=', 'umkms.id');
+
+        if (Schema::hasColumn('umkm_data_quality_flags', 'status')) {
+            $query->where('analytics_quality_flags.status', 'open');
+        }
+
+        return $query
+            ->select(
+                DB::raw("COALESCE(analytics_quality_flags.flag_group, 'general') as flag_group"),
+                DB::raw("COALESCE(analytics_quality_flags.severity, 'info') as severity"),
+                DB::raw('COUNT(DISTINCT analytics_quality_flags.umkm_id) as total_count')
+            )
+            ->groupBy(
+                DB::raw("COALESCE(analytics_quality_flags.flag_group, 'general')"),
+                DB::raw("COALESCE(analytics_quality_flags.severity, 'info')")
+            )
+            ->orderByDesc('total_count')
+            ->orderBy('flag_group')
+            ->limit(12)
+            ->get()
+            ->map(fn (object $row): array => [
+                'group' => (string) $row->flag_group,
+                'severity' => (string) $row->severity,
+                'total' => (int) $row->total_count,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private static function areaComparisonAnalytics(array $context, Builder $base): array
+    {
+        $scope = (string) ($context['scope'] ?? 'city');
+
+        if ($scope === 'village') {
+            return self::areaComparisonByCategory($base);
+        }
+
+        $level = $scope === 'district' ? 'village' : 'district';
+        $idColumn = $level === 'village' ? 'village_region_id' : 'district_region_id';
+
+        if (
+            ! Schema::hasTable('regions')
+            || ! Schema::hasColumn('regions', 'id')
+            || ! Schema::hasColumn('regions', 'name')
+            || ! Schema::hasColumn('umkm_locations', $idColumn)
+        ) {
+            return [
+                'level' => $level,
+                'rows' => [],
+            ];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('regions as analytics_area_regions', 'analytics_area_regions.id', '=', 'umkm_locations.' . $idColumn)
+            ->leftJoin('umkm_data_quality_flags as analytics_area_quality_flags', function ($join): void {
+                $join->on('analytics_area_quality_flags.umkm_id', '=', 'umkms.id');
+
+                if (Schema::hasColumn('umkm_data_quality_flags', 'status')) {
+                    $join->where('analytics_area_quality_flags.status', '=', 'open');
+                }
+            });
+
+        return [
+            'level' => $level,
+            'rows' => $query
+                ->select(
+                    'analytics_area_regions.name',
+                    DB::raw('COUNT(DISTINCT umkms.id) as total_umkm'),
+                    DB::raw("COUNT(DISTINCT CASE WHEN umkm_locations.coordinate_status = 'terpetakan' AND umkm_locations.latitude IS NOT NULL AND umkm_locations.longitude IS NOT NULL THEN umkms.id END) as mapped_total"),
+                    DB::raw('COUNT(DISTINCT analytics_area_quality_flags.umkm_id) as open_quality_notes')
+                )
+                ->groupBy('analytics_area_regions.id', 'analytics_area_regions.name')
+                ->orderByDesc('total_umkm')
+                ->orderBy('analytics_area_regions.name')
+                ->limit(10)
+                ->get()
+                ->map(function (object $row): array {
+                    $areaTotal = (int) $row->total_umkm;
+                    $mapped = (int) $row->mapped_total;
+
+                    return [
+                        'name' => (string) ($row->name ?: 'Wilayah'),
+                        'total_umkm' => $areaTotal,
+                        'mapped_total' => $mapped,
+                        'mapped_percentage' => self::percent($mapped, $areaTotal),
+                        'open_quality_notes' => (int) $row->open_quality_notes,
+                    ];
+                })
+                ->values()
+                ->all(),
+        ];
+    }
+
+    private static function areaComparisonByCategory(Builder $base): array
+    {
+        $categories = self::businessCategoryAnalyticsRows($base, self::countDistinctUmkm($base));
+
+        return [
+            'level' => 'category',
+            'rows' => collect($categories)
+                ->map(fn (array $row): array => [
+                    'name' => (string) $row['name'],
+                    'total_umkm' => (int) $row['total'],
+                    'mapped_total' => 0,
+                    'mapped_percentage' => 0.0,
+                    'open_quality_notes' => 0,
+                ])
+                ->values()
+                ->all(),
+        ];
+    }
+
+    private static function decisionRecommendations(array $readiness, array $marketing): array
+    {
+        $recommendations = [];
+        $location = $readiness['location'] ?? [];
+        $mappedPercentage = (float) ($location['mapped_percentage'] ?? 0);
+
+        if ($mappedPercentage < 75.0) {
+            $recommendations[] = 'Validasi dan pelengkapan titik lokasi perlu menjadi perhatian.';
+        }
+
+        foreach (($marketing['methods'] ?? []) as $method) {
+            if (($method['name'] ?? '') === 'Belum tersedia' && (int) ($method['total'] ?? 0) > 0) {
+                $recommendations[] = 'Metode pemasaran belum lengkap pada sebagian data.';
+                break;
+            }
+        }
+
+        if (($readiness['quality_notes'] ?? []) !== []) {
+            $recommendations[] = 'Catatan kualitas data terbuka perlu dipantau sebelum interpretasi lanjutan.';
+        }
+
+        if ($recommendations === []) {
+            $recommendations[] = 'Data agregat cukup siap untuk ringkasan awal pada wilayah ini.';
+        }
+
+        return $recommendations;
+    }
+
+    private static function applyClassificationGuards(Builder $query, string $alias): void
+    {
+        if (Schema::hasColumn('umkm_business_classifications', 'status_data')) {
+            $query->whereIn($alias . '.status_data', self::operationalStatuses());
+        }
+
+        if (Schema::hasColumn('umkm_business_classifications', 'is_primary')) {
+            $query->where($alias . '.is_primary', true);
+        }
+    }
+
+    private static function applyReferenceActiveGuard(Builder $query, string $table, string $alias): void
+    {
+        if (Schema::hasColumn($table, 'is_active')) {
+            $query->where(function (Builder $query) use ($alias): void {
+                $query->where($alias . '.is_active', true)
+                    ->orWhereNull($alias . '.is_active');
+            });
+        }
+    }
+
     private static function detailCard(string $key, array $context, array $cards, int $total, int $mapped, float $mappedPercent, array $dominant, int $activeRegions, float $coverage, int $regionDenominator): array
+
     {
         $unmapped = max(0, $total - $mapped);
         $card = $cards[$key] ?? null;
