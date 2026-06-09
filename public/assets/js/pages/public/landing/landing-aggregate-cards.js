@@ -37,6 +37,13 @@
     }
     return map;
   }
+  function dispatchPublicAnalyticsReady(payload) {
+    var safe = normalizePayload(payload);
+    if (!safe || !safe.data || !safe.data.analytics) return;
+    document.dispatchEvent(new CustomEvent('umkm:landing-analytics:ready', {
+      detail: { payload: safe }
+    }));
+  }
   function query(extra) {
     var data = state.payload && state.payload.data ? state.payload.data : {};
     var region = data.region || {};
@@ -329,7 +336,7 @@ function setLoading() {
       targets.progress.setAttribute('aria-valuenow', String(progress));
     }
     if (targets.footerLabel) targets.footerLabel.textContent = String(cardData.footer_label || 'Data agregat');
-    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Aman untuk publik');
+    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Data agregat');
   }
   function applyPayload(payload) {
     var safe = normalizePayload(payload);
@@ -412,7 +419,7 @@ function renderDetail(modal, detail) {
     var primaryContext = hero.context || hero.percent_text || '';
 
     if (title) title.textContent = detail.title || 'Rincian Agregat';
-    if (subtitle) subtitle.textContent = detail.subtitle || 'Agregat aman untuk publik';
+    if (subtitle) subtitle.textContent = detail.subtitle || 'Rincian agregat wilayah';
 
     if (content) {
       var summaryHtml = summary.map(function (item) {
@@ -432,7 +439,7 @@ function renderDetail(modal, detail) {
         summaryHtml || '<div class="aggregate-detail-empty">Ringkasan belum tersedia.</div>',
         '</section>',
         sectionsHtml,
-        '<div class="aggregate-detail-note">' + escapeHtml(detail.public_safe_note || 'Rincian yang ditampilkan bersifat agregat aman untuk publik.') + '</div>'
+        '<div class="aggregate-detail-note">' + escapeHtml(detail.public_safe_note || 'Rincian yang ditampilkan berupa data agregat wilayah.') + '</div>'
       ].join('');
     }
   }
