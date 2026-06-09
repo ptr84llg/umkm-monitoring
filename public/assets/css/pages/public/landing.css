@@ -3750,3 +3750,341 @@ body.layout-public .umkm-public-footer {
         min-height: 280px;
     }
 }
+/* Public landing analytics UI 1E: on-demand loader layout */
+.public-analytics-action-note {
+    color: #64748b;
+    font-size: .86rem;
+    line-height: 1.45;
+}
+
+.public-analytics-show-btn {
+    align-items: center;
+    box-shadow: 0 .85rem 1.8rem rgba(15, 118, 110, .16);
+    display: inline-flex;
+    font-weight: 850;
+    gap: .55rem;
+}
+
+.public-analytics-show-icon {
+    align-items: center;
+    background: rgba(255, 255, 255, .18);
+    border-radius: 999px;
+    display: inline-flex;
+    height: 1.65rem;
+    justify-content: center;
+    width: 1.65rem;
+}
+
+.public-analytics-show-icon svg {
+    fill: currentColor;
+    height: 1rem;
+    width: 1rem;
+}
+
+.public-analytics-stage {
+    min-height: 15rem;
+}
+
+.public-analytics-placeholder,
+.public-analytics-error {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(239, 246, 255, .82));
+    border: 1px solid rgba(148, 163, 184, .18);
+    border-radius: 1.6rem;
+    box-shadow: 0 1.4rem 4rem rgba(15, 23, 42, .07);
+    color: #334155;
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.public-analytics-placeholder-icon {
+    align-items: center;
+    background: rgba(15, 118, 110, .1);
+    border-radius: 1rem;
+    color: #0f766e;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 3.5rem;
+    justify-content: center;
+    width: 3.5rem;
+}
+
+.public-analytics-placeholder-icon svg {
+    fill: currentColor;
+    height: 1.7rem;
+    width: 1.7rem;
+}
+
+.public-analytics-placeholder strong,
+.public-analytics-error strong {
+    color: #0f172a;
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 900;
+    margin-bottom: .25rem;
+}
+
+.public-analytics-placeholder p,
+.public-analytics-error p {
+    color: #64748b;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.public-analytics-loader {
+    margin-bottom: 1.5rem;
+}
+
+.public-analytics-loader-card {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(240, 253, 250, .9));
+    border: 1px solid rgba(20, 184, 166, .2);
+    border-radius: 1.7rem;
+    box-shadow: 0 1.6rem 4.5rem rgba(15, 23, 42, .1);
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 1.35rem;
+}
+
+.public-loader-orb {
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .92), rgba(255, 255, 255, 0) 34%),
+        conic-gradient(from 180deg, #0f766e, #14b8a6, #f97316, #0f766e);
+    border-radius: 999px;
+    box-shadow: 0 1rem 2rem rgba(15, 118, 110, .18);
+    height: 4.25rem;
+    position: relative;
+    width: 4.25rem;
+    animation: publicAnalyticsSpin 1.45s linear infinite;
+}
+
+.public-loader-orb::after {
+    background: #ffffff;
+    border-radius: inherit;
+    content: "";
+    inset: .55rem;
+    position: absolute;
+}
+
+.public-loader-kicker {
+    color: #0f766e;
+    display: block;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+    margin-bottom: .25rem;
+    text-transform: uppercase;
+}
+
+.public-loader-content strong {
+    color: #0f172a;
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.public-loader-content p {
+    color: #64748b;
+    font-size: .92rem;
+    line-height: 1.5;
+    margin: .25rem 0 .85rem;
+}
+
+.public-loader-progress {
+    background: rgba(148, 163, 184, .22);
+    border-radius: 999px;
+    height: .55rem;
+    overflow: hidden;
+}
+
+.public-loader-progress span {
+    background: linear-gradient(90deg, #0f766e, #14b8a6, #f97316);
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+    transition: width .28s ease;
+    width: 20%;
+}
+
+.public-loader-steps {
+    display: grid;
+    gap: .45rem;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    list-style: none;
+    margin: .95rem 0 0;
+    padding: 0;
+}
+
+.public-loader-steps li {
+    background: rgba(241, 245, 249, .78);
+    border: 1px solid rgba(148, 163, 184, .18);
+    border-radius: .85rem;
+    color: #64748b;
+    font-size: .74rem;
+    font-weight: 800;
+    line-height: 1.25;
+    padding: .55rem .6rem;
+}
+
+.public-loader-steps li.is-running {
+    background: rgba(20, 184, 166, .12);
+    border-color: rgba(20, 184, 166, .28);
+    color: #0f766e;
+}
+
+.public-loader-steps li.is-done {
+    background: rgba(15, 118, 110, .1);
+    border-color: rgba(15, 118, 110, .18);
+    color: #115e59;
+}
+
+.public-tab-summary-grid {
+    display: grid;
+    gap: .8rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.public-tab-summary-grid div {
+    background: linear-gradient(135deg, rgba(240, 253, 250, .85), rgba(239, 246, 255, .85));
+    border: 1px solid rgba(20, 184, 166, .12);
+    border-radius: 1rem;
+    padding: .85rem 1rem;
+}
+
+.public-tab-summary-grid span {
+    color: #64748b;
+    display: block;
+    font-size: .74rem;
+    font-weight: 850;
+    letter-spacing: .045em;
+    margin-bottom: .25rem;
+    text-transform: uppercase;
+}
+
+.public-tab-summary-grid strong {
+    color: #0f172a;
+    display: block;
+    font-size: 1.04rem;
+    font-weight: 900;
+    line-height: 1.25;
+}
+
+.public-tab-summary-grid p {
+    color: #475569;
+    font-size: .82rem;
+    line-height: 1.4;
+    margin: .35rem 0 0;
+}
+
+@keyframes publicAnalyticsSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .public-loader-orb {
+        animation: none;
+    }
+
+    .public-loader-progress span {
+        transition: none;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .public-analytics-loader-card {
+        grid-template-columns: 1fr;
+    }
+
+    .public-loader-steps,
+    .public-tab-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .public-analytics-placeholder,
+    .public-analytics-error {
+        align-items: flex-start;
+        display: grid;
+    }
+}
+/* Public landing analytics UI 1E fix: lazy tab charts and readable labels */
+.public-tab-lazy-loader {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(240, 253, 250, .92), rgba(239, 246, 255, .92));
+    border: 1px solid rgba(20, 184, 166, .18);
+    border-radius: 1.15rem;
+    box-shadow: 0 .85rem 2rem rgba(15, 23, 42, .07);
+    display: flex;
+    gap: .85rem;
+    margin-bottom: 1rem;
+    padding: .85rem 1rem;
+}
+
+.public-tab-lazy-orb {
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.92), rgba(255,255,255,0) 34%),
+        conic-gradient(from 180deg, #0f766e, #14b8a6, #f97316, #0f766e);
+    border-radius: 999px;
+    box-shadow: 0 .75rem 1.6rem rgba(15, 118, 110, .18);
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 2.35rem;
+    position: relative;
+    width: 2.35rem;
+    animation: publicAnalyticsSpin 1.2s linear infinite;
+}
+
+.public-tab-lazy-orb::after {
+    background: #ffffff;
+    border-radius: inherit;
+    content: "";
+    inset: .36rem;
+    position: absolute;
+}
+
+.public-tab-lazy-loader strong {
+    color: #0f172a;
+    display: block;
+    font-size: .92rem;
+    font-weight: 900;
+}
+
+.public-tab-lazy-loader p {
+    color: #64748b;
+    font-size: .84rem;
+    line-height: 1.4;
+    margin: .15rem 0 0;
+}
+
+.public-chart-canvas {
+    height: 360px;
+    min-height: 360px;
+}
+
+#analytics-business-pane .public-chart-canvas {
+    height: 380px;
+    min-height: 380px;
+}
+
+.public-chart-panel {
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .public-tab-lazy-orb {
+        animation: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .public-chart-canvas,
+    #analytics-business-pane .public-chart-canvas {
+        height: 320px;
+        min-height: 320px;
+    }
+}

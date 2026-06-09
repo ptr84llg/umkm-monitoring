@@ -1,10 +1,20 @@
 (function () {
   'use strict';
 
+  var API_URL = '/api/public/landing-preview/data';
+
   var state = {
     payload: null,
+    rendered: false,
+    loading: false,
     charts: {},
     table: null,
+    renderedTabs: {
+      business: false,
+      marketing: false,
+      readiness: false,
+      area: false
+    },
     filters: {
       category: '',
       type: '',
@@ -35,7 +45,6 @@
 
   function cleanText(value, fallback) {
     var safeFallback = fallback || 'Belum tersedia';
-
     if (value === null || value === undefined || value === '') return safeFallback;
 
     if (typeof value === 'string') {
@@ -89,8 +98,12 @@
     return null;
   }
 
+  function currentSafePayload() {
+    return normalizePayload(state.payload || window.PublicLandingAggregatePayload);
+  }
+
   function analyticsData() {
-    var safe = normalizePayload(state.payload || window.PublicLandingAggregatePayload);
+    var safe = currentSafePayload();
     return safe && safe.data && safe.data.analytics ? safe.data.analytics : null;
   }
 
@@ -121,10 +134,9 @@
 
   function decisionNotes() {
     var analytics = analyticsData();
-    var notes = analytics && analytics.decision_notes && Array.isArray(analytics.decision_notes.recommendations)
+    return analytics && analytics.decision_notes && Array.isArray(analytics.decision_notes.recommendations)
       ? analytics.decision_notes.recommendations
       : [];
-    return notes;
   }
 
   function setText(selector, value, context) {
@@ -134,6 +146,13 @@
 
   function arrayOf(value) {
     return Array.isArray(value) ? value : [];
+  }
+
+  function contextLabel() {
+    var context = analyticsContext();
+    return cleanText(context.label, 'Kota Lubuklinggau')
+      .replace(/\s*\/\s*Belum tersedia/g, '')
+      .replace(/\s*•\s*Belum tersedia/g, '');
   }
 
   function categories() {
@@ -217,31 +236,70 @@
 
   function selectedCategoryRow() {
     var rows = categories();
-    if (state.filters.category) {
-      return rows.find(function (item) { return item.name === state.filters.category; }) || null;
-    }
+    if (state.filters.category) return rows.find(function (item) { return item.name === state.filters.category; }) || null;
     return rows.length ? rows[0] : null;
   }
 
   function selectedTypeRow() {
     var rows = types();
-    if (state.filters.type) {
-      return rows.find(function (item) { return item.name === state.filters.type; }) || null;
-    }
+    if (state.filters.type) return rows.find(function (item) { return item.name === state.filters.type; }) || null;
     return rows.length ? rows[0] : null;
   }
 
   function selectedMarketingRow() {
     var rows = marketingMethods();
-    if (state.filters.marketing) {
-      return rows.find(function (item) { return item.name === state.filters.marketing; }) || null;
-    }
+    if (state.filters.marketing) return rows.find(function (item) { return item.name === state.filters.marketing; }) || null;
     return rows.length ? rows[0] : null;
   }
 
-  function contextLabel() {
+  function queryParams() {
+    var safe = currentSafePayload();
+    var data = safe && safe.data ? safe.data : {};
+    var region = data.region || {};
+    var selection = data.selection || {};
     var context = analyticsContext();
-    return cleanText(context.label, 'Kota Lubuklinggau');
+    var q = new URLSearchParams();
+
+    q.set('city_code', selection.city_code || region.city_code || (context.city && context.city.code) || '16.73');
+    q.set('scope', 'city');
+
+    if (selection.district_code || region.district_code || (context.district && context.district.code)) {
+      q.set('district_code', selection.district_code || region.district_code || context.district.code);
+      q.set('scope', 'district');
+    }
+
+    if (selection.village_code || region.village_code || (context.village && context.village.code)) {
+      q.set('village_code', selection.village_code || region.village_code || context.village.code);
+      q.set('scope', 'village');
+    }
+
+    return q;
+  }
+
+  function requestJson() {
+    if (!(window.UMKM && window.UMKM.ajax && typeof window.UMKM.ajax.get === 'function')) {
+      return Promise.reject(new Error('AJAX internal belum siap.'));
+    }
+
+    var url = API_URL + '?' + queryParams().toString();
+
+    return Promise.resolve(window.UMKM.ajax.get(url, {
+      headers: {
+        'X-UMKM-Preview': 'landing-public-safe',
+        'X-UMKM-Internal-Request': '1'
+      }
+    })).then(function (payload) {
+      return payload && payload.payload ? payload.payload : payload;
+    }).then(function (payload) {
+      var safe = normalizePayload(payload);
+      if (!safe || !safe.data || !safe.data.analytics) {
+        throw new Error('Data analitik belum tersedia.');
+      }
+
+      state.payload = safe;
+      window.PublicLandingAggregatePayload = safe;
+      return safe;
+    });
   }
 
   function updateContext() {
@@ -322,59 +380,144 @@
     }).join('');
   }
 
-  function setInsight(key, value, context) {
-    var card = one('[data-public-insight-card="' + key + '"]');
-    if (!card) return;
-
-    setText('[data-public-insight-value]', value, card);
-    setText('[data-public-insight-context]', context, card);
+  function resetRenderedTabs() {
+    state.renderedTabs = {
+      business: false,
+      marketing: false,
+      readiness: false,
+      area: false
+    };
   }
 
-  function updateInsights() {
-    var total = totalUmkm();
-    var category = selectedCategoryRow();
-    var type = selectedTypeRow();
-    var marketing = selectedMarketingRow();
-    var location = locationReadiness();
-    var mapped = numberValue(location.mapped_total, 0);
-    var mappedPercent = numberValue(location.mapped_percentage, 0);
+  function destroyVisuals() {
+    Object.keys(state.charts).forEach(function (key) {
+      var chart = state.charts[key];
+      if (chart && typeof chart.dispose === 'function') {
+        try { chart.dispose(); } catch (error) { /* ignore dispose race */ }
+      }
+    });
 
-    setInsight('total_umkm', formatNumber(total), 'Jumlah UMKM pada wilayah aktif.');
-    setInsight(
-      'dominant_category',
-      category ? category.name : 'Belum tersedia',
-      category ? formatNumber(category.total) + ' UMKM atau ' + formatPercent(category.percentage) + ' dari wilayah aktif.' : 'Data kategori belum tersedia.'
-    );
-    setInsight(
-      'dominant_type',
-      type ? type.name : 'Belum tersedia',
-      type ? formatNumber(type.total) + ' UMKM atau ' + formatPercent(type.percentage) + ' dari wilayah aktif.' : 'Data jenis usaha belum tersedia.'
-    );
-    setInsight(
-      'dominant_marketing',
-      marketing ? marketing.name : 'Belum tersedia',
-      marketing ? formatNumber(marketing.total) + ' UMKM atau ' + formatPercent(marketing.percentage) + ' dari wilayah aktif.' : 'Data pemasaran belum tersedia.'
-    );
-    setInsight(
-      'mapped_readiness',
-      formatPercent(mappedPercent),
-      formatNumber(mapped) + ' UMKM sudah memiliki titik lokasi.'
-    );
-  }
+    state.charts = {};
 
-  function emptyChart(container, message) {
-    if (!container) return;
-    if (container.__echartInstance) {
-      container.__echartInstance.dispose();
-      container.__echartInstance = null;
+    if (state.table && typeof state.table.destroy === 'function') {
+      try { state.table.destroy(); } catch (error) { /* ignore table destroy race */ }
     }
-    container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>' + escapeHtml(message || 'Data agregat pada wilayah ini belum cukup untuk divisualisasikan.') + '</span></div>';
+
+    state.table = null;
+    resetRenderedTabs();
   }
 
-  function fallbackList(container, rows, valueKey) {
+  function setStateNote(message) {
+    setText('[data-public-analytics-state-note]', message || '', root());
+  }
+
+  function showPlaceholder(message) {
+    var placeholder = one('[data-public-analytics-placeholder]');
+    var loader = one('[data-public-analytics-loader]');
+    var target = one('[data-public-analytics-render-target]');
+
+    destroyVisuals();
+    state.rendered = false;
+
+    if (target) target.innerHTML = '';
+    if (loader) loader.hidden = true;
+    if (placeholder) {
+      placeholder.hidden = false;
+      var paragraph = placeholder.querySelector('p');
+      if (paragraph && message) paragraph.textContent = message;
+    }
+
+    setStateNote('Pilih filter bila diperlukan, lalu klik tombol untuk memuat visual analitik.');
+  }
+
+  function setLoaderStep(index, title, desc) {
+    var loader = one('[data-public-analytics-loader]');
+    if (!loader) return;
+
+    var titleNode = one('[data-public-analytics-loader-title]', loader);
+    var descNode = one('[data-public-analytics-loader-desc]', loader);
+    var bar = one('[data-public-loader-progress-bar]', loader);
+    var steps = all('[data-public-loader-step]', loader);
+    var percent = Math.max(0, Math.min(100, ((index + 1) / 5) * 100));
+
+    if (titleNode) titleNode.textContent = title || 'Memuat visual analitik';
+    if (descNode) descNode.textContent = desc || 'Mohon tunggu sebentar.';
+    if (bar) bar.style.width = percent + '%';
+
+    steps.forEach(function (step, stepIndex) {
+      step.classList.remove('is-running', 'is-done');
+      if (stepIndex < index) step.classList.add('is-done');
+      if (stepIndex === index) step.classList.add('is-running');
+      if (stepIndex <= index) step.setAttribute('aria-current', stepIndex === index ? 'step' : 'false');
+    });
+  }
+
+  function showLoader() {
+    var placeholder = one('[data-public-analytics-placeholder]');
+    var loader = one('[data-public-analytics-loader]');
+    var target = one('[data-public-analytics-render-target]');
+
+    destroyVisuals();
+    state.rendered = false;
+    state.loading = true;
+
+    if (target) target.innerHTML = '';
+    if (placeholder) placeholder.hidden = true;
+    if (loader) loader.hidden = false;
+
+    setLoaderStep(0, 'Menyiapkan konteks wilayah', 'Membaca wilayah dan filter aktif.');
+    setStateNote('Memuat visual analitik terbaru...');
+  }
+
+  function hideLoader() {
+    var loader = one('[data-public-analytics-loader]');
+    if (loader) loader.hidden = true;
+    state.loading = false;
+  }
+
+  function showTabLoader(key, message) {
+    var pane = tabPane(key);
+    if (!pane) return;
+
+    var existing = one('[data-public-tab-loader]', pane);
+    if (existing) existing.remove();
+
+    var loader = document.createElement('div');
+    loader.className = 'public-tab-lazy-loader';
+    loader.setAttribute('data-public-tab-loader', key);
+    loader.innerHTML = '<span class="public-tab-lazy-orb" aria-hidden="true"></span><div><strong>Menyusun visual</strong><p>' + escapeHtml(message || 'Grafik sedang disiapkan dari data agregat terbaru.') + '</p></div>';
+    pane.prepend(loader);
+  }
+
+  function hideTabLoader(key) {
+    var pane = tabPane(key);
+    if (!pane) return;
+
+    var loader = one('[data-public-tab-loader]', pane);
+    if (loader) loader.remove();
+  }
+
+  function renderTemplate() {
+    var template = one('[data-public-analytics-template]');
+    var target = one('[data-public-analytics-render-target]');
+    var placeholder = one('[data-public-analytics-placeholder]');
+
+    if (!template || !target) throw new Error('Template visual analitik belum tersedia.');
+
+    target.innerHTML = '';
+    target.appendChild(template.content.cloneNode(true));
+
+    if (placeholder) placeholder.hidden = true;
+
+    state.rendered = true;
+    resetRenderedTabs();
+  }
+
+  function htmlList(container, rows, valueKey) {
     if (!container) return;
+
     if (!rows.length) {
-      emptyChart(container);
+      container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Data agregat pada wilayah ini belum cukup untuk divisualisasikan.</span></div>';
       return;
     }
 
@@ -383,42 +526,56 @@
     }).join('') + '</div>';
   }
 
-  function renderChart(selector, key, rows, optionFactory, emptyMessage) {
+  function ensureChartContainer(container) {
+    if (!container) return false;
+
+    if (container.clientHeight < 160) {
+      container.style.height = '340px';
+      container.style.minHeight = '340px';
+    }
+
+    return container.clientWidth > 80 && container.clientHeight > 160;
+  }
+
+  function renderChart(selector, key, rows, optionFactory, valueKey) {
     var container = one(selector);
     if (!container) return;
 
     if (!rows.length) {
-      emptyChart(container, emptyMessage);
+      htmlList(container, rows, valueKey);
       return;
     }
 
-    if (!(window.echarts && typeof window.echarts.init === 'function')) {
-      fallbackList(container, rows, key === 'area' ? 'total_umkm' : 'total');
+    if (!(window.echarts && typeof window.echarts.init === 'function') || !ensureChartContainer(container)) {
+      htmlList(container, rows, valueKey);
       return;
     }
 
     container.innerHTML = '';
-    var chart = state.charts[key];
 
-    if (!chart || chart.isDisposed && chart.isDisposed()) {
-      chart = window.echarts.init(container);
-      state.charts[key] = chart;
-      container.__echartInstance = chart;
-    }
+    var chart = window.echarts.init(container, null, {
+      renderer: 'canvas',
+      width: container.clientWidth,
+      height: container.clientHeight
+    });
 
+    state.charts[key] = chart;
     chart.setOption(optionFactory(rows), true);
+
+    window.requestAnimationFrame(function () {
+      try { chart.resize(); } catch (error) { /* ignore resize race */ }
+    });
   }
 
   function categoryRowsForChart() {
     var rows = categories();
-    if (state.filters.category) {
-      rows = rows.filter(function (item) { return item.name === state.filters.category; });
-    }
+    if (state.filters.category) rows = rows.filter(function (item) { return item.name === state.filters.category; });
     return rows;
   }
 
   function readinessRowsForChart() {
     var location = locationReadiness();
+
     return [
       { name: 'Terpetakan', total: numberValue(location.mapped_total, 0) },
       { name: 'Belum terpetakan', total: numberValue(location.unmapped_total, 0) },
@@ -429,101 +586,104 @@
     });
   }
 
-  function updateCharts() {
-    renderChart('[data-public-analytics-chart="category"]', 'category', categoryRowsForChart(), function (rows) {
-      return {
-        tooltip: {
-          trigger: 'item',
-          formatter: function (params) {
-            return params.name + '<br/>' + formatNumber(params.value) + ' UMKM';
-          }
-        },
-        legend: {
-          bottom: 0,
-          type: 'scroll'
-        },
-        series: [{
-          type: 'pie',
-          radius: ['48%', '72%'],
-          center: ['50%', '43%'],
-          avoidLabelOverlap: true,
-          label: { formatter: '{b}' },
-          data: rows.map(function (item) {
-            return { name: item.name, value: item.total };
-          })
-        }]
-      };
-    }, 'Kategori usaha belum tersedia pada wilayah aktif.');
+  function updateBusinessSummary() {
+    var node = one('[data-public-tab-summary="business"]');
+    if (!node) return;
 
+    var category = selectedCategoryRow();
+    var type = selectedTypeRow();
+
+    node.innerHTML = [
+      '<div><span>Total UMKM</span><strong>' + escapeHtml(formatNumber(totalUmkm())) + '</strong><p>Jumlah pada wilayah aktif.</p></div>',
+      '<div><span>Kategori dominan</span><strong>' + escapeHtml(category ? category.name : 'Belum tersedia') + '</strong><p>' + escapeHtml(category ? (formatNumber(category.total) + ' UMKM atau ' + formatPercent(category.percentage)) : 'Data belum tersedia.') + '</p></div>',
+      '<div><span>Jenis usaha dominan</span><strong>' + escapeHtml(type ? type.name : 'Belum tersedia') + '</strong><p>' + escapeHtml(type ? (formatNumber(type.total) + ' UMKM atau ' + formatPercent(type.percentage)) : 'Data belum tersedia.') + '</p></div>'
+    ].join('');
+  }
+
+  function categoryChartOption(rows) {
+    return {
+      animationDuration: 650,
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) { return params.name + '<br/>' + formatNumber(params.value) + ' UMKM (' + params.percent + '%)'; }
+      },
+      legend: { bottom: 0, type: 'scroll' },
+      series: [{
+        type: 'pie',
+        radius: ['46%', '70%'],
+        center: ['50%', '43%'],
+        avoidLabelOverlap: true,
+        label: {
+          show: true,
+          formatter: function (params) {
+            return params.name + '\n' + formatNumber(params.value) + ' (' + params.percent + '%)';
+          },
+          lineHeight: 16
+        },
+        labelLine: { show: true, length: 14, length2: 12 },
+        data: rows.map(function (item) { return { name: item.name, value: item.total }; })
+      }]
+    };
+  }
+
+  function horizontalBarOption(rows, valueKey) {
+    return {
+      animationDuration: 650,
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function (params) {
+          var item = params && params[0] ? params[0] : null;
+          return item ? item.name + '<br/>' + formatNumber(item.value) + ' UMKM' : '';
+        }
+      },
+      grid: { left: 8, right: 70, top: 14, bottom: 8, containLabel: true },
+      xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
+      yAxis: { type: 'category', data: rows.map(function (item) { return item.name; }) },
+      series: [{
+        type: 'bar',
+        data: rows.map(function (item) { return item[valueKey || 'total']; }),
+        barMaxWidth: 26,
+        label: {
+          show: true,
+          position: 'right',
+          formatter: function (params) { return formatNumber(params.value); }
+        }
+      }]
+    };
+  }
+
+  function renderBusinessTab() {
+    updateBusinessSummary();
+    renderChart('[data-public-analytics-chart="category"]', 'category', categoryRowsForChart(), categoryChartOption, 'total');
     renderChart('[data-public-analytics-chart="types"]', 'types', types().slice(0, 10), function (rows) {
-      return {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' },
-          formatter: function (params) {
-            var item = params && params[0] ? params[0] : null;
-            return item ? item.name + '<br/>' + formatNumber(item.value) + ' UMKM' : '';
-          }
-        },
-        grid: { left: 8, right: 24, top: 12, bottom: 8, containLabel: true },
-        xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
-        yAxis: { type: 'category', data: rows.map(function (item) { return item.name; }) },
-        series: [{ type: 'bar', data: rows.map(function (item) { return item.total; }), barMaxWidth: 24 }]
-      };
-    }, 'Jenis usaha belum tersedia pada wilayah aktif.');
+      return horizontalBarOption(rows, 'total');
+    }, 'total');
+  }
 
-    renderChart('[data-public-analytics-chart="marketing"]', 'marketing', marketingMethods(), function (rows) {
-      return {
-        tooltip: {
-          trigger: 'item',
+  function marketingChartOption(rows) {
+    return {
+      animationDuration: 650,
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) { return params.name + '<br/>' + formatNumber(params.value) + ' UMKM (' + params.percent + '%)'; }
+      },
+      legend: { bottom: 0, type: 'scroll' },
+      series: [{
+        type: 'pie',
+        radius: ['46%', '70%'],
+        center: ['50%', '43%'],
+        label: {
+          show: true,
           formatter: function (params) {
-            return params.name + '<br/>' + formatNumber(params.value) + ' UMKM';
-          }
+            return params.name + '\n' + formatNumber(params.value) + ' (' + params.percent + '%)';
+          },
+          lineHeight: 16
         },
-        legend: { bottom: 0, type: 'scroll' },
-        series: [{
-          type: 'pie',
-          radius: ['48%', '72%'],
-          center: ['50%', '43%'],
-          label: { formatter: '{b}' },
-          data: rows.map(function (item) { return { name: item.name, value: item.total }; })
-        }]
-      };
-    }, 'Data metode pemasaran belum tersedia.');
-
-    renderChart('[data-public-analytics-chart="readiness"]', 'readiness', readinessRowsForChart(), function (rows) {
-      return {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' },
-          formatter: function (params) {
-            var item = params && params[0] ? params[0] : null;
-            return item ? item.name + '<br/>' + formatNumber(item.value) + ' UMKM' : '';
-          }
-        },
-        grid: { left: 8, right: 24, top: 12, bottom: 8, containLabel: true },
-        xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
-        yAxis: { type: 'category', data: rows.map(function (item) { return item.name; }) },
-        series: [{ type: 'bar', data: rows.map(function (item) { return item.total; }), barMaxWidth: 28 }]
-      };
-    }, 'Data kesiapan lokasi belum tersedia.');
-
-    renderChart('[data-public-analytics-chart="area"]', 'area', areaRows().slice(0, 10), function (rows) {
-      return {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { type: 'shadow' },
-          formatter: function (params) {
-            var item = params && params[0] ? params[0] : null;
-            return item ? item.name + '<br/>' + formatNumber(item.value) + ' UMKM' : '';
-          }
-        },
-        grid: { left: 8, right: 24, top: 12, bottom: 8, containLabel: true },
-        xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
-        yAxis: { type: 'category', data: rows.map(function (item) { return item.name; }) },
-        series: [{ type: 'bar', data: rows.map(function (item) { return item.total_umkm; }), barMaxWidth: 24 }]
-      };
-    }, 'Area pembanding belum tersedia pada wilayah aktif.');
+        labelLine: { show: true, length: 14, length2: 12 },
+        data: rows.map(function (item) { return { name: item.name, value: item.total }; })
+      }]
+    };
   }
 
   function updateMarketingNote() {
@@ -536,24 +696,34 @@
 
     node.innerHTML = '<span>Ringkasan Pemasaran</span>'
       + '<p>Metode pemasaran dominan pada wilayah aktif adalah <b>' + escapeHtml(dominant ? dominant.name : 'Belum tersedia') + '</b>.'
-      + (dominant ? ' Kelompok ini mencakup <b>' + escapeHtml(formatNumber(dominant.total)) + '</b> UMKM.' : '')
+      + (dominant ? ' Kelompok ini mencakup <b>' + escapeHtml(formatNumber(dominant.total)) + '</b> UMKM atau <b>' + escapeHtml(formatPercent(dominant.percentage)) + '</b>.' : '')
       + '</p>'
       + (unavailable && unavailable.total > 0
         ? '<p class="mb-0">Masih terdapat <b>' + escapeHtml(formatNumber(unavailable.total)) + '</b> UMKM dengan metode pemasaran belum tersedia.</p>'
         : '<p class="mb-0">Data metode pemasaran sudah tersedia pada ringkasan wilayah ini.</p>');
   }
 
+  function renderMarketingTab() {
+    updateMarketingNote();
+    renderChart('[data-public-analytics-chart="marketing"]', 'marketing', marketingMethods(), marketingChartOption, 'total');
+  }
+
   function updateReadinessStack() {
     var location = locationReadiness();
     var mapped = numberValue(location.mapped_total, 0);
     var unmapped = numberValue(location.unmapped_total, 0);
-    var notes = qualityNotes().reduce(function (sum, item) {
-      return sum + numberValue(item.total, 0);
-    }, 0);
+    var notes = qualityNotes().reduce(function (sum, item) { return sum + numberValue(item.total, 0); }, 0);
 
     setText('[data-public-readiness-mapped]', formatNumber(mapped));
     setText('[data-public-readiness-unmapped]', formatNumber(unmapped));
     setText('[data-public-readiness-note]', formatNumber(notes));
+  }
+
+  function renderReadinessTab() {
+    updateReadinessStack();
+    renderChart('[data-public-analytics-chart="readiness"]', 'readiness', readinessRowsForChart(), function (rows) {
+      return horizontalBarOption(rows, 'total');
+    }, 'total');
   }
 
   function tablePriority(row) {
@@ -574,12 +744,7 @@
       + '<thead><tr><th>Area</th><th class="text-end">UMKM</th><th class="text-end">Terpetakan</th><th>Status</th></tr></thead>'
       + '<tbody>'
       + rows.map(function (row) {
-        return '<tr>'
-          + '<td>' + escapeHtml(row.name) + '</td>'
-          + '<td class="text-end">' + escapeHtml(formatNumber(row.total_umkm)) + '</td>'
-          + '<td class="text-end">' + escapeHtml(formatPercent(row.mapped_percentage)) + '</td>'
-          + '<td>' + escapeHtml(tablePriority(row)) + '</td>'
-          + '</tr>';
+        return '<tr><td>' + escapeHtml(row.name) + '</td><td class="text-end">' + escapeHtml(formatNumber(row.total_umkm)) + '</td><td class="text-end">' + escapeHtml(formatPercent(row.mapped_percentage)) + '</td><td>' + escapeHtml(tablePriority(row)) + '</td></tr>';
       }).join('')
       + '</tbody></table></div>';
   }
@@ -599,36 +764,40 @@
     });
 
     if (!rows.length) {
-      if (state.table && typeof state.table.destroy === 'function') {
-        state.table.destroy();
-        state.table = null;
-      }
       fallbackAreaTable(container, rows);
       return;
     }
 
-    if (window.Tabulator) {
-      if (!state.table) {
-        container.innerHTML = '';
-        state.table = new window.Tabulator(container, {
-          layout: 'fitColumns',
-          height: '310px',
-          reactiveData: true,
-          placeholder: 'Area pembanding belum tersedia.',
-          columns: [
-            { title: 'Area', field: 'name', minWidth: 150 },
-            { title: 'UMKM', field: 'total_umkm', hozAlign: 'right', width: 100, formatter: function (cell) { return formatNumber(cell.getValue()); } },
-            { title: 'Terpetakan', field: 'mapped_percentage', hozAlign: 'right', width: 120, formatter: function (cell) { return formatPercent(cell.getValue()); } },
-            { title: 'Status', field: 'priority', minWidth: 130 }
-          ]
-        });
-      }
+    if (state.table && typeof state.table.destroy === 'function') {
+      try { state.table.destroy(); } catch (error) { /* ignore redraw race */ }
+      state.table = null;
+    }
 
-      state.table.setData(rows);
+    if (window.Tabulator) {
+      state.table = new window.Tabulator(container, {
+        layout: 'fitColumns',
+        height: '310px',
+        data: rows,
+        placeholder: 'Area pembanding belum tersedia.',
+        columns: [
+          { title: 'Area', field: 'name', minWidth: 150 },
+          { title: 'UMKM', field: 'total_umkm', hozAlign: 'right', width: 100, formatter: function (cell) { return formatNumber(cell.getValue()); } },
+          { title: 'Terpetakan', field: 'mapped_percentage', hozAlign: 'right', width: 120, formatter: function (cell) { return formatPercent(cell.getValue()); } },
+          { title: 'Status', field: 'priority', minWidth: 130 }
+        ]
+      });
       return;
     }
 
     fallbackAreaTable(container, rows);
+  }
+
+  function renderAreaTab() {
+    var rows = areaRows().slice(0, 10);
+    renderChart('[data-public-analytics-chart="area"]', 'area', rows, function (areaChartRows) {
+      return horizontalBarOption(areaChartRows, 'total_umkm');
+    }, 'total_umkm');
+    updateAreaTable();
   }
 
   function updateNarrative() {
@@ -659,92 +828,208 @@
     node.innerHTML = narrative;
   }
 
-  function render() {
-    if (!root()) return;
-    if (!analyticsData()) {
-      updateContext();
+  function resizeVisuals() {
+    Object.keys(state.charts).forEach(function (key) {
+      var chart = state.charts[key];
+      if (chart && typeof chart.resize === 'function') {
+        try { chart.resize(); } catch (error) { /* ignore resize race */ }
+      }
+    });
+
+    if (state.table && typeof state.table.redraw === 'function') {
+      try { state.table.redraw(true); } catch (error) { /* ignore redraw race */ }
+    }
+  }
+
+  function tabPane(key) {
+    if (key === 'marketing') return one('#analytics-marketing-pane');
+    if (key === 'readiness') return one('#analytics-readiness-pane');
+    if (key === 'area') return one('#analytics-area-pane');
+    return one('#analytics-business-pane');
+  }
+
+  function activeTabKey() {
+    if (one('#analytics-marketing-pane.show.active')) return 'marketing';
+    if (one('#analytics-readiness-pane.show.active')) return 'readiness';
+    if (one('#analytics-area-pane.show.active')) return 'area';
+    return 'business';
+  }
+
+  function renderTab(key) {
+    if (!state.rendered || !analyticsData()) return;
+    if (state.renderedTabs[key]) {
+      resizeVisuals();
       return;
     }
 
+    showTabLoader(key, 'Menyusun grafik ' + (key === 'business' ? 'struktur usaha' : key === 'marketing' ? 'pemasaran' : key === 'readiness' ? 'kesiapan data' : 'area pembanding') + '.');
+
+    window.setTimeout(function () {
+      if (key === 'marketing') renderMarketingTab();
+      else if (key === 'readiness') renderReadinessTab();
+      else if (key === 'area') renderAreaTab();
+      else renderBusinessTab();
+
+      state.renderedTabs[key] = true;
+      hideTabLoader(key);
+      updateNarrative();
+      resizeVisuals();
+    }, 220);
+  }
+
+  function renderAnalyticsContent() {
+    if (!analyticsData()) throw new Error('Data analitik belum tersedia.');
+
+    setLoaderStep(2, 'Menyiapkan wadah grafik', 'Membuat ruang visual dan ringkasan agregat.');
+    renderTemplate();
+
+    setLoaderStep(3, 'Menyusun grafik awal', 'Menampilkan struktur usaha sebagai tab utama.');
+    renderTab('business');
+
+    setLoaderStep(4, 'Menampilkan ringkasan wawasan', 'Menyelesaikan narasi ringkasan agregat.');
+    updateNarrative();
+
+    window.setTimeout(resizeVisuals, 300);
+    window.setTimeout(resizeVisuals, 700);
+  }
+
+  function renderControlOnly() {
     updateContext();
     updateFilters();
-    updateInsights();
-    updateCharts();
-    updateMarketingNote();
-    updateReadinessStack();
-    updateAreaTable();
-    updateNarrative();
+  }
+
+  function showError(message) {
+    hideLoader();
+
+    var target = one('[data-public-analytics-render-target]');
+    var placeholder = one('[data-public-analytics-placeholder]');
+    if (target) {
+      target.innerHTML = '<div class="public-analytics-error"><strong>Visual analitik belum dapat dimuat.</strong><p>' + escapeHtml(message || 'Terjadi kendala saat memuat data agregat.') + '</p></div>';
+    }
+    if (placeholder) placeholder.hidden = true;
+
+    setStateNote('Visual analitik belum dapat dimuat. Silakan ulangi.');
+  }
+
+  function showAnalytics() {
+    if (state.loading) return;
+
+    showLoader();
+
+    Promise.resolve()
+      .then(function () {
+        setLoaderStep(1, 'Memuat data agregat', 'Mengambil data terbaru dari wilayah dan filter aktif.');
+        return requestJson();
+      })
+      .then(function () {
+        renderControlOnly();
+        renderAnalyticsContent();
+      })
+      .then(function () {
+        window.setTimeout(function () {
+          hideLoader();
+          setStateNote('Visual analitik sudah dimuat berdasarkan wilayah dan filter aktif.');
+        }, 280);
+      })
+      .catch(function (error) {
+        showError(error && error.message ? error.message : 'Visual analitik gagal dimuat.');
+      });
+  }
+
+  function invalidateAnalytics(reason) {
+    showPlaceholder(reason || 'Wilayah atau filter berubah. Klik Tampilkan Analitik untuk memuat data terbaru.');
   }
 
   function handleFilterChange(select) {
     var key = select.getAttribute('data-public-analytics-filter') || '';
     state.filters[key] = select.value || '';
 
-    if (key === 'category') {
-      state.filters.type = '';
-    }
+    if (key === 'category') state.filters.type = '';
 
-    render();
+    updateFilters();
+    invalidateAnalytics('Filter berubah. Klik Tampilkan Analitik untuk memuat ulang grafik dan tabel.');
   }
 
   function bind() {
+    document.addEventListener('click', function (event) {
+      var showButton = event.target && event.target.closest ? event.target.closest('[data-public-analytics-show]') : null;
+      if (showButton) {
+        event.preventDefault();
+        showAnalytics();
+        return;
+      }
+
+      var reset = event.target && event.target.closest ? event.target.closest('[data-public-analytics-reset]') : null;
+      if (reset) {
+        event.preventDefault();
+        state.filters = { category: '', type: '', marketing: '' };
+        updateFilters();
+        invalidateAnalytics('Filter direset. Klik Tampilkan Analitik untuk memuat ulang grafik dan tabel.');
+      }
+    });
+
     document.addEventListener('change', function (event) {
       var select = event.target && event.target.closest ? event.target.closest('[data-public-analytics-filter]') : null;
       if (!select) return;
       handleFilterChange(select);
     });
 
-    document.addEventListener('click', function (event) {
-      var reset = event.target && event.target.closest ? event.target.closest('[data-public-analytics-reset]') : null;
-      if (!reset) return;
+    document.addEventListener('shown.bs.tab', function (event) {
+      var target = event && event.target ? event.target.getAttribute('data-bs-target') : '';
+      var key = target === '#analytics-marketing-pane'
+        ? 'marketing'
+        : target === '#analytics-readiness-pane'
+          ? 'readiness'
+          : target === '#analytics-area-pane'
+            ? 'area'
+            : 'business';
 
-      state.filters = { category: '', type: '', marketing: '' };
-      render();
-    });
-
-    document.addEventListener('shown.bs.tab', function () {
-      window.setTimeout(function () {
-        Object.keys(state.charts).forEach(function (key) {
-          if (state.charts[key] && typeof state.charts[key].resize === 'function') {
-            state.charts[key].resize();
-          }
-        });
-        if (state.table && typeof state.table.redraw === 'function') {
-          state.table.redraw(true);
-        }
-      }, 80);
+      renderTab(key);
+      window.setTimeout(resizeVisuals, 180);
     });
 
     document.addEventListener('umkm:landing-analytics:ready', function (event) {
-      state.payload = event && event.detail ? event.detail.payload : window.PublicLandingAggregatePayload;
-      render();
+      var payload = event && event.detail ? event.detail.payload : window.PublicLandingAggregatePayload;
+      var safe = normalizePayload(payload);
+      if (safe) {
+        state.payload = safe;
+        renderControlOnly();
+        invalidateAnalytics('Data wilayah berubah. Klik Tampilkan Analitik untuk memuat visual terbaru.');
+      }
     });
 
     document.addEventListener('umkm:landing-region:changed', function (event) {
-      if (event && event.detail && event.detail.response) {
-        state.payload = event.detail.response;
-      } else {
-        state.payload = window.PublicLandingAggregatePayload;
+      var response = event && event.detail ? event.detail.response : null;
+      var safe = normalizePayload(response || window.PublicLandingAggregatePayload);
+      if (safe) {
+        state.payload = safe;
+        renderControlOnly();
       }
-      window.setTimeout(render, 80);
+      invalidateAnalytics('Wilayah aktif berubah. Klik Tampilkan Analitik untuk memuat visual terbaru.');
     });
 
     window.addEventListener('resize', function () {
-      Object.keys(state.charts).forEach(function (key) {
-        if (state.charts[key] && typeof state.charts[key].resize === 'function') {
-          state.charts[key].resize();
-        }
-      });
-      if (state.table && typeof state.table.redraw === 'function') {
-        state.table.redraw(true);
-      }
+      window.setTimeout(resizeVisuals, 80);
     });
+  }
+
+  function waitForInitialPayload(attempt) {
+    var safe = normalizePayload(window.PublicLandingAggregatePayload);
+    if (safe && safe.data && safe.data.analytics) {
+      state.payload = safe;
+      renderControlOnly();
+      return;
+    }
+
+    if ((attempt || 0) < 16) {
+      window.setTimeout(function () { waitForInitialPayload((attempt || 0) + 1); }, 200);
+    }
   }
 
   function boot() {
     bind();
-    state.payload = window.PublicLandingAggregatePayload;
-    window.setTimeout(render, 120);
+    showPlaceholder('Area ini akan memuat grafik, tabel, dan ringkasan setelah data agregat terbaru berhasil dimuat.');
+    waitForInitialPayload(0);
   }
 
   if (document.readyState === 'loading') {

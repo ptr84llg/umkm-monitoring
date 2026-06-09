@@ -16,7 +16,6 @@
         'public/landing/landing-region-map-google.js',
         'public/landing/landing-aggregate-cards.js',
         'public/landing/landing-analytics-insights.js',
-        'public/landing/landing-analytics-chart-fix.js',
         'public/landing/landing-location-bridge.js',
         'public/landing/landing-components.js',
         'public/landing/landing-boot.js',
