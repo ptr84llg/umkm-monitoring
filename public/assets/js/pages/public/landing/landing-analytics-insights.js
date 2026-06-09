@@ -273,6 +273,10 @@
       q.set('scope', 'village');
     }
 
+    if (state.filters.category) q.set('category', state.filters.category);
+    if (state.filters.type) q.set('business_type', state.filters.type);
+    if (state.filters.marketing) q.set('marketing_method', state.filters.marketing);
+
     return q;
   }
 

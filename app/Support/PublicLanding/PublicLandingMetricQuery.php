@@ -11,20 +11,22 @@ final class PublicLandingMetricQuery
     public static function payload(array $input = []): array
     {
         $context = self::resolveContext($input);
+        $filters = self::resolveAnalyticsFilters($input);
         $base = self::baseOperationalQuery($context);
+        $filteredBase = self::applyAnalyticsFilters(self::cloneQuery($base), $filters);
 
-        $total = self::countDistinctUmkm($base);
+        $total = self::countDistinctUmkm($filteredBase);
         $mapped = self::countDistinctUmkm(
-            self::cloneQuery($base)
+            self::cloneQuery($filteredBase)
                 ->whereNotNull('umkm_locations.latitude')
                 ->whereNotNull('umkm_locations.longitude')
         );
 
         $mappedPercent = self::percent($mapped, $total);
-        $activeRegions = self::activeVillageCount($context, $base, $total);
+        $activeRegions = self::activeVillageCount($context, $filteredBase, $total);
         $regionDenominator = self::villageDenominator($context);
         $coverage = self::percent($activeRegions, $regionDenominator);
-        $dominant = self::dominantCategory($base, $total);
+        $dominant = self::dominantCategory($filteredBase, $total);
 
         $cards = self::aggregateCards($total, $mapped, $mappedPercent, $dominant, $activeRegions, $coverage);
 
@@ -46,7 +48,7 @@ final class PublicLandingMetricQuery
             'aggregate_cards' => array_values($cards),
             'aggregate_card_map' => $cards,
             'preview' => self::preview($total, $mapped, $mappedPercent, $activeRegions, $regionDenominator, $coverage, $dominant),
-            'analytics' => self::analyticsPayload($context, self::cloneQuery($base), $total),
+            'analytics' => self::analyticsPayload($context, self::cloneQuery($filteredBase), $total, $filters),
             'fields' => self::fields($total, $mappedPercent, $coverage, $dominant),
             'areas' => [],
             'watched' => [
@@ -206,7 +208,106 @@ final class PublicLandingMetricQuery
         return array_values(array_filter(array_map('trim', $items)));
     }
 
+    private static function resolveAnalyticsFilters(array $input): array
+    {
+        return [
+            'category' => self::cleanAnalyticsFilter($input['category'] ?? $input['business_category'] ?? null),
+            'business_type' => self::cleanAnalyticsFilter($input['business_type'] ?? null),
+            'marketing_method' => self::cleanAnalyticsFilter($input['marketing_method'] ?? $input['marketing'] ?? null),
+        ];
+    }
+
+    private static function cleanAnalyticsFilter(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)) ?? '');
+
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) > 120) {
+            $text = mb_substr($text, 0, 120);
+        }
+
+        return in_array(mb_strtolower($text), ['semua', 'all', '*'], true) ? null : $text;
+    }
+
+    private static function applyAnalyticsFilters(Builder $query, array $filters): Builder
+    {
+        $category = $filters['category'] ?? null;
+        $businessType = $filters['business_type'] ?? null;
+        $marketingMethod = $filters['marketing_method'] ?? null;
+
+        if (($category !== null || $businessType !== null)
+            && Schema::hasTable('umkm_business_classifications')
+            && Schema::hasColumn('umkm_business_classifications', 'umkm_id')
+        ) {
+            $query->whereExists(function (Builder $subQuery) use ($category, $businessType): void {
+                $subQuery->selectRaw('1')
+                    ->from('umkm_business_classifications as filter_classifications')
+                    ->whereColumn('filter_classifications.umkm_id', 'umkms.id');
+
+                self::applyClassificationGuards($subQuery, 'filter_classifications');
+
+                if ($category !== null
+                    && Schema::hasTable('business_category_references')
+                    && Schema::hasColumn('umkm_business_classifications', 'business_category_id')
+                ) {
+                    $subQuery->join('business_category_references as filter_categories', 'filter_categories.id', '=', 'filter_classifications.business_category_id')
+                        ->where('filter_categories.name', $category);
+
+                    self::applyReferenceActiveGuard($subQuery, 'business_category_references', 'filter_categories');
+                }
+
+                if ($businessType !== null
+                    && Schema::hasTable('business_type_references')
+                    && Schema::hasColumn('umkm_business_classifications', 'business_type_id')
+                ) {
+                    $subQuery->join('business_type_references as filter_types', 'filter_types.id', '=', 'filter_classifications.business_type_id')
+                        ->where('filter_types.name', $businessType);
+
+                    self::applyReferenceActiveGuard($subQuery, 'business_type_references', 'filter_types');
+                }
+            });
+        }
+
+        if ($marketingMethod !== null
+            && Schema::hasTable('umkm_baseline_profiles')
+            && Schema::hasTable('marketing_method_references')
+            && Schema::hasColumn('umkm_baseline_profiles', 'umkm_id')
+            && Schema::hasColumn('umkm_baseline_profiles', 'marketing_method_id')
+        ) {
+            if ($marketingMethod === 'Belum tersedia') {
+                $query->whereNotExists(function (Builder $subQuery): void {
+                    $subQuery->selectRaw('1')
+                        ->from('umkm_baseline_profiles as filter_baseline')
+                        ->join('marketing_method_references as filter_marketing_methods', 'filter_marketing_methods.id', '=', 'filter_baseline.marketing_method_id')
+                        ->whereColumn('filter_baseline.umkm_id', 'umkms.id');
+
+                    self::applyReferenceActiveGuard($subQuery, 'marketing_method_references', 'filter_marketing_methods');
+                });
+            } else {
+                $query->whereExists(function (Builder $subQuery) use ($marketingMethod): void {
+                    $subQuery->selectRaw('1')
+                        ->from('umkm_baseline_profiles as filter_baseline')
+                        ->join('marketing_method_references as filter_marketing_methods', 'filter_marketing_methods.id', '=', 'filter_baseline.marketing_method_id')
+                        ->whereColumn('filter_baseline.umkm_id', 'umkms.id')
+                        ->where('filter_marketing_methods.name', $marketingMethod);
+
+                    self::applyReferenceActiveGuard($subQuery, 'marketing_method_references', 'filter_marketing_methods');
+                });
+            }
+        }
+
+        return $query;
+    }
+
     private static function cloneQuery(Builder $query): Builder
+
     {
         return clone $query;
     }
@@ -364,12 +465,12 @@ final class PublicLandingMetricQuery
         ];
     }
 
-    private static function analyticsPayload(array $context, Builder $base, int $total): array
+    private static function analyticsPayload(array $context, Builder $base, int $total, array $filters = []): array
     {
         $businessStructure = self::businessStructureAnalytics($base, $total);
         $marketing = self::marketingAnalytics($base, $total);
         $readiness = self::dataReadinessAnalytics($base, $total);
-        $areaComparison = self::areaComparisonAnalytics($context, $base);
+        $areaComparison = self::areaComparisonAnalytics($context, $base, $filters);
 
         return [
             'context' => self::analyticsContext($context),
@@ -620,17 +721,42 @@ final class PublicLandingMetricQuery
             ->all();
     }
 
-    private static function areaComparisonAnalytics(array $context, Builder $base): array
+    private static function areaComparisonAnalytics(array $context, Builder $base, array $filters = []): array
     {
         $scope = (string) ($context['scope'] ?? 'city');
 
         if ($scope === 'village') {
+            $districtId = (int) ($context['district']['id'] ?? 0);
+
+            if ($districtId > 0) {
+                $districtContext = $context;
+                $districtContext['scope'] = 'district';
+                $districtContext['village'] = null;
+                $districtContext['region']['scope'] = 'district';
+                $districtContext['region']['village_code'] = '';
+                $districtContext['region']['village_name'] = '';
+                $districtContext['selection']['scope'] = 'district';
+                $districtContext['selection']['village_code'] = '';
+
+                $comparisonBase = self::applyAnalyticsFilters(
+                    self::baseOperationalQuery($districtContext),
+                    $filters
+                );
+
+                return self::areaComparisonByRegionRows($comparisonBase, 'sibling_village', 'village_region_id');
+            }
+
             return self::areaComparisonByCategory($base);
         }
 
         $level = $scope === 'district' ? 'village' : 'district';
         $idColumn = $level === 'village' ? 'village_region_id' : 'district_region_id';
 
+        return self::areaComparisonByRegionRows($base, $level, $idColumn);
+    }
+
+    private static function areaComparisonByRegionRows(Builder $base, string $level, string $idColumn): array
+    {
         if (
             ! Schema::hasTable('regions')
             || ! Schema::hasColumn('regions', 'id')

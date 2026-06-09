@@ -102,11 +102,15 @@ final class PublicLandingRegionGeometry
         }
 
         $districtNumber = $selection['district_number'];
-        $villageNumber = $selection['village_number'];
+        $villageCode = self::cleanCode((string) ($selection['village_code'] ?? ''));
 
-        $features = array_values(array_filter($features, function (array $feature) use ($districtNumber, $villageNumber) {
-            return (int) ($feature['properties']['district_number'] ?? 0) === $districtNumber
-                && (int) ($feature['properties']['village_number'] ?? 0) === $villageNumber;
+        $features = array_values(array_filter($features, function (array $feature) use ($districtNumber, $villageCode) {
+            $properties = $feature['properties'] ?? [];
+            $featureCode = self::cleanCode((string) ($properties['region_code'] ?? $properties['village_code'] ?? ''));
+
+            return (int) ($properties['district_number'] ?? 0) === $districtNumber
+                && $villageCode !== ''
+                && $featureCode === $villageCode;
         }));
 
         return self::enrichFeaturesWithUmkmCounts($features, 'village');
@@ -174,9 +178,13 @@ final class PublicLandingRegionGeometry
         $districtNumber = (int) ltrim((string) ($properties['kd_kecamatan'] ?? '0'), '0');
         $villageNumber = (int) ltrim((string) ($properties['kd_kelurahan'] ?? '0'), '0');
         $districtCode = self::districtCodeFromNumber($districtNumber);
-        $regionCode = self::villageCodeFromNumber($districtNumber, $villageNumber);
+        $legacyRegionCode = self::villageCodeFromNumber($districtNumber, $villageNumber);
         $name = self::cleanName((string) ($properties['nm_kelurahan'] ?? 'Kelurahan'));
-        $districtName = self::cleanName((string) ($properties['nm_kecamatan'] ?? $districtCode));
+        $officialVillage = self::officialVillageRegion($districtCode, $name, $legacyRegionCode, $villageNumber);
+        $regionCode = self::cleanCode((string) ($officialVillage['code'] ?? $legacyRegionCode));
+        $districtCode = self::cleanCode((string) ($officialVillage['district_code'] ?? $officialVillage['parent_code'] ?? $districtCode));
+        $name = self::cleanName((string) ($officialVillage['name'] ?? $name));
+        $districtName = self::officialDistrictName($districtCode);
 
         return [
             'type' => 'Feature',
@@ -193,8 +201,7 @@ final class PublicLandingRegionGeometry
                 'district_number' => $districtNumber,
                 'village_number' => $villageNumber,
                 'active' => $selection['scope'] === 'village'
-                    && $selection['district_number'] === $districtNumber
-                    && $selection['village_number'] === $villageNumber,
+                    && self::cleanCode((string) ($selection['village_code'] ?? '')) === $regionCode,
                 'selectable' => true,
                 'display_order' => $index + 1,
             ],
@@ -621,7 +628,186 @@ final class PublicLandingRegionGeometry
         ];
     }
 
+    private static function officialVillageRegion(string $districtCode, string $name, string $legacyRegionCode = '', int $villageNumber = 0): ?array
+    {
+        $districtCode = self::cleanCode($districtCode);
+        $nameKey = self::normalizedNameKey($name);
+
+        if ($districtCode === '' || $nameKey === '' || ! Schema::hasTable('regions')) {
+            return null;
+        }
+
+        $lookups = self::officialVillageLookups();
+
+        if ($lookups['by_pair'] !== []) {
+            $pairKey = $districtCode . '|' . $nameKey;
+
+            if (isset($lookups['by_pair'][$pairKey])) {
+                return $lookups['by_pair'][$pairKey];
+            }
+        }
+
+        foreach (self::officialVillageCodeCandidates($districtCode, $legacyRegionCode, $villageNumber) as $candidate) {
+            if (isset($lookups['by_code'][$candidate])) {
+                return $lookups['by_code'][$candidate];
+            }
+        }
+
+        return null;
+    }
+
+    private static function officialVillageLookups(): array
+    {
+        static $cache = null;
+
+        if ($cache !== null) {
+            return $cache;
+        }
+
+        $cache = [
+            'by_code' => [],
+            'by_pair' => [],
+        ];
+
+        if (
+            ! Schema::hasTable('regions')
+            || ! Schema::hasColumn('regions', 'code')
+            || ! Schema::hasColumn('regions', 'name')
+        ) {
+            return $cache;
+        }
+
+        $cityCode = (string) config('umkm.landing_region.city_code', '16.73');
+        $query = DB::table('regions')
+            ->select('code', 'name');
+
+        foreach (['level', 'parent_code', 'district_code', 'village_code'] as $column) {
+            if (Schema::hasColumn('regions', $column)) {
+                $query->addSelect($column);
+            }
+        }
+
+        if (Schema::hasColumn('regions', 'level')) {
+            $query->where('level', 'village');
+        }
+
+        $query->where(function (Builder $query) use ($cityCode): void {
+            $query->where('code', 'like', $cityCode . '.%');
+
+            if (Schema::hasColumn('regions', 'parent_code')) {
+                $query->orWhere('parent_code', 'like', $cityCode . '.%');
+            }
+
+            if (Schema::hasColumn('regions', 'district_code')) {
+                $query->orWhere('district_code', 'like', $cityCode . '.%');
+            }
+
+            if (Schema::hasColumn('regions', 'village_code')) {
+                $query->orWhere('village_code', 'like', $cityCode . '.%');
+            }
+        });
+
+        foreach ($query->get() as $row) {
+            $code = self::cleanCode((string) ($row->code ?? ''));
+            $name = self::cleanName((string) ($row->name ?? ''));
+            $districtCode = self::cleanCode((string) ($row->district_code ?? $row->parent_code ?? ''));
+
+            if ($districtCode === '') {
+                $districtCode = self::districtCodeFromOfficialVillageCode($code);
+            }
+
+            if ($code === '' || $name === '' || $districtCode === '') {
+                continue;
+            }
+
+            $record = [
+                'code' => $code,
+                'name' => $name,
+                'district_code' => $districtCode,
+                'parent_code' => self::cleanCode((string) ($row->parent_code ?? $districtCode)),
+                'village_code' => self::cleanCode((string) ($row->village_code ?? $code)),
+            ];
+
+            $cache['by_code'][$code] = $record;
+            $cache['by_pair'][$districtCode . '|' . self::normalizedNameKey($name)] = $record;
+        }
+
+        return $cache;
+    }
+
+    private static function officialDistrictName(string $districtCode): string
+    {
+        static $cache = [];
+
+        $districtCode = self::cleanCode($districtCode);
+
+        if ($districtCode === '') {
+            return '';
+        }
+
+        if (array_key_exists($districtCode, $cache)) {
+            return $cache[$districtCode];
+        }
+
+        $cache[$districtCode] = $districtCode;
+
+        if (
+            ! Schema::hasTable('regions')
+            || ! Schema::hasColumn('regions', 'code')
+            || ! Schema::hasColumn('regions', 'name')
+        ) {
+            return $cache[$districtCode];
+        }
+
+        $query = DB::table('regions')
+            ->where('code', $districtCode);
+
+        if (Schema::hasColumn('regions', 'level')) {
+            $query->where('level', 'district');
+        }
+
+        $name = $query->value('name');
+
+        if (is_string($name) && trim($name) !== '') {
+            $cache[$districtCode] = self::cleanName($name);
+        }
+
+        return $cache[$districtCode];
+    }
+
+    private static function officialVillageCodeCandidates(string $districtCode, string $legacyRegionCode, int $villageNumber): array
+    {
+        $districtCode = self::cleanCode($districtCode);
+        $legacyRegionCode = self::cleanCode($legacyRegionCode);
+        $candidates = [];
+
+        if ($legacyRegionCode !== '') {
+            $candidates[] = $legacyRegionCode;
+        }
+
+        if ($districtCode !== '' && $villageNumber > 0) {
+            $candidates[] = $districtCode . '.' . str_pad((string) $villageNumber, 3, '0', STR_PAD_LEFT);
+            $candidates[] = $districtCode . '.' . str_pad((string) $villageNumber, 4, '0', STR_PAD_LEFT);
+            $candidates[] = $districtCode . '.1' . str_pad((string) $villageNumber, 3, '0', STR_PAD_LEFT);
+            $candidates[] = $districtCode . '.10' . str_pad((string) $villageNumber, 2, '0', STR_PAD_LEFT);
+        }
+
+        return array_values(array_unique(array_filter($candidates)));
+    }
+
+    private static function districtCodeFromOfficialVillageCode(string $code): string
+    {
+        $parts = array_values(array_filter(explode('.', self::cleanCode($code)), fn ($part) => $part !== ''));
+
+        if (count($parts) < 4) {
+            return '';
+        }
+
+        return implode('.', array_slice($parts, 0, 3));
+    }
+
     private static function readGeojson(?string $path): array
+
     {
         if (! $path || ! is_file($path)) {
             return [];

@@ -20,6 +20,9 @@ class LandingPreviewController extends Controller
             'city_code',
             'district_code',
             'village_code',
+            'category',
+            'business_type',
+            'marketing_method',
         ]));
 
         return response()
