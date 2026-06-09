@@ -4088,3 +4088,37 @@ body.layout-public .umkm-public-footer {
         min-height: 320px;
     }
 }
+
+/* PUBLICLANDING-ANALYTICS-VISUAL-POLISH-1H-FINAL */
+.public-combo-analytics-card {
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--umkm-primary-rgb), .07), transparent 18rem),
+        linear-gradient(145deg, rgba(255, 255, 255, .98), rgba(var(--umkm-primary-rgb), .035));
+}
+
+.public-insight-panel-plain {
+    min-height: auto;
+    border: 1px solid rgba(var(--umkm-primary-rgb), .10);
+    background: rgba(255, 255, 255, .72);
+    box-shadow: none;
+}
+
+.public-insight-panel-plain p:last-child {
+    margin-bottom: 0;
+}
+
+.public-chart-canvas-tall {
+    min-height: 390px !important;
+    height: 390px !important;
+}
+
+.public-stacked-chart-canvas {
+    margin-top: .6rem;
+}
+
+@media (max-width: 991.98px) {
+    .public-chart-canvas-tall {
+        min-height: 330px !important;
+        height: 330px !important;
+    }
+}

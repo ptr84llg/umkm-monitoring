@@ -184,57 +184,58 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="analytics-marketing-pane" role="tabpanel" aria-labelledby="analytics-marketing-tab" tabindex="0">
+                        </div>                        <div class="tab-pane fade" id="analytics-marketing-pane" role="tabpanel" aria-labelledby="analytics-marketing-tab" tabindex="0">
                             <div class="row g-3 g-xl-4">
-                                <div class="col-12 col-xl-5">
-                                    <div class="public-insight-panel h-100" data-public-analytics-marketing-note>
-                                        <span>Ringkasan Pemasaran</span>
-                                        <p>Menunggu data pemasaran pada wilayah aktif.</p>
+                                <div class="col-12 col-xl-6">
+                                    <div class="public-chart-panel public-combo-analytics-card h-100">
+                                        <div class="public-insight-panel public-insight-panel-plain mb-3" data-public-analytics-marketing-note>
+                                            <span>Ringkasan Pemasaran</span>
+                                            <p>Menunggu data pemasaran pada wilayah aktif.</p>
+                                        </div>
+                                        <div class="public-chart-head">
+                                            <strong>Sebaran Metode Pemasaran per Subwilayah</strong>
+                                            <small>Setiap bar menampilkan komposisi metode pemasaran pada subwilayah aktif.</small>
+                                        </div>
+                                        <div class="public-chart-canvas public-chart-canvas-tall public-stacked-chart-canvas" data-public-analytics-chart="marketing-area"></div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-xl-7">
+                                <div class="col-12 col-xl-6">
                                     <div class="public-chart-panel h-100">
                                         <div class="public-chart-head">
                                             <strong>Komposisi Metode Pemasaran</strong>
                                             <small>Distribusi metode pemasaran pada wilayah aktif.</small>
                                         </div>
-                                        <div class="public-chart-canvas" data-public-analytics-chart="marketing"></div>
+                                        <div class="public-chart-canvas public-chart-canvas-tall" data-public-analytics-chart="marketing"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        <div class="tab-pane fade" id="analytics-readiness-pane" role="tabpanel" aria-labelledby="analytics-readiness-tab" tabindex="0">
+                            <div class="row g-3 g-xl-4">
+                                <div class="col-12 col-xl-6">
+                                    <div class="public-chart-panel public-combo-analytics-card h-100">
+                                        <div class="public-insight-panel public-insight-panel-plain mb-3" data-public-analytics-readiness-note>
+                                            <span>Ringkasan Kesiapan Data</span>
+                                            <p>Menunggu data kesiapan pada wilayah aktif.</p>
+                                        </div>
+                                        <div class="public-chart-head">
+                                            <strong>Sebaran Kesiapan Data per Subwilayah</strong>
+                                            <small>Setiap bar membandingkan UMKM terpetakan dan belum terpetakan pada subwilayah aktif.</small>
+                                        </div>
+                                        <div class="public-chart-canvas public-chart-canvas-tall public-stacked-chart-canvas" data-public-analytics-chart="readiness-area"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-6">
+                                    <div class="public-chart-panel h-100">
+                                        <div class="public-chart-head">
+                                            <strong>Komposisi Kesiapan Data</strong>
+                                            <small>Perbandingan kesiapan data pada wilayah aktif.</small>
+                                        </div>
+                                        <div class="public-chart-canvas public-chart-canvas-tall" data-public-analytics-chart="readiness"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="tab-pane fade" id="analytics-readiness-pane" role="tabpanel" aria-labelledby="analytics-readiness-tab" tabindex="0">
-                            <div class="row g-3 g-xl-4">
-                                <div class="col-12 col-xl-5">
-                                    <div class="public-readiness-stack" data-public-readiness-stack>
-                                        <div>
-                                            <span>UMKM terpetakan</span>
-                                            <strong data-public-readiness-mapped>—</strong>
-                                        </div>
-                                        <div>
-                                            <span>Belum terpetakan</span>
-                                            <strong data-public-readiness-unmapped>—</strong>
-                                        </div>
-                                        <div>
-                                            <span>Catatan kualitas data</span>
-                                            <strong data-public-readiness-note>—</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-xl-7">
-                                    <div class="public-chart-panel h-100">
-                                        <div class="public-chart-head">
-                                            <strong>Kesiapan Data Lokasi</strong>
-                                            <small>Perbandingan data terpetakan dan belum terpetakan.</small>
-                                        </div>
-                                        <div class="public-chart-canvas" data-public-analytics-chart="readiness"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="tab-pane fade" id="analytics-area-pane" role="tabpanel" aria-labelledby="analytics-area-tab" tabindex="0">
                             <div class="row g-3 g-xl-4">

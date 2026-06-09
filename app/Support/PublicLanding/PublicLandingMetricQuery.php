@@ -468,8 +468,8 @@ final class PublicLandingMetricQuery
     private static function analyticsPayload(array $context, Builder $base, int $total, array $filters = []): array
     {
         $businessStructure = self::businessStructureAnalytics($base, $total);
-        $marketing = self::marketingAnalytics($base, $total);
-        $readiness = self::dataReadinessAnalytics($base, $total);
+        $marketing = self::marketingAnalytics($context, $base, $total, $filters);
+        $readiness = self::dataReadinessAnalytics($context, $base, $total, $filters);
         $areaComparison = self::areaComparisonAnalytics($context, $base, $filters);
 
         return [
@@ -602,7 +602,42 @@ final class PublicLandingMetricQuery
             ->all();
     }
 
-    private static function marketingAnalytics(Builder $base, int $total): array
+    private static function subregionDistributionContext(array $context, array $filters): array
+    {
+        $scope = (string) ($context['scope'] ?? 'city');
+        $distributionContext = $context;
+
+        if ($scope === 'village') {
+            $district = $context['district'] ?? null;
+
+            if (is_array($district) && (int) ($district['id'] ?? 0) > 0) {
+                $distributionContext['scope'] = 'district';
+                $distributionContext['village'] = null;
+                $distributionContext['region']['scope'] = 'district';
+                $distributionContext['region']['village_code'] = '';
+                $distributionContext['region']['village_name'] = '';
+                $distributionContext['selection']['scope'] = 'district';
+                $distributionContext['selection']['village_code'] = '';
+
+                return [
+                    'level' => 'sibling_village',
+                    'id_column' => 'village_region_id',
+                    'base' => self::applyAnalyticsFilters(self::baseOperationalQuery($distributionContext), $filters),
+                ];
+            }
+        }
+
+        $level = $scope === 'city' ? 'district' : 'village';
+        $idColumn = $level === 'district' ? 'district_region_id' : 'village_region_id';
+
+        return [
+            'level' => $level,
+            'id_column' => $idColumn,
+            'base' => self::applyAnalyticsFilters(self::baseOperationalQuery($distributionContext), $filters),
+        ];
+    }
+
+    private static function marketingAnalytics(array $context, Builder $base, int $total, array $filters = []): array
     {
         if (
             ! Schema::hasTable('umkm_baseline_profiles')
@@ -614,6 +649,10 @@ final class PublicLandingMetricQuery
                 'total_umkm' => $total,
                 'dominant_method' => 'Belum tersedia',
                 'methods' => [],
+                'by_area' => [
+                    'level' => 'area',
+                    'rows' => [],
+                ],
             ];
         }
 
@@ -644,10 +683,110 @@ final class PublicLandingMetricQuery
             'total_umkm' => $total,
             'dominant_method' => $rows[0]['name'] ?? 'Belum tersedia',
             'methods' => $rows,
+            'by_area' => self::marketingByAreaRows($context, $filters),
         ];
     }
 
-    private static function dataReadinessAnalytics(Builder $base, int $total): array
+    private static function marketingByAreaRows(array $context, array $filters): array
+    {
+        $distribution = self::subregionDistributionContext($context, $filters);
+        $base = $distribution['base'] ?? null;
+        $idColumn = (string) ($distribution['id_column'] ?? '');
+        $level = (string) ($distribution['level'] ?? 'area');
+
+        if (
+            ! $base instanceof Builder
+            || $idColumn === ''
+            || ! Schema::hasTable('regions')
+            || ! Schema::hasTable('umkm_baseline_profiles')
+            || ! Schema::hasTable('marketing_method_references')
+            || ! Schema::hasColumn('regions', 'id')
+            || ! Schema::hasColumn('regions', 'name')
+            || ! Schema::hasColumn('umkm_locations', $idColumn)
+            || ! Schema::hasColumn('umkm_baseline_profiles', 'umkm_id')
+            || ! Schema::hasColumn('umkm_baseline_profiles', 'marketing_method_id')
+        ) {
+            return [
+                'level' => $level,
+                'rows' => [],
+            ];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('regions as analytics_marketing_area_regions', 'analytics_marketing_area_regions.id', '=', 'umkm_locations.' . $idColumn)
+            ->leftJoin('umkm_baseline_profiles as analytics_marketing_area_baseline', 'analytics_marketing_area_baseline.umkm_id', '=', 'umkms.id')
+            ->leftJoin('marketing_method_references as analytics_marketing_area_methods', 'analytics_marketing_area_methods.id', '=', 'analytics_marketing_area_baseline.marketing_method_id');
+
+        self::applyReferenceActiveGuard($query, 'marketing_method_references', 'analytics_marketing_area_methods');
+
+        $rawRows = $query
+            ->select(
+                'analytics_marketing_area_regions.id as area_id',
+                'analytics_marketing_area_regions.name as area_name',
+                DB::raw("COALESCE(analytics_marketing_area_methods.name, 'Belum tersedia') as method_name"),
+                DB::raw('COUNT(DISTINCT umkms.id) as total_count')
+            )
+            ->groupBy(
+                'analytics_marketing_area_regions.id',
+                'analytics_marketing_area_regions.name',
+                DB::raw("COALESCE(analytics_marketing_area_methods.name, 'Belum tersedia')")
+            )
+            ->orderBy('analytics_marketing_area_regions.name')
+            ->orderByDesc('total_count')
+            ->get();
+
+        $areas = [];
+
+        foreach ($rawRows as $row) {
+            $areaId = (int) $row->area_id;
+            $methodName = (string) ($row->method_name ?: 'Belum tersedia');
+            $count = (int) $row->total_count;
+
+            if (! isset($areas[$areaId])) {
+                $areas[$areaId] = [
+                    'id' => $areaId,
+                    'name' => (string) ($row->area_name ?: 'Wilayah'),
+                    'total_umkm' => 0,
+                    'methods' => [],
+                ];
+            }
+
+            $areas[$areaId]['total_umkm'] += $count;
+            $areas[$areaId]['methods'][$methodName] = ($areas[$areaId]['methods'][$methodName] ?? 0) + $count;
+        }
+
+        $rows = collect($areas)
+            ->map(function (array $area): array {
+                $total = (int) $area['total_umkm'];
+                $methods = collect($area['methods'])
+                    ->map(fn (int $count, string $name): array => [
+                        'name' => $name,
+                        'total' => $count,
+                        'percentage' => self::percent($count, $total),
+                    ])
+                    ->sortByDesc('total')
+                    ->values()
+                    ->all();
+
+                return [
+                    'name' => (string) $area['name'],
+                    'total_umkm' => $total,
+                    'dominant_method' => $methods[0]['name'] ?? 'Belum tersedia',
+                    'methods' => $methods,
+                ];
+            })
+            ->sortByDesc('total_umkm')
+            ->take(10)
+            ->values()
+            ->all();
+
+        return [
+            'level' => $level,
+            'rows' => $rows,
+        ];
+    }
+
+    private static function dataReadinessAnalytics(array $context, Builder $base, int $total, array $filters = []): array
     {
         $mapped = self::countDistinctUmkm(
             self::cloneQuery($base)
@@ -706,7 +845,105 @@ final class PublicLandingMetricQuery
                     'percentage' => self::percent($missingRegion, $total),
                 ],
             ],
+            'by_area' => self::dataReadinessByAreaRows($context, $filters),
             'quality_notes' => self::qualityNoteAnalyticsRows($base),
+        ];
+    }
+
+    private static function dataReadinessByAreaRows(array $context, array $filters): array
+    {
+        $distribution = self::subregionDistributionContext($context, $filters);
+        $base = $distribution['base'] ?? null;
+        $idColumn = (string) ($distribution['id_column'] ?? '');
+        $level = (string) ($distribution['level'] ?? 'area');
+
+        if (
+            ! $base instanceof Builder
+            || $idColumn === ''
+            || ! Schema::hasTable('regions')
+            || ! Schema::hasColumn('regions', 'id')
+            || ! Schema::hasColumn('regions', 'name')
+            || ! Schema::hasColumn('umkm_locations', $idColumn)
+        ) {
+            return [
+                'level' => $level,
+                'rows' => [],
+            ];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('regions as analytics_readiness_area_regions', 'analytics_readiness_area_regions.id', '=', 'umkm_locations.' . $idColumn);
+
+        $hasQualityFlags = Schema::hasTable('umkm_data_quality_flags')
+            && Schema::hasColumn('umkm_data_quality_flags', 'umkm_id');
+
+        if ($hasQualityFlags) {
+            $query->leftJoin('umkm_data_quality_flags as analytics_readiness_area_quality_flags', function ($join): void {
+                $join->on('analytics_readiness_area_quality_flags.umkm_id', '=', 'umkms.id');
+
+                if (Schema::hasColumn('umkm_data_quality_flags', 'status')) {
+                    $join->where('analytics_readiness_area_quality_flags.status', '=', 'open');
+                }
+            });
+        }
+
+        $qualitySelect = $hasQualityFlags
+            ? DB::raw('COUNT(DISTINCT analytics_readiness_area_quality_flags.umkm_id) as open_quality_notes')
+            : DB::raw('0 as open_quality_notes');
+
+        $rows = $query
+            ->select(
+                'analytics_readiness_area_regions.id as area_id',
+                'analytics_readiness_area_regions.name as area_name',
+                DB::raw('COUNT(DISTINCT umkms.id) as total_umkm'),
+                DB::raw("COUNT(DISTINCT CASE WHEN umkm_locations.coordinate_status = 'terpetakan' AND umkm_locations.latitude IS NOT NULL AND umkm_locations.longitude IS NOT NULL THEN umkms.id END) as mapped_total"),
+                DB::raw("COUNT(DISTINCT CASE WHEN umkm_locations.coordinate_status = 'perlu_validasi' THEN umkms.id END) as needs_validation_total"),
+                DB::raw('COUNT(DISTINCT CASE WHEN umkm_locations.district_region_id IS NULL OR umkm_locations.village_region_id IS NULL THEN umkms.id END) as missing_region_total'),
+                $qualitySelect
+            )
+            ->groupBy('analytics_readiness_area_regions.id', 'analytics_readiness_area_regions.name')
+            ->orderByDesc('total_umkm')
+            ->orderBy('analytics_readiness_area_regions.name')
+            ->limit(10)
+            ->get()
+            ->map(function (object $row): array {
+                $total = (int) $row->total_umkm;
+                $mapped = (int) $row->mapped_total;
+                $unmapped = max(0, $total - $mapped);
+                $needsValidation = (int) $row->needs_validation_total;
+                $missingRegion = (int) $row->missing_region_total;
+                $qualityNotes = (int) $row->open_quality_notes;
+
+                return [
+                    'name' => (string) ($row->area_name ?: 'Wilayah'),
+                    'total_umkm' => $total,
+                    'mapped_total' => $mapped,
+                    'unmapped_total' => $unmapped,
+                    'needs_validation_total' => $needsValidation,
+                    'missing_region_total' => $missingRegion,
+                    'open_quality_notes' => $qualityNotes,
+                    'mapped_percentage' => self::percent($mapped, $total),
+                    'unmapped_percentage' => self::percent($unmapped, $total),
+                    'items' => [
+                        [
+                            'name' => 'Terpetakan',
+                            'total' => $mapped,
+                            'percentage' => self::percent($mapped, $total),
+                        ],
+                        [
+                            'name' => 'Belum terpetakan',
+                            'total' => $unmapped,
+                            'percentage' => self::percent($unmapped, $total),
+                        ],
+                    ],
+                ];
+            })
+            ->values()
+            ->all();
+
+        return [
+            'level' => $level,
+            'rows' => $rows,
         ];
     }
 

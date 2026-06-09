@@ -631,27 +631,38 @@
   }
 
   function horizontalBarOption(rows, valueKey) {
+    var key = valueKey || 'total';
+
     return {
       animationDuration: 650,
+      animationEasing: 'cubicOut',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter: function (params) {
           var item = params && params[0] ? params[0] : null;
-          return item ? item.name + '<br/>' + formatNumber(item.value) + ' UMKM' : '';
+          var row = item ? rows[item.dataIndex] || {} : {};
+          if (!item) return '';
+
+          var percent = numberValue(row.percentage, 0);
+          return item.name + '<br/>' + formatNumber(item.value) + ' UMKM' + (percent > 0 ? ' (' + formatPercent(percent) + ')' : '');
         }
       },
-      grid: { left: 8, right: 70, top: 14, bottom: 8, containLabel: true },
+      grid: { left: 8, right: 112, top: 14, bottom: 8, containLabel: true },
       xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
       yAxis: { type: 'category', data: rows.map(function (item) { return item.name; }) },
       series: [{
         type: 'bar',
-        data: rows.map(function (item) { return item[valueKey || 'total']; }),
+        data: rows.map(function (item) { return { value: numberValue(item[key], 0) }; }),
         barMaxWidth: 26,
         label: {
           show: true,
           position: 'right',
-          formatter: function (params) { return formatNumber(params.value); }
+          formatter: function (params) {
+            var row = rows[params.dataIndex] || {};
+            var percent = numberValue(row.percentage, 0);
+            return formatNumber(params.value) + (percent > 0 ? ' • ' + formatPercent(percent) : '');
+          }
         }
       }]
     };
@@ -707,24 +718,162 @@
         : '<p class="mb-0">Data metode pemasaran sudah tersedia pada ringkasan wilayah ini.</p>');
   }
 
+  function marketingAreaRows() {
+    return arrayOf(marketingData().by_area && marketingData().by_area.rows)
+      .map(function (area) {
+        return {
+          name: cleanText(area.name, 'Wilayah'),
+          total_umkm: numberValue(area.total_umkm, 0),
+          dominant_method: cleanText(area.dominant_method, 'Belum tersedia'),
+          methods: arrayOf(area.methods).map(function (method) {
+            return {
+              name: cleanText(method.name, 'Belum tersedia'),
+              total: numberValue(method.total, 0),
+              percentage: numberValue(method.percentage, 0)
+            };
+          })
+        };
+      })
+      .filter(function (area) {
+        return area.name && area.total_umkm > 0;
+      });
+  }
+
+  function readinessAreaRows() {
+    return arrayOf(readinessData().by_area && readinessData().by_area.rows)
+      .map(function (area) {
+        return {
+          name: cleanText(area.name, 'Wilayah'),
+          total_umkm: numberValue(area.total_umkm, 0),
+          mapped_total: numberValue(area.mapped_total, 0),
+          unmapped_total: numberValue(area.unmapped_total, 0),
+          needs_validation_total: numberValue(area.needs_validation_total, 0),
+          missing_region_total: numberValue(area.missing_region_total, 0),
+          open_quality_notes: numberValue(area.open_quality_notes, 0),
+          mapped_percentage: numberValue(area.mapped_percentage, 0),
+          items: arrayOf(area.items).map(function (item) {
+            return {
+              name: cleanText(item.name, 'Kesiapan data'),
+              total: numberValue(item.total, 0),
+              percentage: numberValue(item.percentage, 0)
+            };
+          })
+        };
+      })
+      .filter(function (area) {
+        return area.name && area.total_umkm > 0;
+      });
+  }
+
+  function methodSeriesNames(rows) {
+    var names = [];
+
+    rows.forEach(function (area) {
+      area.methods.forEach(function (method) {
+        if (method.name && names.indexOf(method.name) === -1) names.push(method.name);
+      });
+    });
+
+    var order = ['Konvensional', 'Digital', 'Both', 'Belum tersedia'];
+    names.sort(function (a, b) {
+      var ai = order.indexOf(a);
+      var bi = order.indexOf(b);
+      if (ai === -1) ai = 99;
+      if (bi === -1) bi = 99;
+      if (ai !== bi) return ai - bi;
+      return a.localeCompare(b);
+    });
+
+    return names;
+  }
+
+  function stackedAreaOption(rows, seriesNames, rowItemsKey, totalKey) {
+    return {
+      animationDuration: 700,
+      animationEasing: 'cubicOut',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function (params) {
+          var row = rows[params && params.length ? params[0].dataIndex : 0] || {};
+          var total = numberValue(row[totalKey || 'total_umkm'], 0);
+          var lines = ['<b>' + escapeHtml(row.name || 'Wilayah') + '</b>', 'Total: ' + formatNumber(total) + ' UMKM'];
+
+          arrayOf(params).forEach(function (item) {
+            var value = numberValue(item.value, 0);
+            if (value < 1) return;
+            lines.push(escapeHtml(item.seriesName) + ': ' + formatNumber(value) + ' UMKM (' + formatPercent(total > 0 ? (value / total) * 100 : 0) + ')');
+          });
+
+          if (row.open_quality_notes > 0) lines.push('Catatan kualitas: ' + formatNumber(row.open_quality_notes));
+          if (row.missing_region_total > 0) lines.push('Wilayah belum lengkap: ' + formatNumber(row.missing_region_total));
+
+          return lines.join('<br/>');
+        }
+      },
+      legend: { top: 0, type: 'scroll' },
+      grid: { left: 8, right: 88, top: 42, bottom: 8, containLabel: true },
+      xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
+      yAxis: { type: 'category', data: rows.map(function (row) { return row.name; }) },
+      series: seriesNames.map(function (name) {
+        return {
+          name: name,
+          type: 'bar',
+          stack: 'total',
+          barMaxWidth: 24,
+          emphasis: { focus: 'series' },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: function (params) {
+              var value = numberValue(params.value, 0);
+              return value >= 10 ? formatNumber(value) : '';
+            }
+          },
+          data: rows.map(function (row) {
+            var item = arrayOf(row[rowItemsKey]).find(function (entry) { return entry.name === name; });
+            return item ? item.total : 0;
+          })
+        };
+      })
+    };
+  }
+
+  function marketingAreaChartOption(rows) {
+    return stackedAreaOption(rows, methodSeriesNames(rows), 'methods', 'total_umkm');
+  }
+
+  function readinessAreaChartOption(rows) {
+    return stackedAreaOption(rows, ['Terpetakan', 'Belum terpetakan'], 'items', 'total_umkm');
+  }
+
   function renderMarketingTab() {
     updateMarketingNote();
+    renderChart('[data-public-analytics-chart="marketing-area"]', 'marketing-area', marketingAreaRows(), marketingAreaChartOption, 'total_umkm');
     renderChart('[data-public-analytics-chart="marketing"]', 'marketing', marketingMethods(), marketingChartOption, 'total');
   }
 
-  function updateReadinessStack() {
+  function updateReadinessNote() {
+    var node = one('[data-public-analytics-readiness-note]');
+    if (!node) return;
+
     var location = locationReadiness();
     var mapped = numberValue(location.mapped_total, 0);
     var unmapped = numberValue(location.unmapped_total, 0);
     var notes = qualityNotes().reduce(function (sum, item) { return sum + numberValue(item.total, 0); }, 0);
+    var mappedPercent = numberValue(location.mapped_percentage, 0);
 
-    setText('[data-public-readiness-mapped]', formatNumber(mapped));
-    setText('[data-public-readiness-unmapped]', formatNumber(unmapped));
-    setText('[data-public-readiness-note]', formatNumber(notes));
+    node.innerHTML = '<span>Ringkasan Kesiapan Data</span>'
+      + '<p><b>' + escapeHtml(formatNumber(mapped)) + '</b> UMKM sudah memiliki titik lokasi atau <b>' + escapeHtml(formatPercent(mappedPercent)) + '</b> dari wilayah aktif.</p>'
+      + '<p><b>' + escapeHtml(formatNumber(unmapped)) + '</b> UMKM belum memiliki titik lokasi.</p>'
+      + (notes > 0
+        ? '<p class="mb-0">Terdapat <b>' + escapeHtml(formatNumber(notes)) + '</b> catatan kualitas data yang perlu diperhatikan.</p>'
+        : '<p class="mb-0">Belum ada catatan kualitas data terbuka pada ringkasan ini.</p>');
   }
 
   function renderReadinessTab() {
-    updateReadinessStack();
+    updateReadinessNote();
+    renderChart('[data-public-analytics-chart="readiness-area"]', 'readiness-area', readinessAreaRows(), readinessAreaChartOption, 'total_umkm');
     renderChart('[data-public-analytics-chart="readiness"]', 'readiness', readinessRowsForChart(), function (rows) {
       return horizontalBarOption(rows, 'total');
     }, 'total');
