@@ -611,6 +611,7 @@ final class PublicLandingMetricQuery
             || ! Schema::hasColumn('umkm_baseline_profiles', 'marketing_method_id')
         ) {
             return [
+                'total_umkm' => $total,
                 'dominant_method' => 'Belum tersedia',
                 'methods' => [],
             ];
@@ -640,6 +641,7 @@ final class PublicLandingMetricQuery
             ->all();
 
         return [
+            'total_umkm' => $total,
             'dominant_method' => $rows[0]['name'] ?? 'Belum tersedia',
             'methods' => $rows,
         ];
@@ -668,15 +670,41 @@ final class PublicLandingMetricQuery
             ? self::countDistinctUmkm(self::cloneQuery($base)->whereNull('umkm_locations.village_region_id'))
             : 0;
 
+        $unmapped = max(0, $total - $mapped);
+        $missingRegion = max($missingDistrict, $missingVillage);
+
         return [
+            'total_umkm' => $total,
             'location' => [
                 'total_umkm' => $total,
                 'mapped_total' => $mapped,
-                'unmapped_total' => max(0, $total - $mapped),
+                'unmapped_total' => $unmapped,
                 'needs_validation_total' => $needsValidation,
                 'missing_district_total' => $missingDistrict,
                 'missing_village_total' => $missingVillage,
                 'mapped_percentage' => self::percent($mapped, $total),
+            ],
+            'items' => [
+                [
+                    'name' => 'Terpetakan',
+                    'total' => $mapped,
+                    'percentage' => self::percent($mapped, $total),
+                ],
+                [
+                    'name' => 'Belum terpetakan',
+                    'total' => $unmapped,
+                    'percentage' => self::percent($unmapped, $total),
+                ],
+                [
+                    'name' => 'Perlu validasi',
+                    'total' => $needsValidation,
+                    'percentage' => self::percent($needsValidation, $total),
+                ],
+                [
+                    'name' => 'Wilayah belum lengkap',
+                    'total' => $missingRegion,
+                    'percentage' => self::percent($missingRegion, $total),
+                ],
             ],
             'quality_notes' => self::qualityNoteAnalyticsRows($base),
         ];

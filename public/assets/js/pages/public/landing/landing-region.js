@@ -167,7 +167,7 @@
         );
 
         setModalCurrent(Landing.regionState.applied.label || 'Kota Lubuklinggau');
-        setRegionAlert('Mode preview wilayah aktif. Daftar kecamatan memakai fallback public-safe karena konteks wilayah belum dapat dimuat penuh.');
+        setRegionAlert('Mode pratinjau wilayah aktif. Daftar kecamatan menggunakan data ringkas sementara karena konteks wilayah belum dapat dimuat penuh.');
 
         Landing.log('warn', 'landing region context fallback applied', {
             message: error && error.message ? error.message : 'region context fallback'
@@ -1045,7 +1045,7 @@
             }
 
             container.classList.add('is-loading');
-            container.innerHTML = '<div class="preview-empty-inline is-loading"><strong>Memuat agregat wilayah</strong><small>Menyiapkan ringkasan public-safe untuk konteks terpilih.</small></div>';
+            container.innerHTML = '<div class="preview-empty-inline is-loading"><strong>Memuat agregat wilayah</strong><small>Menyiapkan ringkasan agregat untuk wilayah terpilih.</small></div>';
         });
 
         Landing.qsa('[data-public-map-cluster-value]').forEach(function (element) {
