@@ -787,7 +787,7 @@
     return names;
   }
 
-  function stackedAreaOption(rows, seriesNames, rowItemsKey, totalKey) {
+  function percentStackedAreaOption(rows, seriesNames, rowItemsKey, totalKey) {
     return {
       animationDuration: 700,
       animationEasing: 'cubicOut',
@@ -800,9 +800,11 @@
           var lines = ['<b>' + escapeHtml(row.name || 'Wilayah') + '</b>', 'Total: ' + formatNumber(total) + ' UMKM'];
 
           arrayOf(params).forEach(function (item) {
-            var value = numberValue(item.value, 0);
-            if (value < 1) return;
-            lines.push(escapeHtml(item.seriesName) + ': ' + formatNumber(value) + ' UMKM (' + formatPercent(total > 0 ? (value / total) * 100 : 0) + ')');
+            var data = item.data || {};
+            var count = numberValue(data.count, 0);
+            var value = numberValue(data.value, 0);
+            if (count < 1 && value <= 0) return;
+            lines.push(escapeHtml(item.seriesName) + ': ' + formatNumber(count) + ' UMKM (' + formatPercent(value) + ')');
           });
 
           if (row.open_quality_notes > 0) lines.push('Catatan kualitas: ' + formatNumber(row.open_quality_notes));
@@ -812,8 +814,12 @@
         }
       },
       legend: { top: 0, type: 'scroll' },
-      grid: { left: 8, right: 88, top: 42, bottom: 8, containLabel: true },
-      xAxis: { type: 'value', axisLabel: { formatter: function (value) { return formatNumber(value); } } },
+      grid: { left: 8, right: 96, top: 42, bottom: 8, containLabel: true },
+      xAxis: {
+        type: 'value',
+        max: 100,
+        axisLabel: { formatter: function (value) { return formatPercent(value); } }
+      },
       yAxis: { type: 'category', data: rows.map(function (row) { return row.name; }) },
       series: seriesNames.map(function (name) {
         return {
@@ -826,13 +832,22 @@
             show: true,
             position: 'inside',
             formatter: function (params) {
-              var value = numberValue(params.value, 0);
-              return value >= 10 ? formatNumber(value) : '';
+              var data = params.data || {};
+              var value = numberValue(data.value, 0);
+              return value >= 7 ? formatPercent(value) : '';
             }
           },
           data: rows.map(function (row) {
+            var total = numberValue(row[totalKey || 'total_umkm'], 0);
             var item = arrayOf(row[rowItemsKey]).find(function (entry) { return entry.name === name; });
-            return item ? item.total : 0;
+            var count = item ? numberValue(item.total, 0) : 0;
+            var percent = total > 0 ? (count / total) * 100 : 0;
+
+            return {
+              value: percent,
+              count: count,
+              total: total
+            };
           })
         };
       })
@@ -840,13 +855,12 @@
   }
 
   function marketingAreaChartOption(rows) {
-    return stackedAreaOption(rows, methodSeriesNames(rows), 'methods', 'total_umkm');
+    return percentStackedAreaOption(rows, methodSeriesNames(rows), 'methods', 'total_umkm');
   }
 
   function readinessAreaChartOption(rows) {
-    return stackedAreaOption(rows, ['Terpetakan', 'Belum terpetakan'], 'items', 'total_umkm');
+    return percentStackedAreaOption(rows, ['Terpetakan', 'Belum terpetakan'], 'items', 'total_umkm');
   }
-
   function renderMarketingTab() {
     updateMarketingNote();
     renderChart('[data-public-analytics-chart="marketing-area"]', 'marketing-area', marketingAreaRows(), marketingAreaChartOption, 'total_umkm');
@@ -945,11 +959,81 @@
     fallbackAreaTable(container, rows);
   }
 
+  function areaPriorityScatterOption(rows) {
+    var maxTotal = rows.reduce(function (max, row) {
+      return Math.max(max, numberValue(row.total_umkm, 0));
+    }, 0);
+
+    return {
+      animationDuration: 720,
+      animationEasing: 'cubicOut',
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var row = params.data && params.data.raw ? params.data.raw : {};
+          return '<b>' + escapeHtml(row.name || 'Area') + '</b>'
+            + '<br/>Total UMKM: ' + formatNumber(row.total_umkm)
+            + '<br/>Terpetakan: ' + formatPercent(row.mapped_percentage)
+            + '<br/>Catatan kualitas: ' + formatNumber(row.open_quality_notes)
+            + '<br/>Status: ' + escapeHtml(tablePriority(row));
+        }
+      },
+      grid: { left: 56, right: 24, top: 22, bottom: 52, containLabel: true },
+      xAxis: {
+        type: 'value',
+        name: 'Total UMKM',
+        nameLocation: 'middle',
+        nameGap: 34,
+        axisLabel: { formatter: function (value) { return formatNumber(value); } },
+        splitLine: { lineStyle: { type: 'dashed' } }
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Terpetakan',
+        max: 100,
+        axisLabel: { formatter: function (value) { return formatPercent(value); } },
+        splitLine: { lineStyle: { type: 'dashed' } }
+      },
+      visualMap: {
+        show: false,
+        min: 0,
+        max: Math.max(1, maxTotal),
+        dimension: 0
+      },
+      series: [{
+        type: 'scatter',
+        symbolSize: function (value, params) {
+          var raw = params && params.data ? params.data.raw || {} : {};
+          var total = numberValue(raw.total_umkm, 0);
+          if (maxTotal <= 0) return 18;
+          return Math.max(18, Math.min(54, 18 + (total / maxTotal) * 36));
+        },
+        label: {
+          show: true,
+          formatter: function (params) {
+            var raw = params.data && params.data.raw ? params.data.raw : {};
+            return raw.name || '';
+          },
+          position: 'top',
+          fontSize: 11
+        },
+        emphasis: {
+          focus: 'self',
+          label: { show: true }
+        },
+        data: rows.map(function (row) {
+          return {
+            value: [row.total_umkm, row.mapped_percentage],
+            raw: row
+          };
+        })
+      }]
+    };
+  }
+
   function renderAreaTab() {
     var rows = areaRows().slice(0, 10);
-    renderChart('[data-public-analytics-chart="area"]', 'area', rows, function (areaChartRows) {
-      return horizontalBarOption(areaChartRows, 'total_umkm');
-    }, 'total_umkm');
+    renderChart('[data-public-analytics-chart="area"]', 'area', rows, areaPriorityScatterOption, 'total_umkm');
     updateAreaTable();
   }
 

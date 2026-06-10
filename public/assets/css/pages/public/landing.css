@@ -4122,3 +4122,17 @@ body.layout-public .umkm-public-footer {
         height: 330px !important;
     }
 }
+
+/* PUBLICLANDING-ANALYTICS-VISUAL-REFINEMENT-2A */
+.public-chart-canvas[data-public-analytics-chart="area"] {
+    min-height: 365px;
+}
+
+.public-chart-canvas[data-public-analytics-chart="marketing-area"],
+.public-chart-canvas[data-public-analytics-chart="readiness-area"] {
+    min-height: 405px;
+}
+
+.public-combo-analytics-card .public-chart-head small {
+    max-width: 340px;
+}
