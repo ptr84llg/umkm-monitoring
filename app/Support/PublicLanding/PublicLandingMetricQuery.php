@@ -16,12 +16,25 @@ final class PublicLandingMetricQuery
         $filteredBase = self::applyAnalyticsFilters(self::cloneQuery($base), $filters);
 
         $total = self::countDistinctUmkm($filteredBase);
-        $mapped = self::countDistinctUmkm(
-            self::cloneQuery($filteredBase)
-                ->whereNotNull('umkm_locations.latitude')
-                ->whereNotNull('umkm_locations.longitude')
-        );
+        $mappedQuery = self::cloneQuery($filteredBase);
+        $mappingConditions = 0;
 
+        if (Schema::hasColumn('umkm_locations', 'coordinate_status')) {
+            $mappedQuery->where('umkm_locations.coordinate_status', 'terpetakan');
+            $mappingConditions++;
+        }
+
+        if (Schema::hasColumn('umkm_locations', 'latitude')) {
+            $mappedQuery->whereNotNull('umkm_locations.latitude');
+            $mappingConditions++;
+        }
+
+        if (Schema::hasColumn('umkm_locations', 'longitude')) {
+            $mappedQuery->whereNotNull('umkm_locations.longitude');
+            $mappingConditions++;
+        }
+
+        $mapped = $mappingConditions > 0 ? self::countDistinctUmkm($mappedQuery) : 0;
         $mappedPercent = self::percent($mapped, $total);
         $activeRegions = self::activeVillageCount($context, $filteredBase, $total);
         $regionDenominator = self::villageDenominator($context);
@@ -29,6 +42,7 @@ final class PublicLandingMetricQuery
         $dominant = self::dominantCategory($filteredBase, $total);
 
         $cards = self::aggregateCards($total, $mapped, $mappedPercent, $dominant, $activeRegions, $coverage);
+        $freshness = PublicLandingDataFreshness::latest();
 
         $payload = [
             'scope' => $context['scope'],
@@ -67,7 +81,9 @@ final class PublicLandingMetricQuery
             'trend_points' => [['label' => 'Saat ini', 'value' => $total]],
             'empty' => $total < 1,
             'empty_message' => $total < 1 ? 'Data belum tersedia pada wilayah ini.' : null,
-            'updated_at' => now()->toIso8601String(),
+            'updated_at' => $freshness['iso'],
+            'updated_at_label' => $freshness['label'],
+            'source_snapshot_id' => $freshness['snapshot_id'],
         ];
 
         $detailCard = self::cleanDetailCardKey((string) ($input['detail_card'] ?? ''));
@@ -182,8 +198,13 @@ final class PublicLandingMetricQuery
     private static function baseOperationalQuery(array $context): Builder
     {
         $query = DB::table('umkms')
-            ->leftJoin('umkm_locations', 'umkm_locations.umkm_id', '=', 'umkms.id')
-            ->whereIn('umkms.status_data', self::operationalStatuses());
+            ->leftJoin('umkm_locations', 'umkm_locations.umkm_id', '=', 'umkms.id');
+
+        if (Schema::hasColumn('umkms', 'status_data')) {
+            $query->whereIn('umkms.status_data', self::operationalStatuses());
+        }
+
+        self::applySourceActiveGuard($query);
 
         $cityId = (int) ($context['city']['id'] ?? 0);
         $districtId = (int) ($context['district']['id'] ?? 0);
@@ -307,7 +328,6 @@ final class PublicLandingMetricQuery
     }
 
     private static function cloneQuery(Builder $query): Builder
-
     {
         return clone $query;
     }
@@ -475,7 +495,11 @@ final class PublicLandingMetricQuery
         return [
             'context' => self::analyticsContext($context),
             'business_structure' => $businessStructure,
+            'workforce' => PublicLandingAdvancedAnalytics::workforce($context, self::cloneQuery($base), $total, $filters),
+            'economy' => PublicLandingAdvancedAnalytics::economy($context, self::cloneQuery($base), $total, $filters),
             'marketing' => $marketing,
+            'market_access' => PublicLandingAdvancedAnalytics::marketAccess($context, self::cloneQuery($base), $total, $filters),
+            'legality' => PublicLandingAdvancedAnalytics::legality($context, self::cloneQuery($base), $total, $filters),
             'data_readiness' => $readiness,
             'area_comparison' => $areaComparison,
             'decision_notes' => [
@@ -811,6 +835,7 @@ final class PublicLandingMetricQuery
 
         $unmapped = max(0, $total - $mapped);
         $missingRegion = max($missingDistrict, $missingVillage);
+        $qualitySummary = self::qualitySummary($base);
 
         return [
             'total_umkm' => $total,
@@ -846,6 +871,7 @@ final class PublicLandingMetricQuery
                 ],
             ],
             'by_area' => self::dataReadinessByAreaRows($context, $filters),
+            'quality_summary' => $qualitySummary,
             'quality_notes' => self::qualityNoteAnalyticsRows($base),
         ];
     }
@@ -980,10 +1006,75 @@ final class PublicLandingMetricQuery
             ->map(fn (object $row): array => [
                 'group' => (string) $row->flag_group,
                 'severity' => (string) $row->severity,
+                'label' => self::qualityPublicLabel((string) $row->flag_group, (string) $row->severity),
                 'total' => (int) $row->total_count,
             ])
             ->values()
             ->all();
+    }
+
+    private static function qualitySummary(Builder $base): array
+    {
+        if (
+            ! Schema::hasTable('umkm_data_quality_flags')
+            || ! Schema::hasColumn('umkm_data_quality_flags', 'umkm_id')
+        ) {
+            return ['flag_count' => 0, 'affected_umkm_count' => 0];
+        }
+
+        $query = self::cloneQuery($base)
+            ->join('umkm_data_quality_flags as analytics_quality_summary_flags', 'analytics_quality_summary_flags.umkm_id', '=', 'umkms.id');
+
+        if (Schema::hasColumn('umkm_data_quality_flags', 'status')) {
+            $query->where('analytics_quality_summary_flags.status', 'open');
+        }
+
+        $flagCountExpression = Schema::hasColumn('umkm_data_quality_flags', 'id')
+            ? 'COUNT(DISTINCT analytics_quality_summary_flags.id)'
+            : 'COUNT(*)';
+
+        $row = $query
+            ->selectRaw($flagCountExpression . ' as flag_count, COUNT(DISTINCT umkms.id) as affected_umkm_count')
+            ->first();
+
+        return [
+            'flag_count' => (int) ($row->flag_count ?? 0),
+            'affected_umkm_count' => (int) ($row->affected_umkm_count ?? 0),
+        ];
+    }
+
+    private static function qualityPublicLabel(string $group, string $severity): string
+    {
+        $groupKey = mb_strtolower(trim($group));
+        $severityKey = mb_strtolower(trim($severity));
+
+        if ($groupKey === 'coordinate') {
+            return 'Koordinat belum tersedia';
+        }
+
+        if ($groupKey === 'identity') {
+            return $severityKey === 'critical' ? 'Identitas memerlukan perbaikan' : 'Identitas perlu dilengkapi';
+        }
+
+        if ($groupKey === 'media') {
+            return 'Media usaha belum tersedia';
+        }
+
+        if ($groupKey === 'marketing') {
+            return 'Informasi pemasaran belum lengkap';
+        }
+
+        if ($groupKey === 'location') {
+            return match ($severityKey) {
+                'critical' => 'Kecamatan/kelurahan belum tersedia',
+                'warning' => 'Lokasi perlu ditinjau',
+                default => 'Informasi lokasi belum lengkap',
+            };
+        }
+
+        $label = trim(preg_replace('/[_-]+/', ' ', $group) ?? $group);
+
+        return $label === '' ? 'Catatan mutu data' : ucfirst($label);
     }
 
     private static function areaComparisonAnalytics(array $context, Builder $base, array $filters = []): array
@@ -1120,6 +1211,25 @@ final class PublicLandingMetricQuery
         }
 
         return $recommendations;
+    }
+
+    private static function applySourceActiveGuard(Builder $query): void
+    {
+        if (! Schema::hasColumn('umkms', 'source_active')) {
+            return;
+        }
+
+        if (! Schema::hasColumn('umkms', 'source_system')) {
+            $query->where('umkms.source_active', 1);
+
+            return;
+        }
+
+        $query->where(function (Builder $guard): void {
+            $guard->whereNull('umkms.source_system')
+                ->orWhere('umkms.source_system', '<>', 'LSS')
+                ->orWhere('umkms.source_active', 1);
+        });
     }
 
     private static function applyClassificationGuards(Builder $query, string $alias): void

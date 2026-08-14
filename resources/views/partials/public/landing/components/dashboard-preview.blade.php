@@ -8,7 +8,7 @@
             <div class="col-12 col-xl-8">
                 <span class="landing-eyebrow">Pusat data publik</span>
                 <h2 class="display-6 fw-bold mt-2 mb-2">Pusat Analitik & Wawasan Interaktif</h2>
-                <p class="lead mb-0">Baca struktur usaha, pemasaran, kesiapan data, dan area pembanding berdasarkan wilayah aktif.</p>
+                <p class="lead mb-0">Baca profil sektor, tenaga kerja, kapasitas ekonomi, akses pasar, legalitas, serta mutu data UMKM berdasarkan wilayah aktif.</p>
             </div>
             <div class="col-12 col-xl-4 text-xl-end">
                 <span class="public-analytics-badge">Ringkasan agregat wilayah</span>
@@ -106,7 +106,7 @@
             </span>
             <div>
                 <strong>Visual analitik belum ditampilkan.</strong>
-                <p>Area ini akan memuat grafik, tabel, dan ringkasan setelah data agregat terbaru berhasil dimuat.</p>
+                <p>Area ini akan memuat profil sektor, tenaga kerja, ekonomi, akses pasar, legalitas, dan mutu data setelah agregat terbaru berhasil dimuat.</p>
             </div>
         </div>
 

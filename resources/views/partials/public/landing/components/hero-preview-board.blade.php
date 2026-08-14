@@ -52,7 +52,9 @@
                 <div class="public-region-map-meta" aria-label="Ringkasan peta wilayah aktif">
                     <span><b data-public-region-map-feature-count>0</b> wilayah tampil</span>
                     <span>Layer <b data-public-region-map-visible-level>Wilayah</b></span>
-                    <span><b data-public-region-map-total-umkm>0</b> UMKM pada layer</span>
+                    <span><b data-public-region-map-total-umkm>0</b> UMKM terasosiasi</span>
+                    <span>Total <b data-public-region-map-operational-total>0</b> operasional</span>
+                    <span class="d-none" data-public-region-map-unmatched-wrap><b data-public-region-map-unmatched>0</b> belum terasosiasi</span>
                     <span>Maks. <b data-public-region-map-density-max>0</b> UMKM/wilayah</span>
                 </div>
             </div>

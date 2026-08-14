@@ -16,6 +16,7 @@
         'public/landing/landing-region-map-google.js',
         'public/landing/landing-aggregate-cards.js',
         'public/landing/landing-analytics-insights.js',
+        'public/landing/landing-analytics-domain-upgrade.js',
         'public/landing/landing-location-bridge.js',
         'public/landing/landing-components.js',
         'public/landing/landing-boot.js',
@@ -437,7 +438,7 @@
 								</div>
                             </div>
 							<p class="lead mb-0">
-								SISFODA UMKM merupakan portal visual analitik berbasis data yang menyajikan informasi sebaran, kategori, dan perkembangan UMKM secara agregat. Informasi ditampilkan secara ringkas, terstruktur, dan aman untuk publik untuk mendukung pemantauan potensi usaha daerah serta pengambilan keputusan berbasis data.
+								SISFODA UMKM merupakan portal visual analitik berbasis data yang menyajikan informasi sebaran, kategori, dan perkembangan UMKM secara agregat. Informasi ditampilkan secara ringkas, terstruktur, dan aman untuk publik guna mendukung pemantauan potensi usaha daerah serta pengambilan keputusan berbasis data.
 							</p>
 							<div class="d-flex flex-wrap gap-3 mt-4 hero-action-row">
 								<span class="public-region-action-mount" data-public-region-action-mount="hero-primary" hidden aria-hidden="true"></span>
@@ -596,7 +597,7 @@
                                     </div>
                                     <p class="mb-0">
                                         Portal visual analitik publik untuk membaca sebaran, tren, dan ringkasan UMKM
-                                        secara agregat, informatif, aman, dan aman untuk publik.
+                                        secara agregat, informatif, dan aman untuk publik.
                                     </p>
                                     <div class="landing-footer-badges">
                                         <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 8h2v-4H8v4Zm3 0h2V9h-2v6Zm3 0h2v-2h-2v2Z"/></svg>Agregat</span>
@@ -628,7 +629,7 @@
                                     <h3>Cakupan Portal</h3>
                                     <p class="mb-0">
                                         Portal menampilkan peta sebaran, statistik agregat, komposisi skala usaha,
-                                        tren pertumbuhan, dan ringkasan wilayah dalam mode aman untuk publik untuk mendukung
+                                        tren pertumbuhan, dan ringkasan wilayah dalam mode aman untuk publik serta mendukung
                                         literasi data UMKM.
                                     </p>
                                     <div class="footer-coverage-metrics">

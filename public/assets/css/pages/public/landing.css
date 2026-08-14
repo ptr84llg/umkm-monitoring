@@ -4136,3 +4136,119 @@ body.layout-public .umkm-public-footer {
 .public-combo-analytics-card .public-chart-head small {
     max-width: 340px;
 }
+
+/* VISUAL-ANALITIK-ECHARTS-TAHAP1 */
+.public-analytics-tabs { gap: .5rem; flex-wrap: wrap; }
+.public-analytics-tabs .nav-link { border-radius: 999px; font-weight: 700; letter-spacing: -.01em; }
+.public-chart-canvas-tall { min-height: 390px; }
+.public-analytics-workspace .public-chart-panel { overflow: hidden; }
+.public-chart-empty {
+    min-height: 260px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    gap: .35rem;
+    color: rgba(15, 23, 42, .72);
+}
+.public-chart-empty strong { display: block; color: rgba(15, 23, 42, .9); }
+.public-tab-summary-grid > div { min-width: 0; }
+.public-tab-summary-grid strong { word-break: break-word; }
+@media (max-width: 768px) {
+    .public-chart-canvas-tall { min-height: 340px; }
+    .public-analytics-tabs .nav-link { width: 100%; text-align: left; }
+}
+/* /VISUAL-ANALITIK-ECHARTS-TAHAP1 */
+
+/* VISUAL-ANALITIK-ECHARTS-TAHAP2-COMBO-BOOTSTRAP-FIRST */
+.public-kpi-card {
+    background: rgba(255, 255, 255, .88);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, .08);
+    border: 1px solid rgba(15, 23, 42, .06) !important;
+    border-radius: 1.15rem;
+}
+.public-kpi-card strong {
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    color: rgba(15, 23, 42, .95);
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-chart-panel {
+    border-radius: 1.25rem;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, .08);
+    border: 1px solid rgba(15, 23, 42, .06) !important;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-chart-head strong {
+    display: block;
+    font-size: 1rem;
+    color: rgba(15, 23, 42, .95);
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-chart-head small {
+    color: rgba(71, 85, 105, .9);
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-chart-canvas-tall {
+    min-height: 390px;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-analytics-tabs {
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-analytics-tabs .nav-link {
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+@media (max-width: 768px) {
+    .public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-chart-canvas-tall {
+        min-height: 340px;
+    }
+    .public-analytics-workspace[data-domain-upgrade-stage="combo-chart-tahap2"] .public-analytics-tabs .nav-link {
+        width: 100%;
+        text-align: left;
+    }
+}
+/* /VISUAL-ANALITIK-ECHARTS-TAHAP2-COMBO-BOOTSTRAP-FIRST */
+
+
+/* VISUAL-ANALITIK-ECHARTS-TAHAP3-SIMPLIFY-BOOTSTRAP-FIRST */
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-chart-panel,
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-kpi-card {
+    border: 1px solid rgba(15, 23, 42, .06) !important;
+    border-radius: 1.15rem;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, .07);
+    background: rgba(255, 255, 255, .92);
+}
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-chart-head strong {
+    display: block;
+    font-size: 1rem;
+    color: rgba(15, 23, 42, .95);
+}
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-chart-head small {
+    margin-top: .25rem;
+    color: rgba(71, 85, 105, .9);
+    line-height: 1.45;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-chart-canvas-tall {
+    min-height: 390px;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-analytics-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+.public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-analytics-tabs .nav-link {
+    border-radius: 999px;
+    white-space: nowrap;
+}
+@media (max-width: 767.98px) {
+    .public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-chart-canvas-tall {
+        min-height: 340px;
+    }
+    .public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-analytics-tabs .nav-item {
+        flex: 1 1 calc(50% - .35rem);
+    }
+    .public-analytics-workspace[data-domain-upgrade-stage="simplified-tahap3"] .public-analytics-tabs .nav-link {
+        width: 100%;
+        text-align: left;
+    }
+}
+/* /VISUAL-ANALITIK-ECHARTS-TAHAP3-SIMPLIFY-BOOTSTRAP-FIRST */

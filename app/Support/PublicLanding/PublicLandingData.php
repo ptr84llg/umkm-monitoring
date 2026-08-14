@@ -259,9 +259,11 @@ final class PublicLandingData
         $coverageValue = $totalVillages > 0 ? (int) round(($activeRegions / $totalVillages) * 100) : 0;
         $mappedValue = $total > 0 ? (int) round(($mapped / $total) * 100) : 0;
 
+        $freshness = PublicLandingDataFreshness::latest();
+
         return [
             'coverage_label' => self::configuredCityName(),
-            'updated_at_label' => now()->format('d/m/Y'),
+            'updated_at_label' => $freshness['label'],
             'public_safe_label' => 'Public-safe',
             'total_umkm' => self::formatNumber($total),
             'mapped_umkm' => self::formatNumber($mapped),
@@ -369,15 +371,22 @@ final class PublicLandingData
             return 0;
         }
 
-        if (self::hasColumn('umkm_locations', 'coordinate_status')) {
-            return (int) $query
-                ->where('umkm_locations.coordinate_status', 'terpetakan')
-                ->distinct()
-                ->count('umkms.id');
-        }
-
         $latitudeColumn = self::firstExistingColumn('umkm_locations', ['latitude', 'lat']);
         $longitudeColumn = self::firstExistingColumn('umkm_locations', ['longitude', 'lng', 'long']);
+
+        if (self::hasColumn('umkm_locations', 'coordinate_status')) {
+            $query->where('umkm_locations.coordinate_status', 'terpetakan');
+
+            if ($latitudeColumn !== null) {
+                $query->whereNotNull('umkm_locations.' . $latitudeColumn);
+            }
+
+            if ($longitudeColumn !== null) {
+                $query->whereNotNull('umkm_locations.' . $longitudeColumn);
+            }
+
+            return (int) $query->distinct()->count('umkms.id');
+        }
 
         if ($latitudeColumn !== null && $longitudeColumn !== null) {
             return (int) $query
@@ -833,11 +842,32 @@ final class PublicLandingData
     {
         $statusColumn = self::firstExistingColumn('umkms', ['status_data', 'status', 'data_status']);
 
-        if ($statusColumn === null) {
-            return $query;
+        if ($statusColumn !== null) {
+            $query->whereIn('umkms.' . $statusColumn, self::publicStatuses());
         }
 
-        return $query->whereIn('umkms.' . $statusColumn, self::publicStatuses());
+        self::applySourceActiveGuard($query);
+
+        return $query;
+    }
+
+    private static function applySourceActiveGuard(Builder $query): void
+    {
+        if (! self::hasColumn('umkms', 'source_active')) {
+            return;
+        }
+
+        if (! self::hasColumn('umkms', 'source_system')) {
+            $query->where('umkms.source_active', 1);
+
+            return;
+        }
+
+        $query->where(function (Builder $guard): void {
+            $guard->whereNull('umkms.source_system')
+                ->orWhere('umkms.source_system', '<>', 'LSS')
+                ->orWhere('umkms.source_active', 1);
+        });
     }
 
     private static function publicStatuses(): array

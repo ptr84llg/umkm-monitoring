@@ -27,6 +27,11 @@ class Umkm extends Model
 
     protected $casts = [
         'established_date' => 'date',
+        'lss_detail_synced_at' => 'datetime',
+        'source_first_seen_at' => 'datetime',
+        'source_last_seen_at' => 'datetime',
+        'source_missing_since' => 'datetime',
+        'source_active' => 'boolean',
     ];
 
     public function owners(): HasMany

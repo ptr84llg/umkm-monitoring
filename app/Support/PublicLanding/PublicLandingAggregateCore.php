@@ -28,6 +28,8 @@ class PublicLandingAggregateCore
         $cards = self::aggregateCards($total, $mapped, $mappedPercent, $dominant, $activeRegions, $coverage);
         $detailKey = self::cleanDetailCardKey($input['detail_card'] ?? null);
 
+        $freshness = PublicLandingDataFreshness::latest();
+
         $payload = [
             'scope' => $region['scope'],
             'region' => $region,
@@ -72,7 +74,9 @@ class PublicLandingAggregateCore
             ],
             'chart' => self::chartPayload($region, $total, $mapped, $mappedPercent, $dominant, $activeRegions, $coverage, $areas),
             'trend_points' => self::trendPoints($total),
-            'updated_at' => now()->format('d/m/Y'),
+            'updated_at' => $freshness['label'],
+            'updated_at_iso' => $freshness['iso'],
+            'source_snapshot_id' => $freshness['snapshot_id'],
         ];
 
         if ($detailKey !== null) {
@@ -196,15 +200,22 @@ class PublicLandingAggregateCore
             return 0;
         }
 
-        if (Schema::hasColumn('umkm_locations', 'coordinate_status')) {
-            return (int) $query
-                ->where('umkm_locations.coordinate_status', 'terpetakan')
-                ->distinct()
-                ->count('umkms.id');
-        }
-
         $lat = self::firstColumn('umkm_locations', ['latitude', 'lat']);
         $lng = self::firstColumn('umkm_locations', ['longitude', 'lng', 'lon']);
+
+        if (Schema::hasColumn('umkm_locations', 'coordinate_status')) {
+            $query->where('umkm_locations.coordinate_status', 'terpetakan');
+
+            if ($lat !== null) {
+                $query->whereNotNull('umkm_locations.' . $lat);
+            }
+
+            if ($lng !== null) {
+                $query->whereNotNull('umkm_locations.' . $lng);
+            }
+
+            return (int) $query->distinct()->count('umkms.id');
+        }
 
         if ($lat !== null && $lng !== null) {
             return (int) $query
@@ -972,17 +983,36 @@ class PublicLandingAggregateCore
 
     private static function applyPublicStatusFilter(Builder $query): Builder
     {
-        if (! Schema::hasColumn('umkms', 'status_data')) {
-            return $query;
+        if (Schema::hasColumn('umkms', 'status_data')) {
+            $statuses = self::publicStatuses();
+
+            if ($statuses !== []) {
+                $query->whereIn('umkms.status_data', $statuses);
+            }
         }
 
-        $statuses = self::publicStatuses();
+        self::applySourceActiveGuard($query);
 
-        if ($statuses === []) {
-            return $query;
+        return $query;
+    }
+
+    private static function applySourceActiveGuard(Builder $query): void
+    {
+        if (! Schema::hasColumn('umkms', 'source_active')) {
+            return;
         }
 
-        return $query->whereIn('umkms.status_data', $statuses);
+        if (! Schema::hasColumn('umkms', 'source_system')) {
+            $query->where('umkms.source_active', 1);
+
+            return;
+        }
+
+        $query->where(function (Builder $guard): void {
+            $guard->whereNull('umkms.source_system')
+                ->orWhere('umkms.source_system', '<>', 'LSS')
+                ->orWhere('umkms.source_active', 1);
+        });
     }
 
     private static function publicStatuses(): array

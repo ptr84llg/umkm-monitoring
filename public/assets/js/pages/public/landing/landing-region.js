@@ -1064,7 +1064,7 @@
         }
 
         if (updatedTarget) {
-            updatedTarget.textContent = response?.updated_at || 'Belum tersedia';
+            updatedTarget.textContent = response?.updated_at_label || response?.updated_at || 'Belum tersedia';
         }
 
         if (trendTarget && trendPoints.length) {

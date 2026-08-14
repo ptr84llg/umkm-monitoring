@@ -843,11 +843,22 @@
 
         setText('[data-public-region-map-title]', selection.label || 'Wilayah aktif');
         setText('[data-public-region-map-scope]', scopeLabel);
+        const matchedText = summary.geometry_matched_total_text || summary.total_umkm_text || '0';
+        const unmatched = Number(summary.geometry_unmatched_total_count || 0);
+        const unmatchedWrap = document.querySelector('[data-public-region-map-unmatched-wrap]');
+
         setText('[data-public-region-map-feature-count]', String(summary.feature_count || 0));
         setText('[data-public-region-map-visible-level]', visibleLevel);
-        setText('[data-public-region-map-total-umkm]', summary.total_umkm_text || '0');
+        setText('[data-public-region-map-total-umkm]', matchedText);
+        setText('[data-public-region-map-operational-total]', summary.operational_total_text || matchedText);
+        setText('[data-public-region-map-unmatched]', summary.geometry_unmatched_total_text || '0');
         setText('[data-public-region-map-density-max]', summary.max_umkm_text || '0');
-        updateActiveInfoPanel(selection, summary.total_umkm_text || '0');
+
+        if (unmatchedWrap) {
+            unmatchedWrap.classList.toggle('d-none', unmatched < 1);
+        }
+
+        updateActiveInfoPanel(selection, matchedText);
     }
 
     function updatePanelFromSelection(selection, feature) {
@@ -857,10 +868,14 @@
             : (safe.scope === 'district' ? 'Kecamatan aktif' : 'Kota aktif');
         const total = feature ? String(feature.getProperty('umkm_total_text') || '0') : '0';
 
+        const unmatchedWrap = document.querySelector('[data-public-region-map-unmatched-wrap]');
+
         setText('[data-public-region-map-title]', safe.label || 'Wilayah aktif');
         setText('[data-public-region-map-scope]', scopeLabel);
         setText('[data-public-region-map-total-umkm]', total);
+        setText('[data-public-region-map-operational-total]', total);
         setText('[data-public-region-map-visible-level]', layerLabelFromSelection(safe));
+        if (unmatchedWrap) unmatchedWrap.classList.add('d-none');
         updateActiveInfoPanel(safe, total);
 
         const payload = state.lastVillagePayload || state.lastDistrictPayload;

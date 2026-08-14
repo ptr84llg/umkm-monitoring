@@ -559,17 +559,85 @@ final class PublicLandingRegionGeometry
 
     private static function applyPublicStatusFilter(Builder $query): Builder
     {
-        if (! Schema::hasColumn('umkms', 'status_data')) {
-            return $query;
+        if (Schema::hasColumn('umkms', 'status_data')) {
+            $statuses = self::publicStatuses();
+
+            if ($statuses !== []) {
+                $query->whereIn('umkms.status_data', $statuses);
+            }
         }
 
-        $statuses = self::publicStatuses();
+        self::applySourceActiveGuard($query);
 
-        if ($statuses === []) {
-            return $query;
+        return $query;
+    }
+
+    private static function applySourceActiveGuard(Builder $query): void
+    {
+        if (! Schema::hasColumn('umkms', 'source_active')) {
+            return;
         }
 
-        return $query->whereIn('umkms.status_data', $statuses);
+        if (! Schema::hasColumn('umkms', 'source_system')) {
+            $query->where('umkms.source_active', 1);
+
+            return;
+        }
+
+        $query->where(function (Builder $guard): void {
+            $guard->whereNull('umkms.source_system')
+                ->orWhere('umkms.source_system', '<>', 'LSS')
+                ->orWhere('umkms.source_active', 1);
+        });
+    }
+
+    private static function operationalTotalForSelection(array $selection): int
+    {
+        if (! Schema::hasTable('umkms') || ! Schema::hasTable('umkm_locations')) {
+            return 0;
+        }
+
+        $scope = (string) ($selection['scope'] ?? 'city');
+        $level = match ($scope) {
+            'village' => 'village',
+            'district' => 'district',
+            default => 'city',
+        };
+        $code = self::cleanCode((string) ($selection[$level . '_code'] ?? ''));
+        $query = self::baseUmkmQuery();
+
+        if ($code === '') {
+            return $level === 'city' ? (int) $query->distinct()->count('umkms.id') : 0;
+        }
+
+        $codeColumn = self::firstColumn('umkm_locations', [$level . '_code']);
+        if ($codeColumn !== null) {
+            return (int) $query
+                ->where('umkm_locations.' . $codeColumn, $code)
+                ->distinct()
+                ->count('umkms.id');
+        }
+
+        $idColumn = self::firstColumn('umkm_locations', $level === 'city'
+            ? ['city_region_id', 'city_id', 'city_reference_id']
+            : ($level === 'district'
+                ? ['district_region_id', 'district_id', 'district_reference_id']
+                : ['village_region_id', 'village_id', 'village_reference_id']));
+
+        if ($idColumn !== null && Schema::hasTable('regions') && Schema::hasColumn('regions', 'id') && Schema::hasColumn('regions', 'code')) {
+            $regionId = DB::table('regions')->where('code', $code)->value('id');
+
+            if ($regionId !== null) {
+                return (int) $query
+                    ->where('umkm_locations.' . $idColumn, (int) $regionId)
+                    ->distinct()
+                    ->count('umkms.id');
+            }
+        }
+
+        // A non-empty region code that cannot be resolved must not silently fall back
+        // to the unscoped city total. Keep the mismatch visible for reconciliation.
+        return 0;
     }
 
     private static function publicStatuses(): array
@@ -605,7 +673,11 @@ final class PublicLandingRegionGeometry
             ->map(fn (array $feature): int => (int) ($feature['properties']['umkm_total'] ?? 0))
             ->values();
 
-        $total = (int) $counts->sum();
+        $geometryMatchedTotal = (int) $counts->sum();
+        $operationalTotal = self::operationalTotalForSelection($selection);
+        $reconciliationDelta = $operationalTotal - $geometryMatchedTotal;
+        $geometryUnmatchedTotal = max(0, $reconciliationDelta);
+        $geometryOvermatchedTotal = max(0, -$reconciliationDelta);
         $max = (int) ($counts->max() ?? 0);
         $active = collect($features)->first(fn (array $feature): bool => (bool) ($feature['properties']['active'] ?? false));
         $activeTotal = $active ? (int) ($active['properties']['umkm_total'] ?? 0) : null;
@@ -619,8 +691,18 @@ final class PublicLandingRegionGeometry
             'contains_umkm_precise_coordinates' => false,
             'contains_raw_geojson_properties' => false,
             'contains_umkm_aggregate_counts' => true,
-            'total_umkm_count' => $total,
-            'total_umkm_text' => self::formatNumber($total),
+            // Backward-compatible layer total: only UMKM represented by visible geometry features.
+            'total_umkm_count' => $geometryMatchedTotal,
+            'total_umkm_text' => self::formatNumber($geometryMatchedTotal),
+            'geometry_matched_total_count' => $geometryMatchedTotal,
+            'geometry_matched_total_text' => self::formatNumber($geometryMatchedTotal),
+            'operational_total_count' => $operationalTotal,
+            'operational_total_text' => self::formatNumber($operationalTotal),
+            'geometry_unmatched_total_count' => $geometryUnmatchedTotal,
+            'geometry_unmatched_total_text' => self::formatNumber($geometryUnmatchedTotal),
+            'geometry_overmatched_total_count' => $geometryOvermatchedTotal,
+            'geometry_overmatched_total_text' => self::formatNumber($geometryOvermatchedTotal),
+            'geometry_reconciliation_delta' => $reconciliationDelta,
             'max_umkm_count' => $max,
             'max_umkm_text' => self::formatNumber($max),
             'active_umkm_count' => $activeTotal,

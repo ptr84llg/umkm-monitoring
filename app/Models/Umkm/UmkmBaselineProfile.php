@@ -17,6 +17,11 @@ class UmkmBaselineProfile extends Model
 
     protected $casts = [
         'employee_count' => 'integer',
+        'capital_amount' => 'decimal:2',
+        'annual_sales_amount' => 'decimal:2',
+        'baseline_monthly_revenue' => 'decimal:2',
+        'loan_amount' => 'decimal:2',
+        'lss_detail_synced_at' => 'datetime',
     ];
 
     public function umkm(): BelongsTo
