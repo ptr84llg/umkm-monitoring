@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminDinas\AdminDinasController;
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LandingPreviewController;
@@ -297,6 +298,14 @@ Route::middleware('auth')->group(function () {
         ])
         ->name('session.keep-alive');
 
+    Route::prefix('admin-dinas')
+        ->name('admin-dinas.')
+        ->middleware(['role:admin_dinas'])
+        ->group(function () {
+            Route::get('/dashboard', [AdminDinasController::class, 'dashboard'])
+                ->middleware('permission:umkm.read.official')
+                ->name('dashboard');
+        });
     Route::prefix('admin-utama')
         ->name('admin-utama.')
         ->middleware(['role:admin_utama'])

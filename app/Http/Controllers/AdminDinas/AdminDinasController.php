@@ -14,22 +14,43 @@ use App\Models\Umkm\UmkmLegality;
 use App\Models\Umkm\UmkmOwner;
 use App\Models\Umkm\UmkmPerformanceRecord;
 use App\Models\Umkm\UmkmProduct;
+use App\Services\AdminDinas\AdminDinasDashboardService;
 use App\Services\AdminDinas\UmkmOfficialService;
 use App\Services\Audit\AuditLogger;
+use Illuminate\Http\Request;
 
 class AdminDinasController extends Controller
 {
-    public function dashboard()
-    {
-        return view('pages.admin-dinas.dashboard', [
-            'data' => [
-                'official_umkm' => Umkm::query()
-                    ->whereIn('status_data', $this->operationalStatuses())
-                    ->count(),
-                'need_fix' => Umkm::query()->where('status_data', 'perlu_perbaikan')->count(),
-                'pending' => Umkm::query()->where('status_data', 'diajukan')->count(),
-            ],
+    public function dashboard(
+        Request $request,
+        AdminDinasDashboardService $dashboardService,
+        AuditLogger $auditLogger
+    ) {
+        $filters = $request->validate([
+            'district_id' => ['nullable', 'integer', 'min:1'],
+            'village_id' => ['nullable', 'integer', 'min:1'],
+            'category_id' => ['nullable', 'integer', 'min:1'],
+            'type_id' => ['nullable', 'integer', 'min:1'],
+            'marketing_method_id' => ['nullable', 'integer', 'min:1'],
         ]);
+
+        $canViewFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $data = $dashboardService->build($filters, $canViewFinancial);
+
+        $auditLogger->log(
+            'admin_dinas.dashboard.view',
+            $request,
+            'dashboard',
+            null,
+            [],
+            [
+                'filters' => $filters,
+                'financial_access' => $canViewFinancial,
+                'scope' => 'internal_read_only',
+            ]
+        );
+
+        return view('pages.admin-dinas.dashboard', compact('data'));
     }
 
     public function index()
