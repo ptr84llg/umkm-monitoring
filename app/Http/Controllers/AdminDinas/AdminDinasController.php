@@ -2,105 +2,106 @@
 
 namespace App\Http\Controllers\AdminDinas;
 
-use App\Actions\AdminDinas\MaskSensitiveUmkmFields;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminDinas\StoreUmkmRequest;
 use App\Http\Requests\AdminDinas\UpdateUmkmRequest;
 use App\Models\Reference\BusinessCategoryReference;
 use App\Models\Reference\BusinessTypeReference;
 use App\Models\Umkm\Umkm;
-use App\Models\Umkm\UmkmBusinessClassification;
-use App\Models\Umkm\UmkmLegality;
-use App\Models\Umkm\UmkmOwner;
-use App\Models\Umkm\UmkmPerformanceRecord;
-use App\Models\Umkm\UmkmProduct;
 use App\Services\AdminDinas\AdminDinasDashboardService;
+use App\Services\AdminDinas\AdminDinasWorkspaceService;
 use App\Services\AdminDinas\UmkmOfficialService;
 use App\Services\Audit\AuditLogger;
 use Illuminate\Http\Request;
 
 class AdminDinasController extends Controller
 {
-    public function dashboard(
-        Request $request,
-        AdminDinasDashboardService $dashboardService,
-        AuditLogger $auditLogger
-    ) {
-        $filters = $request->validate([
-            'district_id' => ['nullable', 'integer', 'min:1'],
-            'village_id' => ['nullable', 'integer', 'min:1'],
-            'category_id' => ['nullable', 'integer', 'min:1'],
-            'type_id' => ['nullable', 'integer', 'min:1'],
-            'marketing_method_id' => ['nullable', 'integer', 'min:1'],
+    public function dashboard(Request $request, AdminDinasDashboardService $service, AuditLogger $audit)
+    {
+        $filters = $this->analyticsFilters($request);
+        $canFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $data = $service->build($filters, $canFinancial);
+
+        $audit->log('admin_dinas.dashboard.view', $request, 'dashboard', null, [], [
+            'filters' => $filters,
+            'financial_access' => $canFinancial,
+            'scope' => 'internal_read_only',
         ]);
-
-        $canViewFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
-        $data = $dashboardService->build($filters, $canViewFinancial);
-
-        $auditLogger->log(
-            'admin_dinas.dashboard.view',
-            $request,
-            'dashboard',
-            null,
-            [],
-            [
-                'filters' => $filters,
-                'financial_access' => $canViewFinancial,
-                'scope' => 'internal_read_only',
-            ]
-        );
 
         return view('pages.admin-dinas.dashboard', compact('data'));
     }
 
-    public function index()
+    public function index(Request $request, AdminDinasWorkspaceService $service, AuditLogger $audit)
     {
-        return view('pages.admin-dinas.umkm-index', [
-            'umkms' => Umkm::query()->latest()->paginate(20),
+        $filters = $this->workspaceFilters($request);
+        $canFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $data = $service->umkmIndex($filters, $canFinancial);
+
+        $audit->log('admin_dinas.umkm.index.view', $request, 'umkms', null, [], [
+            'filters' => array_diff_key($filters, ['search' => true]),
+            'search_used' => ! empty($filters['search']),
+            'financial_access' => $canFinancial,
+            'scope' => 'internal_read_only',
         ]);
+
+        return view('pages.admin-dinas.umkm-index', compact('data'));
     }
 
+    public function show(Request $request, Umkm $umkm, AdminDinasWorkspaceService $service, AuditLogger $audit)
+    {
+        $data = $service->umkmDetail($umkm, $request->user());
+
+        $audit->log('admin_dinas.umkm.detail.view', $request, 'umkms', $umkm->id, [], [
+            'financial_access' => (bool) $request->user()?->hasPermission('umkm.sensitive.financial'),
+            'scope' => 'internal_read_only',
+        ]);
+
+        return view('pages.admin-dinas.umkm-show', compact('data'));
+    }
+
+    public function analytics(Request $request, AdminDinasWorkspaceService $service, AuditLogger $audit)
+    {
+        $filters = $this->analyticsFilters($request);
+        $canFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $data = $service->analyticsOverview($filters, $canFinancial);
+
+        $audit->log('admin_dinas.analytics.view', $request, 'analytics', null, [], [
+            'filters' => $filters,
+            'financial_access' => $canFinancial,
+            'scope' => 'internal_read_only',
+        ]);
+
+        return view('pages.admin-dinas.analytics.index', compact('data'));
+    }
+
+    public function financialAnalytics(Request $request, AdminDinasWorkspaceService $service, AuditLogger $audit)
+    {
+        $filters = $this->analyticsFilters($request);
+        $data = $service->financialAnalyticsPage($filters);
+
+        $audit->log('admin_dinas.analytics.financial.view', $request, 'analytics', null, [], [
+            'filters' => $filters,
+            'scope' => 'internal_sensitive_read_only',
+        ]);
+
+        return view('pages.admin-dinas.analytics.financial', compact('data'));
+    }
+
+    /*
+     * Foundation CRUD tetap dipertahankan di kode, tetapi tidak di-route pada
+     * Refine-Evaluate. Batch ini hanya mengaktifkan pembacaan internal.
+     */
     public function create()
     {
         return view('pages.admin-dinas.umkm-create');
     }
 
-    public function store(StoreUmkmRequest $request, UmkmOfficialService $service, AuditLogger $auditLogger)
+    public function store(StoreUmkmRequest $request, UmkmOfficialService $service, AuditLogger $audit)
     {
         $umkm = $service->createOfficial($request->validated(), $request->user()->id);
-        $auditLogger->log('umkm.official.create', $request, 'umkms', $umkm->id, [], $umkm->toArray());
+        $audit->log('umkm.official.create', $request, 'umkms', $umkm->id, [], $umkm->toArray());
 
         return redirect()->route('admin-dinas.umkm.show', $umkm)->with('status', 'Data UMKM operasional ditambahkan.');
-    }
-
-    public function show(Umkm $umkm, MaskSensitiveUmkmFields $mask)
-    {
-        $profile = [
-            'umkm' => $umkm,
-            'owners' => UmkmOwner::query()->where('umkm_id', $umkm->id)->get(),
-            'classifications' => UmkmBusinessClassification::query()
-                ->with(['category', 'businessType'])
-                ->where('umkm_id', $umkm->id)
-                ->get(),
-            'legalities' => UmkmLegality::query()->where('umkm_id', $umkm->id)->get(),
-            'products' => UmkmProduct::query()->where('umkm_id', $umkm->id)->get(),
-            'performance' => UmkmPerformanceRecord::query()->where('umkm_id', $umkm->id)->get(),
-            'quality_status' => $umkm->quality_status,
-            'history' => [],
-        ];
-
-        $masked = $mask->execute([
-            'owner_phone' => optional($profile['owners']->first())->phone,
-            'owner_email' => optional($profile['owners']->first())->email,
-            'nib_number' => optional($profile['legalities']->first())->nib_number,
-            'oss_risk_level' => optional($profile['legalities']->first())->oss_risk_level,
-            'monthly_revenue' => optional($profile['performance']->first())->monthly_revenue,
-            'latitude' => optional($umkm->locations()->first())->latitude,
-            'longitude' => optional($umkm->locations()->first())->longitude,
-            'coaching_notes' => $umkm->notes,
-        ], auth()->user());
-
-        return view('pages.admin-dinas.umkm-show', compact('profile', 'masked'));
     }
 
     public function edit(Umkm $umkm)
@@ -108,11 +109,11 @@ class AdminDinasController extends Controller
         return view('pages.admin-dinas.umkm-edit', compact('umkm'));
     }
 
-    public function update(UpdateUmkmRequest $request, Umkm $umkm, UmkmOfficialService $service, AuditLogger $auditLogger)
+    public function update(UpdateUmkmRequest $request, Umkm $umkm, UmkmOfficialService $service, AuditLogger $audit)
     {
         $before = $umkm->toArray();
         $updated = $service->updateOfficial($umkm, $request->validated(), $request->user()->id);
-        $auditLogger->log('umkm.official.update', $request, 'umkms', $umkm->id, $before, $updated->toArray());
+        $audit->log('umkm.official.update', $request, 'umkms', $umkm->id, $before, $updated->toArray());
 
         return redirect()->route('admin-dinas.umkm.show', $umkm)->with('status', 'Data UMKM operasional diperbarui.');
     }
@@ -120,23 +121,34 @@ class AdminDinasController extends Controller
     public function references()
     {
         return view('pages.admin-dinas.references', [
-            'categories' => BusinessCategoryReference::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(['id', 'name', 'slug']),
-            'types' => BusinessTypeReference::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->limit(100)
-                ->get(['id', 'name', 'slug']),
+            'categories' => BusinessCategoryReference::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']),
+            'types' => BusinessTypeReference::query()->where('is_active', true)->orderBy('name')->limit(100)->get(['id', 'name', 'slug']),
         ]);
     }
 
-    private function operationalStatuses(): array
+    private function analyticsFilters(Request $request): array
     {
-        return array_values(array_filter(array_map(
-            fn ($status) => trim((string) $status),
-            (array) config('umkm.data.operational_statuses', ['resmi', 'terbatas'])
-        )));
+        return $request->validate([
+            'district_id' => ['nullable', 'integer', 'min:1'],
+            'village_id' => ['nullable', 'integer', 'min:1'],
+            'category_id' => ['nullable', 'integer', 'min:1'],
+            'type_id' => ['nullable', 'integer', 'min:1'],
+            'marketing_method_id' => ['nullable', 'integer', 'min:1'],
+            'quality_status' => ['nullable', 'string', 'max:80'],
+        ]);
+    }
+
+    private function workspaceFilters(Request $request): array
+    {
+        return $request->validate([
+            'search' => ['nullable', 'string', 'max:120'],
+            'district_id' => ['nullable', 'integer', 'min:1'],
+            'village_id' => ['nullable', 'integer', 'min:1'],
+            'category_id' => ['nullable', 'integer', 'min:1'],
+            'type_id' => ['nullable', 'integer', 'min:1'],
+            'marketing_method_id' => ['nullable', 'integer', 'min:1'],
+            'quality_status' => ['nullable', 'string', 'max:80'],
+            'per_page' => ['nullable', 'integer', 'in:25,50,100'],
+        ]);
     }
 }

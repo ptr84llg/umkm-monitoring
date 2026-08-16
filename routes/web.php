@@ -305,6 +305,22 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [AdminDinasController::class, 'dashboard'])
                 ->middleware('permission:umkm.read.official')
                 ->name('dashboard');
+
+            Route::get('/umkm', [AdminDinasController::class, 'index'])
+                ->middleware('permission:umkm.read.official')
+                ->name('umkm.index');
+
+            Route::get('/umkm/{umkm}', [AdminDinasController::class, 'show'])
+                ->middleware('permission:umkm.read.official')
+                ->name('umkm.show');
+
+            Route::get('/analytics', [AdminDinasController::class, 'analytics'])
+                ->middleware('permission:umkm.read.official')
+                ->name('analytics.index');
+
+            Route::get('/analytics/financial', [AdminDinasController::class, 'financialAnalytics'])
+                ->middleware('permission:umkm.sensitive.financial')
+                ->name('analytics.financial');
         });
     Route::prefix('admin-utama')
         ->name('admin-utama.')

@@ -338,7 +338,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse(($financial['details'] ?? []) as $row)
+                                @forelse(collect($financial['details'] ?? [])->take(8) as $row)
                                     <tr>
                                         <td>
                                             <div class="fw-semibold">{{ $row['business_name'] }}</div>
