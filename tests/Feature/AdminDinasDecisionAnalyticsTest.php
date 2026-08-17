@@ -170,6 +170,41 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
 
         $before = $this->sourceSnapshot();
 
+        $citywide = app(AdminDinasDecisionAnalyticsService::class)->build(
+            [],
+            true,
+            true
+        );
+
+        $this->assertSame('citywide', $citywide['analysis_mode']['key']);
+        $this->assertSame('Gambaran Keputusan Seluruh Kota', $citywide['analysis_mode']['title']);
+        $this->assertNotEmpty($citywide['citywide']['type_ranking']);
+        $this->assertNotEmpty($citywide['citywide']['district_ranking']);
+        $this->assertNotEmpty($citywide['citywide']['distribution_matrix']['rows']);
+        $this->assertSame('baseline_monthly_revenue', $citywide['citywide']['economic_metric']);
+
+        $citywidePotential = collect($citywide['citywide']['potential_pairs'])
+            ->first(fn (array $row): bool =>
+                (int) $row['type_id'] === (int) $typeA->id
+                && (int) $row['district_id'] === (int) $this->districts[1]->id
+            );
+
+        $this->assertNotNull($citywidePotential);
+        $this->assertSame(3, $citywidePotential['business_count']);
+        $this->assertTrue($citywidePotential['potential_relative']);
+
+        $citywideResponse = $this->actingAs($admin)
+            ->get(route('admin-dinas.analytics.decision'));
+
+        $citywideResponse
+            ->assertOk()
+            ->assertSee('Gambaran Keputusan Seluruh Kota')
+            ->assertSee('Jenis Usaha dengan Jumlah Terbesar')
+            ->assertSee('Jenis Usaha × Kecamatan')
+            ->assertSee('Pasangan Jenis Usaha–Kecamatan yang Perlu Ditinjau')
+            ->assertSee('Kuliner Decision')
+            ->assertDontSee('Pilih Jenis Usaha untuk membandingkan');
+
         $data = app(AdminDinasDecisionAnalyticsService::class)->build([
             'type_id' => $typeA->id,
             'district_id' => $this->districts[1]->id,
@@ -322,6 +357,47 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
             ->assertDontSee('Omzet bulanan baseline');
     }
 
+    public function test_citywide_economic_metric_prefers_the_available_metric_with_higher_numeric_coverage(): void
+    {
+        $this->createAdminDinas(
+            'decision-coverage@example.test',
+            true,
+            false
+        );
+
+        $type = $this->createType('Coverage Metric Decision');
+
+        foreach (range(1, 5) as $index) {
+            $this->createBusiness(
+                'DEC-COV-' . $index,
+                'Coverage Business ' . $index,
+                $type,
+                $index <= 3 ? $this->districts[0] : $this->districts[1],
+                15000000 + ($index * 1000000),
+                120000000 + ($index * 10000000),
+                $index === 1 ? 10000000 : null,
+                2,
+                -3.2900 + ($index * 0.0002),
+                102.8600 + ($index * 0.0002)
+            );
+        }
+
+        $data = app(AdminDinasDecisionAnalyticsService::class)->build(
+            [],
+            true,
+            false
+        );
+
+        $this->assertSame('citywide', $data['analysis_mode']['key']);
+        $this->assertSame('annual_sales_amount', $data['citywide']['economic_metric']);
+        $this->assertSame(5, $data['citywide']['economic_sample_count']);
+        $this->assertSame(100.0, $data['citywide']['economic_coverage_percent']);
+        $this->assertSame(
+            'highest_available_numeric_coverage_with_minimum_group_size_tie_preserves_metric_order',
+            $data['methodology']['economic_metric_rule']
+        );
+    }
+
     private function replaceLocationTableWithProductionAlignedTestSchema(): void
     {
         Schema::disableForeignKeyConstraints();
@@ -428,7 +504,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         Region $district,
         float $capital,
         float $annualSales,
-        float $monthlyRevenue,
+        ?float $monthlyRevenue,
         int $employees,
         float $latitude,
         float $longitude

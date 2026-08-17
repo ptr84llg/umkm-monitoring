@@ -63,6 +63,14 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
         $this->assertStringContainsString('haversineMeters(', $service);
         $this->assertStringContainsString('quantile(', $service);
         $this->assertStringContainsString('median(', $service);
+        $this->assertStringContainsString('citywideDecisionOverview(', $service);
+        $this->assertStringContainsString("'analysis_mode' => \$analysisMode", $service);
+        $this->assertStringContainsString("'potential_pairs' => \$potentialPairs->all()", $service);
+        $this->assertStringContainsString("'distribution_matrix' => [", $service);
+        $this->assertStringContainsString(
+            "'economic_metric_rule' => 'highest_available_numeric_coverage_with_minimum_group_size_tie_preserves_metric_order'",
+            $service
+        );
 
         foreach ([
             '->insert(',
@@ -76,6 +84,12 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
         }
 
         $this->assertStringContainsString('Analitik Keputusan Admin Dinas', $view);
+        $this->assertStringContainsString('Opsi <strong>Semua</strong> tetap menghasilkan analitik keputusan tingkat kota', $view);
+        $this->assertStringContainsString('Jenis Usaha dengan Jumlah Terbesar', $view);
+        $this->assertStringContainsString('Jenis Usaha × Kecamatan', $view);
+        $this->assertStringContainsString('Pasangan Jenis Usaha–Kecamatan yang Perlu Ditinjau', $view);
+        $this->assertStringContainsString('Visual bar hanya membantu membandingkan besaran', $view);
+        $this->assertStringNotContainsString('Pilih <strong>Jenis Usaha</strong> untuk membandingkan', $view);
         $this->assertStringContainsString('Indikasi potensi relatif', $view);
         $this->assertStringContainsString('Informasi Spasial Pendukung', $view);
         $this->assertStringContainsString('tidak digunakan sebagai filter atau penentu label Analitik Keputusan', $view);

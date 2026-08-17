@@ -46,18 +46,49 @@ class AdminDinasDecisionAnalyticsService
             $filterOptions['districts'] ?? [],
             $analyticsFilters['district_id'] ?? null
         );
+        $selectedVillage = $this->resolveOption(
+            $filterOptions['villages'] ?? [],
+            $analyticsFilters['village_id'] ?? null
+        );
+
+        if (! $selectedDistrict && ! empty($selectedVillage['parent_code'])) {
+            $selectedDistrict = $this->resolveOptionByCode(
+                $filterOptions['districts'] ?? [],
+                (string) $selectedVillage['parent_code']
+            );
+        }
+
+        $analysisMode = $this->analysisMode(
+            $selectedDistrict,
+            $selectedVillage,
+            $selectedType
+        );
 
         $summary = [
             'total_umkm' => (int) data_get($dashboard, 'summary.total_umkm', 0),
             'type_count' => $this->contextTypeCount($analyticsFilters),
             'district_count' => $this->contextDistrictCount($analyticsFilters),
+            'workforce_recorded' => (int) data_get($dashboard, 'summary.workforce_recorded', 0),
+            'spatial_associated' => (int) data_get($dashboard, 'summary.spatial_associated', 0),
             'coordinate_mapped' => $this->coordinateMappedCount($analyticsFilters),
             'quality_affected' => (int) data_get($dashboard, 'summary.quality_affected', 0),
+            'financial_coverage' => $canFinancial
+                ? (array) data_get($dashboard, 'financial.coverage', [])
+                : null,
         ];
         $summary['coordinate_mapped_percent'] = $this->percent(
             $summary['coordinate_mapped'],
             $summary['total_umkm']
         );
+
+        $citywide = null;
+        if (($analysisMode['key'] ?? null) === 'citywide') {
+            $citywide = $this->citywideDecisionOverview(
+                $analyticsFilters,
+                $canFinancial,
+                $minimumGroupSize
+            );
+        }
 
         $competitionRows = [];
         $competitionSummary = null;
@@ -90,6 +121,7 @@ class AdminDinasDecisionAnalyticsService
         );
 
         $qualityWarning = $summary['quality_affected'] > 0
+            || (bool) data_get($citywide, 'quality_warning', false)
             || collect($competitionRows)->contains(
                 fn (array $row): bool => (bool) ($row['quality_warning'] ?? false)
             )
@@ -100,9 +132,12 @@ class AdminDinasDecisionAnalyticsService
         $payload = [
             'filters' => $analyticsFilters,
             'filter_options' => $filterOptions,
+            'analysis_mode' => $analysisMode,
             'selected_type' => $selectedType,
             'selected_district' => $selectedDistrict,
+            'selected_village' => $selectedVillage,
             'summary' => $summary,
+            'citywide' => $citywide,
             'competition_by_district' => $competitionRows,
             'competition_summary' => $competitionSummary,
             'opportunity_types' => $opportunityRows,
@@ -124,6 +159,7 @@ class AdminDinasDecisionAnalyticsService
                 'causal_inference' => false,
                 'automatic_recommendation' => false,
                 'potential_rule' => 'lower_quartile_business_count_and_at_or_above_reference_median',
+                'economic_metric_rule' => 'highest_available_numeric_coverage_with_minimum_group_size_tie_preserves_metric_order',
                 'micro_spatial_rule' => 'same_primary_type_haversine_context_only_not_decision_filter',
             ],
         ];
@@ -131,6 +167,447 @@ class AdminDinasDecisionAnalyticsService
         $payload['decision_insights'] = $this->decisionInsights($payload);
 
         return $payload;
+    }
+
+    private function citywideDecisionOverview(
+        array $filters,
+        bool $canFinancial,
+        int $minimumGroupSize
+    ): array {
+        $scopeFilters = array_diff_key($filters, [
+            'district_id' => true,
+            'village_id' => true,
+            'type_id' => true,
+        ]);
+
+        $typeRows = $this->citywideTypeRows($scopeFilters, $canFinancial);
+        $spatialRows = $this->citywideSpatialTypeRows($scopeFilters, $canFinancial);
+        $districts = $this->cityDistricts();
+        $overallDistrictCounts = $this->overallDistrictCounts($scopeFilters);
+        $qualityIds = $this->qualityAffectedIds(
+            $typeRows->pluck('umkm_id')->unique()->all()
+        );
+
+        $uniqueTypeRows = $typeRows->unique('umkm_id')->values();
+        $economicMetric = $canFinancial
+            ? $this->chooseEconomicMetric($uniqueTypeRows, $minimumGroupSize)
+            : null;
+        $economicSampleCount = $economicMetric
+            ? count($this->numericValues($uniqueTypeRows, $economicMetric))
+            : 0;
+
+        $spatialByType = $spatialRows->groupBy('type_id');
+
+        $typeRanking = $typeRows
+            ->groupBy('type_id')
+            ->map(function (Collection $group) use (
+                $qualityIds,
+                $minimumGroupSize,
+                $economicMetric,
+                $spatialByType,
+                $scopeFilters
+            ): array {
+                $group = $group->unique('umkm_id')->values();
+                $first = $group->first();
+                $aggregate = $this->aggregateRows(
+                    $group,
+                    $qualityIds,
+                    $minimumGroupSize,
+                    $economicMetric
+                );
+                $spatialGroup = collect($spatialByType->get((int) $first->type_id, collect()));
+                $typeId = (int) $first->type_id;
+                $drillFilters = array_filter(
+                    array_merge($scopeFilters, ['type_id' => $typeId]),
+                    static fn ($value): bool => $value !== null && $value !== ''
+                );
+
+                return array_merge($aggregate, [
+                    'type_id' => $typeId,
+                    'type_name' => (string) $first->type_name,
+                    'district_coverage' => $spatialGroup
+                        ->pluck('district_id')
+                        ->filter()
+                        ->unique()
+                        ->count(),
+                    'quality_warning' => $aggregate['quality_affected'] > 0,
+                    'decision_url' => route('admin-dinas.analytics.decision', $drillFilters),
+                    'drill_down_url' => route('admin-dinas.umkm.index', $drillFilters),
+                ]);
+            })
+            ->sort(function (array $left, array $right): int {
+                $countOrder = $right['business_count'] <=> $left['business_count'];
+
+                return $countOrder !== 0
+                    ? $countOrder
+                    : strcmp($left['type_name'], $right['type_name']);
+            })
+            ->values();
+
+        $spatialByDistrict = $spatialRows->groupBy('district_id');
+
+        $districtRanking = $districts
+            ->map(function (array $district) use (
+                $spatialByDistrict,
+                $overallDistrictCounts,
+                $qualityIds,
+                $scopeFilters
+            ): array {
+                $group = collect($spatialByDistrict->get($district['id'], collect()))
+                    ->unique('umkm_id')
+                    ->values();
+                $typeCounts = $group
+                    ->groupBy('type_id')
+                    ->map(fn (Collection $rows): int => $rows->pluck('umkm_id')->unique()->count())
+                    ->sortDesc()
+                    ->values();
+                $classifiedCount = $group->count();
+                $districtTotal = (int) ($overallDistrictCounts[$district['id']] ?? 0);
+                $topThree = (int) $typeCounts->take(3)->sum();
+                $employees = $this->numericValues($group, 'employee_count');
+                $drillFilters = array_filter(
+                    array_merge($scopeFilters, ['district_id' => $district['id']]),
+                    static fn ($value): bool => $value !== null && $value !== ''
+                );
+
+                return array_merge($district, [
+                    'business_count' => $districtTotal,
+                    'classified_count' => $classifiedCount,
+                    'type_count' => $group->pluck('type_id')->filter()->unique()->count(),
+                    'employees_total' => (int) round(array_sum($employees)),
+                    'top3_type_share_percent' => $this->percent($topThree, $classifiedCount),
+                    'quality_affected' => $group->pluck('umkm_id')
+                        ->map(fn ($id): int => (int) $id)
+                        ->filter(fn (int $id): bool => $qualityIds->contains($id))
+                        ->unique()
+                        ->count(),
+                    'decision_url' => route('admin-dinas.analytics.decision', $drillFilters),
+                    'drill_down_url' => route('admin-dinas.umkm.index', $drillFilters),
+                    'map_url' => route('admin-dinas.analytics.spatial', $drillFilters),
+                ]);
+            })
+            ->sort(function (array $left, array $right): int {
+                $countOrder = $right['business_count'] <=> $left['business_count'];
+
+                return $countOrder !== 0
+                    ? $countOrder
+                    : strcmp($left['name'], $right['name']);
+            })
+            ->values();
+
+        $matrixTypes = $typeRanking->take(12)->values();
+        $matrix = $matrixTypes->map(function (array $type) use (
+            $districts,
+            $spatialByType,
+            $scopeFilters
+        ): array {
+            $typeSpatial = collect($spatialByType->get($type['type_id'], collect()));
+            $counts = $districts->map(function (array $district) use ($typeSpatial): int {
+                return $typeSpatial
+                    ->where('district_id', $district['id'])
+                    ->pluck('umkm_id')
+                    ->unique()
+                    ->count();
+            })->values()->all();
+            $positiveCounts = array_values(array_filter(
+                $counts,
+                fn (int $count): bool => $count > 0
+            ));
+            $q1 = $this->quantile($positiveCounts, 0.25);
+            $q3 = $this->quantile($positiveCounts, 0.75);
+            $cells = [];
+
+            foreach ($districts as $index => $district) {
+                $count = (int) ($counts[$index] ?? 0);
+                $drillFilters = array_filter(
+                    array_merge($scopeFilters, [
+                        'district_id' => $district['id'],
+                        'type_id' => $type['type_id'],
+                    ]),
+                    static fn ($value): bool => $value !== null && $value !== ''
+                );
+
+                $cells[] = [
+                    'district_id' => $district['id'],
+                    'district_name' => $district['name'],
+                    'count' => $count,
+                    'level' => $this->densityLabel($count, $q1, $q3),
+                    'decision_url' => route('admin-dinas.analytics.decision', $drillFilters),
+                ];
+            }
+
+            return [
+                'type_id' => $type['type_id'],
+                'type_name' => $type['type_name'],
+                'total' => $type['business_count'],
+                'cells' => $cells,
+            ];
+        })->values();
+
+        $potentialPairs = collect();
+        $structuralGaps = collect();
+
+        foreach ($typeRows->groupBy('type_id') as $typeId => $allTypeGroup) {
+            $allTypeGroup = $allTypeGroup->unique('umkm_id')->values();
+            $first = $allTypeGroup->first();
+            $typeSpatial = collect($spatialByType->get((int) $typeId, collect()));
+            $positiveCounts = $districts->map(function (array $district) use ($typeSpatial): int {
+                return $typeSpatial
+                    ->where('district_id', $district['id'])
+                    ->pluck('umkm_id')
+                    ->unique()
+                    ->count();
+            })->filter(fn (int $count): bool => $count > 0)->values()->all();
+            $q1 = $this->quantile($positiveCounts, 0.25);
+            $q3 = $this->quantile($positiveCounts, 0.75);
+            $referenceValues = $economicMetric
+                ? $this->numericValues($allTypeGroup, $economicMetric)
+                : [];
+            $referenceMedian = $economicMetric
+                && count($referenceValues) >= $minimumGroupSize
+                    ? $this->median($referenceValues)
+                    : null;
+
+            foreach ($districts as $district) {
+                $districtGroup = $typeSpatial
+                    ->where('district_id', $district['id'])
+                    ->unique('umkm_id')
+                    ->values();
+                $count = $districtGroup->count();
+                $density = $this->densityLabel($count, $q1, $q3);
+
+                if ($density !== 'Rendah' || $count < $minimumGroupSize) {
+                    continue;
+                }
+
+                $aggregate = $this->aggregateRows(
+                    $districtGroup,
+                    $qualityIds,
+                    $minimumGroupSize,
+                    $economicMetric
+                );
+                $drillFilters = array_filter(
+                    array_merge($scopeFilters, [
+                        'district_id' => $district['id'],
+                        'type_id' => (int) $typeId,
+                    ]),
+                    static fn ($value): bool => $value !== null && $value !== ''
+                );
+                $candidate = array_merge($aggregate, [
+                    'type_id' => (int) $typeId,
+                    'type_name' => (string) $first->type_name,
+                    'district_id' => $district['id'],
+                    'district_name' => $district['name'],
+                    'density_level' => $density,
+                    'economic_metric' => $economicMetric,
+                    'economic_metric_label' => $economicMetric
+                        ? self::ECONOMIC_METRICS[$economicMetric]
+                        : null,
+                    'reference_median' => $referenceMedian,
+                    'quality_warning' => $aggregate['quality_affected'] > 0,
+                    'decision_url' => route('admin-dinas.analytics.decision', $drillFilters),
+                    'drill_down_url' => route('admin-dinas.umkm.index', $drillFilters),
+                    'map_url' => route('admin-dinas.analytics.spatial', $drillFilters),
+                ]);
+
+                $structuralGaps->push($candidate);
+
+                if (
+                    $economicMetric !== null
+                    && $referenceMedian !== null
+                    && ($aggregate['economic']['visible'] ?? false)
+                    && $aggregate['economic']['median'] !== null
+                    && $aggregate['economic']['median'] >= $referenceMedian
+                ) {
+                    $candidate['potential_relative'] = true;
+                    $potentialPairs->push($candidate);
+                }
+            }
+        }
+
+        $potentialPairs = $potentialPairs
+            ->sort(function (array $left, array $right): int {
+                $countOrder = $left['business_count'] <=> $right['business_count'];
+                if ($countOrder !== 0) {
+                    return $countOrder;
+                }
+
+                $leftMedian = (float) data_get($left, 'economic.median', 0);
+                $rightMedian = (float) data_get($right, 'economic.median', 0);
+                $medianOrder = $rightMedian <=> $leftMedian;
+
+                return $medianOrder !== 0
+                    ? $medianOrder
+                    : strcmp($left['type_name'], $right['type_name']);
+            })
+            ->take(20)
+            ->values();
+
+        $structuralGaps = $structuralGaps
+            ->sort(function (array $left, array $right): int {
+                $countOrder = $left['business_count'] <=> $right['business_count'];
+
+                return $countOrder !== 0
+                    ? $countOrder
+                    : strcmp($left['type_name'], $right['type_name']);
+            })
+            ->take(20)
+            ->values();
+
+        return [
+            'type_ranking' => $typeRanking->all(),
+            'district_ranking' => $districtRanking->all(),
+            'distribution_matrix' => [
+                'districts' => $districts->all(),
+                'rows' => $matrix->all(),
+                'type_limit' => 12,
+            ],
+            'potential_pairs' => $potentialPairs->all(),
+            'structural_gaps' => $structuralGaps->all(),
+            'economic_metric' => $economicMetric,
+            'economic_metric_label' => $economicMetric
+                ? self::ECONOMIC_METRICS[$economicMetric]
+                : null,
+            'economic_sample_count' => $economicSampleCount,
+            'economic_coverage_percent' => $this->percent(
+                $economicSampleCount,
+                $uniqueTypeRows->count()
+            ),
+            'classified_count' => $uniqueTypeRows->count(),
+            'spatial_classified_count' => $spatialRows->pluck('umkm_id')->unique()->count(),
+            'quality_warning' => $qualityIds->isNotEmpty(),
+        ];
+    }
+
+    private function citywideTypeRows(array $filters, bool $canFinancial): Collection
+    {
+        if (! $this->analyticsSchemaReady()) {
+            return collect();
+        }
+
+        $select = [
+            'u.id as umkm_id',
+            't.id as type_id',
+            't.name as type_name',
+            'b.employee_count',
+        ];
+
+        if ($canFinancial) {
+            $select[] = 'b.capital_amount';
+            $select[] = 'b.annual_sales_amount';
+            $select[] = 'b.baseline_monthly_revenue';
+        }
+
+        return $this->baseQuery($filters)
+            ->join('umkm_business_classifications as c', function ($join): void {
+                $join->on('c.umkm_id', '=', 'u.id')
+                    ->where('c.is_primary', 1);
+            })
+            ->join('business_type_references as t', 't.id', '=', 'c.business_type_id')
+            ->leftJoin('umkm_baseline_profiles as b', 'b.umkm_id', '=', 'u.id')
+            ->whereNotNull('c.business_type_id')
+            ->when(
+                Schema::hasColumn('business_type_references', 'is_active'),
+                fn (Builder $query) => $query->where('t.is_active', 1)
+            )
+            ->select($select)
+            ->distinct()
+            ->get()
+            ->unique('umkm_id')
+            ->values();
+    }
+
+    private function citywideSpatialTypeRows(array $filters, bool $canFinancial): Collection
+    {
+        if (! $this->analyticsSchemaReady()) {
+            return collect();
+        }
+
+        $select = [
+            'u.id as umkm_id',
+            't.id as type_id',
+            't.name as type_name',
+            'd.id as district_id',
+            'd.code as district_code',
+            'd.name as district_name',
+            'b.employee_count',
+        ];
+
+        if ($canFinancial) {
+            $select[] = 'b.capital_amount';
+            $select[] = 'b.annual_sales_amount';
+            $select[] = 'b.baseline_monthly_revenue';
+        }
+
+        $query = $this->baseQuery($filters)
+            ->join('umkm_business_classifications as c', function ($join): void {
+                $join->on('c.umkm_id', '=', 'u.id')
+                    ->where('c.is_primary', 1);
+            })
+            ->join('business_type_references as t', 't.id', '=', 'c.business_type_id')
+            ->join('umkm_locations as l', 'l.umkm_id', '=', 'u.id')
+            ->join('regions as d', 'd.id', '=', 'l.district_region_id')
+            ->leftJoin('umkm_baseline_profiles as b', 'b.umkm_id', '=', 'u.id')
+            ->whereNotNull('c.business_type_id')
+            ->where('d.level', 'district')
+            ->where('d.parent_code', $this->cityCode())
+            ->when(
+                Schema::hasColumn('business_type_references', 'is_active'),
+                fn (Builder $builder) => $builder->where('t.is_active', 1)
+            )
+            ->select($select)
+            ->orderBy('u.id')
+            ->orderBy('l.id');
+
+        if (Schema::hasColumn('umkm_locations', 'deleted_at')) {
+            $query->whereNull('l.deleted_at');
+        }
+
+        return $query->get()->unique('umkm_id')->values();
+    }
+
+    private function analysisMode(
+        ?array $selectedDistrict,
+        ?array $selectedVillage,
+        ?array $selectedType
+    ): array {
+        $regionName = $selectedVillage['name']
+            ?? $selectedDistrict['name']
+            ?? null;
+
+        if ($selectedType && $selectedDistrict) {
+            return [
+                'key' => 'region_type',
+                'label' => 'Wilayah × Jenis Usaha',
+                'title' => $selectedType['name'] . ' · ' . $regionName,
+                'description' => 'Analisis spesifik jenis usaha pada wilayah aktif dengan pembanding lintas wilayah.',
+            ];
+        }
+
+        if ($selectedType) {
+            return [
+                'key' => 'business_type',
+                'label' => 'Jenis Usaha',
+                'title' => $selectedType['name'],
+                'description' => 'Membandingkan konsentrasi jenis usaha terpilih pada seluruh wilayah yang tersedia.',
+            ];
+        }
+
+        if ($selectedDistrict) {
+            return [
+                'key' => 'region',
+                'label' => 'Wilayah',
+                'title' => $regionName,
+                'description' => 'Membaca komposisi jenis usaha dan indikasi potensi relatif pada wilayah aktif.',
+            ];
+        }
+
+        return [
+            'key' => 'citywide',
+            'label' => 'Seluruh Kota',
+            'title' => 'Gambaran Keputusan Seluruh Kota',
+            'description' => 'Membaca struktur jenis usaha, perbandingan kecamatan, kesenjangan distribusi, dan indikasi potensi relatif tanpa mewajibkan filter awal.',
+        ];
     }
 
     private function competitionByDistrict(
@@ -527,6 +1004,7 @@ class AdminDinasDecisionAnalyticsService
         ];
 
         if ($canFinancial) {
+            $select[] = 'b.capital_amount';
             $select[] = 'b.annual_sales_amount';
             $select[] = 'b.baseline_monthly_revenue';
         }
@@ -568,6 +1046,7 @@ class AdminDinasDecisionAnalyticsService
         ];
 
         if ($canFinancial) {
+            $select[] = 'b.capital_amount';
             $select[] = 'b.annual_sales_amount';
             $select[] = 'b.baseline_monthly_revenue';
         }
@@ -604,6 +1083,7 @@ class AdminDinasDecisionAnalyticsService
         ];
 
         if ($canFinancial) {
+            $select[] = 'b.capital_amount';
             $select[] = 'b.annual_sales_amount';
             $select[] = 'b.baseline_monthly_revenue';
         }
@@ -686,6 +1166,9 @@ class AdminDinasDecisionAnalyticsService
         $businessCount = $rows->count();
 
         $employees = $this->numericValues($rows, 'employee_count');
+        $capitalValues = $this->numericValues($rows, 'capital_amount');
+        $capitalVisible = $businessCount >= $minimumGroupSize
+            && count($capitalValues) >= $minimumGroupSize;
         $economicValues = $economicMetric
             ? $this->numericValues($rows, $economicMetric)
             : [];
@@ -701,6 +1184,11 @@ class AdminDinasDecisionAnalyticsService
                 ->filter(fn (int $id): bool => $qualityIds->contains($id))
                 ->unique()
                 ->count(),
+            'capital' => [
+                'sample_count' => count($capitalValues),
+                'visible' => $capitalVisible,
+                'median' => $capitalVisible ? $this->median($capitalValues) : null,
+            ],
             'economic' => [
                 'sample_count' => count($economicValues),
                 'visible' => $economicVisible,
@@ -898,12 +1386,43 @@ class AdminDinasDecisionAnalyticsService
             $code = is_array($item) ? ($item['code'] ?? null) : ($item->code ?? null);
 
             if ((string) $id === (string) $selectedId) {
+                $parentCode = is_array($item)
+                    ? ($item['parent_code'] ?? null)
+                    : ($item->parent_code ?? null);
+
                 return [
                     'id' => (int) $id,
                     'name' => (string) $name,
                     'code' => $code !== null ? (string) $code : null,
+                    'parent_code' => $parentCode !== null ? (string) $parentCode : null,
                 ];
             }
+        }
+
+        return null;
+    }
+
+    private function resolveOptionByCode(iterable $items, string $selectedCode): ?array
+    {
+        foreach ($items as $item) {
+            $code = is_array($item) ? ($item['code'] ?? null) : ($item->code ?? null);
+
+            if ((string) $code !== $selectedCode) {
+                continue;
+            }
+
+            $id = is_array($item) ? ($item['id'] ?? null) : ($item->id ?? null);
+            $name = is_array($item) ? ($item['name'] ?? null) : ($item->name ?? null);
+            $parentCode = is_array($item)
+                ? ($item['parent_code'] ?? null)
+                : ($item->parent_code ?? null);
+
+            return [
+                'id' => (int) $id,
+                'name' => (string) $name,
+                'code' => $code !== null ? (string) $code : null,
+                'parent_code' => $parentCode !== null ? (string) $parentCode : null,
+            ];
         }
 
         return null;
@@ -913,13 +1432,23 @@ class AdminDinasDecisionAnalyticsService
         Collection $rows,
         int $minimumGroupSize
     ): ?string {
+        $bestColumn = null;
+        $bestCount = -1;
+
         foreach (array_keys(self::ECONOMIC_METRICS) as $column) {
-            if (count($this->numericValues($rows, $column)) >= $minimumGroupSize) {
-                return $column;
+            $sampleCount = count($this->numericValues($rows, $column));
+
+            if ($sampleCount < $minimumGroupSize) {
+                continue;
+            }
+
+            if ($sampleCount > $bestCount) {
+                $bestColumn = $column;
+                $bestCount = $sampleCount;
             }
         }
 
-        return null;
+        return $bestColumn;
     }
 
     private function numericValues(Collection $rows, string $column): array
@@ -1098,19 +1627,68 @@ class AdminDinasDecisionAnalyticsService
     private function decisionInsights(array $payload): array
     {
         $insights = [];
+        $modeKey = (string) data_get($payload, 'analysis_mode.key', 'citywide');
         $selectedType = $payload['selected_type'] ?? null;
         $selectedDistrict = $payload['selected_district'] ?? null;
+        $selectedVillage = $payload['selected_village'] ?? null;
         $competition = collect($payload['competition_by_district'] ?? []);
         $opportunities = collect($payload['opportunity_types'] ?? []);
+        $citywide = (array) ($payload['citywide'] ?? []);
 
-        if (! $selectedType) {
-            $insights[] = [
-                'level' => 'info',
-                'title' => 'Pilih jenis usaha',
-                'finding' => 'Jenis usaha belum dipilih.',
-                'consideration' => 'Pilih jenis usaha untuk membandingkan konsentrasi dan konteks usaha sejenis antarwilayah.',
-            ];
-        } elseif ($competition->isNotEmpty()) {
+        if ($modeKey === 'citywide') {
+            $typeRanking = collect($citywide['type_ranking'] ?? []);
+            $districtRanking = collect($citywide['district_ranking'] ?? []);
+            $potentialPairs = collect($citywide['potential_pairs'] ?? []);
+            $structuralGaps = collect($citywide['structural_gaps'] ?? []);
+
+            if ($typeRanking->isNotEmpty()) {
+                $dominant = $typeRanking->first();
+                $insights[] = [
+                    'level' => 'info',
+                    'title' => 'Struktur jenis usaha kota',
+                    'finding' => sprintf(
+                        '%s merupakan jenis usaha dengan jumlah terbesar pada konteks aktif: %d UMKM.',
+                        $dominant['type_name'],
+                        (int) $dominant['business_count']
+                    ),
+                    'consideration' => 'Dominasi jumlah menggambarkan struktur baseline, bukan otomatis kekuatan atau kejenuhan pasar.',
+                ];
+            }
+
+            if ($districtRanking->isNotEmpty()) {
+                $largest = $districtRanking->first();
+                $insights[] = [
+                    'level' => 'attention',
+                    'title' => 'Sebaran antar-kecamatan',
+                    'finding' => sprintf(
+                        '%s memiliki jumlah UMKM terbesar pada konteks aktif: %d UMKM.',
+                        $largest['name'],
+                        (int) $largest['business_count']
+                    ),
+                    'consideration' => 'Baca bersama jumlah jenis usaha dan proporsi tiga jenis terbesar untuk memahami konsentrasi struktur wilayah.',
+                ];
+            }
+
+            if ($potentialPairs->isNotEmpty()) {
+                $insights[] = [
+                    'level' => 'opportunity',
+                    'title' => 'Indikasi potensi relatif lintas wilayah',
+                    'finding' => $potentialPairs->count()
+                        . ' pasangan jenis usaha-wilayah memenuhi rule transparan pada daftar prioritas tampilan.',
+                    'consideration' => 'Label hanya menunjukkan kombinasi jumlah relatif rendah dan median indikator ekonomi tidak di bawah pembanding jenis yang sama; verifikasi lapangan tetap diperlukan.',
+                ];
+            } elseif ($structuralGaps->isNotEmpty()) {
+                $insights[] = [
+                    'level' => 'info',
+                    'title' => 'Kesenjangan distribusi teridentifikasi',
+                    'finding' => $structuralGaps->count()
+                        . ' pasangan jenis usaha-wilayah memiliki konsentrasi relatif rendah pada daftar prioritas tampilan.',
+                    'consideration' => 'Konsentrasi rendah saja tidak cukup untuk menyatakan potensi ekonomi.',
+                ];
+            }
+        }
+
+        if ($selectedType && $competition->isNotEmpty()) {
             $highest = $competition->sortByDesc('business_count')->first();
             $insights[] = [
                 'level' => 'attention',
@@ -1137,12 +1715,14 @@ class AdminDinasDecisionAnalyticsService
 
         if ($selectedDistrict && $opportunities->isNotEmpty()) {
             $potentialTypeCount = $opportunities->where('potential_relative', true)->count();
+            $regionName = $selectedVillage['name']
+                ?? $selectedDistrict['name'];
             $insights[] = [
                 'level' => $potentialTypeCount > 0 ? 'opportunity' : 'info',
                 'title' => 'Komposisi jenis usaha wilayah',
                 'finding' => $potentialTypeCount > 0
-                    ? $potentialTypeCount . ' jenis usaha menunjukkan indikasi potensi relatif pada ' . $selectedDistrict['name'] . '.'
-                    : 'Belum ada jenis usaha yang memenuhi rule indikasi potensi relatif pada ' . $selectedDistrict['name'] . '.',
+                    ? $potentialTypeCount . ' jenis usaha menunjukkan indikasi potensi relatif pada ' . $regionName . '.'
+                    : 'Belum ada jenis usaha yang memenuhi rule indikasi potensi relatif pada ' . $regionName . '.',
                 'consideration' => 'Label didasarkan pada jumlah usaha dan sinyal ekonomi baseline, bukan prediksi keberhasilan.',
             ];
         }
