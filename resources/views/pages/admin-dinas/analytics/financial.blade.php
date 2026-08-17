@@ -85,6 +85,14 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-6 col-xl-auto">
+                    <label class="form-label" for="per_page">Baris</label>
+                    <select class="form-select" id="per_page" name="per_page">
+                        @foreach([25, 50, 100] as $pageSize)
+                            <option value="{{ $pageSize }}" @selected((int)($filters['per_page'] ?? 25) === $pageSize)>{{ $pageSize }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-12 d-flex justify-content-end gap-2">
                     <a href="{{ route('admin-dinas.analytics.financial') }}" class="btn btn-outline-secondary">Reset</a>
                     <button class="btn btn-warning" type="submit">Terapkan</button>

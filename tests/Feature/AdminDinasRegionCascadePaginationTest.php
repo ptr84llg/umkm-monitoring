@@ -59,19 +59,20 @@ class AdminDinasRegionCascadePaginationTest extends TestCase
             ->assertSee('Sebelumnya');
     }
 
-    public function test_financial_record_list_uses_real_server_side_pagination(): void
+    public function test_financial_record_list_uses_selectable_server_side_page_size(): void
     {
         $user = $this->createAdminDinasUser('paging-financial@example.test', true);
 
-        $this->seedFinancialUmkms(30, 'FIN PAGING');
+        $this->seedFinancialUmkms(60, 'FIN PAGING');
 
         $response = $this->actingAs($user)
-            ->get('/admin-dinas/analytics/financial?quality_status=lengkap_terpetakan&financial_page=2')
+            ->get('/admin-dinas/analytics/financial?quality_status=lengkap_terpetakan&per_page=50&financial_page=2')
             ->assertOk()
             ->assertSee('Preview Nilai Keuangan Terdata')
-            ->assertSee('FIN PAGING 26')
+            ->assertSee('FIN PAGING 51')
             ->assertDontSee('FIN PAGING 01')
             ->assertSee('quality_status=lengkap_terpetakan', false)
+            ->assertSee('per_page=50', false)
             ->assertSee('financial_page=1', false);
 
         $normalizedText = preg_replace(
@@ -81,7 +82,16 @@ class AdminDinasRegionCascadePaginationTest extends TestCase
         );
 
         $this->assertIsString($normalizedText);
+        $this->assertStringContainsString('Menampilkan 51–60 dari 60 record', trim($normalizedText));
         $this->assertStringContainsString('Halaman 2 dari 2', trim($normalizedText));
+
+        $viewSource = file_get_contents(
+            resource_path('views/pages/admin-dinas/analytics/financial.blade.php')
+        );
+
+        $this->assertIsString($viewSource);
+        $this->assertStringContainsString('name="per_page"', $viewSource);
+        $this->assertStringContainsString('@foreach([25, 50, 100] as $pageSize)', $viewSource);
     }
 
     private function seedFinancialUmkms(int $count, string $prefix): void

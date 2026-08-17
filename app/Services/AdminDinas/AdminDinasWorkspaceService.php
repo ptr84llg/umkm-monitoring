@@ -182,6 +182,9 @@ class AdminDinasWorkspaceService
 
     private function financialDetailsPage(array $filters)
     {
+        $perPage = (int) ($filters['per_page'] ?? 25);
+        $perPage = in_array($perPage, [25, 50, 100], true) ? $perPage : 25;
+
         $query = $this->baseQuery($filters)->select([
             'u.id',
             'u.umkm_code',
@@ -198,7 +201,7 @@ class AdminDinasWorkspaceService
         $paginator = $query
             ->orderBy('u.business_name')
             ->orderBy('u.id')
-            ->paginate(25, ['*'], 'financial_page')
+            ->paginate($perPage, ['*'], 'financial_page')
             ->withQueryString();
 
         $paginator->setCollection(

@@ -95,6 +95,14 @@ class AdminDinasController extends Controller
     public function financialAnalytics(Request $request, AdminDinasWorkspaceService $service, AuditLogger $audit)
     {
         $filters = $this->analyticsFilters($request);
+        $pagination = $request->validate([
+            'per_page' => ['nullable', 'integer', 'in:25,50,100'],
+        ]);
+
+        if (isset($pagination['per_page'])) {
+            $filters['per_page'] = (int) $pagination['per_page'];
+        }
+
         $data = $service->financialAnalyticsPage($filters);
 
         $audit->log('admin_dinas.analytics.financial.view', $request, 'analytics', null, [], [
