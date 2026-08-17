@@ -38,11 +38,8 @@
     position: sticky;
     top: 0;
     z-index: 1040;
-    color: #fff;
-    border-bottom: 1px solid rgba(255, 255, 255, .18);
-    background: var(--umkm-primary);
-    box-shadow: 0 .8rem 2.25rem rgba(var(--umkm-primary-rgb), .24);
-    backdrop-filter: none;
+    border-bottom: 1px solid var(--umkm-line-soft);
+    box-shadow: 0 .75rem 2.5rem rgba(var(--umkm-ink-rgb), .05);
 }
 
 .dashboard-topbar-inner {
@@ -245,68 +242,6 @@
     height: 2.15rem;
     border-radius: 50%;
     font-size: .85rem;
-}
-
-/* Solid theme-aware topbar */
-.dashboard-topbar .dashboard-brand {
-    color: #fff;
-}
-
-.dashboard-topbar .dashboard-brand:hover {
-    color: #fff;
-    opacity: .96;
-}
-
-.dashboard-topbar .dashboard-brand-mark {
-    background: #fff;
-    box-shadow: 0 .55rem 1.25rem rgba(0, 0, 0, .14);
-}
-
-.dashboard-topbar .dashboard-brand-copy strong,
-.dashboard-topbar .dashboard-mega-trigger-copy strong,
-.dashboard-topbar .dashboard-user-copy strong {
-    color: #fff;
-}
-
-.dashboard-topbar .dashboard-brand-copy small,
-.dashboard-topbar .dashboard-mega-trigger-copy small,
-.dashboard-topbar .dashboard-user-copy small {
-    color: rgba(255, 255, 255, .76);
-}
-
-.dashboard-topbar .dashboard-icon-button,
-.dashboard-topbar .dashboard-topbar-link,
-.dashboard-topbar .dashboard-logout-btn,
-.dashboard-topbar .dashboard-mega-trigger,
-.dashboard-topbar .dashboard-user-chip {
-    color: #fff;
-    border-color: rgba(255, 255, 255, .24);
-    background: rgba(255, 255, 255, .11);
-    box-shadow: none;
-}
-
-.dashboard-topbar .dashboard-mega-trigger-icon {
-    color: #fff;
-    background: rgba(255, 255, 255, .15);
-}
-
-.dashboard-topbar .dashboard-mega-trigger-caret {
-    color: rgba(255, 255, 255, .78);
-}
-
-.dashboard-shell[data-mega-menu="open"] .dashboard-topbar .dashboard-mega-trigger,
-.dashboard-topbar .dashboard-icon-button:hover,
-.dashboard-topbar .dashboard-topbar-link:hover,
-.dashboard-topbar .dashboard-logout-btn:hover,
-.dashboard-topbar .dashboard-mega-trigger:hover {
-    color: #fff;
-    border-color: rgba(255, 255, 255, .42);
-    background: rgba(255, 255, 255, .20);
-    box-shadow: none;
-}
-
-.dashboard-topbar .dashboard-dot {
-    border-color: var(--umkm-primary);
 }
 
 .dashboard-role-admin-utama .dashboard-user-avatar {

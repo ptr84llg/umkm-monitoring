@@ -37,28 +37,62 @@ class AdminDinasNavigationThemeTest extends TestCase
         );
     }
 
-    public function test_internal_topbar_uses_solid_theme_color_contract(): void
+    public function test_internal_topbar_uses_core_bootstrap_theme_contract(): void
     {
+        $layout = file_get_contents(
+            resource_path('views/layouts/dashboard.blade.php')
+        );
+
         $css = file_get_contents(
             public_path('assets/css/core/layout/umkm-internal-shell.css')
         );
 
+        $bridge = file_get_contents(
+            public_path('assets/css/core/foundation/umkm-bootstrap-bridge.css')
+        );
+
+        $this->assertIsString($layout);
         $this->assertIsString($css);
+        $this->assertIsString($bridge);
+
         $this->assertStringContainsString(
-            'background: var(--umkm-primary);',
+            'class="dashboard-topbar bg-primary"',
+            $layout
+        );
+
+        $this->assertStringContainsString(
+            '<strong class="text-white">Ruang Kerja</strong>',
+            $layout
+        );
+
+        $this->assertStringContainsString(
+            '<small class="text-white-50">Monitoring UMKM</small>',
+            $layout
+        );
+
+        $this->assertSame(
+            1,
+            preg_match('/\.dashboard-topbar\s*\{([^}]*)\}/s', $css, $matches)
+        );
+
+        $this->assertStringNotContainsString(
+            'background:',
+            $matches[1]
+        );
+
+        $this->assertStringNotContainsString(
+            'backdrop-filter:',
+            $matches[1]
+        );
+
+        $this->assertStringNotContainsString(
+            '/* Solid theme-aware topbar */',
             $css
         );
+
         $this->assertStringContainsString(
-            '.dashboard-topbar .dashboard-mega-trigger',
-            $css
-        );
-        $this->assertStringContainsString(
-            '.dashboard-topbar .dashboard-topbar-link',
-            $css
-        );
-        $this->assertStringContainsString(
-            'color: #fff;',
-            $css
+            '--bs-primary-rgb: var(--umkm-primary-rgb);',
+            $bridge
         );
     }
 

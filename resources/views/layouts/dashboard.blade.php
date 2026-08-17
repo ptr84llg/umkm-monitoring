@@ -482,7 +482,7 @@
       data-umkm-session-redirect-url="{{ url('/') }}"
       data-umkm-session-keep-alive-url="{{ route('session.keep-alive') }}">
     <div class="dashboard-shell" data-dashboard-shell-frame data-mega-menu="closed" data-mobile-menu="closed">
-        <header class="dashboard-topbar" data-dashboard-topbar>
+        <header class="dashboard-topbar bg-primary" data-dashboard-topbar>
             <div class="dashboard-topbar-inner">
                 <div class="dashboard-topbar-start">
                     <a class="dashboard-brand" href="{{ $dashboardHomeUrl }}" aria-label="Ruang Kerja Monitoring UMKM">
@@ -495,8 +495,8 @@
                                  loading="eager">
                         </span>
                         <span class="dashboard-brand-copy">
-                            <strong>Ruang Kerja</strong>
-                            <small>Monitoring UMKM</small>
+                            <strong class="text-white">Ruang Kerja</strong>
+                            <small class="text-white-50">Monitoring UMKM</small>
                         </span>
                     </a>
 
