@@ -175,8 +175,38 @@ class AdminDinasWorkspaceService
         $base = $this->dashboardService->build($filters, true);
         $base['filter_options'] = $this->filterOptions();
         $base['loan_source_analysis'] = $this->loanSourceBreakdown($filters);
+        $base['financial']['details'] = $this->financialDetailsPage($filters);
 
         return $base;
+    }
+
+    private function financialDetailsPage(array $filters)
+    {
+        $query = $this->baseQuery($filters)->select([
+            'u.id',
+            'u.umkm_code',
+            'u.business_name',
+            'u.quality_status',
+        ]);
+
+        $query->selectSub($this->districtSubquery(), 'district_name')
+            ->selectSub($this->baselineSubquery('capital_amount'), 'capital_amount')
+            ->selectSub($this->baselineSubquery('annual_sales_amount'), 'annual_sales_amount')
+            ->selectSub($this->baselineSubquery('loan_amount'), 'loan_amount')
+            ->selectSub($this->baselineSubquery('loan_source'), 'loan_source');
+
+        $paginator = $query
+            ->orderBy('u.business_name')
+            ->orderBy('u.id')
+            ->paginate(25, ['*'], 'financial_page')
+            ->withQueryString();
+
+        $paginator->setCollection(
+            $paginator->getCollection()
+                ->map(static fn ($row): array => (array) $row)
+        );
+
+        return $paginator;
     }
 
     private function baseQuery(array $filters): Builder

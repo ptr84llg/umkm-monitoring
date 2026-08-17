@@ -9,6 +9,7 @@
     $coverage = $data['financial']['coverage'] ?? [];
     $analysis = $data['loan_source_analysis'] ?? [];
     $financial = $data['financial'] ?? [];
+    $financialRows = $financial['details'] ?? null;
 
     $baseFilter = array_filter($filters, static fn ($value) => $value !== null && $value !== '');
 
@@ -70,7 +71,7 @@
                         <select class="form-select" id="{{ $filter[0] }}" name="{{ $filter[0] }}">
                             <option value="">Semua</option>
                             @foreach($filter[2] as $item)
-                                <option value="{{ $item->id }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -220,7 +221,14 @@
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                 <div>
                     <h2 class="h5 mb-1">Preview Nilai Keuangan Terdata</h2>
-                    <p class="text-body-secondary mb-0">Menampilkan 15 record pertama pada konteks aktif. Nilai sumber tidak dikoreksi.</p>
+                    @if($financialRows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+                        <p class="text-body-secondary mb-0">
+                            Menampilkan {{ number_format($financialRows->firstItem() ?? 0, 0, ',', '.') }}–{{ number_format($financialRows->lastItem() ?? 0, 0, ',', '.') }}
+                            dari {{ number_format($financialRows->total(), 0, ',', '.') }} record. Nilai sumber tidak dikoreksi.
+                        </p>
+                    @else
+                        <p class="text-body-secondary mb-0">Nilai sumber ditampilkan tanpa koreksi.</p>
+                    @endif
                 </div>
                 <a href="{{ route('admin-dinas.umkm.index', array_filter($filters, static fn ($value) => $value !== null && $value !== '')) }}" class="btn btn-outline-primary align-self-lg-start">Lihat Data UMKM</a>
             </div>
@@ -240,7 +248,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse(collect($financial['details'] ?? [])->take(15) as $row)
+                        @forelse(($financialRows ?? []) as $row)
                             <tr>
                                 <td>
                                     <div class="fw-semibold">{{ $row['business_name'] }}</div>
@@ -260,7 +268,64 @@
                     </tbody>
                 </table>
             </div>
+
+            @if($financialRows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+                @php
+                    $financialCurrentPage = $financialRows->currentPage();
+                    $financialLastPage = $financialRows->lastPage();
+
+                    $financialPageNumbers = collect([
+                        1,
+                        $financialCurrentPage - 2,
+                        $financialCurrentPage - 1,
+                        $financialCurrentPage,
+                        $financialCurrentPage + 1,
+                        $financialCurrentPage + 2,
+                        $financialLastPage,
+                    ])->filter(static fn ($page) => $page >= 1 && $page <= $financialLastPage)
+                      ->unique()
+                      ->sort()
+                      ->values();
+                @endphp
+
+                <div class="border-top pt-3 mt-3">
+                    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                        <div class="small text-body-secondary">
+                            Halaman {{ number_format($financialCurrentPage, 0, ',', '.') }}
+                            dari {{ number_format($financialLastPage, 0, ',', '.') }}
+                        </div>
+
+                        @if($financialLastPage > 1)
+                            <nav aria-label="Navigasi Halaman Data Keuangan UMKM">
+                                <ul class="pagination pagination-sm mb-0 flex-wrap">
+                                    <li class="page-item @if($financialRows->onFirstPage()) disabled @endif">
+                                        <a class="page-link" href="{{ $financialRows->previousPageUrl() ?: '#' }}">Sebelumnya</a>
+                                    </li>
+
+                                    @php $financialPreviousRendered = null; @endphp
+                                    @foreach($financialPageNumbers as $page)
+                                        @if($financialPreviousRendered !== null && $page - $financialPreviousRendered > 1)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+
+                                        <li class="page-item @if($page === $financialCurrentPage) active @endif">
+                                            <a class="page-link" href="{{ $financialRows->url($page) }}">{{ number_format($page, 0, ',', '.') }}</a>
+                                        </li>
+
+                                        @php $financialPreviousRendered = $page; @endphp
+                                    @endforeach
+
+                                    <li class="page-item @if(!$financialRows->hasMorePages()) disabled @endif">
+                                        <a class="page-link" href="{{ $financialRows->nextPageUrl() ?: '#' }}">Berikutnya</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 </div>
+<script src="{{ asset('assets/js/pages/admin-dinas/admin-dinas-region-cascade.js') }}" defer></script>
 @endsection

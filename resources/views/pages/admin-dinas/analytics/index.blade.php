@@ -59,7 +59,7 @@
                         <select class="form-select" id="{{ $filter[0] }}" name="{{ $filter[0] }}">
                             <option value="">Semua</option>
                             @foreach($filter[2] as $item)
-                                <option value="{{ $item->id }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -236,4 +236,5 @@
         </div>
     </section>
 </div>
+<script src="{{ asset('assets/js/pages/admin-dinas/admin-dinas-region-cascade.js') }}" defer></script>
 @endsection

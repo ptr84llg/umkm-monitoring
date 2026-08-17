@@ -81,7 +81,7 @@
                     <select class="form-select" id="district_id" name="district_id">
                         <option value="">Semua Kecamatan</option>
                         @foreach(($options['districts'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>
                                 {{ $item->name }}
                             </option>
                         @endforeach
@@ -93,7 +93,7 @@
                     <select class="form-select" id="village_id" name="village_id">
                         <option value="">Semua Kelurahan</option>
                         @foreach(($options['villages'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>
                                 {{ $item->name }}
                             </option>
                         @endforeach
@@ -105,7 +105,7 @@
                     <select class="form-select" id="category_id" name="category_id">
                         <option value="">Semua Kategori</option>
                         @foreach(($options['categories'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['category_id'] ?? '') === (string)$item->id)>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['category_id'] ?? '') === (string)$item->id)>
                                 {{ $item->name }}
                             </option>
                         @endforeach
@@ -117,7 +117,7 @@
                     <select class="form-select" id="type_id" name="type_id">
                         <option value="">Semua Jenis</option>
                         @foreach(($options['types'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['type_id'] ?? '') === (string)$item->id)>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['type_id'] ?? '') === (string)$item->id)>
                                 {{ $item->name }}
                             </option>
                         @endforeach
@@ -129,7 +129,7 @@
                     <select class="form-select" id="marketing_method_id" name="marketing_method_id">
                         <option value="">Semua Metode</option>
                         @foreach(($options['marketingMethods'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['marketing_method_id'] ?? '') === (string)$item->id)>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['marketing_method_id'] ?? '') === (string)$item->id)>
                                 {{ $item->name }}
                             </option>
                         @endforeach
@@ -387,4 +387,5 @@
     | JSON_UNESCAPED_SLASHES
 ) !!}</script>
 <script src="{{ asset('assets/js/pages/admin-dinas/spatial-analytics.js') }}" defer></script>
+<script src="{{ asset('assets/js/pages/admin-dinas/admin-dinas-region-cascade.js') }}" defer></script>
 @endsection

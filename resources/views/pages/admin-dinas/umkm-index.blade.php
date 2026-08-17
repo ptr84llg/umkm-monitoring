@@ -76,7 +76,7 @@
                     <select class="form-select" id="district_id" name="district_id">
                         <option value="">Semua Kecamatan</option>
                         @foreach(($options['districts'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -85,7 +85,7 @@
                     <select class="form-select" id="village_id" name="village_id">
                         <option value="">Semua Kelurahan</option>
                         @foreach(($options['villages'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -111,7 +111,7 @@
                         <select class="form-select" id="{{ $filter[0] }}" name="{{ $filter[0] }}">
                             <option value="">Semua</option>
                             @foreach($filter[2] as $item)
-                                <option value="{{ $item->id }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" data-region-code="{{ $item->code ?? '' }}" data-parent-code="{{ $item->parent_code ?? '' }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -247,4 +247,5 @@
         </div>
     </section>
 </div>
+<script src="{{ asset('assets/js/pages/admin-dinas/admin-dinas-region-cascade.js') }}" defer></script>
 @endsection
