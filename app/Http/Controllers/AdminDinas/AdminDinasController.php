@@ -194,7 +194,6 @@ class AdminDinasController extends Controller
             'type_id' => ['nullable', 'integer', 'min:1'],
             'marketing_method_id' => ['nullable', 'integer', 'min:1'],
             'quality_status' => ['nullable', 'string', 'max:80'],
-            'radius_meters' => ['nullable', 'integer', 'in:250,500,1000'],
         ]);
     }
 

@@ -34,12 +34,20 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
         $service = file_get_contents(
             app_path('Services/AdminDinas/AdminDinasDecisionAnalyticsService.php')
         );
+        $controller = file_get_contents(
+            app_path('Http/Controllers/AdminDinas/AdminDinasController.php')
+        );
         $view = file_get_contents(
             resource_path('views/pages/admin-dinas/analytics/decision.blade.php')
         );
+        $shellCss = file_get_contents(
+            public_path('assets/css/core/layout/umkm-internal-shell.css')
+        );
 
         $this->assertIsString($service);
+        $this->assertIsString($controller);
         $this->assertIsString($view);
+        $this->assertIsString($shellCss);
 
         $this->assertStringContainsString(
             "'scope' => 'year_1_baseline_cross_sectional_spatial_decision_support'",
@@ -69,12 +77,33 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
 
         $this->assertStringContainsString('Analitik Keputusan Admin Dinas', $view);
         $this->assertStringContainsString('Indikasi potensi relatif', $view);
-        $this->assertStringContainsString('Micro-Spatial Analytics', $view);
+        $this->assertStringContainsString('Informasi Spasial Pendukung', $view);
+        $this->assertStringContainsString('tidak digunakan sebagai filter atau penentu label Analitik Keputusan', $view);
         $this->assertStringContainsString('bukan prediksi keberhasilan', $view);
         $this->assertStringContainsString(
             'Nilai sumber tetap dipertahankan apa adanya dan tidak dinormalisasi',
             $view
         );
+
+        foreach (['radius_meters', 'Radius Spasial', 'Radius aktif', 'Kepadatan Radius Aktif'] as $removedRadiusContract) {
+            $this->assertStringNotContainsString($removedRadiusContract, $view);
+        }
+
+        $this->assertStringNotContainsString('radius_meters', $controller);
+        $this->assertStringNotContainsString('radius_meters', $service);
+        $this->assertStringNotContainsString('RADIUS_OPTIONS', $service);
+        $this->assertStringNotContainsString('neighbors_selected_radius', $service);
+        $this->assertStringContainsString(
+            "'micro_spatial_rule' => 'same_primary_type_haversine_context_only_not_decision_filter'",
+            $service
+        );
+
+        $this->assertStringContainsString(
+            'max-height: calc(100dvh - var(--dashboard-topbar-height) - 2rem);',
+            $shellCss
+        );
+        $this->assertStringContainsString('overflow-y: auto;', $shellCss);
+        $this->assertStringContainsString('overscroll-behavior: contain;', $shellCss);
     }
 
     public function test_admin_dinas_menu_separates_operational_and_decision_analytics_sections(): void

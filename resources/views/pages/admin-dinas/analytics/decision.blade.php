@@ -56,7 +56,6 @@
         return $money(data_get($row, 'economic.median'));
     };
 
-    $contextWithoutRadius = array_diff_key($baseFilter, ['radius_meters' => true]);
 @endphp
 
 <div class="d-flex flex-column gap-4">
@@ -69,22 +68,22 @@
                 <h1 class="h3 mb-2">Analitik Keputusan Admin Dinas</h1>
                 <p class="text-body-secondary mb-0">
                     Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi baseline,
-                    mutu data, dan kedekatan spasial sebagai bahan pertimbangan pembinaan.
+                    dan mutu data sebagai bahan pertimbangan pembinaan. Informasi spasial ditempatkan sebagai konteks pendukung opsional.
                 </p>
             </div>
 
             <div class="d-flex flex-wrap gap-2 align-self-xl-start">
-                <a href="{{ route('admin-dinas.analytics.index', $contextWithoutRadius) }}" class="btn btn-outline-primary">
+                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-outline-primary">
                     Analitik Umum
                 </a>
-                <a href="{{ route('admin-dinas.analytics.spatial', $contextWithoutRadius) }}" class="btn btn-success">
+                <a href="{{ route('admin-dinas.analytics.spatial', $baseFilter) }}" class="btn btn-success">
                     Peta Wilayah
                 </a>
-                <a href="{{ route('admin-dinas.umkm.index', $contextWithoutRadius) }}" class="btn btn-outline-secondary">
+                <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-secondary">
                     Data UMKM
                 </a>
                 @if($data['can_view_financial'] ?? false)
-                    <a href="{{ route('admin-dinas.analytics.financial', $contextWithoutRadius) }}" class="btn btn-warning">
+                    <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="btn btn-warning">
                         Ekonomi & Keuangan
                     </a>
                 @endif
@@ -114,7 +113,7 @@
                 <div>
                     <h2 class="h5 mb-1">Konteks Analisis</h2>
                     <p class="text-body-secondary mb-0">
-                        Gunakan filter yang sama dengan Analitik dan Peta Wilayah. Radius hanya digunakan untuk micro-spatial analytics.
+                        Gunakan konteks wilayah dan karakteristik usaha yang relevan. Analitik keputusan utama tidak dibatasi oleh radius spasial.
                     </p>
                 </div>
                 <a href="{{ route('admin-dinas.analytics.decision') }}" class="btn btn-sm btn-outline-secondary align-self-lg-start">
@@ -160,16 +159,6 @@
                     </select>
                 </div>
 
-                <div class="col-md-6 col-xl-auto">
-                    <label class="form-label" for="radius_meters">Radius Spasial</label>
-                    <select class="form-select" id="radius_meters" name="radius_meters">
-                        @foreach([250, 500, 1000] as $radius)
-                            <option value="{{ $radius }}" @selected((int)($filters['radius_meters'] ?? 500) === $radius)>
-                                {{ number_format($radius, 0, ',', '.') }} m
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
 
                 <div class="col-12 d-flex justify-content-end">
                     <button class="btn btn-primary px-4" type="submit">Terapkan Analisis</button>
@@ -418,109 +407,100 @@
 
     <section class="card border shadow-sm">
         <div class="card-body p-4">
-            <div class="d-flex flex-column flex-xl-row justify-content-between gap-3 mb-3">
-                <div>
-                    <span class="badge text-bg-secondary mb-2">Micro-Spatial Analytics</span>
-                    <h2 class="h5 mb-1">Kedekatan Usaha Sejenis</h2>
-                    <p class="text-body-secondary mb-0">
-                        Jarak dihitung dengan formula Haversine dari titik coordinate-mapped.
-                        Pool pembanding tetap lintas batas kecamatan agar kedekatan fisik tidak dipotong batas administratif.
-                    </p>
-                </div>
-                <span class="badge text-bg-light border align-self-xl-start">
-                    Radius aktif {{ number_format((int)($microSpatial['radius_meters'] ?? 500), 0, ',', '.') }} m
-                </span>
+            <div class="mb-3">
+                <span class="badge text-bg-secondary mb-2">Informasi Spasial Pendukung</span>
+                <h2 class="h5 mb-1">Kedekatan Usaha Sejenis · Opsional</h2>
+                <p class="text-body-secondary mb-0">
+                    Informasi ini tidak digunakan sebagai filter atau penentu label Analitik Keputusan.
+                    Jarak dan jumlah tetangga hanya memberi konteks tambahan ketika koordinat sumber tersedia dan pengguna berwenang.
+                </p>
             </div>
 
-            @if(!($data['can_view_coordinates'] ?? false))
-                <div class="alert alert-warning mb-0">
-                    Micro-spatial analytics memerlukan izin <code>umkm.sensitive.coordinate</code>.
-                    Tanpa izin tersebut, titik dan jarak individual tidak diproses untuk tampilan ini.
-                </div>
-            @elseif(!$selectedType)
-                <div class="alert alert-light border mb-0">
-                    Pilih <strong>Jenis Usaha</strong> untuk menghitung kedekatan usaha sejenis.
-                </div>
-            @elseif(!($microSpatial['available'] ?? false))
-                <div class="alert alert-light border mb-0">
-                    Analisis spasial belum tersedia pada konteks ini.
-                </div>
-            @elseif($microRows->isEmpty())
-                <div class="alert alert-light border mb-0">
-                    Tidak ada titik coordinate-mapped untuk jenis usaha dan konteks wilayah terpilih.
-                </div>
-            @else
-                <div class="d-flex flex-wrap gap-2 mb-3 small">
-                    <span class="badge text-bg-light border">
-                        Pool kota: {{ number_format((int)($microSpatial['pool_count'] ?? 0), 0, ',', '.') }} titik
-                    </span>
-                    <span class="badge text-bg-light border">
-                        Ditampilkan: {{ number_format((int)($microSpatial['focus_count'] ?? 0), 0, ',', '.') }} titik
-                    </span>
-                    <span class="badge text-bg-light border">
-                        Tetangga lintas batas administratif diperhitungkan
-                    </span>
-                </div>
+            <details class="border rounded-3 bg-body-tertiary">
+                <summary class="p-3 fw-semibold" style="cursor:pointer;">
+                    Tampilkan informasi kedekatan spasial
+                </summary>
+                <div class="p-3 border-top bg-body">
+                    @if(!($data['can_view_coordinates'] ?? false))
+                        <div class="alert alert-warning mb-0">
+                            Informasi kedekatan spasial memerlukan izin <code>umkm.sensitive.coordinate</code>.
+                        </div>
+                    @elseif(!$selectedType)
+                        <div class="alert alert-light border mb-0">
+                            Pilih <strong>Jenis Usaha</strong> jika ingin melihat konteks kedekatan spasial sebagai informasi tambahan.
+                        </div>
+                    @elseif(!($microSpatial['available'] ?? false))
+                        <div class="alert alert-light border mb-0">
+                            Informasi spasial belum tersedia pada konteks ini.
+                        </div>
+                    @elseif($microRows->isEmpty())
+                        <div class="alert alert-light border mb-0">
+                            Tidak ada titik coordinate-mapped untuk jenis usaha dan konteks wilayah terpilih.
+                        </div>
+                    @else
+                        <div class="d-flex flex-wrap gap-2 mb-3 small">
+                            <span class="badge text-bg-light border">
+                                Pool kota: {{ number_format((int)($microSpatial['pool_count'] ?? 0), 0, ',', '.') }} titik
+                            </span>
+                            <span class="badge text-bg-light border">
+                                Ditampilkan: {{ number_format((int)($microSpatial['focus_count'] ?? 0), 0, ',', '.') }} titik
+                            </span>
+                            <span class="badge text-bg-light border">
+                                Pembanding kedekatan tetap lintas batas administratif
+                            </span>
+                        </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>UMKM</th>
-                                <th>Wilayah</th>
-                                <th class="text-end">Terdekat</th>
-                                <th class="text-end">≤250 m</th>
-                                <th class="text-end">≤500 m</th>
-                                <th class="text-end">≤1 km</th>
-                                <th>Kepadatan Radius Aktif</th>
-                                <th>Mutu</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($microRows as $row)
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold">{{ $row['business_name'] }}</div>
-                                        <div class="small text-body-secondary">{{ $row['umkm_code'] }}</div>
-                                    </td>
-                                    <td>
-                                        <div>{{ $row['district_name'] }}</div>
-                                        <div class="small text-body-secondary">{{ $row['village_name'] ?: 'Kelurahan belum tersedia' }}</div>
-                                    </td>
-                                    <td class="text-end">
-                                        {{ $row['nearest_same_type_meters'] !== null ? number_format((float)$row['nearest_same_type_meters'], 1, ',', '.') . ' m' : '—' }}
-                                    </td>
-                                    <td class="text-end">{{ number_format((int)$row['neighbors_250m'], 0, ',', '.') }}</td>
-                                    <td class="text-end">{{ number_format((int)$row['neighbors_500m'], 0, ',', '.') }}</td>
-                                    <td class="text-end">{{ number_format((int)$row['neighbors_1000m'], 0, ',', '.') }}</td>
-                                    <td>
-                                        <span class="badge {{ $densityBadge((string)$row['local_density_level']) }}">
-                                            {{ $row['local_density_level'] }}
-                                        </span>
-                                        <div class="small text-body-secondary mt-1">
-                                            {{ number_format((int)$row['neighbors_selected_radius'], 0, ',', '.') }} usaha sejenis
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if($row['quality_warning'])
-                                            <span class="badge text-bg-warning">Ada flag</span>
-                                        @else
-                                            <span class="badge text-bg-success">Tanpa flag terbuka</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-sm btn-outline-primary" href="{{ $row['detail_url'] }}">Detail</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>UMKM</th>
+                                        <th>Wilayah</th>
+                                        <th class="text-end">Usaha Sejenis Terdekat</th>
+                                        <th class="text-end">≤250 m</th>
+                                        <th class="text-end">≤500 m</th>
+                                        <th class="text-end">≤1 km</th>
+                                        <th>Mutu</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($microRows as $row)
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">{{ $row['business_name'] }}</div>
+                                                <div class="small text-body-secondary">{{ $row['umkm_code'] }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ $row['district_name'] }}</div>
+                                                <div class="small text-body-secondary">{{ $row['village_name'] ?: 'Kelurahan belum tersedia' }}</div>
+                                            </td>
+                                            <td class="text-end">
+                                                {{ $row['nearest_same_type_meters'] !== null ? number_format((float)$row['nearest_same_type_meters'], 1, ',', '.') . ' m' : '—' }}
+                                            </td>
+                                            <td class="text-end">{{ number_format((int)$row['neighbors_250m'], 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((int)$row['neighbors_500m'], 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((int)$row['neighbors_1000m'], 0, ',', '.') }}</td>
+                                            <td>
+                                                @if($row['quality_warning'])
+                                                    <span class="badge text-bg-warning">Ada flag</span>
+                                                @else
+                                                    <span class="badge text-bg-success">Tanpa flag terbuka</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-sm btn-outline-primary" href="{{ $row['detail_url'] }}">Detail</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
-            @endif
+            </details>
         </div>
     </section>
-
     <section class="card border shadow-sm">
         <div class="card-body p-4">
             <h2 class="h5 mb-2">Metodologi & Batas Penggunaan</h2>
@@ -537,7 +517,7 @@
                     <ul class="mb-0">
                         <li>Tidak melakukan forecasting atau causal inference.</li>
                         <li>Tidak menghasilkan rekomendasi otomatis "harus membuka/menutup usaha".</li>
-                        <li>Micro-spatial hanya memakai coordinate-mapped dengan latitude dan longitude tersedia.</li>
+                        <li>Informasi spasial bersifat pendukung, bukan filter atau penentu label keputusan; hanya memakai coordinate-mapped dengan latitude dan longitude tersedia.</li>
                         <li>Drill-down tetap mengarah ke record sumber/read-only sesuai kewenangan.</li>
                     </ul>
                 </div>

@@ -362,6 +362,10 @@
     backdrop-filter: blur(22px);
     transition: opacity .2s ease, transform .2s ease;
     pointer-events: auto;
+    max-height: calc(100dvh - var(--dashboard-topbar-height) - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 }
 
 .dashboard-shell[data-mega-menu="open"] .dashboard-mega-layer {

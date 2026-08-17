@@ -173,7 +173,6 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $data = app(AdminDinasDecisionAnalyticsService::class)->build([
             'type_id' => $typeA->id,
             'district_id' => $this->districts[1]->id,
-            'radius_meters' => 500,
         ], true, true);
 
         $this->assertSame($typeA->id, $data['selected_type']['id']);
@@ -217,7 +216,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $this->assertSame('Aktivitas relatif rendah', $lowActivity['context_label']);
 
         $this->assertTrue($data['micro_spatial']['available']);
-        $this->assertSame(500, $data['micro_spatial']['radius_meters']);
+        $this->assertArrayNotHasKey('radius_meters', $data['micro_spatial']);
         $this->assertSame(3, $data['micro_spatial']['focus_count']);
         $this->assertGreaterThanOrEqual(21, $data['micro_spatial']['pool_count']);
 
@@ -234,7 +233,6 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
             ->get(route('admin-dinas.analytics.decision', [
                 'type_id' => $typeA->id,
                 'district_id' => $this->districts[1]->id,
-                'radius_meters' => 500,
             ]));
 
         $response
@@ -242,7 +240,10 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
             ->assertSee('Analitik Keputusan Admin Dinas')
             ->assertSee('Persaingan & Konsentrasi', false)
             ->assertSee('Potensi Relatif')
-            ->assertSee('Micro-Spatial Analytics')
+            ->assertSee('Informasi Spasial Pendukung')
+            ->assertSee('tidak digunakan sebagai filter atau penentu label Analitik Keputusan')
+            ->assertDontSee('Radius Spasial')
+            ->assertDontSee('Radius aktif')
             ->assertSee('Indikasi potensi relatif')
             ->assertSee('Kuliner D2 1');
 
@@ -261,6 +262,10 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $this->assertStringContainsString(
             '<strong>Peta Wilayah</strong>',
             $offcanvas
+        );
+        $this->assertStringContainsString(
+            'data-dashboard-mega-submenu-title>Analitik Keputusan</small>',
+            $html
         );
     }
 
@@ -292,7 +297,6 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $data = app(AdminDinasDecisionAnalyticsService::class)->build([
             'type_id' => $type->id,
             'district_id' => $this->districts[0]->id,
-            'radius_meters' => 500,
         ], false, false);
 
         $this->assertFalse($data['can_view_financial']);

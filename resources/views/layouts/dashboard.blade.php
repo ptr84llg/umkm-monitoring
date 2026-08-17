@@ -177,8 +177,8 @@
                     ],
                     [
                         'title' => 'Analitik Keputusan',
-                        'description' => 'Persaingan, potensi relatif, micro-spatial',
-                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi baseline, mutu data, dan kedekatan spasial sebagai bahan pertimbangan pembinaan.',
+                        'description' => 'Persaingan, potensi relatif, dan konteks wilayah',
+                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi baseline, dan mutu data sebagai bahan pertimbangan pembinaan; informasi spasial tersedia sebagai konteks pendukung opsional.',
                         'route' => 'admin-dinas.analytics.decision',
                         'permission' => 'umkm.read.official',
                         'icon' => 'chart',
@@ -309,7 +309,15 @@
     ];
 
     $dashboardMenuItems = collect($dashboardMenuSections)->flatMap(fn ($section) => $section['items'] ?? [])->values();
-    $dashboardFeaturedItem = $dashboardMenuItems->first(fn ($item) => ! empty($item['route']) && is_string($item['route']) && Route::has($item['route'])) ?? $dashboardMenuItems->first();
+    $dashboardFeaturedItem = $dashboardMenuItems->first(function ($item) use ($dashboardCurrentRoute): bool {
+        $routeName = $item['route'] ?? null;
+
+        return is_string($routeName)
+            && Route::has($routeName)
+            && is_string($dashboardCurrentRoute)
+            && $routeName === $dashboardCurrentRoute;
+    }) ?? $dashboardMenuItems->first(fn ($item) => ! empty($item['route']) && is_string($item['route']) && Route::has($item['route']))
+        ?? $dashboardMenuItems->first();
 
     $dashboardSubmenuFor = function (array $menuItem) use ($dashboardRoleKey): array {
         $title = mb_strtolower((string) ($menuItem['title'] ?? ''));
@@ -358,6 +366,12 @@
                 ['title' => 'Profil Sektor', 'description' => 'Distribusi wilayah, kategori, dan jenis usaha.', 'state' => 'Aktif'],
                 ['title' => 'Tenaga Kerja & Pasar', 'description' => 'Tenaga kerja tercatat dan metode pemasaran.', 'state' => 'Aktif'],
                 ['title' => 'Mutu Data', 'description' => 'Kelompok flag mutu dan cakupan record yang terdampak.', 'state' => 'Aktif'],
+            ],
+            'analitik keputusan' => [
+                ['title' => 'Ringkasan Keputusan', 'description' => 'Temuan dan pertimbangan berbasis indikator baseline.', 'state' => 'Aktif'],
+                ['title' => 'Persaingan & Konsentrasi', 'description' => 'Perbandingan usaha sejenis antarwilayah tanpa klaim kausal.', 'state' => 'Aktif'],
+                ['title' => 'Potensi Relatif', 'description' => 'Rule transparan berbasis jumlah usaha dan sinyal ekonomi baseline.', 'state' => 'Aktif'],
+                ['title' => 'Informasi Spasial Pendukung', 'description' => 'Kedekatan coordinate-mapped sebagai konteks tambahan, bukan filter keputusan.', 'state' => 'Opsional'],
             ],
             'peta wilayah' => [
                 ['title' => 'Peta Administratif', 'description' => 'Choropleth kecamatan dan kelurahan berbasis GeoJSON lokal.', 'state' => 'Aktif'],

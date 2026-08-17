@@ -16,7 +16,6 @@ class AdminDinasDecisionAnalyticsService
         'annual_sales_amount' => 'Penjualan tahunan',
     ];
 
-    private const RADIUS_OPTIONS = [250, 500, 1000];
 
     public function __construct(
         private AdminDinasDashboardService $dashboardService
@@ -36,12 +35,7 @@ class AdminDinasDecisionAnalyticsService
             )
         );
 
-        $radiusMeters = (int) ($filters['radius_meters'] ?? 500);
-        if (! in_array($radiusMeters, self::RADIUS_OPTIONS, true)) {
-            $radiusMeters = 500;
-        }
-
-        $analyticsFilters = array_diff_key($filters, ['radius_meters' => true]);
+        $analyticsFilters = $filters;
         $dashboard = $this->dashboardService->build($analyticsFilters, $canFinancial);
         $filterOptions = $dashboard['filter_options'] ?? [];
         $selectedType = $this->resolveOption(
@@ -92,8 +86,7 @@ class AdminDinasDecisionAnalyticsService
         $microSpatial = $this->microSpatial(
             $analyticsFilters,
             $selectedType ? (int) $selectedType['id'] : null,
-            $canCoordinate,
-            $radiusMeters
+            $canCoordinate
         );
 
         $qualityWarning = $summary['quality_affected'] > 0
@@ -105,7 +98,7 @@ class AdminDinasDecisionAnalyticsService
             );
 
         $payload = [
-            'filters' => array_merge($analyticsFilters, ['radius_meters' => $radiusMeters]),
+            'filters' => $analyticsFilters,
             'filter_options' => $filterOptions,
             'selected_type' => $selectedType,
             'selected_district' => $selectedDistrict,
@@ -131,7 +124,7 @@ class AdminDinasDecisionAnalyticsService
                 'causal_inference' => false,
                 'automatic_recommendation' => false,
                 'potential_rule' => 'lower_quartile_business_count_and_at_or_above_reference_median',
-                'micro_spatial_rule' => 'same_primary_type_haversine_distance_citywide_pool',
+                'micro_spatial_rule' => 'same_primary_type_haversine_context_only_not_decision_filter',
             ],
         ];
 
@@ -392,12 +385,10 @@ class AdminDinasDecisionAnalyticsService
     private function microSpatial(
         array $filters,
         ?int $typeId,
-        bool $canCoordinate,
-        int $radiusMeters
+        bool $canCoordinate
     ): array {
         $base = [
             'available' => false,
-            'radius_meters' => $radiusMeters,
             'pool_count' => 0,
             'focus_count' => 0,
             'rows' => [],
@@ -458,7 +449,6 @@ class AdminDinasDecisionAnalyticsService
 
         $rows = $focus->map(function ($point) use (
             $pool,
-            $radiusMeters,
             $qualityIds
         ): array {
             $distances = $pool
@@ -486,46 +476,37 @@ class AdminDinasDecisionAnalyticsService
                 'neighbors_250m' => $distances->filter(fn (float $distance): bool => $distance <= 250)->count(),
                 'neighbors_500m' => $distances->filter(fn (float $distance): bool => $distance <= 500)->count(),
                 'neighbors_1000m' => $distances->filter(fn (float $distance): bool => $distance <= 1000)->count(),
-                'neighbors_selected_radius' => $distances
-                    ->filter(fn (float $distance): bool => $distance <= $radiusMeters)
-                    ->count(),
                 'quality_warning' => $qualityIds->contains((int) $point->umkm_id),
                 'detail_url' => route('admin-dinas.umkm.show', (int) $point->umkm_id),
             ];
         })->values();
 
-        $neighborValues = $rows
-            ->pluck('neighbors_selected_radius')
-            ->map(fn ($value): int => (int) $value)
-            ->all();
-        $q1 = $this->quantile($neighborValues, 0.25);
-        $q3 = $this->quantile($neighborValues, 0.75);
+        $rows = $rows->sort(function (array $left, array $right): int {
+            $leftDistance = $left['nearest_same_type_meters'];
+            $rightDistance = $right['nearest_same_type_meters'];
 
-        $rows = $rows->map(function (array $row) use ($q1, $q3): array {
-            $row['local_density_level'] = $this->densityLabel(
-                (int) $row['neighbors_selected_radius'],
-                $q1,
-                $q3
-            );
-
-            return $row;
-        })->sort(function (array $left, array $right): int {
-            $neighborOrder = $right['neighbors_selected_radius']
-                <=> $left['neighbors_selected_radius'];
-
-            if ($neighborOrder !== 0) {
-                return $neighborOrder;
+            if ($leftDistance === null && $rightDistance === null) {
+                return strcmp($left['business_name'], $right['business_name']);
             }
 
-            return strcmp($left['business_name'], $right['business_name']);
+            if ($leftDistance === null) {
+                return 1;
+            }
+
+            if ($rightDistance === null) {
+                return -1;
+            }
+
+            $distanceOrder = $leftDistance <=> $rightDistance;
+
+            return $distanceOrder !== 0
+                ? $distanceOrder
+                : strcmp($left['business_name'], $right['business_name']);
         })->values();
 
         $base['available'] = true;
         $base['reason'] = null;
-        $base['q1_neighbors'] = $q1;
-        $base['q3_neighbors'] = $q3;
         $base['rows'] = $rows->all();
-
         return $base;
     }
 
@@ -1121,14 +1102,13 @@ class AdminDinasDecisionAnalyticsService
         $selectedDistrict = $payload['selected_district'] ?? null;
         $competition = collect($payload['competition_by_district'] ?? []);
         $opportunities = collect($payload['opportunity_types'] ?? []);
-        $summary = $payload['summary'] ?? [];
 
         if (! $selectedType) {
             $insights[] = [
                 'level' => 'info',
                 'title' => 'Pilih jenis usaha',
                 'finding' => 'Jenis usaha belum dipilih.',
-                'consideration' => 'Pilih jenis usaha untuk membandingkan konsentrasi antarwilayah dan analisis spasial usaha sejenis.',
+                'consideration' => 'Pilih jenis usaha untuk membandingkan konsentrasi dan konteks usaha sejenis antarwilayah.',
             ];
         } elseif ($competition->isNotEmpty()) {
             $highest = $competition->sortByDesc('business_count')->first();
@@ -1173,22 +1153,6 @@ class AdminDinasDecisionAnalyticsService
                 'title' => 'Mutu data perlu diperhatikan',
                 'finding' => 'Sebagian record dalam analisis memiliki flag mutu terbuka.',
                 'consideration' => 'Nilai sumber tetap dipertahankan apa adanya; interpretasikan hasil agregat dengan hati-hati.',
-            ];
-        }
-
-        $total = (int) ($summary['total_umkm'] ?? 0);
-        $mapped = (int) ($summary['coordinate_mapped'] ?? 0);
-
-        if ($total > 0 && $mapped < $total) {
-            $insights[] = [
-                'level' => 'warning',
-                'title' => 'Cakupan spasial belum penuh',
-                'finding' => sprintf(
-                    '%d dari %d UMKM dalam konteks memenuhi rule coordinate-mapped.',
-                    $mapped,
-                    $total
-                ),
-                'consideration' => 'Analisis jarak hanya menggunakan record dengan status terpetakan serta latitude dan longitude yang tersedia.',
             ];
         }
 
