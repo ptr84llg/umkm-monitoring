@@ -18,13 +18,39 @@ class AdminDinasInternalWorkspaceTest extends TestCase
 
     public function test_internal_workspace_routes_are_get_only_and_registered(): void
     {
-        foreach ([
+        $legacyReadOnlyRoutes = [
+            'admin-dinas.dashboard',
             'admin-dinas.umkm.index',
             'admin-dinas.umkm.show',
             'admin-dinas.analytics.index',
+            'admin-dinas.analytics.spatial',
             'admin-dinas.analytics.financial',
-        ] as $routeName) {
+        ];
+
+        foreach ($legacyReadOnlyRoutes as $routeName) {
             $this->assertTrue(Route::has($routeName), $routeName . ' harus aktif.');
+
+            $route = Route::getRoutes()->getByName($routeName);
+            $this->assertNotNull($route);
+            $this->assertEmpty(
+                array_intersect($route->methods(), ['POST', 'PUT', 'PATCH', 'DELETE']),
+                $routeName . ' harus tetap read-only.'
+            );
+        }
+
+        $claimWriteRoutes = [
+            'admin-dinas.account-claims.invite.store',
+            'admin-dinas.account-claims.review',
+            'admin-dinas.account-claims.resend',
+        ];
+
+        foreach ($claimWriteRoutes as $routeName) {
+            $this->assertTrue(Route::has($routeName), $routeName . ' harus aktif.');
+
+            $route = Route::getRoutes()->getByName($routeName);
+            $this->assertNotNull($route);
+            $this->assertContains('POST', $route->methods());
+            $this->assertEmpty(array_intersect($route->methods(), ['PUT', 'PATCH', 'DELETE']));
         }
 
         foreach (Route::getRoutes() as $route) {
@@ -32,7 +58,23 @@ class AdminDinasInternalWorkspaceTest extends TestCase
                 continue;
             }
 
-            $this->assertEmpty(array_intersect($route->methods(), ['POST', 'PUT', 'PATCH', 'DELETE']));
+            $writeMethods = array_values(array_intersect(
+                $route->methods(),
+                ['POST', 'PUT', 'PATCH', 'DELETE']
+            ));
+
+            if ($writeMethods === []) {
+                continue;
+            }
+
+            $routeName = (string) $route->getName();
+
+            $this->assertStringStartsWith(
+                'admin-dinas.account-claims.',
+                $routeName,
+                'Checkpoint 10A hanya mengizinkan write route Admin Dinas untuk review/aktivasi claim.'
+            );
+            $this->assertSame(['POST'], $writeMethods);
         }
     }
 

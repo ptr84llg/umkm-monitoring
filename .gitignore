@@ -55,6 +55,7 @@ _ide_helper.php
 !/database/migrations/2026_08_14_000001_sync_lss_refresh_schema.php
 !/database/migrations/2026_08_17_000001_ensure_admin_dinas_financial_permission.php
 !/database/migrations/2026_08_17_000002_ensure_admin_dinas_coordinate_permission.php
+!/database/migrations/2026_08_17_000003_create_umkm_account_claim_activation.php
 
 Homestead.json
 Homestead.yaml

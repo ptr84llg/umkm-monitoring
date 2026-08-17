@@ -146,6 +146,14 @@
                         'icon' => 'store',
                     ],
                     [
+                        'title' => 'Klaim Akun Pelaku',
+                        'description' => 'Review claim dan aktivasi',
+                        'detail' => 'Verifikasi keterkaitan pemohon, approval atau rejection, undangan Dinas, dan pengiriman aktivasi tanpa password default.',
+                        'route' => 'admin-dinas.account-claims.index',
+                        'permission' => 'umkm.claim.review',
+                        'icon' => 'shield',
+                    ],
+                    [
                         'title' => 'Analitik',
                         'description' => 'Visual analytics internal',
                         'detail' => 'Analisis wilayah, sektor, tenaga kerja, akses pasar, legalitas, dan mutu data sesuai kewenangan.',

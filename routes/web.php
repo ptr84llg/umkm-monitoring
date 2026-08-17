@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminDinas\AdminDinasController;
+use App\Http\Controllers\AdminDinas\UmkmAccountClaimReviewController;
+use App\Http\Controllers\PelakuUmkm\AccountClaimController;
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LandingPreviewController;
@@ -29,10 +31,10 @@ use Illuminate\Support\Facades\Route;
 | 4. login/logout;
 | 5. simple admin utama dashboard.
 |
-| Routes for admin dinas, pelaku UMKM, kepala dinas, survey, expert validation,
-| export, proposal, dashboard analytics, smoke pages, and internal API modules
-| are temporarily disabled at route level. Their controllers, views, models,
-| services, policies, assets, and other foundations are not deleted.
+| Pelaku workspace, proposal, survey, expert validation, export, smoke pages,
+| and other deferred modules remain disabled at route level. Admin Dinas
+| read-only scope is active. Checkpoint 10A adds only account claim/activation
+| and Dinas claim review without activating the Pelaku workspace.
 |
 */
 
@@ -129,6 +131,26 @@ Route::prefix('api/public/location-gate')
         Route::post('/clear', [LocationGateController::class, 'clear'])
             ->name('clear');
     });
+
+Route::middleware('guest')->prefix('pelaku')->group(function () {
+    Route::get('/claim', [AccountClaimController::class, 'create'])
+        ->name('pelaku-claim.create');
+
+    Route::post('/claim', [AccountClaimController::class, 'store'])
+        ->middleware(['throttle:5,1', 'safe.errors'])
+        ->name('pelaku-claim.store');
+
+    Route::get('/claim/status/{claim_reference}', [AccountClaimController::class, 'status'])
+        ->name('pelaku-claim.status');
+
+    Route::get('/activation/{claim_reference}', [AccountClaimController::class, 'showActivation'])
+        ->middleware('throttle:20,1')
+        ->name('pelaku-activation.show');
+
+    Route::post('/activation/{claim_reference}', [AccountClaimController::class, 'activate'])
+        ->middleware(['throttle:8,1', 'safe.errors'])
+        ->name('pelaku-activation.activate');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])
@@ -325,6 +347,30 @@ Route::middleware('auth')->group(function () {
             Route::get('/analytics/financial', [AdminDinasController::class, 'financialAnalytics'])
                 ->middleware('permission:umkm.sensitive.financial')
                 ->name('analytics.financial');
+
+            Route::get('/account-claims/invite', [UmkmAccountClaimReviewController::class, 'inviteForm'])
+                ->middleware('permission:umkm.claim.review')
+                ->name('account-claims.invite');
+
+            Route::post('/account-claims/invite', [UmkmAccountClaimReviewController::class, 'invite'])
+                ->middleware(['permission:umkm.claim.review', 'throttle:10,1', 'safe.errors'])
+                ->name('account-claims.invite.store');
+
+            Route::get('/account-claims', [UmkmAccountClaimReviewController::class, 'index'])
+                ->middleware('permission:umkm.claim.review')
+                ->name('account-claims.index');
+
+            Route::get('/account-claims/{claim}', [UmkmAccountClaimReviewController::class, 'show'])
+                ->middleware('permission:umkm.claim.review')
+                ->name('account-claims.show');
+
+            Route::post('/account-claims/{claim}/review', [UmkmAccountClaimReviewController::class, 'review'])
+                ->middleware(['permission:umkm.claim.review', 'throttle:10,1', 'safe.errors'])
+                ->name('account-claims.review');
+
+            Route::post('/account-claims/{claim}/resend-activation', [UmkmAccountClaimReviewController::class, 'resend'])
+                ->middleware(['permission:umkm.claim.review', 'throttle:5,1', 'safe.errors'])
+                ->name('account-claims.resend');
         });
     Route::prefix('admin-utama')
         ->name('admin-utama.')
