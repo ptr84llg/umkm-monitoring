@@ -7,23 +7,57 @@ use Tests\TestCase;
 
 class PelakuAccountClaimActivationContractTest extends TestCase
 {
-    public function test_checkpoint_10a_source_does_not_create_ownership_binding(): void
+    public function test_checkpoint_10b_binding_is_created_only_from_activation_path(): void
     {
-        $paths = [
-            app_path('Services/PelakuUmkm/AccountClaimActivationService.php'),
+        $activationService = file_get_contents(
+            app_path('Services/PelakuUmkm/AccountClaimActivationService.php')
+        );
+        $bindingService = file_get_contents(
+            app_path('Services/PelakuUmkm/OwnershipBindingService.php')
+        );
+
+        $this->assertIsString($activationService);
+        $this->assertIsString($bindingService);
+
+        $this->assertStringContainsString(
+            'createFromActivatedClaim',
+            $activationService
+        );
+        $this->assertStringContainsString(
+            'UmkmAccountClaim::STATUS_ACTIVATED',
+            $bindingService
+        );
+        $this->assertStringContainsString(
+            "'source_claim_id' => \$claim->id",
+            $bindingService
+        );
+        $this->assertStringContainsString(
+            'BINDING_SOURCE_ACCOUNT_CLAIM_ACTIVATION',
+            $bindingService
+        );
+        $this->assertStringContainsString(
+            'VERIFICATION_VERIFIED',
+            $bindingService
+        );
+
+        foreach ([
             app_path('Http/Controllers/PelakuUmkm/AccountClaimController.php'),
             app_path('Http/Controllers/AdminDinas/UmkmAccountClaimReviewController.php'),
-            database_path('migrations/2026_08_17_000003_create_umkm_account_claim_activation.php'),
-        ];
-
-        foreach ($paths as $path) {
-            $source = file_get_contents($path);
-            $this->assertIsString($source);
-            $this->assertStringNotContainsString('umkm_user_links', $source);
+        ] as $controllerPath) {
+            $controller = file_get_contents($controllerPath);
+            $this->assertIsString($controller);
+            $this->assertStringNotContainsString(
+                'UmkmUserLink::query()->create',
+                $controller
+            );
+            $this->assertStringNotContainsString(
+                "DB::table('umkm_user_links')->insert",
+                $controller
+            );
         }
     }
 
-    public function test_checkpoint_10a_exposes_claim_activation_but_not_pelaku_workspace(): void
+    public function test_checkpoint_10b_keeps_pelaku_workspace_disabled(): void
     {
         $this->assertTrue(Route::has('pelaku-claim.create'));
         $this->assertTrue(Route::has('pelaku-activation.activate'));
@@ -48,20 +82,29 @@ class PelakuAccountClaimActivationContractTest extends TestCase
         }
     }
 
-    public function test_activation_service_never_writes_umkm_profile_fields(): void
+    public function test_activation_and_binding_services_never_write_umkm_profile_fields(): void
     {
-        $service = file_get_contents(
-            app_path('Services/PelakuUmkm/AccountClaimActivationService.php')
-        );
+        $sources = [
+            file_get_contents(
+                app_path('Services/PelakuUmkm/AccountClaimActivationService.php')
+            ),
+            file_get_contents(
+                app_path('Services/PelakuUmkm/OwnershipBindingService.php')
+            ),
+        ];
 
-        foreach ([
-            "'quality_status' =>",
-            "'business_name' =>",
-            "'source_system' =>",
-            "'source_record_id' =>",
-            "'source_active' =>",
-        ] as $forbidden) {
-            $this->assertStringNotContainsString($forbidden, $service);
+        foreach ($sources as $source) {
+            $this->assertIsString($source);
+
+            foreach ([
+                "'quality_status' =>",
+                "'business_name' =>",
+                "'source_system' =>",
+                "'source_record_id' =>",
+                "'source_active' =>",
+            ] as $forbidden) {
+                $this->assertStringNotContainsString($forbidden, $source);
+            }
         }
     }
 }

@@ -21,10 +21,21 @@ class AccountClaimActivationService
     private const ACTIVATION_TTL_MINUTES = 10;
     private const MAX_OTP_ATTEMPTS = 5;
 
+    public function __construct(
+        private readonly OwnershipBindingService $ownershipBindings
+    ) {
+    }
+
     public function submitSelfClaim(array $data, Request $request): UmkmAccountClaim
     {
         $umkm = $this->resolveUmkm((string) $data['umkm_code']);
         $email = $this->normalizeEmail((string) $data['applicant_email']);
+
+        $this->ownershipBindings->assertApplicantNotAlreadyBound(
+            $umkm,
+            $email,
+            'owner'
+        );
 
         return DB::transaction(function () use ($data, $request, $umkm, $email): UmkmAccountClaim {
             $this->guardNoOpenClaim($umkm->id, $email);
@@ -71,6 +82,12 @@ class AccountClaimActivationService
     {
         $umkm = $this->resolveUmkm((string) $data['umkm_code']);
         $email = $this->normalizeEmail((string) $data['applicant_email']);
+
+        $this->ownershipBindings->assertApplicantNotAlreadyBound(
+            $umkm,
+            $email,
+            'owner'
+        );
 
         $claim = DB::transaction(function () use ($actor, $data, $request, $umkm, $email): UmkmAccountClaim {
             $this->guardNoOpenClaim($umkm->id, $email);
@@ -331,9 +348,11 @@ class AccountClaimActivationService
                 ]
             );
 
+            $activationCompletedAt = now();
+
             $challenge->forceFill([
-                'verified_at' => now(),
-                'consumed_at' => now(),
+                'verified_at' => $activationCompletedAt,
+                'consumed_at' => $activationCompletedAt,
                 'status' => 'consumed',
             ])->save();
 
@@ -342,8 +361,13 @@ class AccountClaimActivationService
             $lockedClaim->forceFill([
                 'status' => UmkmAccountClaim::STATUS_ACTIVATED,
                 'activated_user_id' => $user->id,
-                'activation_completed_at' => now(),
+                'activation_completed_at' => $activationCompletedAt,
             ])->save();
+
+            $binding = $this->ownershipBindings->createFromActivatedClaim(
+                $lockedClaim,
+                $user
+            );
 
             $this->recordEvent(
                 $lockedClaim,
@@ -354,7 +378,9 @@ class AccountClaimActivationService
                 $request,
                 [
                     'credential_verified' => true,
-                    'ownership_binding_created' => false,
+                    'ownership_binding_created' => true,
+                    'ownership_binding_id' => $binding->id,
+                    'ownership_binding_source' => $binding->binding_source,
                 ]
             );
 

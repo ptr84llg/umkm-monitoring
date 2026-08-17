@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use LogicException;
 
 class UmkmAccountClaim extends Model
@@ -76,6 +77,11 @@ class UmkmAccountClaim extends Model
     public function resubmissionOf(): BelongsTo
     {
         return $this->belongsTo(self::class, 'resubmission_of_id');
+    }
+
+    public function ownershipBinding(): HasOne
+    {
+        return $this->hasOne(UmkmUserLink::class, 'source_claim_id');
     }
 
     public function challenges(): HasMany
