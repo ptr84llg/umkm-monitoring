@@ -154,6 +154,14 @@
                         'icon' => 'shield',
                     ],
                     [
+                        'title' => 'Review Perubahan Profil',
+                        'description' => 'Validasi approved override',
+                        'detail' => 'Menilai usulan perubahan profil Pelaku dan mengaktifkan approved override tanpa menimpa nilai sumber/LSS.',
+                        'route' => 'admin-dinas.profile-reviews.index',
+                        'permission' => 'umkm.profile.review',
+                        'icon' => 'check',
+                    ],
+                    [
                         'title' => 'Analitik',
                         'description' => 'Visual analytics internal',
                         'detail' => 'Analisis wilayah, sektor, tenaga kerja, akses pasar, legalitas, dan mutu data sesuai kewenangan.',

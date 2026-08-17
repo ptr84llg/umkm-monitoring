@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminDinas\AdminDinasController;
 use App\Http\Controllers\AdminDinas\UmkmAccountClaimReviewController;
+use App\Http\Controllers\AdminDinas\ProfileOverrideReviewController;
 use App\Http\Controllers\PelakuUmkm\AccountClaimController;
 use App\Http\Controllers\PelakuUmkm\PelakuUmkmController;
 use App\Http\Controllers\PelakuUmkm\ProfileOverrideController;
@@ -33,9 +34,9 @@ use Illuminate\Support\Facades\Route;
 | 4. login/logout;
 | 5. simple admin utama dashboard.
 |
-| Checkpoint 10D keeps the verified Pelaku workspace and activates controlled
-| profile-change submission plus effective-profile resolution. Source-owned UMKM
-| rows remain immutable; Admin Dinas profile review routes stay disabled until 10E.
+| Checkpoint 10E keeps the verified Pelaku workspace and immutable profile proposal
+| flow, and activates dedicated Admin Dinas review. Approved decisions create
+| append-only cumulative override revisions; source-owned UMKM rows remain immutable.
 | Survey, periodic reporting, expert validation, export, and smoke pages remain deferred.
 |
 */
@@ -373,6 +374,18 @@ Route::middleware('auth')->group(function () {
             Route::post('/account-claims/{claim}/resend-activation', [UmkmAccountClaimReviewController::class, 'resend'])
                 ->middleware(['permission:umkm.claim.review', 'throttle:5,1', 'safe.errors'])
                 ->name('account-claims.resend');
+
+            Route::get('/profile-reviews', [ProfileOverrideReviewController::class, 'index'])
+                ->middleware('permission:umkm.profile.review')
+                ->name('profile-reviews.index');
+
+            Route::get('/profile-reviews/{proposal}', [ProfileOverrideReviewController::class, 'show'])
+                ->middleware('permission:umkm.profile.review')
+                ->name('profile-reviews.show');
+
+            Route::post('/profile-reviews/{proposal}/review', [ProfileOverrideReviewController::class, 'review'])
+                ->middleware(['permission:umkm.profile.review', 'throttle:10,1', 'safe.errors'])
+                ->name('profile-reviews.review');
         });
 
     Route::prefix('pelaku-umkm')

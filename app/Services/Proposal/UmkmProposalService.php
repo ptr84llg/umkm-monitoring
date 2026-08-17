@@ -80,22 +80,33 @@ class UmkmProposalService
             $request,
             $auditLogger
         ): UmkmUpdateSubmission {
-            if ($submission->status_data === 'disetujui') {
+            $locked = UmkmUpdateSubmission::query()
+                ->whereKey($submission->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (data_get($locked->submission_payload, 'schema') !== 'profile_override.v1') {
                 throw ValidationException::withMessages([
-                    'decision' => 'Submission yang sudah disetujui tidak dapat direview ulang.',
+                    'decision' => 'Hanya submission profile_override.v1 yang dapat direview melalui workflow ini.',
                 ]);
             }
 
-            $before = $submission->toArray();
+            if ($locked->status_data !== 'diajukan') {
+                throw ValidationException::withMessages([
+                    'decision' => 'Submission ini sudah memiliki keputusan. Koreksi harus diajukan sebagai submission baru.',
+                ]);
+            }
+
+            $before = $locked->toArray();
             $review = DataValidationReview::query()->create([
-                'submission_id' => $submission->id,
+                'submission_id' => $locked->id,
                 'reviewer_id' => $reviewerId,
                 'decision' => $decision,
                 'review_note' => $reviewNote,
                 'reviewed_at' => now(),
             ]);
 
-            $submission->forceFill([
+            $locked->forceFill([
                 'status_data' => $decision,
                 'review_notes' => $reviewNote,
                 'reviewed_at' => $review->reviewed_at,
@@ -104,7 +115,7 @@ class UmkmProposalService
 
             if ($decision === 'disetujui') {
                 $revision = $this->approvedOverrides->activateFromApprovedSubmission(
-                    $submission->fresh(),
+                    $locked->fresh(),
                     $review,
                     $reviewerId
                 );
@@ -119,7 +130,7 @@ class UmkmProposalService
                 );
             }
 
-            $updated = $submission->fresh();
+            $updated = $locked->fresh();
             $auditLogger->log(
                 'umkm.profile.proposal.review',
                 $request,

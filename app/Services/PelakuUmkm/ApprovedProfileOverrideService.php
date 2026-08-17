@@ -2,11 +2,13 @@
 
 namespace App\Services\PelakuUmkm;
 
+use App\Models\Umkm\Umkm;
 use App\Models\Umkm\UmkmCurrentProfileOverride;
 use App\Models\Umkm\UmkmProfileOverrideRevision;
 use App\Models\Umkm\UmkmUpdateSubmission;
 use App\Models\Validation\DataValidationReview;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use LogicException;
 
 class ApprovedProfileOverrideService
@@ -14,6 +16,18 @@ class ApprovedProfileOverrideService
     public function __construct(
         private readonly EffectiveUmkmProfileService $profiles
     ) {
+    }
+
+    public function conflictingFields(UmkmUpdateSubmission $submission): array
+    {
+        if (data_get($submission->submission_payload, 'schema') !== 'profile_override.v1') {
+            return [];
+        }
+
+        $umkm = Umkm::query()->findOrFail($submission->umkm_id);
+        $profile = $this->profiles->resolve($umkm);
+
+        return $this->conflictsAgainstProfile($submission, $profile['effective']);
     }
 
     public function activateFromApprovedSubmission(
@@ -38,21 +52,50 @@ class ApprovedProfileOverrideService
                 throw new LogicException('This approved submission already produced an override revision.');
             }
 
-            $overrideData = $this->profiles->filterEditable($submission->new_data ?? []);
-            if ($overrideData === []) {
+            $changes = $this->profiles->filterEditable($submission->new_data ?? []);
+            if ($changes === []) {
                 throw new LogicException('Approved submission does not contain an editable profile field.');
             }
 
+            $umkm = Umkm::query()
+                ->whereKey($submission->umkm_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $profile = $this->profiles->resolve($umkm);
+            $conflicts = $this->conflictsAgainstProfile($submission, $profile['effective']);
+
+            if ($conflicts !== []) {
+                throw ValidationException::withMessages([
+                    'decision' => 'Profil efektif berubah sejak pengajuan pada field: '.implode(', ', $conflicts).'. Minta Pelaku membuat pengajuan baru.',
+                ]);
+            }
+
             $current = UmkmCurrentProfileOverride::query()
+                ->with('revision')
                 ->where('umkm_id', $submission->umkm_id)
+                ->lockForUpdate()
                 ->first();
+
+            $currentOverlay = $this->profiles->filterEditable(
+                $current?->revision?->override_data ?? []
+            );
+
+            $nextOverlay = array_replace($currentOverlay, $changes);
+
+            foreach ($nextOverlay as $field => $value) {
+                if ($this->normalizeValue($field, $value)
+                    === $this->normalizeValue($field, $profile['source'][$field] ?? null)) {
+                    unset($nextOverlay[$field]);
+                }
+            }
 
             $revision = UmkmProfileOverrideRevision::query()->create([
                 'umkm_id' => $submission->umkm_id,
                 'source_submission_id' => $submission->id,
                 'approved_review_id' => $review->id,
                 'previous_override_revision_id' => $current?->override_revision_id,
-                'override_data' => $overrideData,
+                'override_data' => $nextOverlay,
                 'approved_by_user_id' => $reviewerId,
                 'approved_at' => $review->reviewed_at ?? now(),
             ]);
@@ -67,5 +110,36 @@ class ApprovedProfileOverrideService
 
             return $revision;
         });
+    }
+
+    private function conflictsAgainstProfile(
+        UmkmUpdateSubmission $submission,
+        array $effectiveNow
+    ): array {
+        $submittedBase = $this->profiles->filterEditable($submission->old_data ?? []);
+        $changes = $this->profiles->filterEditable($submission->new_data ?? []);
+        $conflicts = [];
+
+        foreach (array_keys($changes) as $field) {
+            if ($this->normalizeValue($field, $submittedBase[$field] ?? null)
+                !== $this->normalizeValue($field, $effectiveNow[$field] ?? null)) {
+                $conflicts[] = $field;
+            }
+        }
+
+        return $conflicts;
+    }
+
+    private function normalizeValue(string $field, mixed $value): mixed
+    {
+        if ($value === '') {
+            return null;
+        }
+
+        return match ($field) {
+            'employee_count', 'marketing_method_id' => $value === null ? null : (int) $value,
+            'established_date' => $value === null ? null : (string) $value,
+            default => $value === null ? null : trim((string) $value),
+        };
     }
 }

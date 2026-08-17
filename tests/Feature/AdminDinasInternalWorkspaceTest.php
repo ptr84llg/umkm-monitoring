@@ -38,13 +38,14 @@ class AdminDinasInternalWorkspaceTest extends TestCase
             );
         }
 
-        $claimWriteRoutes = [
+        $allowedWriteRoutes = [
             'admin-dinas.account-claims.invite.store',
             'admin-dinas.account-claims.review',
             'admin-dinas.account-claims.resend',
+            'admin-dinas.profile-reviews.review',
         ];
 
-        foreach ($claimWriteRoutes as $routeName) {
+        foreach ($allowedWriteRoutes as $routeName) {
             $this->assertTrue(Route::has($routeName), $routeName . ' harus aktif.');
 
             $route = Route::getRoutes()->getByName($routeName);
@@ -68,11 +69,10 @@ class AdminDinasInternalWorkspaceTest extends TestCase
             }
 
             $routeName = (string) $route->getName();
-
-            $this->assertStringStartsWith(
-                'admin-dinas.account-claims.',
+            $this->assertContains(
                 $routeName,
-                'Checkpoint 10A hanya mengizinkan write route Admin Dinas untuk review/aktivasi claim.'
+                $allowedWriteRoutes,
+                'Checkpoint 10E hanya mengizinkan write route Admin Dinas untuk account claim dan immutable profile review.'
             );
             $this->assertSame(['POST'], $writeMethods);
         }

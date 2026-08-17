@@ -35,7 +35,7 @@
                     @if($review->review_note)<div>{{ $review->review_note }}</div>@endif
                 </div>
             @empty
-                <p class="text-muted mb-0">Belum direview Admin Dinas. Route review baru diaktifkan pada Checkpoint 10E.</p>
+                <p class="text-muted mb-0">Belum direview Admin Dinas.</p>
             @endforelse
         </div>
     </div>
