@@ -11,6 +11,7 @@
             <p class="mb-0">Nilai sumber tetap dipertahankan. Override hanya menjadi nilai efektif setelah persetujuan.</p>
         </div>
         <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" href="{{ route('pelaku-umkm.analytics.index', ['umkm_id' => $umkm->id]) }}">Buka Analitik</a>
             @if(auth()->user()?->hasPermission('umkm.profile.propose'))
                 <a class="btn btn-primary" href="{{ route('pelaku-umkm.profile-change.create', $umkm) }}">Ajukan Perubahan</a>
             @endif

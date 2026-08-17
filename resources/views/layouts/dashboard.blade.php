@@ -226,6 +226,14 @@
                         'icon' => 'dashboard',
                     ],
                     [
+                        'title' => 'Analitik Keputusan',
+                        'description' => 'Posisi, persaingan, dan potensi relatif',
+                        'detail' => 'Analitik baseline Tahun Pertama untuk membandingkan posisi usaha, kepadatan usaha sejenis antarwilayah, dan indikasi potensi jenis usaha secara agregat.',
+                        'route' => 'pelaku-umkm.analytics.index',
+                        'permission' => 'umkm.workspace.access',
+                        'icon' => 'chart',
+                    ],
+                    [
                         'title' => 'Profil Efektif',
                         'description' => 'Sumber + approved override',
                         'detail' => 'Melihat nilai sumber dan nilai efektif tanpa menimpa data sumber kelembagaan.',

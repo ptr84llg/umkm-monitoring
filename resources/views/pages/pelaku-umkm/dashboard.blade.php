@@ -8,9 +8,12 @@
         <div>
             <p class="text-muted mb-1">Workspace kepemilikan terverifikasi</p>
             <h1 class="h3 mb-2">Dashboard Pelaku UMKM</h1>
-            <p class="mb-0">Data pada tahap ini ditampilkan secara read-only. Perubahan profil belum diaktifkan.</p>
+            <p class="mb-0">Profil efektif dan pengajuan perubahan sudah tersedia. Analitik Tahun Pertama membaca baseline secara cross-sectional dan spasial tanpa mengubah data sumber.</p>
         </div>
-        <a class="btn btn-primary" href="{{ route('pelaku-umkm.umkm.index') }}">Lihat Data Usaha</a>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary" href="{{ route('pelaku-umkm.analytics.index') }}">Buka Analitik Keputusan</a>
+            <a class="btn btn-outline-primary" href="{{ route('pelaku-umkm.umkm.index') }}">Lihat Data Usaha</a>
+        </div>
     </div>
 
     <div class="card mb-4">

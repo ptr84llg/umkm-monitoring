@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDinas\AdminDinasController;
 use App\Http\Controllers\AdminDinas\UmkmAccountClaimReviewController;
 use App\Http\Controllers\AdminDinas\ProfileOverrideReviewController;
 use App\Http\Controllers\PelakuUmkm\AccountClaimController;
+use App\Http\Controllers\PelakuUmkm\PelakuAnalyticsController;
 use App\Http\Controllers\PelakuUmkm\PelakuUmkmController;
 use App\Http\Controllers\PelakuUmkm\ProfileOverrideController;
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
@@ -398,6 +399,9 @@ Route::middleware(['auth', 'single.device'])->group(function () {
         ->group(function () {
             Route::get('/dashboard', [PelakuUmkmController::class, 'dashboard'])
                 ->name('dashboard');
+
+            Route::get('/analytics', [PelakuAnalyticsController::class, 'index'])
+                ->name('analytics.index');
 
             Route::get('/umkm', [PelakuUmkmController::class, 'index'])
                 ->name('umkm.index');
