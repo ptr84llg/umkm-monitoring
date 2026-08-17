@@ -9,15 +9,28 @@
     $filters = $data['filters'] ?? [];
     $financial = $data['financial'] ?? null;
     $coverage = $financial['coverage'] ?? [];
+    $districts = collect($data['districts'] ?? [])->take(5);
+    $categories = collect($data['categories'] ?? [])->take(5);
     $snapshot = $data['freshness']['snapshot_id'] ?? null;
     $completedAt = $data['freshness']['completed_at'] ?? null;
 
-    $formatMoney = static function ($value): string {
-        if ($value === null || $value === '') {
-            return 'Belum tersedia';
+    $baseFilter = array_filter([
+        'district_id' => $filters['district_id'] ?? null,
+        'village_id' => $filters['village_id'] ?? null,
+        'category_id' => $filters['category_id'] ?? null,
+        'type_id' => $filters['type_id'] ?? null,
+        'marketing_method_id' => $filters['marketing_method_id'] ?? null,
+    ], static fn ($value) => $value !== null && $value !== '');
+
+    $maxDistrict = max(1, (int) ($districts->max('total_umkm') ?? 1));
+    $maxCategory = max(1, (int) ($categories->max('total_umkm') ?? 1));
+
+    $pct = static function (int $value, int $max): string {
+        if ($max <= 0) {
+            return '0';
         }
 
-        return 'Rp ' . number_format((float) $value, 0, ',', '.');
+        return number_format(min(100, ($value / $max) * 100), 2, '.', '');
     };
 
     $coveragePercent = static function (int $filled, int $total): string {
@@ -34,20 +47,36 @@
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-xl-row justify-content-between gap-3">
                 <div>
-                    <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Monitoring Internal Dinas</span>
-                    <h1 class="h3 mb-2">Monitoring dan Analitik UMKM</h1>
+                    <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Ringkasan Kendali Internal</span>
+                    <h1 class="h3 mb-2">Monitoring UMKM Admin Dinas</h1>
                     <p class="text-body-secondary mb-0">
-                        Ruang internal untuk melihat kondisi UMKM secara lebih rinci berdasarkan wilayah, klasifikasi usaha,
-                        mutu data, dan ketersediaan informasi keuangan.
+                        Dashboard menampilkan indikator kendali utama. Eksplorasi record dan analisis rinci ditempatkan pada modul Data UMKM dan Analitik.
                     </p>
                 </div>
-                <div class="border rounded-3 p-3 bg-body-tertiary align-self-xl-start">
-                    <div class="small text-body-secondary">Sumber aktif</div>
-                    <strong>{{ $data['freshness']['source_system'] ?? 'LSS' }}</strong>
-                    <div class="small text-body-secondary mt-2">Snapshot</div>
-                    <strong>{{ $snapshot ?: 'Belum tersedia' }}</strong>
-                    <div class="small text-body-secondary mt-2">Sinkron selesai</div>
-                    <strong>{{ $completedAt ?: 'Belum tersedia' }}</strong>
+                <div class="d-flex flex-wrap gap-2 align-self-xl-start">
+                    <a class="btn btn-outline-primary" href="{{ route('admin-dinas.umkm.index', $baseFilter) }}">Buka Data UMKM</a>
+                    <a class="btn btn-primary" href="{{ route('admin-dinas.analytics.index', $baseFilter) }}">Buka Analitik</a>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-2">
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
+                        <div class="small text-body-secondary">Sumber aktif</div>
+                        <strong>{{ $data['freshness']['source_system'] ?? 'LSS' }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
+                        <div class="small text-body-secondary">Snapshot</div>
+                        <strong class="text-break">{{ $snapshot ?: 'Belum tersedia' }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
+                        <div class="small text-body-secondary">Sinkron selesai</div>
+                        <strong>{{ $completedAt ?: 'Belum tersedia' }}</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,149 +86,83 @@
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
-                    <h2 class="h5 mb-1">Filter Analitik</h2>
-                    <p class="text-body-secondary mb-0">Seluruh indikator di bawah mengikuti konteks filter yang sama.</p>
+                    <h2 class="h5 mb-1">Konteks Monitoring</h2>
+                    <p class="text-body-secondary mb-0">KPI dan ringkasan di bawah mengikuti filter yang sama.</p>
                 </div>
                 <a href="{{ route('admin-dinas.dashboard') }}" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
             </div>
 
             <form method="GET" action="{{ route('admin-dinas.dashboard') }}" class="row g-3">
-                <div class="col-md-6 col-xl-3">
-                    <label class="form-label" for="district_id">Kecamatan</label>
-                    <select class="form-select" id="district_id" name="district_id">
-                        <option value="">Semua Kecamatan</option>
-                        @foreach(($options['districts'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @foreach([
+                    ['district_id', 'Kecamatan', $options['districts'] ?? []],
+                    ['village_id', 'Kelurahan', $options['villages'] ?? []],
+                    ['category_id', 'Kategori', $options['categories'] ?? []],
+                    ['type_id', 'Jenis Usaha', $options['types'] ?? []],
+                    ['marketing_method_id', 'Pemasaran', $options['marketingMethods'] ?? []],
+                ] as $filter)
+                    <div class="col-md-6 col-xl">
+                        <label class="form-label" for="{{ $filter[0] }}">{{ $filter[1] }}</label>
+                        <select class="form-select" id="{{ $filter[0] }}" name="{{ $filter[0] }}">
+                            <option value="">Semua</option>
+                            @foreach($filter[2] as $item)
+                                <option value="{{ $item->id }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endforeach
 
-                <div class="col-md-6 col-xl-3">
-                    <label class="form-label" for="village_id">Kelurahan</label>
-                    <select class="form-select" id="village_id" name="village_id">
-                        <option value="">Semua Kelurahan</option>
-                        @foreach(($options['villages'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <label class="form-label" for="category_id">Kategori</label>
-                    <select class="form-select" id="category_id" name="category_id">
-                        <option value="">Semua Kategori</option>
-                        @foreach(($options['categories'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['category_id'] ?? '') === (string)$item->id)>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <label class="form-label" for="type_id">Jenis Usaha</label>
-                    <select class="form-select" id="type_id" name="type_id">
-                        <option value="">Semua Jenis</option>
-                        @foreach(($options['types'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['type_id'] ?? '') === (string)$item->id)>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-8 col-xl-2">
-                    <label class="form-label" for="marketing_method_id">Pemasaran</label>
-                    <select class="form-select" id="marketing_method_id" name="marketing_method_id">
-                        <option value="">Semua Metode</option>
-                        @foreach(($options['marketingMethods'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['marketing_method_id'] ?? '') === (string)$item->id)>
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-4 col-xl-12 d-flex justify-content-end">
-                    <button class="btn btn-primary px-4" type="submit">Tampilkan Analitik</button>
+                <div class="col-md-12 col-xl-auto d-flex align-items-end">
+                    <button class="btn btn-primary px-4" type="submit">Terapkan</button>
                 </div>
             </form>
         </div>
     </section>
 
-    <section>
-        <div class="row g-3">
+    <section class="row g-3">
+        @foreach([
+            ['UMKM dalam konteks aktif', $summary['total_umkm'] ?? 0, 'Record operasional sesuai filter'],
+            ['Tenaga kerja tercatat', $summary['workforce_recorded'] ?? 0, 'Akumulasi nilai sumber yang terdata'],
+            ['Terasosiasi wilayah', $summary['spatial_associated'] ?? 0, 'Belum terasosiasi: ' . number_format((int)($summary['spatial_unassociated'] ?? 0), 0, ',', '.')],
+            ['UMKM dengan flag mutu', $summary['quality_affected'] ?? 0, 'Flag mutu tidak otomatis berarti nilai sumber salah'],
+        ] as $metric)
             <div class="col-md-6 col-xl-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
-                        <div class="text-body-secondary small">UMKM dalam konteks aktif</div>
-                        <div class="display-6 fw-semibold">{{ number_format((int)($summary['total_umkm'] ?? 0), 0, ',', '.') }}</div>
-                        <div class="small text-body-secondary">Record operasional sesuai filter</div>
+                        <div class="small text-body-secondary">{{ $metric[0] }}</div>
+                        <div class="display-6 fw-semibold">{{ number_format((int)$metric[1], 0, ',', '.') }}</div>
+                        <div class="small text-body-secondary">{{ $metric[2] }}</div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-body-secondary small">Tenaga kerja tercatat</div>
-                        <div class="display-6 fw-semibold">{{ number_format((int)($summary['workforce_recorded'] ?? 0), 0, ',', '.') }}</div>
-                        <div class="small text-body-secondary">Akumulasi nilai sumber yang terdata</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-body-secondary small">Terasosiasi wilayah</div>
-                        <div class="display-6 fw-semibold">{{ number_format((int)($summary['spatial_associated'] ?? 0), 0, ',', '.') }}</div>
-                        <div class="small text-body-secondary">
-                            Belum terasosiasi: {{ number_format((int)($summary['spatial_unassociated'] ?? 0), 0, ',', '.') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-body-secondary small">UMKM dengan catatan mutu terbuka</div>
-                        <div class="display-6 fw-semibold">{{ number_format((int)($summary['quality_affected'] ?? 0), 0, ',', '.') }}</div>
-                        <div class="small text-body-secondary">Catatan mutu tidak berarti data otomatis salah</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </section>
 
     <section class="row g-4">
         <div class="col-xl-7">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5 mb-1">Sebaran UMKM per Kecamatan</h2>
-                    <p class="text-body-secondary mb-3">Jumlah record operasional yang terasosiasi ke wilayah administratif.</p>
+                    <div class="d-flex justify-content-between gap-3 mb-3">
+                        <div>
+                            <h2 class="h5 mb-1">Fokus Wilayah</h2>
+                            <p class="text-body-secondary mb-0">Lima kecamatan dengan jumlah UMKM terbesar pada konteks aktif.</p>
+                        </div>
+                        <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-sm btn-outline-primary align-self-start">Lihat Analitik</a>
+                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Kecamatan</th>
-                                    <th class="text-end">UMKM</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse(($data['districts'] ?? []) as $row)
-                                    <tr>
-                                        <td>{{ $row['name'] }}</td>
-                                        <td class="text-end fw-semibold">{{ number_format($row['total_umkm'], 0, ',', '.') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="2" class="text-body-secondary">Belum tersedia pada konteks aktif.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="d-flex flex-column gap-3">
+                        @forelse($districts as $row)
+                            <a class="text-decoration-none text-body" href="{{ route('admin-dinas.umkm.index', array_merge($baseFilter, ['district_id' => $row['id']])) }}">
+                                <div class="d-flex justify-content-between gap-3 mb-1">
+                                    <span>{{ $row['name'] }}</span>
+                                    <strong>{{ number_format((int)$row['total_umkm'], 0, ',', '.') }}</strong>
+                                </div>
+                                <div class="progress" role="progressbar" aria-label="{{ $row['name'] }}" aria-valuenow="{{ $row['total_umkm'] }}" aria-valuemin="0" aria-valuemax="{{ $maxDistrict }}" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ $pct((int)$row['total_umkm'], $maxDistrict) }}%"></div>
+                                </div>
+                            </a>
+                        @empty
+                            <p class="text-body-secondary mb-0">Belum tersedia pada konteks aktif.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -208,15 +171,20 @@
         <div class="col-xl-5">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5 mb-1">Kategori Usaha Dominan</h2>
-                    <p class="text-body-secondary mb-3">Sepuluh kategori dengan jumlah UMKM terbanyak pada filter aktif.</p>
+                    <h2 class="h5 mb-1">Fokus Sektor</h2>
+                    <p class="text-body-secondary mb-3">Lima kategori dengan jumlah UMKM terbesar pada konteks aktif.</p>
 
                     <div class="d-flex flex-column gap-3">
-                        @forelse(($data['categories'] ?? []) as $row)
-                            <div class="d-flex justify-content-between gap-3 border-bottom pb-2">
-                                <span>{{ $row['name'] }}</span>
-                                <strong>{{ number_format($row['total_umkm'], 0, ',', '.') }}</strong>
-                            </div>
+                        @forelse($categories as $row)
+                            <a class="text-decoration-none text-body" href="{{ route('admin-dinas.umkm.index', array_merge($baseFilter, ['category_id' => $row['id']])) }}">
+                                <div class="d-flex justify-content-between gap-3 mb-1">
+                                    <span>{{ $row['name'] }}</span>
+                                    <strong>{{ number_format((int)$row['total_umkm'], 0, ',', '.') }}</strong>
+                                </div>
+                                <div class="progress" role="progressbar" aria-label="{{ $row['name'] }}" aria-valuenow="{{ $row['total_umkm'] }}" aria-valuemin="0" aria-valuemax="{{ $maxCategory }}" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ $pct((int)$row['total_umkm'], $maxCategory) }}%"></div>
+                                </div>
+                            </a>
                         @empty
                             <p class="text-body-secondary mb-0">Belum tersedia pada konteks aktif.</p>
                         @endforelse
@@ -229,148 +197,84 @@
     @if($data['can_view_financial'] ?? false)
         <section class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                     <div>
                         <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Internal · Data Sensitif</span>
-                        <h2 class="h4 mb-2">Analitik Keuangan Internal</h2>
+                        <h2 class="h5 mb-1">Cakupan Keuangan</h2>
                         <p class="text-body-secondary mb-0">
-                            Nilai ditampilkan sesuai nilai yang tersimpan dari sumber. Sistem tidak mengalikan, mengoreksi,
-                            menormalisasi, atau menyatakan nominal tersebut valid tanpa proses verifikasi.
+                            Ringkasan hanya menunjukkan ketersediaan nilai. Nominal rinci dan quality issue dianalisis pada halaman Ekonomi & Keuangan.
                         </p>
                     </div>
-                    <div class="alert alert-warning mb-0 align-self-lg-start">
-                        <strong>0 berbeda dari belum tersedia.</strong><br>
-                        Cakupan dihitung berdasarkan nilai non-NULL.
-                    </div>
+                    <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="btn btn-warning align-self-lg-start">Buka Ekonomi & Keuangan</a>
                 </div>
 
-                <div class="row g-3 mb-4">
+                <div class="alert alert-warning py-2">
+                    <strong>0 berbeda dari belum tersedia.</strong> Cakupan dihitung berdasarkan nilai non-NULL dan tidak menyatakan nominal telah tervalidasi.
+                </div>
+
+                <div class="row g-3">
                     @foreach([
-                        ['label' => 'Modal terdata', 'key' => 'capital_filled'],
-                        ['label' => 'Penjualan tahunan terdata', 'key' => 'annual_sales_filled'],
-                        ['label' => 'Omzet bulanan terdata', 'key' => 'monthly_revenue_filled'],
-                        ['label' => 'Jumlah pinjaman terdata', 'key' => 'loan_amount_filled'],
-                        ['label' => 'Sumber pinjaman terdata', 'key' => 'loan_source_filled'],
+                        ['Modal', 'capital_filled'],
+                        ['Penjualan Tahunan', 'annual_sales_filled'],
+                        ['Omzet Bulanan', 'monthly_revenue_filled'],
+                        ['Jumlah Pinjaman', 'loan_amount_filled'],
+                        ['Sumber Pinjaman', 'loan_source_filled'],
                     ] as $metric)
                         @php
-                            $filled = (int)($coverage[$metric['key']] ?? 0);
+                            $filled = (int)($coverage[$metric[1]] ?? 0);
                             $total = (int)($coverage['total_umkm'] ?? 0);
                         @endphp
                         <div class="col-md-6 col-xl">
                             <div class="border rounded-3 p-3 h-100">
-                                <div class="small text-body-secondary">{{ $metric['label'] }}</div>
+                                <div class="small text-body-secondary">{{ $metric[0] }} terdata</div>
                                 <div class="h3 mb-0">{{ number_format($filled, 0, ',', '.') }}</div>
-                                <div class="small text-body-secondary">{{ $coveragePercent($filled, $total) }} dari konteks aktif</div>
+                                <div class="small text-body-secondary">{{ $coveragePercent($filled, $total) }}</div>
                             </div>
                         </div>
                     @endforeach
                 </div>
-
-                <div class="row g-4">
-                    <div class="col-xl-8">
-                        <h3 class="h6">Cakupan Informasi Keuangan per Kecamatan</h3>
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Kecamatan</th>
-                                        <th class="text-end">UMKM</th>
-                                        <th class="text-end">Modal</th>
-                                        <th class="text-end">Penjualan</th>
-                                        <th class="text-end">Pinjaman</th>
-                                        <th class="text-end">Sumber Pinjaman</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse(($financial['districts'] ?? []) as $row)
-                                        <tr>
-                                            <td>{{ $row['name'] }}</td>
-                                            <td class="text-end">{{ number_format($row['total_umkm'], 0, ',', '.') }}</td>
-                                            <td class="text-end">{{ number_format($row['capital_filled'], 0, ',', '.') }}</td>
-                                            <td class="text-end">{{ number_format($row['annual_sales_filled'], 0, ',', '.') }}</td>
-                                            <td class="text-end">{{ number_format($row['loan_amount_filled'], 0, ',', '.') }}</td>
-                                            <td class="text-end">{{ number_format($row['loan_source_filled'], 0, ',', '.') }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr><td colspan="6" class="text-body-secondary">Belum tersedia.</td></tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4">
-                        <h3 class="h6">Sumber Pinjaman yang Terdata</h3>
-                        <div class="d-flex flex-column gap-2">
-                            @forelse(($financial['loanSources'] ?? []) as $row)
-                                <div class="d-flex justify-content-between gap-3 border-bottom py-2">
-                                    <span>{{ $row['name'] }}</span>
-                                    <strong>{{ number_format($row['total_umkm'], 0, ',', '.') }}</strong>
-                                </div>
-                            @empty
-                                <p class="text-body-secondary">Belum tersedia.</p>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
-                <div>
-                    <h3 class="h5 mb-1">Detail Nilai Keuangan Terdata</h3>
-                    <p class="text-body-secondary">
-                        Menampilkan maksimal 30 UMKM pada konteks aktif. Nilai kecil atau tidak lazim tetap ditampilkan apa adanya
-                        dan tidak diubah menjadi satuan lain.
-                    </p>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>UMKM</th>
-                                    <th>Kecamatan</th>
-                                    <th class="text-end">Modal</th>
-                                    <th class="text-end">Penjualan Tahunan</th>
-                                    <th class="text-end">Omzet Bulanan</th>
-                                    <th class="text-end">Pinjaman</th>
-                                    <th>Sumber Pinjaman</th>
-                                    <th>Mutu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse(collect($financial['details'] ?? [])->take(8) as $row)
-                                    <tr>
-                                        <td>
-                                            <div class="fw-semibold">{{ $row['business_name'] }}</div>
-                                            <div class="small text-body-secondary">{{ $row['umkm_code'] }}</div>
-                                        </td>
-                                        <td>{{ $row['district_name'] ?? 'Belum terasosiasi' }}</td>
-                                        <td class="text-end">{{ $formatMoney($row['capital_amount']) }}</td>
-                                        <td class="text-end">{{ $formatMoney($row['annual_sales_amount']) }}</td>
-                                        <td class="text-end">{{ $formatMoney($row['baseline_monthly_revenue']) }}</td>
-                                        <td class="text-end">{{ $formatMoney($row['loan_amount']) }}</td>
-                                        <td>{{ ($row['loan_source'] ?? '') !== '' ? $row['loan_source'] : 'Belum tersedia' }}</td>
-                                        <td>{{ $row['quality_status'] ?: 'Belum tersedia' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="8" class="text-body-secondary">Tidak ada data pada konteks aktif.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    @else
-        <section class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="h5">Akses Analitik Keuangan Belum Aktif</h2>
-                <p class="text-body-secondary mb-0">
-                    Informasi keuangan merupakan data internal sensitif dan hanya ditampilkan kepada akun yang memiliki izin
-                    <code>umkm.sensitive.financial</code>.
-                </p>
             </div>
         </section>
     @endif
+
+    <section class="row g-3">
+        <div class="col-lg-4">
+            <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+                <div class="card-body p-4">
+                    <span class="badge text-bg-primary-subtle text-primary-emphasis mb-2">Drill-down</span>
+                    <h2 class="h5">Data UMKM</h2>
+                    <p class="text-body-secondary mb-0">Cari, filter, dan buka detail record UMKM secara read-only.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4">
+            <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+                <div class="card-body p-4">
+                    <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Eksplorasi</span>
+                    <h2 class="h5">Analitik Internal</h2>
+                    <p class="text-body-secondary mb-0">Bandingkan wilayah, sektor, tenaga kerja, pemasaran, legalitas, dan mutu data.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4">
+            @if($data['can_view_financial'] ?? false)
+                <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+                    <div class="card-body p-4">
+                        <span class="badge text-bg-warning-subtle text-warning-emphasis mb-2">Sensitif</span>
+                        <h2 class="h5">Ekonomi & Keuangan</h2>
+                        <p class="text-body-secondary mb-0">Telusuri cakupan nilai keuangan dan source-quality issue tanpa normalisasi.</p>
+                    </div>
+                </a>
+            @else
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <span class="badge text-bg-secondary mb-2">Terbatas</span>
+                        <h2 class="h5">Ekonomi & Keuangan</h2>
+                        <p class="text-body-secondary mb-0">Akses memerlukan izin data keuangan sensitif.</p>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </section>
 </div>
 @endsection

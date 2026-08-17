@@ -12,7 +12,7 @@ class AdminDinasDashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_dinas_with_financial_permission_sees_internal_financial_analytics(): void
+    public function test_admin_dinas_with_financial_permission_sees_internal_financial_summary(): void
     {
         $user = $this->createAdminDinasUser(
             'dinas-financial@example.test',
@@ -22,13 +22,16 @@ class AdminDinasDashboardTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/dashboard')
             ->assertOk()
-            ->assertSee('Monitoring dan Analitik UMKM')
-            ->assertSee('Analitik Keuangan Internal')
+            ->assertSee('Monitoring UMKM Admin Dinas')
+            ->assertSee('Cakupan Keuangan')
             ->assertSee('Modal terdata')
-            ->assertSee('0 berbeda dari belum tersedia');
+            ->assertSee('0 berbeda dari belum tersedia')
+            ->assertSee('Buka Ekonomi & Keuangan', false)
+            ->assertDontSee('Detail Nilai Keuangan Terdata')
+            ->assertDontSee('Sumber Pinjaman yang Terdata');
     }
 
-    public function test_admin_dinas_without_financial_permission_does_not_receive_financial_detail(): void
+    public function test_admin_dinas_without_financial_permission_sees_restricted_financial_card_only(): void
     {
         $user = $this->createAdminDinasUser(
             'dinas-read-only@example.test',
@@ -38,7 +41,10 @@ class AdminDinasDashboardTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/dashboard')
             ->assertOk()
-            ->assertSee('Akses Analitik Keuangan Belum Aktif')
+            ->assertSee('Monitoring UMKM Admin Dinas')
+            ->assertSee('Akses memerlukan izin data keuangan sensitif')
+            ->assertDontSee('Modal terdata')
+            ->assertDontSee('Buka Ekonomi & Keuangan', false)
             ->assertDontSee('Detail Nilai Keuangan Terdata');
     }
 
