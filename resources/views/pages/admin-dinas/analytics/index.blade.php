@@ -36,6 +36,7 @@
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
                 <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-primary">Data UMKM</a>
+                <a href="{{ route('admin-dinas.analytics.decision', $baseFilter) }}" class="btn btn-dark">Analitik Keputusan</a>
                 <a href="{{ route('admin-dinas.analytics.spatial', $baseFilter) }}" class="btn btn-success">Peta Wilayah</a>
                 @if($data['can_view_financial'] ?? false)
                     <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="btn btn-warning">Ekonomi & Keuangan</a>

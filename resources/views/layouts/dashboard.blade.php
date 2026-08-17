@@ -127,7 +127,7 @@
         'admin_dinas' => [
             [
                 'label' => 'Operasional',
-                'summary' => 'Pembinaan, validasi, dan monitoring wilayah.',
+                'summary' => 'Pembinaan, validasi, dan pengelolaan data wilayah.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
@@ -161,11 +161,25 @@
                         'permission' => 'umkm.profile.review',
                         'icon' => 'check',
                     ],
+                ],
+            ],
+            [
+                'label' => 'Analitik & Keputusan',
+                'summary' => 'Visual analytics, dukungan keputusan, spasial, dan ekonomi.',
+                'items' => [
                     [
                         'title' => 'Analitik',
                         'description' => 'Visual analytics internal',
                         'detail' => 'Analisis wilayah, sektor, tenaga kerja, akses pasar, legalitas, dan mutu data sesuai kewenangan.',
                         'route' => 'admin-dinas.analytics.index',
+                        'permission' => 'umkm.read.official',
+                        'icon' => 'chart',
+                    ],
+                    [
+                        'title' => 'Analitik Keputusan',
+                        'description' => 'Persaingan, potensi relatif, micro-spatial',
+                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi baseline, mutu data, dan kedekatan spasial sebagai bahan pertimbangan pembinaan.',
+                        'route' => 'admin-dinas.analytics.decision',
                         'permission' => 'umkm.read.official',
                         'icon' => 'chart',
                     ],
@@ -187,8 +201,7 @@
                     ],
                 ],
             ],
-        ],
-        'kepala_dinas' => [
+        ],        'kepala_dinas' => [
             [
                 'label' => 'Eksekutif',
                 'summary' => 'Monitoring keputusan dan laporan strategis.',
@@ -822,6 +835,7 @@
                                         $menuEnabled = $routeExists && $permissionAllowed;
                                         $menuHref = $menuEnabled ? route($menuRoute) : '#';
                                         $menuActive = $routeExists && is_string($dashboardCurrentRoute) && $dashboardCurrentRoute === $menuRoute;
+                                        $menuDisplay = $dashboardMenuDisplay($menuItem);
                                     @endphp
 
                                     <a href="{{ $menuHref }}"

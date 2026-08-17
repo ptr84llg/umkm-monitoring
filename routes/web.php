@@ -344,6 +344,10 @@ Route::middleware(['auth', 'single.device'])->group(function () {
                 ->middleware('permission:umkm.read.official')
                 ->name('analytics.index');
 
+            Route::get('/analytics/decision', [AdminDinasController::class, 'decisionAnalytics'])
+                ->middleware('permission:umkm.read.official')
+                ->name('analytics.decision');
+
             Route::get('/analytics/spatial', [AdminDinasController::class, 'spatialAnalytics'])
                 ->middleware('permission:umkm.read.official')
                 ->name('analytics.spatial');

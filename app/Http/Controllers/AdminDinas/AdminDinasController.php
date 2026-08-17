@@ -9,6 +9,7 @@ use App\Models\Reference\BusinessCategoryReference;
 use App\Models\Reference\BusinessTypeReference;
 use App\Models\Umkm\Umkm;
 use App\Services\AdminDinas\AdminDinasDashboardService;
+use App\Services\AdminDinas\AdminDinasDecisionAnalyticsService;
 use App\Services\AdminDinas\AdminDinasSpatialAnalyticsService;
 use App\Services\AdminDinas\AdminDinasWorkspaceService;
 use App\Services\AdminDinas\UmkmOfficialService;
@@ -73,6 +74,26 @@ class AdminDinasController extends Controller
         ]);
 
         return view('pages.admin-dinas.analytics.index', compact('data'));
+    }
+
+    public function decisionAnalytics(
+        Request $request,
+        AdminDinasDecisionAnalyticsService $service,
+        AuditLogger $audit
+    ) {
+        $filters = $this->decisionAnalyticsFilters($request);
+        $canFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $canCoordinate = (bool) $request->user()?->hasPermission('umkm.sensitive.coordinate');
+        $data = $service->build($filters, $canFinancial, $canCoordinate);
+
+        $audit->log('admin_dinas.analytics.decision.view', $request, 'analytics', null, [], [
+            'filters' => $filters,
+            'financial_access' => $canFinancial,
+            'coordinate_access' => $canCoordinate,
+            'scope' => 'year_1_baseline_cross_sectional_spatial_decision_support',
+        ]);
+
+        return view('pages.admin-dinas.analytics.decision', compact('data'));
     }
 
     public function spatialAnalytics(Request $request, AdminDinasSpatialAnalyticsService $service, AuditLogger $audit)
@@ -161,6 +182,19 @@ class AdminDinasController extends Controller
             'type_id' => ['nullable', 'integer', 'min:1'],
             'marketing_method_id' => ['nullable', 'integer', 'min:1'],
             'quality_status' => ['nullable', 'string', 'max:80'],
+        ]);
+    }
+
+    private function decisionAnalyticsFilters(Request $request): array
+    {
+        return $request->validate([
+            'district_id' => ['nullable', 'integer', 'min:1'],
+            'village_id' => ['nullable', 'integer', 'min:1'],
+            'category_id' => ['nullable', 'integer', 'min:1'],
+            'type_id' => ['nullable', 'integer', 'min:1'],
+            'marketing_method_id' => ['nullable', 'integer', 'min:1'],
+            'quality_status' => ['nullable', 'string', 'max:80'],
+            'radius_meters' => ['nullable', 'integer', 'in:250,500,1000'],
         ]);
     }
 

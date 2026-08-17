@@ -49,6 +49,9 @@
                 <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-outline-primary">
                     Analitik Umum
                 </a>
+                <a href="{{ route('admin-dinas.analytics.decision', $baseFilter) }}" class="btn btn-dark">
+                    Analitik Keputusan
+                </a>
                 <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-secondary">
                     Data UMKM
                 </a>
