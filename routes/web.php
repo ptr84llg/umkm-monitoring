@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminDinas\AdminDinasController;
 use App\Http\Controllers\AdminDinas\UmkmAccountClaimReviewController;
 use App\Http\Controllers\PelakuUmkm\AccountClaimController;
+use App\Http\Controllers\PelakuUmkm\PelakuUmkmController;
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LandingPreviewController;
@@ -31,10 +32,10 @@ use Illuminate\Support\Facades\Route;
 | 4. login/logout;
 | 5. simple admin utama dashboard.
 |
-| Pelaku workspace, proposal, survey, expert validation, export, smoke pages,
-| and other deferred modules remain disabled at route level. Admin Dinas
-| read-only scope is active. Checkpoint 10A adds only account claim/activation
-| and Dinas claim review without activating the Pelaku workspace.
+| Checkpoint 10C activates only the verified Pelaku UMKM read-only workspace.
+| Proposal/profile override, survey, reporting, expert validation, export,
+| smoke pages, and other deferred modules remain disabled at route level.
+| Admin Dinas read-only scope and Checkpoint 10A claim review remain active.
 |
 */
 
@@ -372,6 +373,25 @@ Route::middleware('auth')->group(function () {
                 ->middleware(['permission:umkm.claim.review', 'throttle:5,1', 'safe.errors'])
                 ->name('account-claims.resend');
         });
+
+    Route::prefix('pelaku-umkm')
+        ->name('pelaku-umkm.')
+        ->middleware([
+            'role:pelaku_umkm',
+            'permission:umkm.workspace.access',
+            'pelaku.workspace.verified',
+        ])
+        ->group(function () {
+            Route::get('/dashboard', [PelakuUmkmController::class, 'dashboard'])
+                ->name('dashboard');
+
+            Route::get('/umkm', [PelakuUmkmController::class, 'index'])
+                ->name('umkm.index');
+
+            Route::get('/umkm/{umkm}', [PelakuUmkmController::class, 'show'])
+                ->name('umkm.show');
+        });
+
     Route::prefix('admin-utama')
         ->name('admin-utama.')
         ->middleware(['role:admin_utama'])

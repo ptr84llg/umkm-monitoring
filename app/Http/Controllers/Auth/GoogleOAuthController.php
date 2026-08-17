@@ -269,8 +269,8 @@ class GoogleOAuthController extends Controller
             ],
             'pelaku_umkm' => [
                 'route' => 'pelaku-umkm.dashboard',
-                'permission' => 'umkm.submit.update',
-                'prefixes' => ['/pelaku-umkm', '/proposals', '/survey'],
+                'permission' => 'umkm.workspace.access',
+                'prefixes' => ['/pelaku-umkm'],
             ],
             'validator_ahli' => [
                 'route' => 'expert.validator.list',

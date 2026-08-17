@@ -57,12 +57,16 @@ class PelakuAccountClaimActivationContractTest extends TestCase
         }
     }
 
-    public function test_checkpoint_10b_keeps_pelaku_workspace_disabled(): void
+    public function test_checkpoint_10c_exposes_only_verified_read_only_pelaku_workspace(): void
     {
         $this->assertTrue(Route::has('pelaku-claim.create'));
         $this->assertTrue(Route::has('pelaku-activation.activate'));
         $this->assertTrue(Route::has('admin-dinas.account-claims.index'));
-        $this->assertFalse(Route::has('pelaku-umkm.dashboard'));
+        $this->assertTrue(Route::has('pelaku-umkm.dashboard'));
+        $this->assertTrue(Route::has('pelaku-umkm.umkm.index'));
+        $this->assertTrue(Route::has('pelaku-umkm.umkm.show'));
+        $this->assertFalse(Route::has('pelaku-umkm.proposals.status'));
+        $this->assertFalse(Route::has('pelaku-umkm.survey'));
     }
 
     public function test_pelaku_claim_request_has_no_quality_or_provenance_input(): void

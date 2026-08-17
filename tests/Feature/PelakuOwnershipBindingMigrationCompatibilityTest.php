@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -34,6 +33,5 @@ class PelakuOwnershipBindingMigrationCompatibilityTest extends TestCase
         }
 
         $this->assertSame(0, DB::table('umkm_user_links')->count());
-        $this->assertFalse(Route::has('pelaku-umkm.dashboard'));
     }
 }
