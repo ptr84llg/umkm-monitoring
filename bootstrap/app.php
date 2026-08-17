@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'validate.umkm.internal.request' => \App\Http\Middleware\Internal\EnsureUmkmInternalRequest::class,
             'location.gate' => \App\Http\Middleware\Location\EnsureLocationGateVerified::class,
             'pelaku.workspace.verified' => \App\Http\Middleware\PelakuUmkm\EnsureVerifiedPelakuWorkspace::class,
+            'single.device' => \App\Http\Middleware\Security\EnforceSingleDeviceSession::class,
         ]);
 
         $middleware->redirectGuestsTo('/');

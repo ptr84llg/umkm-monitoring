@@ -307,7 +307,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.update');
 
 });
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'single.device'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])
         ->name('logout');
 

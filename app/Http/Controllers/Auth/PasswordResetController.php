@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use App\Services\Auth\LoginOtpService;
+use App\Services\Auth\SingleDeviceSessionService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -200,7 +201,7 @@ class PasswordResetController extends Controller
         ]);
     }
 
-    public function verifyOtp(Request $request, LoginOtpService $loginOtpService)
+    public function verifyOtp(Request $request, LoginOtpService $loginOtpService, SingleDeviceSessionService $singleDeviceSessions)
     {
         $payload = $this->pendingPasswordResetPayload($request);
         $guard = $loginOtpService->activeChallengeForPayload($payload, $request, LoginOtpService::PURPOSE_PASSWORD_RESET);
@@ -272,6 +273,7 @@ class PasswordResetController extends Controller
         $request->session()->forget('auth.password_reset_otp');
 
         if ($status === Password::PASSWORD_RESET) {
+            $singleDeviceSessions->revokeAllForUser($context['user']->fresh(), 'password_reset');
             $this->deleteResetTokenForEmail($context['email']);
 
             $message = 'Password berhasil diperbarui. Silakan login kembali.';

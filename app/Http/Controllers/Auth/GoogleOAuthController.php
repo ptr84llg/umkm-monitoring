@@ -8,6 +8,7 @@ use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Services\Auth\OAuthIdentityService;
+use App\Services\Auth\SingleDeviceSessionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +18,11 @@ use Throwable;
 
 class GoogleOAuthController extends Controller
 {
+    public function __construct(
+        private readonly SingleDeviceSessionService $singleDeviceSessions
+    ) {
+    }
+
     private const PENDING_SESSION_KEY = 'auth.google.pending';
 
     private const PUBLIC_IDENTITY_SESSION_KEY = 'auth.google.public_identity';
@@ -233,6 +239,7 @@ class GoogleOAuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $this->singleDeviceSessions->activate($user, $request, 'google', false, false);
 
         $user->forceFill([
             'last_login_at' => now(),

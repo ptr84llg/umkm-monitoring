@@ -7,6 +7,7 @@ use App\Models\Audit\SecurityEventLog;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Services\Auth\LoginOtpService;
+use App\Services\Auth\SingleDeviceSessionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,7 @@ class LoginController extends Controller
         return view('pages.auth.login');
     }
 
-    public function store(Request $request, AuditLogger $auditLogger, LoginOtpService $loginOtpService)
+    public function store(Request $request, AuditLogger $auditLogger, LoginOtpService $loginOtpService, SingleDeviceSessionService $singleDeviceSessions)
     {
         $identifierField = $request->has('identifier') ? 'identifier' : 'email';
 
@@ -118,6 +119,7 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+        $singleDeviceSessions->activate($user, $request, 'manual', false, false);
 
         $user->forceFill([
             'last_login_at' => now(),
@@ -141,9 +143,13 @@ class LoginController extends Controller
         return redirect()->to($redirectUrl);
     }
 
-    public function destroy(Request $request, AuditLogger $auditLogger)
+    public function destroy(Request $request, AuditLogger $auditLogger, SingleDeviceSessionService $singleDeviceSessions)
     {
         $auditLogger->log('logout', $request, 'users', $request->user()?->id);
+
+        if ($request->user()) {
+            $singleDeviceSessions->revokeCurrentSession($request->user(), $request, 'logout');
+        }
 
         Auth::logout();
 

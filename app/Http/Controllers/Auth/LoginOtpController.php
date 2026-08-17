@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Services\Auth\LoginOtpService;
+use App\Services\Auth\SingleDeviceSessionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +35,7 @@ class LoginOtpController extends Controller
         ]);
     }
 
-    public function verify(Request $request, LoginOtpService $loginOtpService, AuditLogger $auditLogger)
+    public function verify(Request $request, LoginOtpService $loginOtpService, AuditLogger $auditLogger, SingleDeviceSessionService $singleDeviceSessions)
     {
         $payload = $this->pendingPayload($request);
         $guard = $loginOtpService->activeChallengeForPayload($payload, $request);
@@ -79,6 +80,7 @@ class LoginOtpController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $singleDeviceSessions->activate($user, $request, 'manual_otp', true, true);
 
         $user->forceFill([
             'last_login_at' => now(),
