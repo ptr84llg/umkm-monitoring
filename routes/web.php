@@ -318,6 +318,10 @@ Route::middleware('auth')->group(function () {
                 ->middleware('permission:umkm.read.official')
                 ->name('analytics.index');
 
+            Route::get('/analytics/spatial', [AdminDinasController::class, 'spatialAnalytics'])
+                ->middleware('permission:umkm.read.official')
+                ->name('analytics.spatial');
+
             Route::get('/analytics/financial', [AdminDinasController::class, 'financialAnalytics'])
                 ->middleware('permission:umkm.sensitive.financial')
                 ->name('analytics.financial');

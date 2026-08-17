@@ -9,6 +9,7 @@ use App\Models\Reference\BusinessCategoryReference;
 use App\Models\Reference\BusinessTypeReference;
 use App\Models\Umkm\Umkm;
 use App\Services\AdminDinas\AdminDinasDashboardService;
+use App\Services\AdminDinas\AdminDinasSpatialAnalyticsService;
 use App\Services\AdminDinas\AdminDinasWorkspaceService;
 use App\Services\AdminDinas\UmkmOfficialService;
 use App\Services\Audit\AuditLogger;
@@ -72,6 +73,23 @@ class AdminDinasController extends Controller
         ]);
 
         return view('pages.admin-dinas.analytics.index', compact('data'));
+    }
+
+    public function spatialAnalytics(Request $request, AdminDinasSpatialAnalyticsService $service, AuditLogger $audit)
+    {
+        $filters = $this->analyticsFilters($request);
+        $canFinancial = (bool) $request->user()?->hasPermission('umkm.sensitive.financial');
+        $canCoordinate = (bool) $request->user()?->hasPermission('umkm.sensitive.coordinate');
+        $data = $service->build($filters, $canFinancial, $canCoordinate);
+
+        $audit->log('admin_dinas.analytics.spatial.view', $request, 'analytics', null, [], [
+            'filters' => $filters,
+            'financial_access' => $canFinancial,
+            'coordinate_access' => $canCoordinate,
+            'scope' => 'internal_spatial_read_only',
+        ]);
+
+        return view('pages.admin-dinas.analytics.spatial', compact('data'));
     }
 
     public function financialAnalytics(Request $request, AdminDinasWorkspaceService $service, AuditLogger $audit)
