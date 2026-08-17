@@ -266,19 +266,6 @@ img.umkm-system-logo,
     object-fit: contain;
 }
 
-.dashboard-brand-mark.system-brand-mark {
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid rgba(var(--umkm-primary-rgb), .14);
-    border-radius: 1rem;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(var(--umkm-primary-rgb), .045)),
-        rgba(255, 255, 255, .82);
-    box-shadow:
-        0 .45rem 1rem rgba(var(--umkm-primary-rgb), .08),
-        inset 0 0 0 1px rgba(255, 255, 255, .62);
-}
-
 .dashboard-brand-mark.system-brand-mark .system-brand-image {
     width: 2.15rem;
     height: 2.15rem;

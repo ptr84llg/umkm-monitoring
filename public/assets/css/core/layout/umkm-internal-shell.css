@@ -865,7 +865,7 @@
     }
 }
 
-/* INTERNALLAYOUT-UI2-FIX1: themeable top navbar and scrollbar */
+/* INTERNALLAYOUT-UI2-FIX1: theme-aware internal scrollbar and topbar controls */
 .layout-dashboard,
 .layout-dashboard * {
     scrollbar-width: thin;
@@ -904,14 +904,7 @@
 }
 
 .dashboard-topbar {
-    border-bottom: 1px solid rgba(var(--umkm-primary-rgb), .18);
-    background:
-        linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .11), rgba(255, 255, 255, .92) 46%, rgba(var(--umkm-accent-rgb), .075)),
-        rgba(255, 255, 255, .90);
-    box-shadow:
-        0 .85rem 2rem rgba(var(--umkm-ink-rgb), .07),
-        0 .18rem 0 rgba(var(--umkm-primary-rgb), .11);
-    backdrop-filter: blur(22px) saturate(1.16);
+    border-bottom-color: rgba(255, 255, 255, .18);
 }
 
 .dashboard-topbar::after {
@@ -919,9 +912,8 @@
     position: absolute;
     inset: auto 0 0 0;
     height: .18rem;
-    background:
-        linear-gradient(90deg, transparent 0%, rgba(var(--umkm-primary-rgb), .30) 16%, var(--umkm-primary) 50%, rgba(var(--umkm-primary-rgb), .30) 84%, transparent 100%);
-    opacity: .86;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, .18) 16%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, .18) 84%, transparent 100%);
+    opacity: .9;
     pointer-events: none;
 }
 
@@ -930,40 +922,19 @@
     isolation: isolate;
 }
 
-.dashboard-brand,
 .dashboard-mega-trigger,
 .dashboard-user-chip,
 .dashboard-topbar-link,
 .dashboard-logout-btn,
 .dashboard-icon-button {
     border-color: rgba(var(--umkm-primary-rgb), .12);
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(var(--umkm-primary-rgb), .045)),
-        rgba(255, 255, 255, .82);
-}
-
-.dashboard-brand {
-    padding: .25rem .35rem .25rem 0;
-    border-radius: 1.2rem;
-}
-
-.dashboard-brand::after {
-    content: "";
-    align-self: stretch;
-    width: 1px;
-    min-height: 2.2rem;
-    margin-left: .2rem;
-    background: linear-gradient(180deg, transparent, rgba(var(--umkm-primary-rgb), .22), transparent);
+    background: linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(var(--umkm-primary-rgb), .045)), rgba(255, 255, 255, .82);
 }
 
 .dashboard-mega-trigger {
     border-color: rgba(var(--umkm-primary-rgb), .18);
-    background:
-        linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .10), rgba(255, 255, 255, .92)),
-        rgba(255, 255, 255, .88);
-    box-shadow:
-        0 .55rem 1.25rem rgba(var(--umkm-primary-rgb), .08),
-        inset 0 0 0 1px rgba(255, 255, 255, .65);
+    background: linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .10), rgba(255, 255, 255, .92)), rgba(255, 255, 255, .88);
+    box-shadow: 0 .55rem 1.25rem rgba(var(--umkm-primary-rgb), .08), inset 0 0 0 1px rgba(255, 255, 255, .65);
 }
 
 .dashboard-mega-trigger-icon {
@@ -972,10 +943,8 @@
 }
 
 .dashboard-shell[data-mega-menu="open"] .dashboard-topbar {
-    border-bottom-color: rgba(var(--umkm-primary-rgb), .28);
-    box-shadow:
-        0 1rem 2.4rem rgba(var(--umkm-ink-rgb), .08),
-        0 .22rem 0 rgba(var(--umkm-primary-rgb), .18);
+    border-bottom-color: rgba(255, 255, 255, .30);
+    box-shadow: 0 1rem 2.4rem rgba(var(--umkm-ink-rgb), .08), 0 .22rem 0 rgba(255, 255, 255, .16);
 }
 
 .dashboard-shell[data-mega-menu="open"] .dashboard-mega-trigger,
@@ -984,9 +953,7 @@
 .dashboard-topbar-link:hover,
 .dashboard-logout-btn:hover {
     border-color: rgba(var(--umkm-primary-rgb), .28);
-    background:
-        linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .13), rgba(255, 255, 255, .96)),
-        rgba(255, 255, 255, .94);
+    background: linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .13), rgba(255, 255, 255, .96)), rgba(255, 255, 255, .94);
 }
 
 .dashboard-mega-panel,
@@ -1021,74 +988,6 @@
     border-radius: 999px;
     background: rgba(var(--umkm-primary-rgb), .58);
 }
-
-@media (max-width: 991.98px) {
-    .dashboard-topbar {
-        background:
-            linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .13), rgba(255, 255, 255, .94) 55%),
-            rgba(255, 255, 255, .92);
-    }
-
-    .dashboard-brand::after {
-        display: none;
-    }
-}
-
-/* INTERNALLAYOUT-UI3: scroll-aware topbar state */
-.dashboard-topbar {
-    opacity: 1;
-    transition:
-        opacity .24s ease,
-        background .24s ease,
-        box-shadow .24s ease,
-        border-color .24s ease,
-        backdrop-filter .24s ease;
-}
-
-.dashboard-shell[data-scroll-state="scrolling"]:not([data-mega-menu="open"]):not([data-mobile-menu="open"]) .dashboard-topbar {
-    opacity: .78;
-    background:
-        linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .075), rgba(255, 255, 255, .80) 52%, rgba(var(--umkm-accent-rgb), .045)),
-        rgba(255, 255, 255, .78);
-    box-shadow:
-        0 .45rem 1.25rem rgba(var(--umkm-ink-rgb), .045),
-        0 .12rem 0 rgba(var(--umkm-primary-rgb), .08);
-    backdrop-filter: blur(16px) saturate(1.05);
-}
-
-.dashboard-shell[data-scroll-state="top"] .dashboard-topbar,
-.dashboard-shell[data-scroll-state="bottom"] .dashboard-topbar,
-.dashboard-shell[data-mega-menu="open"] .dashboard-topbar,
-.dashboard-shell[data-mobile-menu="open"] .dashboard-topbar,
-.dashboard-topbar:hover,
-.dashboard-topbar:focus-within {
-    opacity: 1;
-}
-
-.dashboard-shell[data-scroll-state="bottom"] .dashboard-topbar {
-    border-bottom-color: rgba(var(--umkm-primary-rgb), .26);
-    box-shadow:
-        0 .95rem 2.25rem rgba(var(--umkm-ink-rgb), .075),
-        0 .18rem 0 rgba(var(--umkm-primary-rgb), .16);
-}
-
-.dashboard-shell[data-scroll-state="scrolling"] .dashboard-topbar:hover,
-.dashboard-shell[data-scroll-state="scrolling"] .dashboard-topbar:focus-within {
-    background:
-        linear-gradient(135deg, rgba(var(--umkm-primary-rgb), .12), rgba(255, 255, 255, .94) 48%, rgba(var(--umkm-accent-rgb), .075)),
-        rgba(255, 255, 255, .92);
-    box-shadow:
-        0 .95rem 2.25rem rgba(var(--umkm-ink-rgb), .08),
-        0 .18rem 0 rgba(var(--umkm-primary-rgb), .16);
-    backdrop-filter: blur(22px) saturate(1.16);
-}
-
-/* MEGAMENU-BOOTSTRAPFIRST-1A: topbar hover opacity guard */
-.dashboard-shell[data-scroll-state="scrolling"] .dashboard-topbar:hover,
-.dashboard-shell[data-scroll-state="scrolling"] .dashboard-topbar:focus-within {
-    opacity: 1;
-}
-
 /* BOOTSTRAPFIRST-GLOBAL-1A: internal shell non-mega hooks */
 .dashboard-brand-copy,
 .dashboard-user-copy,
