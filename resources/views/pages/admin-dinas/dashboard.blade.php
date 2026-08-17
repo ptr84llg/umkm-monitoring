@@ -20,6 +20,7 @@
         'category_id' => $filters['category_id'] ?? null,
         'type_id' => $filters['type_id'] ?? null,
         'marketing_method_id' => $filters['marketing_method_id'] ?? null,
+        'quality_status' => $filters['quality_status'] ?? null,
     ], static fn ($value) => $value !== null && $value !== '');
 
     $maxDistrict = max(1, (int) ($districts->max('total_umkm') ?? 1));
@@ -43,7 +44,7 @@
 @endphp
 
 <div class="d-flex flex-column gap-4">
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-xl-row justify-content-between gap-3">
                 <div>
@@ -82,7 +83,7 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
@@ -110,13 +111,28 @@
                         </select>
                     </div>
                 @endforeach
-
-                <div class="col-md-12 col-xl-auto d-flex align-items-end">
+                <div class="col-md-6 col-xl">
+                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <select class="form-select" id="quality_status" name="quality_status">
+                        <option value="">Semua</option>
+                        @foreach(($options['qualityStatuses'] ?? []) as $value)
+                            <option value="{{ $value }}" @selected((string)($filters['quality_status'] ?? '') === (string)$value)>{{ \Illuminate\Support\Str::headline((string)$value) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    <a href="{{ route('admin-dinas.dashboard') }}" class="btn btn-outline-secondary">Reset</a>
                     <button class="btn btn-primary px-4" type="submit">Terapkan</button>
                 </div>
             </form>
         </div>
     </section>
+
+    @include('pages.admin-dinas.partials.active-context', [
+        'contextFilters' => $filters,
+        'contextOptions' => $options,
+        'contextCount' => $summary['total_umkm'] ?? 0,
+    ])
 
     <section class="row g-3">
         @foreach([
@@ -126,7 +142,7 @@
             ['UMKM dengan flag mutu', $summary['quality_affected'] ?? 0, 'Flag mutu tidak otomatis berarti nilai sumber salah'],
         ] as $metric)
             <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body">
                         <div class="small text-body-secondary">{{ $metric[0] }}</div>
                         <div class="display-6 fw-semibold">{{ number_format((int)$metric[1], 0, ',', '.') }}</div>
@@ -139,7 +155,7 @@
 
     <section class="row g-4">
         <div class="col-xl-7">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between gap-3 mb-3">
                         <div>
@@ -169,7 +185,7 @@
         </div>
 
         <div class="col-xl-5">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5 mb-1">Fokus Sektor</h2>
                     <p class="text-body-secondary mb-3">Lima kategori dengan jumlah UMKM terbesar pada konteks aktif.</p>
@@ -195,7 +211,7 @@
     </section>
 
     @if($data['can_view_financial'] ?? false)
-        <section class="card border-0 shadow-sm">
+        <section class="card border shadow-sm">
             <div class="card-body p-4">
                 <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                     <div>
@@ -239,7 +255,7 @@
 
     <section class="row g-3">
         <div class="col-lg-4">
-            <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+            <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="card border shadow-sm h-100 text-decoration-none text-body">
                 <div class="card-body p-4">
                     <span class="badge text-bg-primary-subtle text-primary-emphasis mb-2">Drill-down</span>
                     <h2 class="h5">Data UMKM</h2>
@@ -248,7 +264,7 @@
             </a>
         </div>
         <div class="col-lg-4">
-            <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+            <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="card border shadow-sm h-100 text-decoration-none text-body">
                 <div class="card-body p-4">
                     <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Eksplorasi</span>
                     <h2 class="h5">Analitik Internal</h2>
@@ -258,7 +274,7 @@
         </div>
         <div class="col-lg-4">
             @if($data['can_view_financial'] ?? false)
-                <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="card border-0 shadow-sm h-100 text-decoration-none text-body">
+                <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="card border shadow-sm h-100 text-decoration-none text-body">
                     <div class="card-body p-4">
                         <span class="badge text-bg-warning-subtle text-warning-emphasis mb-2">Sensitif</span>
                         <h2 class="h5">Ekonomi & Keuangan</h2>
@@ -266,7 +282,7 @@
                     </div>
                 </a>
             @else
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body p-4">
                         <span class="badge text-bg-secondary mb-2">Terbatas</span>
                         <h2 class="h5">Ekonomi & Keuangan</h2>

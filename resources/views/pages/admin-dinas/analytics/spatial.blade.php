@@ -32,7 +32,7 @@
 @endphp
 
 <div class="d-flex flex-column gap-4">
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-xl-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">
@@ -61,7 +61,7 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between gap-3 mb-3">
                 <div>
@@ -155,6 +155,12 @@
         </div>
     </section>
 
+    @include('pages.admin-dinas.partials.active-context', [
+        'contextFilters' => $filters,
+        'contextOptions' => $options,
+        'contextCount' => $summary['total_umkm'] ?? 0,
+    ])
+
     <section class="row g-3">
         @foreach([
             ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Record operasional sesuai filter'],
@@ -164,7 +170,7 @@
             ['Cakupan coordinate-mapped', number_format((float)($summary['coordinate_mapped_percent'] ?? 0), 2, ',', '.') . '%', 'Bukan cakupan asosiasi administratif'],
         ] as $metric)
             <div class="col-md-6 col-xl">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body">
                         <div class="small text-body-secondary">{{ $metric[0] }}</div>
                         <div class="h2 mb-1">
@@ -190,7 +196,7 @@
 
     <section class="row g-4">
         <div class="col-xl-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                         <div>
@@ -248,7 +254,7 @@
         </div>
 
         <div class="col-xl-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Detail Wilayah</span>
                     <h2 class="h5" id="spatialRegionName">
@@ -295,7 +301,7 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                 <div>

@@ -7,6 +7,15 @@
     $rows = $data['rows'];
     $filters = $data['filters'] ?? [];
     $options = $data['filter_options'] ?? [];
+
+    $baseFilter = array_filter([
+        'district_id' => $filters['district_id'] ?? null,
+        'village_id' => $filters['village_id'] ?? null,
+        'category_id' => $filters['category_id'] ?? null,
+        'type_id' => $filters['type_id'] ?? null,
+        'marketing_method_id' => $filters['marketing_method_id'] ?? null,
+        'quality_status' => $filters['quality_status'] ?? null,
+    ], static fn ($value) => $value !== null && $value !== '');
     $canFinancial = (bool)($data['can_view_financial'] ?? false);
 
     $label = static fn ($value): string => $value
@@ -39,7 +48,7 @@
 @endphp
 
 <div class="d-flex flex-column gap-4">
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Read-only Internal</span>
@@ -49,50 +58,37 @@
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
-                <a href="{{ route('admin-dinas.dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
-                <a href="{{ route('admin-dinas.analytics.index') }}" class="btn btn-primary">Buka Analitik</a>
+                <a href="{{ route('admin-dinas.dashboard', $baseFilter) }}" class="btn btn-outline-secondary">Dashboard</a>
+                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-primary">Buka Analitik</a>
             </div>
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <form method="GET" action="{{ route('admin-dinas.umkm.index') }}" class="row g-3">
                 <div class="col-12 col-xl-4">
                     <label class="form-label" for="search">Cari UMKM</label>
                     <input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Nama, kode, atau source record ID">
                 </div>
-
                 <div class="col-md-6 col-xl-2">
                     <label class="form-label" for="district_id">Kecamatan</label>
                     <select class="form-select" id="district_id" name="district_id">
-                        <option value="">Semua</option>
+                        <option value="">Semua Kecamatan</option>
                         @foreach(($options['districts'] ?? []) as $item)
                             <option value="{{ $item->id }}" @selected((string)($filters['district_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
-
                 <div class="col-md-6 col-xl-2">
-                    <label class="form-label" for="category_id">Kategori</label>
-                    <select class="form-select" id="category_id" name="category_id">
-                        <option value="">Semua</option>
-                        @foreach(($options['categories'] ?? []) as $item)
-                            <option value="{{ $item->id }}" @selected((string)($filters['category_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                    <label class="form-label" for="village_id">Kelurahan</label>
+                    <select class="form-select" id="village_id" name="village_id">
+                        <option value="">Semua Kelurahan</option>
+                        @foreach(($options['villages'] ?? []) as $item)
+                            <option value="{{ $item->id }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
-                    <select class="form-select" id="quality_status" name="quality_status">
-                        <option value="">Semua</option>
-                        @foreach(($options['qualityStatuses'] ?? []) as $value)
-                            <option value="{{ $value }}" @selected((string)($filters['quality_status'] ?? '') === (string)$value)>{{ $label($value) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
                 <div class="col-md-6 col-xl-2">
                     <label class="form-label" for="per_page">Baris</label>
                     <select class="form-select" id="per_page" name="per_page">
@@ -101,53 +97,46 @@
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-12">
-                    <details class="border rounded-3 p-3 bg-body-tertiary" @if($advancedActive) open @endif>
-                        <summary class="fw-semibold">Filter Lanjutan</summary>
-                        <div class="row g-3 mt-1">
-                            <div class="col-md-4">
-                                <label class="form-label" for="village_id">Kelurahan</label>
-                                <select class="form-select" id="village_id" name="village_id">
-                                    <option value="">Semua Kelurahan</option>
-                                    @foreach(($options['villages'] ?? []) as $item)
-                                        <option value="{{ $item->id }}" @selected((string)($filters['village_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label" for="type_id">Jenis Usaha</label>
-                                <select class="form-select" id="type_id" name="type_id">
-                                    <option value="">Semua Jenis</option>
-                                    @foreach(($options['types'] ?? []) as $item)
-                                        <option value="{{ $item->id }}" @selected((string)($filters['type_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label" for="marketing_method_id">Metode Pemasaran</label>
-                                <select class="form-select" id="marketing_method_id" name="marketing_method_id">
-                                    <option value="">Semua Metode</option>
-                                    @foreach(($options['marketingMethods'] ?? []) as $item)
-                                        <option value="{{ $item->id }}" @selected((string)($filters['marketing_method_id'] ?? '') === (string)$item->id)>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </details>
+                <div class="col-md-6 col-xl-2 d-flex align-items-end gap-2">
+                    <a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary flex-fill">Reset</a>
+                    <button class="btn btn-primary flex-fill" type="submit">Terapkan</button>
                 </div>
-
-                <div class="col-12 d-flex justify-content-end gap-2">
-                    <a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary">Reset</a>
-                    <button class="btn btn-primary" type="submit">Terapkan Filter</button>
+                @foreach([
+                    ['category_id', 'Kategori', $options['categories'] ?? []],
+                    ['type_id', 'Jenis Usaha', $options['types'] ?? []],
+                    ['marketing_method_id', 'Pemasaran', $options['marketingMethods'] ?? []],
+                ] as $filter)
+                    <div class="col-md-6 col-xl-3">
+                        <label class="form-label" for="{{ $filter[0] }}">{{ $filter[1] }}</label>
+                        <select class="form-select" id="{{ $filter[0] }}" name="{{ $filter[0] }}">
+                            <option value="">Semua</option>
+                            @foreach($filter[2] as $item)
+                                <option value="{{ $item->id }}" @selected((string)($filters[$filter[0]] ?? '') === (string)$item->id)>{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endforeach
+                <div class="col-md-6 col-xl-3">
+                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <select class="form-select" id="quality_status" name="quality_status">
+                        <option value="">Semua</option>
+                        @foreach(($options['qualityStatuses'] ?? []) as $value)
+                            <option value="{{ $value }}" @selected((string)($filters['quality_status'] ?? '') === (string)$value)>{{ $label($value) }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </form>
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    @include('pages.admin-dinas.partials.active-context', [
+        'contextFilters' => $filters,
+        'contextOptions' => $options,
+        'contextCount' => $rows->total(),
+        'contextSearch' => $filters['search'] ?? null,
+    ])
+
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
                 <div>

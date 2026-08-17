@@ -28,7 +28,7 @@ class AdminDinasUiRefinementTest extends TestCase
             ->assertDontSee('Sumber Pinjaman yang Terdata');
     }
 
-    public function test_data_umkm_has_advanced_filters_and_custom_pagination_copy(): void
+    public function test_data_umkm_has_primary_filters_active_context_and_custom_pagination_copy(): void
     {
         $user = $this->createAdminDinasUser('ui-data@example.test', true);
 
@@ -42,10 +42,15 @@ class AdminDinasUiRefinementTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/umkm')
             ->assertOk()
-            ->assertSee('Filter Lanjutan')
+            ->assertDontSee('Filter Lanjutan')
+            ->assertSee('Konteks Aktif')
+            ->assertSee('Cari UMKM')
+            ->assertSee('Kecamatan')
             ->assertSee('Kelurahan')
+            ->assertSee('Kategori')
             ->assertSee('Jenis Usaha')
-            ->assertSee('Metode Pemasaran')
+            ->assertSee('Pemasaran')
+            ->assertSee('Mutu Data')
             ->assertSee('Halaman 1 dari 1')
             ->assertSee('UMKM UI TEST');
     }
@@ -61,11 +66,17 @@ class AdminDinasUiRefinementTest extends TestCase
 
         $this->assertStringNotContainsString('<progress', $response->getContent());
 
-        $viewSource = file_get_contents(resource_path('views/pages/admin-dinas/analytics/index.blade.php'));
+        $viewSource = file_get_contents(
+            resource_path('views/pages/admin-dinas/analytics/index.blade.php')
+        );
+
         $this->assertIsString($viewSource);
         $this->assertStringContainsString('progress-bar bg-success', $viewSource);
         $this->assertStringContainsString('progress-bar bg-warning', $viewSource);
-        $this->assertStringContainsString("\$data['legality_identified'] ?? 0", $viewSource);
+        $this->assertStringContainsString(
+            "\$data['legality_identified'] ?? 0",
+            $viewSource
+        );
     }
 
     public function test_financial_page_keeps_source_literal_quality_separation_copy(): void

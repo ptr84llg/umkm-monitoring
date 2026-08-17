@@ -27,7 +27,7 @@
 @endphp
 
 <div class="d-flex flex-column gap-4">
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Visual Analytics Internal</span>
@@ -44,11 +44,12 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <form method="GET" action="{{ route('admin-dinas.analytics.index') }}" class="row g-3">
                 @foreach([
                     ['district_id', 'Kecamatan', $options['districts'] ?? []],
+                    ['village_id', 'Kelurahan', $options['villages'] ?? []],
                     ['category_id', 'Kategori', $options['categories'] ?? []],
                     ['type_id', 'Jenis Usaha', $options['types'] ?? []],
                     ['marketing_method_id', 'Pemasaran', $options['marketingMethods'] ?? []],
@@ -63,8 +64,7 @@
                         </select>
                     </div>
                 @endforeach
-
-                <div class="col-md-8 col-xl">
+                <div class="col-md-6 col-xl">
                     <label class="form-label" for="quality_status">Mutu Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
@@ -73,14 +73,19 @@
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-md-4 col-xl-auto d-flex align-items-end gap-2">
+                <div class="col-12 d-flex justify-content-end gap-2">
                     <a href="{{ route('admin-dinas.analytics.index') }}" class="btn btn-outline-secondary">Reset</a>
                     <button class="btn btn-primary" type="submit">Terapkan</button>
                 </div>
             </form>
         </div>
     </section>
+
+    @include('pages.admin-dinas.partials.active-context', [
+        'contextFilters' => $filters,
+        'contextOptions' => $options,
+        'contextCount' => $summary['total_umkm'] ?? 0,
+    ])
 
     <section class="row g-3">
         @foreach([
@@ -91,7 +96,7 @@
             ['UMKM dengan Flag Mutu', $summary['quality_affected'] ?? 0, 'Flag terbuka'],
         ] as $metric)
             <div class="col-md-6 col-xl">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body">
                         <div class="small text-body-secondary">{{ $metric[0] }}</div>
                         <div class="h2 mb-1">{{ number_format((int)$metric[1], 0, ',', '.') }}</div>
@@ -104,7 +109,7 @@
 
     <section class="row g-4">
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Profil Sektor · Kecamatan</h2>
                     <p class="text-body-secondary">Distribusi UMKM yang terasosiasi ke kecamatan.</p>
@@ -124,7 +129,7 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Profil Sektor · Kategori</h2>
                     <p class="text-body-secondary">Kategori berasal dari klasifikasi yang tersimpan.</p>
@@ -146,7 +151,7 @@
 
     <section class="row g-4">
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Jenis Usaha</h2>
                     <div class="d-flex flex-column gap-3">
@@ -164,7 +169,7 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Tenaga Kerja per Kecamatan</h2>
                     <p class="text-body-secondary">Akumulasi employee_count yang terdata pada sumber.</p>
@@ -186,7 +191,7 @@
 
     <section class="row g-4">
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Akses Pasar · Metode Pemasaran</h2>
                     <div class="d-flex flex-column gap-3">
@@ -204,7 +209,7 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Mutu Data · Kelompok Flag</h2>
                     <p class="text-body-secondary mb-2">Flag merupakan hasil pemeriksaan mutu dan bukan koreksi otomatis.</p>

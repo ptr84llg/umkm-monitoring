@@ -10,6 +10,8 @@
     $analysis = $data['loan_source_analysis'] ?? [];
     $financial = $data['financial'] ?? [];
 
+    $baseFilter = array_filter($filters, static fn ($value) => $value !== null && $value !== '');
+
     $money = static fn ($value): string => ($value === null || $value === '')
         ? 'Belum tersedia'
         : 'Rp ' . number_format((float)$value, 0, ',', '.');
@@ -37,7 +39,7 @@
 @endphp
 
 <div class="d-flex flex-column gap-4">
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Internal · Data Sensitif</span>
@@ -47,17 +49,18 @@
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
-                <a href="{{ route('admin-dinas.analytics.index') }}" class="btn btn-outline-primary">Analitik Umum</a>
-                <a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary">Data UMKM</a>
+                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-outline-primary">Analitik Umum</a>
+                <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-secondary">Data UMKM</a>
             </div>
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <form method="GET" action="{{ route('admin-dinas.analytics.financial') }}" class="row g-3">
                 @foreach([
                     ['district_id', 'Kecamatan', $options['districts'] ?? []],
+                    ['village_id', 'Kelurahan', $options['villages'] ?? []],
                     ['category_id', 'Kategori', $options['categories'] ?? []],
                     ['type_id', 'Jenis Usaha', $options['types'] ?? []],
                     ['marketing_method_id', 'Pemasaran', $options['marketingMethods'] ?? []],
@@ -72,8 +75,7 @@
                         </select>
                     </div>
                 @endforeach
-
-                <div class="col-md-8 col-xl">
+                <div class="col-md-6 col-xl">
                     <label class="form-label" for="quality_status">Mutu Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
@@ -82,14 +84,19 @@
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-md-4 col-xl-auto d-flex align-items-end gap-2">
+                <div class="col-12 d-flex justify-content-end gap-2">
                     <a href="{{ route('admin-dinas.analytics.financial') }}" class="btn btn-outline-secondary">Reset</a>
                     <button class="btn btn-warning" type="submit">Terapkan</button>
                 </div>
             </form>
         </div>
     </section>
+
+    @include('pages.admin-dinas.partials.active-context', [
+        'contextFilters' => $filters,
+        'contextOptions' => $options,
+        'contextCount' => $coverage['total_umkm'] ?? 0,
+    ])
 
     <section class="alert alert-warning mb-0">
         <strong>0 berbeda dari belum tersedia.</strong>
@@ -109,7 +116,7 @@
                 $total = (int)($coverage['total_umkm'] ?? 0);
             @endphp
             <div class="col-md-6 col-xl">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body">
                         <div class="small text-body-secondary">{{ $metric[0] }} terdata</div>
                         <div class="h2 mb-0">{{ number_format($filled, 0, ',', '.') }}</div>
@@ -120,7 +127,7 @@
         @endforeach
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <h2 class="h5">Cakupan Keuangan per Kecamatan</h2>
             <p class="text-body-secondary">Tabel menunjukkan jumlah UMKM dengan nilai terdata pada masing-masing unsur keuangan.</p>
@@ -158,7 +165,7 @@
 
     <section class="row g-4">
         <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Sumber Pinjaman Teridentifikasi</h2>
                     <p class="text-body-secondary">Nilai sumber ditampilkan apa adanya dan tidak dinormalisasi menjadi kategori lain.</p>
@@ -208,7 +215,7 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border shadow-sm">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                 <div>

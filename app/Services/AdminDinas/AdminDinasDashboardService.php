@@ -51,6 +51,10 @@ class AdminDinasDashboardService
             });
         }
 
+        if (! empty($filters['quality_status'])) {
+            $query->where('umkms.quality_status', (string) $filters['quality_status']);
+        }
+
         if (! empty($filters['district_id']) && Schema::hasTable('umkm_locations')) {
             $districtId = (int) $filters['district_id'];
 
@@ -133,6 +137,7 @@ class AdminDinasDashboardService
         $categories = collect();
         $types = collect();
         $marketingMethods = collect();
+        $qualityStatuses = collect();
 
         if (Schema::hasTable('regions') && Schema::hasTable('umkm_locations')) {
             $districts = DB::table('regions as r')
@@ -180,7 +185,16 @@ class AdminDinasDashboardService
                 ->get(['id', 'name']);
         }
 
-        return compact('districts', 'villages', 'categories', 'types', 'marketingMethods');
+        if (Schema::hasColumn('umkms', 'quality_status')) {
+            $qualityStatuses = DB::table('umkms')
+                ->whereNotNull('quality_status')
+                ->whereRaw("TRIM(quality_status) <> ''")
+                ->distinct()
+                ->orderBy('quality_status')
+                ->pluck('quality_status');
+        }
+
+        return compact('districts', 'villages', 'categories', 'types', 'marketingMethods', 'qualityStatuses');
     }
 
     private function workforceRecorded(array $filters): int
