@@ -58,6 +58,7 @@ _ide_helper.php
 !/database/migrations/2026_08_17_000003_create_umkm_account_claim_activation.php
 !/database/migrations/2026_08_17_000004_add_verified_ownership_binding_to_umkm_user_links.php
 !/database/migrations/2026_08_17_000005_ensure_pelaku_workspace_permission.php
+!/database/migrations/2026_08_17_000006_create_immutable_profile_override.php
 
 Homestead.json
 Homestead.yaml

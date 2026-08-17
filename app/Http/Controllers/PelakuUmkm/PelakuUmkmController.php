@@ -4,7 +4,9 @@ namespace App\Http\Controllers\PelakuUmkm;
 
 use App\Http\Controllers\Controller;
 use App\Models\Umkm\Umkm;
+use App\Services\AdminDinas\UmkmOfficialService;
 use App\Services\Audit\AuditLogger;
+use App\Services\PelakuUmkm\EffectiveUmkmProfileService;
 use App\Services\PelakuUmkm\PelakuWorkspaceAccessService;
 use Illuminate\Http\Request;
 
@@ -56,6 +58,7 @@ class PelakuUmkmController extends Controller
         Request $request,
         Umkm $umkm,
         PelakuWorkspaceAccessService $accessService,
+        EffectiveUmkmProfileService $profiles,
         AuditLogger $auditLogger
     ) {
         if (! $accessService->owns($request->user(), $umkm)) {
@@ -69,6 +72,8 @@ class PelakuUmkmController extends Controller
             $umkm->id
         );
 
-        return view('pages.pelaku-umkm.umkm-show', compact('umkm'));
+        $effectiveProfile = $profiles->resolve($umkm);
+
+        return view('pages.pelaku-umkm.umkm-show', compact('umkm', 'effectiveProfile'));
     }
 }

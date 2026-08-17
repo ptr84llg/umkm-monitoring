@@ -95,4 +95,14 @@ class Umkm extends Model
     {
         return $this->hasMany(UmkmUpdateSubmission::class);
     }
+
+    public function profileOverrideRevisions(): HasMany
+    {
+        return $this->hasMany(UmkmProfileOverrideRevision::class);
+    }
+
+    public function currentProfileOverride(): HasOne
+    {
+        return $this->hasOne(UmkmCurrentProfileOverride::class);
+    }
 }

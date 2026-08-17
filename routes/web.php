@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDinas\AdminDinasController;
 use App\Http\Controllers\AdminDinas\UmkmAccountClaimReviewController;
 use App\Http\Controllers\PelakuUmkm\AccountClaimController;
 use App\Http\Controllers\PelakuUmkm\PelakuUmkmController;
+use App\Http\Controllers\PelakuUmkm\ProfileOverrideController;
 use App\Http\Controllers\AdminUtama\AdminUtamaController;
 use App\Http\Controllers\Api\Public\LandingComponentController;
 use App\Http\Controllers\Api\Public\LandingPreviewController;
@@ -32,10 +33,10 @@ use Illuminate\Support\Facades\Route;
 | 4. login/logout;
 | 5. simple admin utama dashboard.
 |
-| Checkpoint 10C activates only the verified Pelaku UMKM read-only workspace.
-| Proposal/profile override, survey, reporting, expert validation, export,
-| smoke pages, and other deferred modules remain disabled at route level.
-| Admin Dinas read-only scope and Checkpoint 10A claim review remain active.
+| Checkpoint 10D keeps the verified Pelaku workspace and activates controlled
+| profile-change submission plus effective-profile resolution. Source-owned UMKM
+| rows remain immutable; Admin Dinas profile review routes stay disabled until 10E.
+| Survey, periodic reporting, expert validation, export, and smoke pages remain deferred.
 |
 */
 
@@ -390,6 +391,20 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/umkm/{umkm}', [PelakuUmkmController::class, 'show'])
                 ->name('umkm.show');
+
+            Route::get('/profile-proposals', [ProfileOverrideController::class, 'index'])
+                ->name('profile-proposals.index');
+
+            Route::get('/profile-proposals/{proposal}', [ProfileOverrideController::class, 'show'])
+                ->name('profile-proposals.show');
+
+            Route::get('/umkm/{umkm}/profile-change', [ProfileOverrideController::class, 'create'])
+                ->middleware('permission:umkm.profile.propose')
+                ->name('profile-change.create');
+
+            Route::post('/umkm/{umkm}/profile-change', [ProfileOverrideController::class, 'store'])
+                ->middleware(['permission:umkm.profile.propose', 'throttle:10,1', 'safe.errors'])
+                ->name('profile-change.store');
         });
 
     Route::prefix('admin-utama')

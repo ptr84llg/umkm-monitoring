@@ -207,7 +207,7 @@
         'pelaku_umkm' => [
             [
                 'label' => 'Usaha Saya',
-                'summary' => 'Akses read-only data usaha yang terikat dan terverifikasi.',
+                'summary' => 'Profil efektif dengan sumber tetap dipertahankan dan perubahan melalui usulan terkontrol.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
@@ -218,12 +218,20 @@
                         'icon' => 'dashboard',
                     ],
                     [
-                        'title' => 'Data Usaha',
-                        'description' => 'Profil read-only',
-                        'detail' => 'Melihat data usaha milik akun berdasarkan binding terverifikasi tanpa mengubah data sumber.',
+                        'title' => 'Profil Efektif',
+                        'description' => 'Sumber + approved override',
+                        'detail' => 'Melihat nilai sumber dan nilai efektif tanpa menimpa data sumber kelembagaan.',
                         'route' => 'pelaku-umkm.umkm.index',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'store',
+                    ],
+                    [
+                        'title' => 'Riwayat Pengajuan Profil',
+                        'description' => 'Submission append-preserved',
+                        'detail' => 'Melihat usulan perubahan profil dan status review tanpa mengubah histori pengajuan.',
+                        'route' => 'pelaku-umkm.profile-proposals.index',
+                        'permission' => 'umkm.workspace.access',
+                        'icon' => 'document',
                     ],
                 ],
             ],
