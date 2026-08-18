@@ -111,77 +111,77 @@
 @section('content')
 <x-umkm.loader.readiness-loader
     id="landingReadinessLoader"
-    title="Menyiapkan Portal Visual UMKM"
-    subtitle="Sistem sedang memeriksa kesiapan landing, keamanan, lokasi, dan preview analitik publik."
+    title="Menyiapkan Informasi UMKM"
+    subtitle="Sistem sedang menyiapkan informasi UMKM, peta wilayah, dan akses halaman."
     :hide-delay="420"
     :lines="[
         [
             'key' => 'landing-structure',
-            'label' => 'Struktur landing',
-            'description' => 'Memeriksa struktur utama halaman landing.',
+            'label' => 'Halaman utama',
+            'description' => 'Menyiapkan halaman utama.',
             'check' => 'selector',
             'selector' => '.umkm-landing',
             'required' => true,
         ],
         [
             'key' => 'core-system',
-            'label' => 'Core sistem',
-            'description' => 'Memeriksa kesiapan core UI sistem.',
+            'label' => 'Layanan utama',
+            'description' => 'Menyiapkan layanan utama halaman.',
             'check' => 'core',
             'required' => true,
         ],
         [
             'key' => 'ajax-core',
-            'label' => 'AJAX internal',
-            'description' => 'Memeriksa kesiapan request internal satu pintu.',
+            'label' => 'Informasi terbaru',
+            'description' => 'Memuat informasi terbaru.',
             'check' => 'module',
             'module' => 'ajax',
             'required' => true,
         ],
         [
             'key' => 'security-core',
-            'label' => 'Modul keamanan',
-            'description' => 'Memeriksa kesiapan metadata dan pengamanan request publik.',
+            'label' => 'Keamanan akses',
+            'description' => 'Memeriksa keamanan akses.',
             'check' => 'module',
             'module' => 'security',
             'required' => true,
         ],
         [
             'key' => 'location-module',
-            'label' => 'Modul lokasi',
-            'description' => 'Memeriksa kesiapan location gate untuk akses masuk sistem.',
+            'label' => 'Akses lokasi',
+            'description' => 'Menyiapkan akses lokasi untuk proses masuk sistem.',
             'check' => 'module',
             'module' => 'location',
             'required' => false,
         ],
         [
             'key' => 'session-module',
-            'label' => 'Modul sesi',
-            'description' => 'Memeriksa kesiapan monitoring sesi publik.',
+            'label' => 'Akses pengguna',
+            'description' => 'Menyiapkan akses pengguna.',
             'check' => 'module',
             'module' => 'session',
             'required' => false,
         ],
         [
             'key' => 'chart-preview',
-            'label' => 'Preview grafik',
-            'description' => 'Memeriksa ketersediaan Chart.js untuk visual preview publik.',
+            'label' => 'Grafik informasi',
+            'description' => 'Menyiapkan grafik informasi.',
             'check' => 'global',
             'global' => 'Chart',
             'required' => false,
         ],
         [
             'key' => 'region-preview',
-            'label' => 'Preview wilayah',
-            'description' => 'Memeriksa mount pilihan wilayah berbasis SSA.',
+            'label' => 'Pilihan wilayah',
+            'description' => 'Menyiapkan pilihan wilayah.',
             'check' => 'selector',
             'selector' => '[data-region-modal-mount]',
             'required' => false,
         ],
         [
             'key' => 'landing-interaction',
-            'label' => 'Interaksi landing',
-            'description' => 'Memeriksa elemen navigasi dan interaksi landing.',
+            'label' => 'Navigasi halaman',
+            'description' => 'Menyiapkan navigasi dan interaksi halaman.',
             'check' => 'selector',
             'selector' => '[data-landing-header]',
             'required' => true,

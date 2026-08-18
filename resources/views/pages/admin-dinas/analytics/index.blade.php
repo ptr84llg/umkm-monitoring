@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik Internal Admin Dinas')
+@section('title', 'Analitik UMKM Admin Dinas')
 
 @section('content')
 @php
@@ -30,9 +30,9 @@
     <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
-                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Visual Analytics Internal</span>
+                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Ringkasan dan Analisis Data</span>
                 <h1 class="h3 mb-2">Analitik UMKM Admin Dinas</h1>
-                <p class="text-body-secondary mb-0">Klik visual untuk melakukan drill-down ke Data UMKM dengan konteks yang sama.</p>
+                <p class="text-body-secondary mb-0">Klik bagian analisis untuk melihat rincian Data UMKM dengan konteks yang sama.</p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
                 <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-primary">Data UMKM</a>
@@ -66,7 +66,7 @@
                     </div>
                 @endforeach
                 <div class="col-md-6 col-xl">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <label class="form-label" for="quality_status">Kualitas Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
                         @foreach(($options['qualityStatuses'] ?? []) as $value)
@@ -90,11 +90,11 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM', $summary['total_umkm'] ?? 0, 'Record operasional'],
-            ['Tenaga Kerja', $summary['workforce_recorded'] ?? 0, 'Nilai sumber terdata'],
-            ['Terasosiasi Wilayah', $summary['spatial_associated'] ?? 0, 'Asosiasi administratif'],
+            ['UMKM', $summary['total_umkm'] ?? 0, 'Data UMKM dalam analisis'],
+            ['Tenaga Kerja', $summary['workforce_recorded'] ?? 0, 'Nilai sumber yang tercatat'],
+            ['Wilayah Teridentifikasi', $summary['spatial_associated'] ?? 0, 'Keterkaitan wilayah administrasi'],
             ['NIB Teridentifikasi', $data['legality_identified'] ?? 0, 'Bukan validasi legal formal'],
-            ['UMKM dengan Flag Mutu', $summary['quality_affected'] ?? 0, 'Flag terbuka'],
+            ['UMKM dengan Catatan Kualitas', $summary['quality_affected'] ?? 0, 'Catatan terbuka'],
         ] as $metric)
             <div class="col-md-6 col-xl">
                 <div class="card border shadow-sm h-100">
@@ -113,7 +113,7 @@
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Profil Sektor · Kecamatan</h2>
-                    <p class="text-body-secondary">Distribusi UMKM yang terasosiasi ke kecamatan.</p>
+                    <p class="text-body-secondary">Sebaran UMKM yang tercatat pada kecamatan.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($data['districts'] as $row)
@@ -173,7 +173,7 @@
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Tenaga Kerja per Kecamatan</h2>
-                    <p class="text-body-secondary">Akumulasi employee_count yang terdata pada sumber.</p>
+                    <p class="text-body-secondary">Akumulasi jumlah tenaga kerja yang tercatat pada sumber.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($data['workforce_by_district'] as $row)
@@ -212,10 +212,10 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Mutu Data · Kelompok Flag</h2>
-                    <p class="text-body-secondary mb-2">Flag merupakan hasil pemeriksaan mutu dan bukan koreksi otomatis.</p>
+                    <h2 class="h5">Kualitas Data · Kelompok Catatan</h2>
+                    <p class="text-body-secondary mb-2">Catatan kualitas merupakan hasil pemeriksaan data dan bukan koreksi otomatis.</p>
                     <div class="alert alert-info py-2 small">
-                        Satu UMKM dapat memiliki lebih dari satu kelompok flag. Jumlah antarkelompok tidak dijumlahkan sebagai total UMKM.
+                        Satu UMKM dapat memiliki lebih dari satu kelompok catatan kualitas. Jumlah antarkelompok tidak dijumlahkan sebagai total UMKM.
                     </div>
 
                     <div class="d-flex flex-column gap-3">
@@ -226,7 +226,7 @@
                                     <strong>{{ number_format($row['affected_umkm'], 0, ',', '.') }} UMKM</strong>
                                 </div>
                                 <div class="progress" style="height: 8px;"><div class="progress-bar bg-warning" style="width: {{ $pct((int)$row['affected_umkm'], $maxQuality) }}%"></div></div>
-                                <div class="small text-body-secondary mt-1">{{ number_format($row['flag_count'], 0, ',', '.') }} flag terbuka</div>
+                                <div class="small text-body-secondary mt-1">{{ number_format($row['flag_count'], 0, ',', '.') }} catatan terbuka</div>
                             </div>
                         @empty
                             <p class="text-body-secondary">Belum tersedia.</p>

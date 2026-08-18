@@ -20,7 +20,7 @@ class AdminDinasUiRefinementTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/dashboard')
             ->assertOk()
-            ->assertSee('Ringkasan Kendali Internal')
+            ->assertSee('Ringkasan Pembinaan UMKM')
             ->assertSee('Buka Data UMKM')
             ->assertSee('Buka Analitik')
             ->assertSee('Cakupan Keuangan')
@@ -50,7 +50,7 @@ class AdminDinasUiRefinementTest extends TestCase
             ->assertSee('Kategori')
             ->assertSee('Jenis Usaha')
             ->assertSee('Pemasaran')
-            ->assertSee('Mutu Data')
+            ->assertSee('Kualitas Data')
             ->assertSee('Halaman 1 dari 1')
             ->assertSee('UMKM UI TEST');
     }
@@ -62,7 +62,7 @@ class AdminDinasUiRefinementTest extends TestCase
         $response = $this->actingAs($user)
             ->get('/admin-dinas/analytics')
             ->assertOk()
-            ->assertSee('Satu UMKM dapat memiliki lebih dari satu kelompok flag');
+            ->assertSee('Satu UMKM dapat memiliki lebih dari satu kelompok catatan kualitas');
 
         $this->assertStringNotContainsString('<progress', $response->getContent());
 
@@ -88,9 +88,9 @@ class AdminDinasUiRefinementTest extends TestCase
             ->assertOk()
             ->assertSee('0 berbeda dari belum tersedia')
             ->assertSee('Sumber Pinjaman Teridentifikasi')
-            ->assertSee('Catatan Mutu Sumber Pinjaman')
+            ->assertSee('Catatan Kualitas Sumber Pinjaman')
             ->assertSee('tidak diubah menjadi Mekaar, KUR, atau kategori lain')
-            ->assertSee('Preview Nilai Keuangan Terdata');
+            ->assertSee('Rincian Nilai Keuangan yang Tercatat');
     }
 
     private function createAdminDinasUser(string $email, bool $financial): User

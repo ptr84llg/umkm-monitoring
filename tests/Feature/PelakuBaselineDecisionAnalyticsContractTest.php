@@ -59,10 +59,10 @@ class PelakuBaselineDecisionAnalyticsContractTest extends TestCase
         $this->assertStringNotContainsString('->delete(', $service);
         $this->assertStringNotContainsString('->save(', $service);
 
-        $this->assertStringContainsString('Tahun Pertama', $view);
-        $this->assertStringContainsString('baseline cross-sectional dan spasial', $view);
+        $this->assertStringNotContainsString('Tahun Pertama', $view);
+        $this->assertStringContainsString('Berdasarkan data UMKM yang tersedia saat ini', $view);
         $this->assertStringContainsString('Indikasi potensi relatif', $view);
-        $this->assertStringContainsString('Modal (Total / Median)', $view);
+        $this->assertStringContainsString('Modal (Total / Nilai Tengah)', $view);
         $this->assertStringContainsString('role="progressbar"', $view);
         $this->assertStringContainsString('bukan prediksi keberhasilan usaha', $view);
         $this->assertStringContainsString('Nominal agregat kelompok', $view);

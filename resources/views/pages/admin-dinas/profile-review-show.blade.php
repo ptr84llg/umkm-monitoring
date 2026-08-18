@@ -1,12 +1,12 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Detail Review Profil UMKM')
+@section('title', 'Detail Verifikasi Perubahan Data UMKM')
 
 @section('content')
 <div class="container-fluid py-3">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <p class="text-muted mb-1">Submission #{{ $proposal->id }}</p>
+            <p class="text-muted mb-1">Pengajuan #{{ $proposal->id }}</p>
             <h1 class="h3 mb-2">{{ $proposal->umkm?->business_name ?? 'UMKM' }}</h1>
             <p class="mb-0">Status: <strong>{{ $proposal->status_data }}</strong></p>
         </div>
@@ -15,16 +15,16 @@
 
     @if($conflictingFields !== [] && $proposal->status_data === 'diajukan')
         <div class="alert alert-warning">
-            Profil efektif telah berubah sejak submission pada field:
+            Data usaha telah berubah sejak pengajuan dibuat pada bagian:
             <strong>{{ implode(', ', array_map(fn ($field) => $labels[$field] ?? $field, $conflictingFields)) }}</strong>.
-            Approval diblokir. Gunakan keputusan perlu perbaikan atau ditolak, lalu minta Pelaku membuat submission baru.
+            Pengajuan ini tidak dapat langsung disetujui. Pilih perlu perbaikan atau ditolak, lalu minta Pelaku membuat pengajuan baru.
         </div>
     @endif
 
     <div class="row g-3 mb-3">
         <div class="col-lg-6">
             <div class="card h-100">
-                <div class="card-header"><strong>Nilai efektif saat pengajuan</strong></div>
+                <div class="card-header"><strong>Data saat pengajuan</strong></div>
                 <div class="card-body">
                     <dl class="row mb-0">
                         @foreach($labels as $field => $label)
@@ -53,7 +53,7 @@
     </div>
 
     <div class="card mb-3">
-        <div class="card-header"><strong>Profil efektif saat ini</strong></div>
+        <div class="card-header"><strong>Data usaha saat ini</strong></div>
         <div class="card-body">
             <dl class="row mb-0">
                 @foreach($labels as $field => $label)
@@ -61,7 +61,7 @@
                     <dd class="col-sm-8">
                         {{ data_get($currentProfile, 'effective.'.$field) ?? '-' }}
                         @if(in_array($field, $currentProfile['overridden_fields'] ?? [], true))
-                            <span class="badge text-bg-info ms-1">approved override</span>
+                            <span class="badge text-bg-info ms-1">perubahan disetujui</span>
                         @endif
                     </dd>
                 @endforeach
@@ -70,17 +70,17 @@
     </div>
 
     <div class="card mb-3">
-        <div class="card-header"><strong>Riwayat review</strong></div>
+        <div class="card-header"><strong>Riwayat pemeriksaan</strong></div>
         <div class="card-body">
             @forelse($proposal->reviews->sortBy('id') as $review)
                 <div class="border-bottom pb-2 mb-2">
                     <strong>{{ $review->decision }}</strong>
                     — {{ $review->reviewed_at?->format('d-m-Y H:i') ?? '-' }}
-                    — {{ $review->reviewer?->name ?? 'Reviewer' }}
+                    — {{ $review->reviewer?->name ?? 'Pemeriksa' }}
                     @if($review->review_note)<div>{{ $review->review_note }}</div>@endif
                 </div>
             @empty
-                <p class="text-muted mb-0">Belum ada keputusan review.</p>
+                <p class="text-muted mb-0">Belum ada keputusan pemeriksaan.</p>
             @endforelse
         </div>
     </div>
@@ -102,7 +102,7 @@
                         @error('decision')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="review_note">Catatan review</label>
+                        <label class="form-label" for="review_note">Catatan pemeriksaan</label>
                         <textarea class="form-control @error('review_note') is-invalid @enderror" id="review_note" name="review_note" rows="4" maxlength="2000">{{ old('review_note') }}</textarea>
                         <div class="form-text">Wajib untuk keputusan perlu perbaikan atau ditolak.</div>
                         @error('review_note')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -112,7 +112,7 @@
             </div>
         </div>
     @else
-        <div class="alert alert-secondary mb-0">Submission ini sudah memiliki keputusan. Koreksi berikutnya harus melalui submission baru.</div>
+        <div class="alert alert-secondary mb-0">Pengajuan ini sudah memiliki keputusan. Perubahan berikutnya harus melalui pengajuan baru.</div>
     @endif
 </div>
 @endsection

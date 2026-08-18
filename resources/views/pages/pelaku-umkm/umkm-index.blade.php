@@ -5,9 +5,9 @@
 @section('content')
 <div class="container-fluid py-3">
     <div class="mb-4">
-        <p class="text-muted mb-1">Binding kepemilikan aktif dan terverifikasi</p>
+        <p class="text-muted mb-1">Usaha yang terhubung dengan akun Anda</p>
         <h1 class="h3 mb-2">Data Usaha Saya</h1>
-        <p class="mb-0">Daftar ini hanya memuat UMKM yang terikat secara resmi ke akun Anda. Semua data masih read-only pada Checkpoint 10C.</p>
+        <p class="mb-0">Daftar ini hanya memuat usaha yang telah diverifikasi dan terhubung dengan akun Anda. Data dapat dilihat; perubahan diajukan melalui menu perubahan profil.</p>
     </div>
 
     <div class="card">
@@ -19,7 +19,7 @@
                             <th>Kode UMKM</th>
                             <th>Nama Usaha</th>
                             <th>Status Data</th>
-                            <th>Mutu Data</th>
+                            <th>Kualitas Data</th>
                             <th></th>
                         </tr>
                     </thead>

@@ -10,11 +10,11 @@
 <div class="container py-5" style="max-width: 760px;">
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4 p-lg-5">
-            <span class="badge text-bg-success mb-3">Klaim Disetujui Dinas</span>
-            <h1 class="h3 mb-2">Aktivasi Kredensial Pelaku UMKM</h1>
+            <span class="badge text-bg-success mb-3">Pengajuan Disetujui Dinas</span>
+            <h1 class="h3 mb-2">Aktifkan Akun Pelaku UMKM</h1>
             <p class="text-body-secondary">
-                OTP dikirim ke {{ $activationContext['masked_email'] }}.
-                Dinas tidak membuat dan tidak mengetahui password pengguna.
+                Kode OTP dikirim ke {{ $activationContext['masked_email'] }}.
+                Password dibuat sendiri oleh Pelaku dan tidak diketahui oleh Dinas.
             </p>
 
             @if ($errors->any())

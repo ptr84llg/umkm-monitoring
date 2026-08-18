@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik Wilayah dan Peta Internal')
+@section('title', 'Peta dan Analisis Wilayah')
 
 @section('content')
 @php
@@ -36,9 +36,9 @@
         <div class="card-body p-4 d-flex flex-column flex-xl-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">
-                    Internal Spatial Analytics
+                    Informasi Wilayah dan Lokasi
                 </span>
-                <h1 class="h3 mb-2">Analitik Wilayah & Peta Internal</h1>
+                <h1 class="h3 mb-2">Peta dan Analisis Wilayah</h1>
                 <p class="text-body-secondary mb-0">
                     Peta administratif memperlihatkan distribusi UMKM berdasarkan wilayah.
                     Titik koordinat individual hanya tersedia jika pengguna memiliki izin koordinat sensitif.
@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="col-md-8 col-xl">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <label class="form-label" for="quality_status">Kualitas Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
                         @foreach(($options['qualityStatuses'] ?? []) as $value)
@@ -166,11 +166,11 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Record operasional sesuai filter'],
-            ['Terasosiasi administratif', $summary['administrative_associated'] ?? 0, 'Memiliki asosiasi kecamatan'],
-            ['Belum terasosiasi', $summary['administrative_unassociated'] ?? 0, 'Tidak dipaksakan ke wilayah'],
-            ['Coordinate-mapped', $summary['coordinate_mapped'] ?? 0, 'Status terpetakan + latitude + longitude'],
-            ['Cakupan coordinate-mapped', number_format((float)($summary['coordinate_mapped_percent'] ?? 0), 2, ',', '.') . '%', 'Bukan cakupan asosiasi administratif'],
+            ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai filter'],
+            ['Wilayah administrasi teridentifikasi', $summary['administrative_associated'] ?? 0, 'Memiliki kecamatan yang tercatat'],
+            ['Wilayah belum teridentifikasi', $summary['administrative_unassociated'] ?? 0, 'Tidak dipaksakan ke wilayah'],
+            ['Memiliki titik lokasi', $summary['coordinate_mapped'] ?? 0, 'Status terpetakan dengan koordinat lokasi lengkap'],
+            ['Cakupan titik lokasi', number_format((float)($summary['coordinate_mapped_percent'] ?? 0), 2, ',', '.') . '%', 'Berbeda dari cakupan wilayah administrasi'],
         ] as $metric)
             <div class="col-md-6 col-xl">
                 <div class="card border shadow-sm h-100">
@@ -191,10 +191,10 @@
     </section>
 
     <section class="alert alert-info mb-0">
-        <strong>Asosiasi administratif berbeda dari titik koordinat.</strong>
+        <strong>Keterkaitan wilayah administrasi berbeda dari titik lokasi.</strong>
         UMKM yang terhubung ke kecamatan atau kelurahan tidak otomatis dianggap mempunyai titik lokasi presisi.
-        Titik individual hanya memenuhi rule jika <code>coordinate_status = terpetakan</code>,
-        latitude terisi, dan longitude terisi.
+        Titik individual hanya ditampilkan jika <code>status lokasi = terpetakan</code>,
+        lintang terisi, dan bujur terisi.
     </section>
 
     <section class="row g-4">
@@ -215,7 +215,7 @@
                                 <select class="form-select form-select-sm" id="spatialMetric">
                                     <option value="umkm_total">Jumlah UMKM</option>
                                     <option value="workers_total">Tenaga Kerja</option>
-                                    <option value="quality_affected">UMKM dengan Flag Mutu</option>
+                                    <option value="quality_affected">UMKM dengan Catatan Kualitas</option>
                                     @if($data['can_view_financial'] ?? false)
                                         <option value="financial_filled">Cakupan Data Keuangan</option>
                                     @endif
@@ -245,9 +245,9 @@
 
                     <div class="d-flex flex-wrap gap-3 mt-3 small text-body-secondary">
                         <span><strong>Lebih gelap</strong> = nilai indikator lebih tinggi</span>
-                        <span>Geometry berasal dari GeoJSON lokal sistem</span>
+                        <span>Peta menggunakan batas administrasi wilayah</span>
                         @if($data['can_view_coordinates'] ?? false)
-                            <span>Titik biru = UMKM yang memenuhi rule coordinate-mapped</span>
+                            <span>Titik biru = UMKM yang memiliki titik lokasi lengkap</span>
                         @else
                             <span><strong>Titik individual disembunyikan</strong> karena izin koordinat sensitif tidak aktif</span>
                         @endif
@@ -271,7 +271,7 @@
                         <dt class="col-7">Tenaga Kerja</dt>
                         <dd class="col-5 text-end" id="spatialRegionWorkers">—</dd>
 
-                        <dt class="col-7">UMKM dengan Flag</dt>
+                        <dt class="col-7">UMKM dengan Catatan</dt>
                         <dd class="col-5 text-end" id="spatialRegionQuality">—</dd>
 
                         @if($data['can_view_financial'] ?? false)
@@ -295,8 +295,8 @@
                     <hr>
 
                     <div class="small text-body-secondary">
-                        <div><strong>Level peta:</strong> {{ $label($map['visible_level'] ?? 'district') }}</div>
-                        <div><strong>Snapshot:</strong> {{ $freshness['snapshot_id'] ?? 'Belum tersedia' }}</div>
+                        <div><strong>Tingkat wilayah:</strong> {{ $label($map['visible_level'] ?? 'district') }}</div>
+                        <div><strong>Versi data:</strong> {{ $freshness['snapshot_id'] ?? 'Belum tersedia' }}</div>
                         <div><strong>Terakhir sinkron:</strong> {{ $freshness['label'] ?? 'Belum tersedia' }}</div>
                     </div>
                 </div>
@@ -310,7 +310,7 @@
                 <div>
                     <h2 class="h5 mb-1">Ringkasan Wilayah pada Peta</h2>
                     <p class="text-body-secondary mb-0">
-                        Tabel menggunakan unit wilayah yang sama dengan geometry yang sedang ditampilkan.
+                        Tabel menggunakan tingkat wilayah yang sama dengan peta yang sedang ditampilkan.
                     </p>
                 </div>
                 <span class="badge text-bg-secondary align-self-lg-start">
@@ -325,7 +325,7 @@
                             <th>Wilayah</th>
                             <th class="text-end">UMKM</th>
                             <th class="text-end">Tenaga Kerja</th>
-                            <th class="text-end">Flag Mutu</th>
+                            <th class="text-end">Catatan Kualitas</th>
                             @if($data['can_view_financial'] ?? false)
                                 <th class="text-end">Data Keuangan</th>
                             @endif
@@ -359,14 +359,14 @@
                                 <td>{{ $row['dominant_category'] ?: 'Belum tersedia' }}</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin-dinas.umkm.index', $params) }}">
-                                        Drill-down
+                                        Lihat Rincian
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="{{ ($data['can_view_financial'] ?? false) ? 7 : 6 }}" class="text-body-secondary">
-                                    Geometry atau data wilayah belum tersedia pada konteks aktif.
+                                    Peta atau data wilayah belum tersedia pada konteks aktif.
                                 </td>
                             </tr>
                         @endforelse

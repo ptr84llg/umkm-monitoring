@@ -12,7 +12,7 @@
                     <h1 class="h3 mb-2">Kirim Undangan Aktivasi</h1>
                     <p class="text-body-secondary mb-0">
                         Gunakan hanya setelah Dinas memverifikasi keterkaitan calon Pelaku dengan UMKM.
-                        Undangan tidak membuat password default dan tidak membentuk ownership binding.
+                        Pelaku membuat password sendiri saat mengaktifkan akun. Keterkaitan akun dengan usaha dibentuk setelah aktivasi berhasil.
                     </p>
                 </div>
                 <a class="btn btn-outline-secondary align-self-start"

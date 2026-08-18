@@ -68,7 +68,7 @@ class AdminDinasRegionCascadePaginationTest extends TestCase
         $response = $this->actingAs($user)
             ->get('/admin-dinas/analytics/financial?quality_status=lengkap_terpetakan&per_page=50&financial_page=2')
             ->assertOk()
-            ->assertSee('Preview Nilai Keuangan Terdata')
+            ->assertSee('Rincian Nilai Keuangan yang Tercatat')
             ->assertSee('FIN PAGING 51')
             ->assertDontSee('FIN PAGING 01')
             ->assertSee('quality_status=lengkap_terpetakan', false)
@@ -82,7 +82,7 @@ class AdminDinasRegionCascadePaginationTest extends TestCase
         );
 
         $this->assertIsString($normalizedText);
-        $this->assertStringContainsString('Menampilkan 51–60 dari 60 record', trim($normalizedText));
+        $this->assertStringContainsString('Menampilkan 51–60 dari 60 data', trim($normalizedText));
         $this->assertStringContainsString('Halaman 2 dari 2', trim($normalizedText));
 
         $viewSource = file_get_contents(

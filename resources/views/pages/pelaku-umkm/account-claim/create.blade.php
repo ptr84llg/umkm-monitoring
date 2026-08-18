@@ -11,11 +11,11 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4 p-lg-5">
             <div class="mb-4">
-                <span class="badge text-bg-primary mb-2">Checkpoint 10A</span>
-                <h1 class="h3 mb-2">Ajukan Klaim Akun Pelaku UMKM</h1>
+                <span class="badge text-bg-primary mb-2">Verifikasi Akun Pelaku</span>
+                <h1 class="h3 mb-2">Hubungkan Akun dengan Data UMKM</h1>
                 <p class="text-body-secondary mb-0">
-                    Pengajuan ini hanya meminta verifikasi keterkaitan pemohon dengan record UMKM.
-                    Data sumber LSS tidak diubah oleh proses klaim.
+                    Ajukan verifikasi agar data usaha dapat dihubungkan dengan akun Anda.
+                    Proses ini tidak mengubah data usaha yang sudah tercatat.
                 </p>
             </div>
 
@@ -41,7 +41,7 @@
                            value="{{ old('umkm_code') }}"
                            maxlength="100"
                            required>
-                    <div class="form-text">Masukkan kode UMKM yang akan diklaim. Sistem tidak membuka daftar record publik dari halaman ini.</div>
+                    <div class="form-text">Masukkan kode UMKM yang akan dihubungkan dengan akun Anda. Daftar data usaha tidak ditampilkan pada halaman ini.</div>
                 </div>
 
                 <div>
@@ -63,7 +63,7 @@
                            value="{{ old('applicant_email') }}"
                            maxlength="190"
                            required>
-                    <div class="form-text">Email ini digunakan untuk OTP dan aktivasi setelah klaim disetujui Dinas.</div>
+                    <div class="form-text">Email ini digunakan untuk verifikasi dan aktivasi akun setelah pengajuan disetujui Dinas.</div>
                 </div>
 
                 <div class="form-check">
@@ -80,12 +80,12 @@
                 </div>
 
                 <div class="alert alert-info mb-0">
-                    Dinas tidak membuat password default. Password baru dibuat sendiri oleh Pelaku setelah approval dan verifikasi OTP.
+                    Password dibuat sendiri oleh Pelaku saat mengaktifkan akun setelah pengajuan disetujui Dinas.
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 justify-content-between">
                     <a class="btn btn-outline-secondary" href="{{ url('/') }}">Kembali</a>
-                    <button class="btn btn-primary px-4" type="submit">Kirim Klaim</button>
+                    <button class="btn btn-primary px-4" type="submit">Kirim Pengajuan</button>
                 </div>
             </form>
         </div>

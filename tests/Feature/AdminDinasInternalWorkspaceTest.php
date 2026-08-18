@@ -90,13 +90,13 @@ class AdminDinasInternalWorkspaceTest extends TestCase
         ]);
 
         $this->actingAs($user)->get('/admin-dinas/umkm')
-            ->assertOk()->assertSee('Data UMKM Internal')->assertSee('UMKM UJI READ ONLY');
+            ->assertOk()->assertSee('Data UMKM')->assertSee('UMKM UJI READ ONLY');
 
         $this->actingAs($user)->get('/admin-dinas/umkm/' . $umkm->id)
-            ->assertOk()->assertSee('Detail Read-only')->assertSee('UMKM UJI READ ONLY')->assertDontSee('Edit');
+            ->assertOk()->assertSee('Hanya Dapat Dilihat')->assertSee('UMKM UJI READ ONLY')->assertDontSee('Edit');
 
         $this->actingAs($user)->get('/admin-dinas/analytics')
-            ->assertOk()->assertSee('Analitik UMKM Admin Dinas')->assertSee('Profil Sektor')->assertSee('Mutu Data');
+            ->assertOk()->assertSee('Analitik UMKM Admin Dinas')->assertSee('Profil Sektor')->assertSee('Kualitas Data');
     }
 
     public function test_financial_analytics_preserves_and_separates_quality_marker_source_values(): void
@@ -123,7 +123,7 @@ class AdminDinasInternalWorkspaceTest extends TestCase
         $this->actingAs($user)->get('/admin-dinas/analytics/financial')
             ->assertOk()
             ->assertSee('Sumber Pinjaman Teridentifikasi')
-            ->assertSee('Catatan Mutu Sumber Pinjaman')
+            ->assertSee('Catatan Kualitas Sumber Pinjaman')
             ->assertSee('Mekaar')
             ->assertSee('Mekaar Data keuangan tidak tersedia');
     }

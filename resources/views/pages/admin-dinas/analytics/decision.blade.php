@@ -11,7 +11,7 @@
         'key' => 'citywide',
         'label' => 'Seluruh Kota',
         'title' => 'Gambaran Keputusan Seluruh Kota',
-        'description' => 'Analitik baseline pada konteks aktif.',
+        'description' => 'Analitik berdasarkan data pada konteks aktif.',
     ];
     $modeKey = (string)($mode['key'] ?? 'citywide');
     $selectedType = $data['selected_type'] ?? null;
@@ -106,12 +106,12 @@
         <div class="card-body p-4 d-flex flex-column flex-xl-row justify-content-between gap-3">
             <div>
                 <div class="d-flex flex-wrap gap-2 mb-2">
-                    <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis">Decision Support · Tahun Pertama</span>
+                    <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis">Informasi Pendukung Keputusan</span>
                     <span class="badge rounded-pill text-bg-light border">Mode: {{ $mode['label'] ?? 'Seluruh Kota' }}</span>
                 </div>
                 <h1 class="h3 mb-2">{{ $mode['title'] ?? 'Analitik Keputusan Admin Dinas' }}</h1>
                 <p class="text-body-secondary mb-0">
-                    {{ $mode['description'] ?? 'Analitik baseline pada konteks aktif.' }}
+                    {{ $mode['description'] ?? 'Analitik berdasarkan data pada konteks aktif.' }}
                     Bentuk visual hanya digunakan ketika membantu perbandingan; angka, tabel, dan interpretasi tetap menjadi bukti utama.
                 </p>
             </div>
@@ -129,7 +129,7 @@
 
     <section class="alert alert-primary mb-0">
         <strong>Batas interpretasi:</strong>
-        seluruh hasil merupakan pembacaan baseline cross-sectional Tahun Pertama.
+        seluruh hasil menggunakan data UMKM Tahun Pertama yang tersedia saat ini.
         Konsentrasi, kesenjangan distribusi, dan potensi bersifat relatif; bukan prediksi keberhasilan,
         rekomendasi otomatis, atau bukti hubungan sebab-akibat.
     </section>
@@ -137,7 +137,7 @@
     @if($data['quality_warning'] ?? false)
         <section class="alert alert-warning mb-0">
             <strong>Perhatian mutu data.</strong>
-            Terdapat flag mutu pada sebagian record yang digunakan. Nilai sumber tetap dipertahankan apa adanya dan tidak dinormalisasi,
+            Terdapat catatan kualitas pada sebagian data yang digunakan. Nilai sumber tetap dipertahankan apa adanya dan tidak dinormalisasi,
             dibuang, atau dibenarkan secara otomatis.
         </section>
     @endif
@@ -179,7 +179,7 @@
                 @endforeach
 
                 <div class="col-md-6 col-xl">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <label class="form-label" for="quality_status">Kualitas Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
                         @foreach(($options['qualityStatuses'] ?? []) as $value)
@@ -205,9 +205,9 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Record operasional sesuai filter'],
-            ['Jenis usaha teridentifikasi', $summary['type_count'] ?? 0, 'Klasifikasi primer pada konteks'],
-            ['Kecamatan tercakup', $summary['district_count'] ?? 0, 'Asosiasi administratif yang terdata'],
+            ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai filter'],
+            ['Jenis usaha teridentifikasi', $summary['type_count'] ?? 0, 'Jenis usaha utama pada konteks'],
+            ['Kecamatan tercakup', $summary['district_count'] ?? 0, 'Wilayah administrasi yang tercatat'],
             ['Tenaga kerja terdata', $summary['workforce_recorded'] ?? 0, 'Akumulasi employee_count sumber'],
             ['UMKM dengan flag mutu', $summary['quality_affected'] ?? 0, 'Flag terbuka; bukan koreksi otomatis'],
         ] as $metric)

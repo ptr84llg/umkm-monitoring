@@ -5,8 +5,8 @@
 @section('content')
 <div class="container-fluid py-3">
     <div class="mb-4">
-        <p class="text-muted mb-1">Riwayat append-preserved</p>
-        <h1 class="h3">Pengajuan Perubahan Profil</h1>
+        <p class="text-muted mb-1">Riwayat pengajuan tersimpan</p>
+        <h1 class="h3">Riwayat Perubahan Data Usaha</h1>
     </div>
 
     <div class="card">

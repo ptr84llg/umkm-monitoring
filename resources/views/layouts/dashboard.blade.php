@@ -16,7 +16,7 @@
     $dashboardHomeUrl = url('/');
     $dashboardRoleKey = 'user';
     $dashboardRoleLabel = 'Pengguna';
-    $dashboardRoleHint = 'Ruang kerja internal';
+    $dashboardRoleHint = 'Ruang kerja pengguna';
 
     $dashboardServerNow = now();
     $dashboardServerTimezone = (string) config('app.timezone', 'Asia/Jakarta');
@@ -83,8 +83,8 @@
                 'items' => [
                     [
                         'title' => 'Akses',
-                        'description' => 'Akun, role, permission',
-                        'detail' => 'Pengelolaan akun internal, role, permission, sesi/perangkat, dan audit akses berbasis kewenangan.',
+                        'description' => 'Akun, peran, dan izin akses',
+                        'detail' => 'Pengelolaan akun, peran, izin akses, sesi/perangkat, dan audit akses sesuai kewenangan.',
                         'route' => 'admin-utama.access.index',
                         'permission' => 'access.manage',
                         'icon' => 'shield',
@@ -99,8 +99,8 @@
                     ],
                     [
                         'title' => 'Governance',
-                        'description' => 'Setting, theme, keamanan, audit',
-                        'detail' => 'Pengaturan sistem, theme, keamanan, audit log, dan tata kelola operasional sistem.',
+                        'description' => 'Pengaturan, tema tampilan, keamanan, dan audit',
+                        'detail' => 'Pengaturan sistem, tema tampilan, keamanan, riwayat audit, dan tata kelola operasional.',
                         'route' => 'admin-utama.governance.settings',
                         'permission' => 'system.manage',
                         'icon' => 'settings',
@@ -139,24 +139,24 @@
                     ],
                     [
                         'title' => 'Data UMKM',
-                        'description' => 'Eksplorasi data internal',
-                        'detail' => 'Penelusuran profil, klasifikasi, wilayah, mutu data, dan informasi internal UMKM secara read-only.',
+                        'description' => 'Penelusuran data UMKM',
+                        'detail' => 'Penelusuran profil, klasifikasi, wilayah, kualitas data, dan informasi UMKM yang hanya dapat dilihat.',
                         'route' => 'admin-dinas.umkm.index',
                         'permission' => 'umkm.read.official',
                         'icon' => 'store',
                     ],
                     [
                         'title' => 'Klaim Akun Pelaku',
-                        'description' => 'Review claim dan aktivasi',
-                        'detail' => 'Verifikasi keterkaitan pemohon, approval atau rejection, undangan Dinas, dan pengiriman aktivasi tanpa password default.',
+                        'description' => 'Verifikasi akun dan aktivasi',
+                        'detail' => 'Verifikasi keterkaitan pemohon, setujui atau tolak pengajuan, kirim undangan Dinas, dan kirim aktivasi tanpa password default.',
                         'route' => 'admin-dinas.account-claims.index',
                         'permission' => 'umkm.claim.review',
                         'icon' => 'shield',
                     ],
                     [
                         'title' => 'Review Perubahan Profil',
-                        'description' => 'Validasi approved override',
-                        'detail' => 'Menilai usulan perubahan profil Pelaku dan mengaktifkan approved override tanpa menimpa nilai sumber/LSS.',
+                        'description' => 'Verifikasi perubahan data',
+                        'detail' => 'Menilai usulan perubahan data Pelaku dan mengaktifkan perubahan yang disetujui tanpa menimpa nilai sumber/LSS.',
                         'route' => 'admin-dinas.profile-reviews.index',
                         'permission' => 'umkm.profile.review',
                         'icon' => 'check',
@@ -165,11 +165,11 @@
             ],
             [
                 'label' => 'Analitik & Keputusan',
-                'summary' => 'Visual analytics, dukungan keputusan, spasial, dan ekonomi.',
+                'summary' => 'Analisis data, dukungan keputusan, wilayah, dan ekonomi.',
                 'items' => [
                     [
                         'title' => 'Analitik',
-                        'description' => 'Visual analytics internal',
+                        'description' => 'Analisis data UMKM',
                         'detail' => 'Analisis wilayah, sektor, tenaga kerja, akses pasar, legalitas, dan mutu data sesuai kewenangan.',
                         'route' => 'admin-dinas.analytics.index',
                         'permission' => 'umkm.read.official',
@@ -178,7 +178,7 @@
                     [
                         'title' => 'Analitik Keputusan',
                         'description' => 'Persaingan, potensi relatif, dan konteks wilayah',
-                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi baseline, dan mutu data sebagai bahan pertimbangan pembinaan; informasi spasial tersedia sebagai konteks pendukung opsional.',
+                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi dari data yang tersedia, dan kualitas data sebagai bahan pertimbangan pembinaan; informasi lokasi tersedia sebagai konteks pendukung opsional.',
                         'route' => 'admin-dinas.analytics.decision',
                         'permission' => 'umkm.read.official',
                         'icon' => 'chart',
@@ -186,7 +186,7 @@
                     [
                         'title' => 'Peta Wilayah',
                         'description' => 'Analitik spasial administratif',
-                        'detail' => 'Peta administratif interaktif untuk membaca distribusi UMKM, tenaga kerja, mutu data, dan titik coordinate-mapped sesuai izin.',
+                        'detail' => 'Peta administratif interaktif untuk membaca distribusi UMKM, tenaga kerja, kualitas data, dan titik lokasi yang tersedia sesuai izin.',
                         'route' => 'admin-dinas.analytics.spatial',
                         'permission' => 'umkm.read.official',
                         'icon' => 'map',
@@ -194,7 +194,7 @@
                     [
                         'title' => 'Ekonomi & Keuangan',
                         'description' => 'Analitik data keuangan internal',
-                        'detail' => 'Cakupan modal, penjualan, omzet, pinjaman, sumber pinjaman, dan quality issue keuangan tanpa menormalisasi nilai sumber.',
+                        'detail' => 'Cakupan modal, penjualan, omzet, pinjaman, sumber pinjaman, dan catatan kualitas data keuangan dengan tetap mempertahankan nilai sumber.',
                         'route' => 'admin-dinas.analytics.financial',
                         'permission' => 'umkm.sensitive.financial',
                         'icon' => 'wallet',
@@ -228,12 +228,12 @@
         'pelaku_umkm' => [
             [
                 'label' => 'Usaha Saya',
-                'summary' => 'Profil efektif dengan sumber tetap dipertahankan dan perubahan melalui usulan terkontrol.',
+                'summary' => 'Data usaha yang terhubung dengan akun serta pengajuan perubahan yang tetap menyimpan data awal.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
                         'description' => 'Ringkasan usaha',
-                        'detail' => 'Ikhtisar UMKM yang mempunyai binding kepemilikan aktif dan terverifikasi.',
+                        'detail' => 'Ikhtisar UMKM yang telah diverifikasi dan terhubung dengan akun Anda.',
                         'route' => 'pelaku-umkm.dashboard',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'dashboard',
@@ -241,23 +241,23 @@
                     [
                         'title' => 'Analitik Keputusan',
                         'description' => 'Posisi, persaingan, dan potensi relatif',
-                        'detail' => 'Analitik baseline Tahun Pertama untuk membandingkan posisi usaha, kepadatan usaha sejenis antarwilayah, dan indikasi potensi jenis usaha secara agregat.',
+                        'detail' => 'Membandingkan posisi usaha, jumlah usaha sejenis antarwilayah, dan indikasi potensi jenis usaha berdasarkan data yang tersedia saat ini.',
                         'route' => 'pelaku-umkm.analytics.index',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'chart',
                     ],
                     [
-                        'title' => 'Profil Efektif',
-                        'description' => 'Sumber + approved override',
-                        'detail' => 'Melihat nilai sumber dan nilai efektif tanpa menimpa data sumber kelembagaan.',
+                        'title' => 'Data Usaha Saya',
+                        'description' => 'Data awal dan data saat ini',
+                        'detail' => 'Melihat data awal dan data saat ini tanpa mengubah data sumber yang tersimpan.',
                         'route' => 'pelaku-umkm.umkm.index',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'store',
                     ],
                     [
                         'title' => 'Riwayat Pengajuan Profil',
-                        'description' => 'Submission append-preserved',
-                        'detail' => 'Melihat usulan perubahan profil dan status review tanpa mengubah histori pengajuan.',
+                        'description' => 'Riwayat pengajuan tersimpan',
+                        'detail' => 'Melihat pengajuan perubahan data dan status pemeriksaan dengan riwayat yang tetap tersimpan.',
                         'route' => 'pelaku-umkm.profile-proposals.index',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'document',
@@ -332,7 +332,7 @@
                 ['title' => 'Akun Pengguna', 'description' => 'Identitas akun, status akses, dan koneksi login pengguna.', 'state' => 'Read-only'],
                 ['title' => 'Peran', 'description' => 'Kelompok kewenangan yang membedakan cakupan kerja pengguna.', 'state' => 'Matriks'],
                 ['title' => 'Izin Akses', 'description' => 'Izin tindakan per modul yang menjadi dasar pembatasan akses.', 'state' => 'PBAC'],
-                ['title' => 'Penetapan Akses', 'description' => 'Relasi akun, role, dan permission untuk pengaturan akses bertingkat.', 'state' => 'Terjadwal'],
+                ['title' => 'Penetapan Akses', 'description' => 'Keterkaitan akun, peran, dan izin akses untuk pengaturan akses bertingkat.', 'state' => 'Terjadwal'],
                 ['title' => 'Sesi & Perangkat', 'description' => 'Pemantauan akses perangkat dan sesi login pengguna.', 'state' => 'Terjadwal'],
                 ['title' => 'Audit Akses', 'description' => 'Jejak aktivitas penting yang terkait dengan akses pengguna.', 'state' => 'Pratinjau'],
             ],
@@ -344,7 +344,7 @@
             'governance' => [
                 ['title' => 'Pengaturan Sistem', 'description' => 'Konfigurasi umum dan kebijakan operasional sistem.', 'state' => 'Aktif'],
                 ['title' => 'Tema Sistem', 'description' => 'Pemilihan tampilan visual yang berlaku pada ruang kerja internal.', 'state' => 'Aktif'],
-                ['title' => 'Keamanan', 'description' => 'Pengaturan pembatasan akses dan kesiapan guard.', 'state' => 'Terjaga'],
+                ['title' => 'Keamanan', 'description' => 'Pengaturan pembatasan akses dan pengamanan akses.', 'state' => 'Terjaga'],
                 ['title' => 'Audit Tata Kelola', 'description' => 'Jejak perubahan konfigurasi penting.', 'state' => 'Terkontrol'],
             ],
             'publikasi' => [
@@ -359,29 +359,29 @@
             ],
             'data umkm' => [
                 ['title' => 'Profil UMKM', 'description' => 'Identitas, wilayah, klasifikasi, dan status mutu data.', 'state' => 'Aktif'],
-                ['title' => 'Drill-down Data', 'description' => 'Filter, pencarian, pagination, dan detail record read-only.', 'state' => 'Aktif'],
-                ['title' => 'Validasi Perubahan', 'description' => 'Workflow perubahan data belum diaktifkan pada batch ini.', 'state' => 'Belum aktif'],
+                ['title' => 'Rincian Data', 'description' => 'Filter, pencarian, halaman data, dan rincian yang hanya dapat dilihat.', 'state' => 'Aktif'],
+                ['title' => 'Validasi Perubahan', 'description' => 'Perubahan data belum tersedia.', 'state' => 'Belum aktif'],
             ],
             'analitik' => [
                 ['title' => 'Profil Sektor', 'description' => 'Distribusi wilayah, kategori, dan jenis usaha.', 'state' => 'Aktif'],
                 ['title' => 'Tenaga Kerja & Pasar', 'description' => 'Tenaga kerja tercatat dan metode pemasaran.', 'state' => 'Aktif'],
-                ['title' => 'Mutu Data', 'description' => 'Kelompok flag mutu dan cakupan record yang terdampak.', 'state' => 'Aktif'],
+                ['title' => 'Mutu Data', 'description' => 'Kelompok catatan kualitas dan cakupan data yang terdampak.', 'state' => 'Aktif'],
             ],
             'analitik keputusan' => [
-                ['title' => 'Ringkasan Keputusan', 'description' => 'Temuan dan pertimbangan berbasis indikator baseline.', 'state' => 'Aktif'],
+                ['title' => 'Ringkasan Keputusan', 'description' => 'Temuan dan pertimbangan berbasis indikator dari data saat ini.', 'state' => 'Aktif'],
                 ['title' => 'Persaingan & Konsentrasi', 'description' => 'Perbandingan usaha sejenis antarwilayah tanpa klaim kausal.', 'state' => 'Aktif'],
-                ['title' => 'Potensi Relatif', 'description' => 'Rule transparan berbasis jumlah usaha dan sinyal ekonomi baseline.', 'state' => 'Aktif'],
-                ['title' => 'Informasi Spasial Pendukung', 'description' => 'Kedekatan coordinate-mapped sebagai konteks tambahan, bukan filter keputusan.', 'state' => 'Opsional'],
+                ['title' => 'Potensi Relatif', 'description' => 'Kriteria yang jelas berdasarkan jumlah usaha dan sinyal ekonomi dari data saat ini.', 'state' => 'Aktif'],
+                ['title' => 'Informasi Spasial Pendukung', 'description' => 'Kedekatan titik lokasi sebagai konteks tambahan, bukan filter keputusan.', 'state' => 'Opsional'],
             ],
             'peta wilayah' => [
-                ['title' => 'Peta Administratif', 'description' => 'Choropleth kecamatan dan kelurahan berbasis GeoJSON lokal.', 'state' => 'Aktif'],
-                ['title' => 'Drill-down Wilayah', 'description' => 'Klik wilayah untuk membuka ringkasan dan Data UMKM terkait.', 'state' => 'Aktif'],
-                ['title' => 'Titik Coordinate-mapped', 'description' => 'Titik presisi hanya ditampilkan jika izin koordinat sensitif aktif.', 'state' => 'Terbatas'],
+                ['title' => 'Peta Administratif', 'description' => 'Peta tematik kecamatan dan kelurahan berdasarkan batas administrasi wilayah.', 'state' => 'Aktif'],
+                ['title' => 'Rincian Wilayah', 'description' => 'Klik wilayah untuk membuka ringkasan dan Data UMKM terkait.', 'state' => 'Aktif'],
+                ['title' => 'Titik Lokasi', 'description' => 'Titik presisi hanya ditampilkan jika izin koordinat sensitif aktif.', 'state' => 'Terbatas'],
             ],
             'ekonomi & keuangan' => [
                 ['title' => 'Cakupan Keuangan', 'description' => 'Ketersediaan modal, penjualan, omzet, pinjaman, dan sumber pinjaman.', 'state' => 'Aktif'],
                 ['title' => 'Sumber Pinjaman', 'description' => 'Nilai sumber pinjaman teridentifikasi ditampilkan apa adanya.', 'state' => 'Aktif'],
-                ['title' => 'Quality Issue Keuangan', 'description' => 'Marker mutu dipisahkan tanpa koreksi atau normalisasi otomatis.', 'state' => 'Aktif'],
+                ['title' => 'Catatan Kualitas Keuangan', 'description' => 'Penanda kualitas data dipisahkan tanpa mengubah nilai sumber secara otomatis.', 'state' => 'Aktif'],
             ],
             'laporan' => [
                 ['title' => 'Ringkasan Eksekutif', 'description' => 'Laporan singkat untuk pimpinan dan evaluasi program.', 'state' => 'Terjadwal'],
@@ -402,7 +402,7 @@
             ],
             'riwayat' => [
                 ['title' => 'Penilaian Tersimpan', 'description' => 'Riwayat hasil validasi yang sudah dikirim.', 'state' => 'Tersimpan'],
-                ['title' => 'Status Submit', 'description' => 'Informasi penguncian hasil penilaian.', 'state' => 'Terkontrol'],
+                ['title' => 'Status Pengiriman', 'description' => 'Informasi penguncian hasil penilaian.', 'state' => 'Terkontrol'],
             ],
         ];
 

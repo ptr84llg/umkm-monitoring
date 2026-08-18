@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik Keputusan Baseline')
+@section('title', 'Perbandingan Usaha dan Kondisi Wilayah')
 
 @section('content')
 @php
@@ -65,24 +65,24 @@
 <div class="container-fluid py-3">
     <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-start gap-3 mb-4">
         <div>
-            <p class="text-muted mb-1">Tahun Pertama · baseline cross-sectional dan spasial</p>
+            <p class="text-muted mb-1">Berdasarkan data UMKM yang tersedia saat ini</p>
             <h1 class="h3 mb-2">Analitik Keputusan Pelaku UMKM</h1>
             <p class="mb-0">
-                Membantu membaca posisi usaha, kepadatan usaha sejenis antarwilayah, dan indikasi potensi jenis usaha tanpa forecasting atau rekomendasi otomatis.
+                Membantu membaca posisi usaha, jumlah usaha sejenis antarwilayah, dan indikasi potensi jenis usaha sebagai bahan pertimbangan.
             </p>
         </div>
         <a class="btn btn-outline-secondary" href="{{ route('pelaku-umkm.dashboard') }}">Kembali ke Dashboard</a>
     </div>
 
     <div class="alert alert-primary">
-        <strong>Batas interpretasi Tahun Pertama:</strong>
-        analitik menggunakan kondisi baseline pada snapshot yang tersedia. Label potensi/persaingan adalah indikasi relatif untuk bahan pertimbangan, bukan prediksi keberhasilan usaha.
+        <strong>Cara menggunakan informasi ini:</strong>
+        Informasi ini menggunakan data UMKM yang tersedia saat ini. Hasil perbandingan dan indikasi potensi digunakan sebagai bahan pertimbangan, bukan prediksi keberhasilan usaha atau jaminan keputusan.
     </div>
 
     @if($data['quality_warning'] ?? false)
         <div class="alert alert-warning">
-            <strong>Perhatian mutu data.</strong>
-            Terdapat flag mutu pada sebagian record yang digunakan. Nilai sumber tetap dipertahankan dan tidak dinormalisasi atau dibuang; interpretasikan agregat dengan hati-hati.
+            <strong>Perhatian kualitas data.</strong>
+            Terdapat catatan kualitas pada sebagian data yang digunakan. Nilai sumber tetap dipertahankan dan tidak dinormalisasi atau dibuang; baca hasil kelompok dengan hati-hati.
         </div>
     @endif
 
@@ -91,7 +91,7 @@
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
                     <h2 class="h5 mb-1">Konteks Analisis</h2>
-                    <p class="text-body-secondary mb-0">Pilih usaha milik Anda, jenis usaha primer, dan wilayah yang ingin dieksplorasi.</p>
+                    <p class="text-body-secondary mb-0">Pilih usaha milik Anda, jenis usaha utama, dan wilayah yang ingin dibandingkan.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-secondary" href="{{ route('pelaku-umkm.analytics.index') }}">Reset</a>
             </div>
@@ -110,7 +110,7 @@
                 </div>
 
                 <div class="col-lg-4">
-                    <label for="type_id" class="form-label">Jenis Usaha Primer</label>
+                    <label for="type_id" class="form-label">Jenis Usaha Utama</label>
                     <select id="type_id" name="type_id" class="form-select" @disabled(!$selectedUmkm)>
                         <option value="">Pilih jenis usaha</option>
                         @foreach($data['available_types'] ?? [] as $type)
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="col-lg-4">
-                    <label for="district_id" class="form-label">Wilayah Analisis Potensi</label>
+                    <label for="district_id" class="form-label">Wilayah Perbandingan</label>
                     <select id="district_id" name="district_id" class="form-select" @disabled(!$selectedUmkm)>
                         <option value="">Pilih kecamatan</option>
                         @foreach($data['districts'] ?? [] as $district)
@@ -154,14 +154,14 @@
                         <h2 class="h5 mb-1">{{ $selectedUmkm['business_name'] }}</h2>
                         <p class="text-body-secondary mb-0">
                             @if($selectedType)
-                                Dibandingkan dengan UMKM lain yang memiliki jenis usaha primer <strong>{{ $selectedType['name'] }}</strong> dalam scope kota.
+                                Dibandingkan dengan UMKM lain yang memiliki jenis usaha primer <strong>{{ $selectedType['name'] }}</strong> di seluruh Kota Lubuk Linggau.
                             @else
                                 Pilih jenis usaha primer untuk membandingkan posisi usaha.
                             @endif
                         </p>
                     </div>
                     <div class="small text-body-secondary">
-                        Snapshot: {{ data_get($data, 'freshness.snapshot_id') ?: 'Belum tersedia' }}
+                        Versi data: {{ data_get($data, 'freshness.snapshot_id') ?: 'Belum tersedia' }}
                     </div>
                 </div>
 
@@ -179,8 +179,8 @@
                                 <div class="border rounded-3 p-3 h-100">
                                     <div class="small text-body-secondary">{{ $metric['label'] }}</div>
                                     <div class="h5 mb-1">{{ $ownFormatted }}</div>
-                                    <div class="small">Median peer: <strong>{{ $peerFormatted }}</strong></div>
-                                    <div class="small text-body-secondary">n peer terisi: {{ number_format((int)$metric['peer_sample_count'], 0, ',', '.') }}</div>
+                                    <div class="small">Nilai tengah usaha sejenis: <strong>{{ $peerFormatted }}</strong></div>
+                                    <div class="small text-body-secondary">Jumlah usaha pembanding: {{ number_format((int)$metric['peer_sample_count'], 0, ',', '.') }}</div>
                                     @if($metric['position'])
                                         <span class="badge text-bg-light border mt-2">{{ $metric['position'] }}</span>
                                     @endif
@@ -189,7 +189,7 @@
                         @endforeach
                     </div>
                     <div class="small text-body-secondary mt-3">
-                        Kelompok pembanding mengecualikan seluruh UMKM yang dimiliki akun ini. Agregat peer hanya ditampilkan jika minimal {{ $minimumGroupSize }} record memenuhi rule privasi dan ketersediaan indikator.
+                        Kelompok pembanding mengecualikan seluruh UMKM yang dimiliki akun ini. Nilai kelompok hanya ditampilkan jika minimal {{ $minimumGroupSize }} usaha memiliki data yang cukup sesuai ketentuan perlindungan data.
                     </div>
                 @else
                     <div class="alert alert-light border mb-0">Jenis usaha primer belum dipilih atau data pembanding belum tersedia.</div>
@@ -203,7 +203,7 @@
                     <span class="badge text-bg-info-subtle text-info-emphasis mb-2">Persaingan Usaha Sejenis</span>
                     <h2 class="h5 mb-1">Perbandingan Antarwilayah</h2>
                     <p class="text-body-secondary mb-0">
-                        Jumlah usaha adalah indikator kepadatan. Modal dan indikator ekonomi membantu memberi konteks; keduanya tidak digunakan sebagai bukti kausal tentang persaingan.
+                        Jumlah usaha membantu melihat tingkat persaingan relatif. Modal dan indikator ekonomi memberi konteks tambahan; keduanya tidak digunakan untuk membuktikan penyebab persaingan.
                     </p>
                 </div>
 
@@ -215,7 +215,7 @@
                                     <th>Kecamatan</th>
                                     <th>Usaha Sejenis</th>
                                     <th>Kepadatan</th>
-                                    <th>Modal (Total / Median)</th>
+                                    <th>Modal (Total / Nilai Tengah)</th>
                                     <th>{{ $competitionSummary['economic_metric_label'] ?? 'Indikator Ekonomi' }} (Total / Median)</th>
                                     <th>Mutu</th>
                                     <th>Interpretasi</th>
@@ -266,8 +266,8 @@
                         </table>
                     </div>
                     <div class="small text-body-secondary">
-                        Q1 jumlah usaha: {{ $competitionSummary['business_count_q1'] !== null ? number_format((float)$competitionSummary['business_count_q1'], 1, ',', '.') : '-' }} ·
-                        Q3: {{ $competitionSummary['business_count_q3'] !== null ? number_format((float)$competitionSummary['business_count_q3'], 1, ',', '.') : '-' }} ·
+                        Batas kelompok rendah: {{ $competitionSummary['business_count_q1'] !== null ? number_format((float)$competitionSummary['business_count_q1'], 1, ',', '.') : '-' }} ·
+                        Batas kelompok tinggi: {{ $competitionSummary['business_count_q3'] !== null ? number_format((float)$competitionSummary['business_count_q3'], 1, ',', '.') : '-' }} ·
                         Referensi ekonomi: {{ $competitionSummary['economic_metric_label'] ?? 'Belum cukup data' }}.
                     </div>
                 @else
@@ -282,7 +282,7 @@
                     <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Potensi Jenis Usaha</span>
                     <h2 class="h5 mb-1">Jenis Usaha yang Relatif Sedikit tetapi Menunjukkan Sinyal Ekonomi</h2>
                     <p class="text-body-secondary mb-0">
-                        Rule transparan: jumlah usaha berada pada kuartil bawah wilayah dan median indikator ekonomi tidak lebih rendah dari median pembanding wilayah. Tidak ada skor berbobot.
+                        Cara membaca: jumlah usaha termasuk kelompok relatif sedikit dan nilai tengah indikator ekonomi tidak lebih rendah dari nilai tengah pembanding wilayah. Tidak ada skor penilaian otomatis.
                     </p>
                 </div>
 
@@ -293,7 +293,7 @@
                 @else
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <span class="badge text-bg-light border">Wilayah: {{ $selectedDistrict['name'] }}</span>
-                        <span class="badge text-bg-light border">Q1 jumlah usaha: {{ $opportunitySummary['business_count_q1'] !== null ? number_format((float)$opportunitySummary['business_count_q1'], 1, ',', '.') : '-' }}</span>
+                        <span class="badge text-bg-light border">Batas kelompok rendah: {{ $opportunitySummary['business_count_q1'] !== null ? number_format((float)$opportunitySummary['business_count_q1'], 1, ',', '.') : '-' }}</span>
                         <span class="badge text-bg-light border">Indikator: {{ $opportunitySummary['economic_metric_label'] ?? 'Belum cukup data' }}</span>
                         <span class="badge text-bg-light border">Indikasi potensi: {{ (int)($opportunitySummary['potential_count'] ?? 0) }}</span>
                     </div>
@@ -304,7 +304,7 @@
                                 <tr>
                                     <th>Jenis Usaha</th>
                                     <th>Jumlah</th>
-                                    <th>Modal (Total / Median)</th>
+                                    <th>Modal (Total / Nilai Tengah)</th>
                                     <th>Indikator Ekonomi (Total / Median)</th>
                                     <th>Mutu</th>
                                     <th>Interpretasi</th>

@@ -114,9 +114,9 @@ class AdminDinasSpatialAnalyticsTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/analytics/spatial')
             ->assertOk()
-            ->assertSeeText('Analitik Wilayah & Peta Internal', false)
+            ->assertSeeText('Peta dan Analisis Wilayah', false)
             ->assertSee('Peta Administratif Interaktif')
-            ->assertSee('Asosiasi administratif berbeda dari titik koordinat')
+            ->assertSee('Keterkaitan wilayah administrasi berbeda dari titik lokasi')
             ->assertSee('Titik individual disembunyikan')
             ->assertDontSee('Tampilkan titik koordinat');
     }
@@ -133,7 +133,7 @@ class AdminDinasSpatialAnalyticsTest extends TestCase
             ->assertOk()
             ->assertSee('Tampilkan titik koordinat')
             ->assertSee(
-                'Titik biru = UMKM yang memenuhi rule coordinate-mapped'
+                'Titik biru = UMKM yang memiliki titik lokasi lengkap'
             );
     }
 

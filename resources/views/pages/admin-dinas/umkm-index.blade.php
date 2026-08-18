@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Data UMKM Internal')
+@section('title', 'Data UMKM')
 
 @section('content')
 @php
@@ -51,10 +51,10 @@
     <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
-                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Read-only Internal</span>
-                <h1 class="h3 mb-2">Data UMKM Internal</h1>
+                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Hanya Dapat Dilihat</span>
+                <h1 class="h3 mb-2">Data UMKM</h1>
                 <p class="text-body-secondary mb-0">
-                    Penelusuran record tanpa mengubah nilai sumber. Detail keuangan hanya muncul sesuai permission pengguna.
+                    Penelusuran data tanpa mengubah nilai sumber. Detail keuangan hanya muncul sesuai izin akses pengguna.
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
@@ -69,7 +69,7 @@
             <form method="GET" action="{{ route('admin-dinas.umkm.index') }}" class="row g-3">
                 <div class="col-12 col-xl-4">
                     <label class="form-label" for="search">Cari UMKM</label>
-                    <input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Nama, kode, atau source record ID">
+                    <input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Nama, kode, atau ID data sumber">
                 </div>
                 <div class="col-md-6 col-xl-2">
                     <label class="form-label" for="district_id">Kecamatan</label>
@@ -117,7 +117,7 @@
                     </div>
                 @endforeach
                 <div class="col-md-6 col-xl-3">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <label class="form-label" for="quality_status">Kualitas Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
                         @foreach(($options['qualityStatuses'] ?? []) as $value)
@@ -143,7 +143,7 @@
                     <h2 class="h5 mb-1">Daftar UMKM</h2>
                     <p class="text-body-secondary mb-0">
                         Menampilkan {{ number_format($rows->firstItem() ?? 0, 0, ',', '.') }}–{{ number_format($rows->lastItem() ?? 0, 0, ',', '.') }}
-                        dari {{ number_format($rows->total(), 0, ',', '.') }} record.
+                        dari {{ number_format($rows->total(), 0, ',', '.') }} data.
                     </p>
                 </div>
                 @if($canFinancial)
@@ -163,7 +163,7 @@
                                 <th class="text-end">Modal</th>
                                 <th class="text-end">Penjualan</th>
                             @endif
-                            <th>Mutu</th>
+                            <th>Kualitas Data</th>
                             <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
@@ -197,7 +197,7 @@
                                 @endif
                                 <td>
                                     <span class="badge {{ $qualityClass }}">{{ $qualityText }}</span>
-                                    <div class="small text-body-secondary mt-1">{{ number_format((int)$row->quality_flag_count, 0, ',', '.') }} flag terbuka</div>
+                                    <div class="small text-body-secondary mt-1">{{ number_format((int)$row->quality_flag_count, 0, ',', '.') }} catatan terbuka</div>
                                 </td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin-dinas.umkm.show', $row->id) }}">Detail</a>

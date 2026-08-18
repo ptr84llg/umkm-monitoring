@@ -1,14 +1,14 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Review Perubahan Profil UMKM')
+@section('title', 'Verifikasi Perubahan Data UMKM')
 
 @section('content')
 <div class="container-fluid py-3">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <p class="text-muted mb-1">Checkpoint 10E</p>
-            <h1 class="h3 mb-2">Review Perubahan Profil UMKM</h1>
-            <p class="mb-0">Review hanya mengaktifkan approved override. Nilai sumber/LSS tidak ditimpa.</p>
+            <p class="text-muted mb-1">Verifikasi Perubahan Data</p>
+            <h1 class="h3 mb-2">Verifikasi Perubahan Data UMKM</h1>
+            <p class="mb-0">Persetujuan hanya mengaktifkan perubahan yang disetujui. Data sumber/LSS tetap dipertahankan.</p>
         </div>
     </div>
 
@@ -60,7 +60,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center text-muted py-4">Tidak ada submission pada status ini.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4">Tidak ada pengajuan pada status ini.</td></tr>
                     @endforelse
                 </tbody>
             </table>

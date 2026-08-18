@@ -3,10 +3,10 @@
 @php
     $assetProfile = 'base';
     $labels = [
-        'pending_review' => ['Menunggu Review Dinas', 'warning'],
-        'approved_pending_activation' => ['Disetujui, Menunggu Aktivasi', 'info'],
-        'rejected' => ['Ditolak', 'danger'],
-        'activated' => ['Kredensial Teraktivasi', 'success'],
+        'pending_review' => ['Menunggu Verifikasi Dinas', 'warning'],
+        'approved_pending_activation' => ['Disetujui, Silakan Aktifkan Akun', 'info'],
+        'rejected' => ['Pengajuan Belum Disetujui', 'danger'],
+        'activated' => ['Akun Berhasil Diaktifkan', 'success'],
     ];
     [$statusLabel, $statusClass] = $labels[$claim->status] ?? [$claim->status, 'secondary'];
 @endphp
@@ -22,7 +22,7 @@
             @endif
 
             <span class="badge text-bg-{{ $statusClass }} mb-3">{{ $statusLabel }}</span>
-            <h1 class="h3 mb-3">Status Klaim Akun Pelaku UMKM</h1>
+            <h1 class="h3 mb-3">Status Pengajuan Akun Pelaku UMKM</h1>
 
             <dl class="row mb-4">
                 <dt class="col-sm-4">Referensi</dt>
@@ -34,15 +34,14 @@
             </dl>
 
             @if ($claim->status === 'pending_review')
-                <p class="text-body-secondary">Dinas akan memverifikasi keterkaitan pemohon dengan UMKM sebelum aktivasi dapat dikirim.</p>
+                <p class="text-body-secondary">Dinas akan memverifikasi keterkaitan Anda dengan UMKM sebelum akun dapat diaktifkan.</p>
             @elseif ($claim->status === 'approved_pending_activation')
                 <p class="text-body-secondary">Buka tautan aktivasi yang dikirim ke email pemohon dan masukkan OTP pada masa berlaku yang tersedia.</p>
             @elseif ($claim->status === 'rejected')
-                <p class="text-body-secondary">Pengajuan ditolak. Histori pengajuan tetap disimpan dan pengajuan baru dapat dibuat sebagai resubmission.</p>
+                <p class="text-body-secondary">Pengajuan belum disetujui. Riwayat pengajuan tetap tersimpan dan Anda dapat membuat pengajuan baru.</p>
             @elseif ($claim->status === 'activated')
                 <p class="text-body-secondary">
-                    Kredensial akun telah aktif. Ownership binding belum dibentuk pada Checkpoint 10A,
-                    sehingga workspace Pelaku belum diaktifkan.
+                    Akun telah aktif dan dapat digunakan sesuai akses yang tersedia.
                 </p>
             @endif
 

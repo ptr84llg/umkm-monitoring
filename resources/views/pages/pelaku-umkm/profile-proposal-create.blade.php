@@ -5,9 +5,9 @@
 @section('content')
 <div class="container-fluid py-3">
     <div class="mb-4">
-        <p class="text-muted mb-1">Usulan perubahan profil</p>
+        <p class="text-muted mb-1">Ajukan perubahan data usaha</p>
         <h1 class="h3">{{ $effectiveProfile['effective']['business_name'] ?? $umkm->business_name }}</h1>
-        <p class="mb-0">Pengajuan tidak menimpa nilai sumber. Nilai baru baru menjadi efektif setelah review dan persetujuan.</p>
+        <p class="mb-0">Data awal tetap tersimpan. Perubahan yang Anda ajukan akan menjadi data saat ini setelah diperiksa dan disetujui Dinas.</p>
     </div>
 
     <form method="POST" action="{{ route('pelaku-umkm.profile-change.store', $umkm) }}" class="card">
@@ -36,7 +36,7 @@
             </div>
 
             <div class="alert alert-warning">
-                quality_status, status_data, provenance sumber, dan metadata internal tidak dapat diubah melalui formulir ini.
+                Status administrasi, catatan kualitas data, sumber data, dan informasi sistem tidak dapat diubah melalui formulir ini.
             </div>
         </div>
         <div class="card-footer d-flex gap-2">

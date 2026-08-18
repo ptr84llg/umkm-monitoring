@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik Keuangan Internal')
+@section('title', 'Analitik Ekonomi & Keuangan')
 
 @section('content')
 @php
@@ -43,10 +43,10 @@
     <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
-                <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Internal · Data Sensitif</span>
+                <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Data Keuangan Terbatas</span>
                 <h1 class="h3 mb-2">Analitik Ekonomi & Keuangan</h1>
                 <p class="text-body-secondary mb-0">
-                    Analitik berfokus pada cakupan dan distribusi nilai yang terdata. Sistem tidak mengoreksi satuan, menormalisasi nominal, atau membuat total/rata-rata nominal sebagai indikator kebijakan.
+                    Analitik berfokus pada cakupan dan sebaran nilai yang tercatat. Nilai sumber tetap ditampilkan apa adanya dan tidak diubah berdasarkan asumsi.
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
@@ -77,7 +77,7 @@
                     </div>
                 @endforeach
                 <div class="col-md-6 col-xl">
-                    <label class="form-label" for="quality_status">Mutu Data</label>
+                    <label class="form-label" for="quality_status">Kualitas Data</label>
                     <select class="form-select" id="quality_status" name="quality_status">
                         <option value="">Semua</option>
                         @foreach(($options['qualityStatuses'] ?? []) as $value)
@@ -109,7 +109,7 @@
 
     <section class="alert alert-warning mb-0">
         <strong>0 berbeda dari belum tersedia.</strong>
-        Cakupan menggunakan nilai non-NULL. Nilai kecil atau tidak lazim tetap dipertahankan sebagai nilai sumber sampai ada verifikasi.
+        Cakupan menunjukkan jumlah data yang memiliki nilai pada sumber. Nilai kecil atau tidak lazim tetap dipertahankan sesuai sumber sampai ada verifikasi.
     </section>
 
     <section class="row g-3">
@@ -201,9 +201,9 @@
         <div class="col-xl-6">
             <div class="card border-warning-subtle shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Catatan Mutu Sumber Pinjaman</h2>
+                    <h2 class="h5">Catatan Kualitas Sumber Pinjaman</h2>
                     <p class="text-body-secondary">
-                        String sumber yang memuat marker “data keuangan tidak tersedia” dipisahkan sebagai quality issue. Nilai tersebut tidak diubah menjadi Mekaar, KUR, atau kategori lain.
+                        Nilai sumber yang memuat penanda “data keuangan tidak tersedia” diberi catatan kualitas data. Nilai tersebut tidak diubah menjadi Mekaar, KUR, atau kategori lain.
                     </p>
 
                     <div class="d-flex flex-column gap-3">
@@ -216,7 +216,7 @@
                                 <div class="progress" style="height: 8px;"><div class="progress-bar bg-warning" style="width: {{ $barPct((int)$row['total_umkm'], $maxIssue) }}%"></div></div>
                             </div>
                         @empty
-                            <p class="text-body-secondary">Tidak ada marker tersebut pada konteks aktif.</p>
+                            <p class="text-body-secondary">Tidak ada penanda tersebut pada konteks aktif.</p>
                         @endforelse
                     </div>
                 </div>
@@ -228,11 +228,11 @@
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                 <div>
-                    <h2 class="h5 mb-1">Preview Nilai Keuangan Terdata</h2>
+                    <h2 class="h5 mb-1">Rincian Nilai Keuangan yang Tercatat</h2>
                     @if($financialRows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
                         <p class="text-body-secondary mb-0">
                             Menampilkan {{ number_format($financialRows->firstItem() ?? 0, 0, ',', '.') }}–{{ number_format($financialRows->lastItem() ?? 0, 0, ',', '.') }}
-                            dari {{ number_format($financialRows->total(), 0, ',', '.') }} record. Nilai sumber tidak dikoreksi.
+                            dari {{ number_format($financialRows->total(), 0, ',', '.') }} data. Nilai sumber tidak dikoreksi.
                         </p>
                     @else
                         <p class="text-body-secondary mb-0">Nilai sumber ditampilkan tanpa koreksi.</p>
@@ -251,7 +251,7 @@
                             <th class="text-end">Penjualan</th>
                             <th class="text-end">Pinjaman</th>
                             <th>Sumber</th>
-                            <th>Mutu</th>
+                            <th>Kualitas Data</th>
                             <th></th>
                         </tr>
                     </thead>

@@ -10,17 +10,16 @@
                     <span class="badge rounded-pill text-bg-light border mb-3">Admin Utama · Super Admin</span>
                     <h1 class="h3 mb-3">Pusat Kendali Sistem Monitoring UMKM</h1>
                     <p class="text-muted mb-0">
-                        Dashboard ini menjadi shell awal untuk memantau sistem, keamanan, konfigurasi, kualitas data,
-                        pengguna, dan kesiapan modul. Pada tahap ini menu masih dikunci sebagai skeleton agar tidak
-                        membuka CRUD atau akses operasional sebelum guard, permission, dan audit siap.
+                        Dashboard ini digunakan untuk memantau sistem, keamanan, konfigurasi, kualitas data,
+                        pengguna, dan ketersediaan modul sesuai kewenangan.
                     </p>
                 </div>
                 <div class="col-lg-4">
                     <div class="border rounded-4 p-3 bg-light-subtle">
-                        <div class="small text-muted mb-1">Status tahap</div>
-                        <div class="fw-semibold">AdminUtama-1B · Dashboard Shell</div>
+                        <div class="small text-muted mb-1">Status sistem</div>
+                        <div class="fw-semibold">Pusat Kendali Sistem Aktif</div>
                         <div class="small text-muted mt-2">
-                            Theme switching 7 opsi sudah terdeteksi, tetapi belum diaktifkan pada tahap ini.
+                            Tersedia 7 pilihan tema tampilan.
                         </div>
                     </div>
                 </div>
@@ -33,13 +32,13 @@
             <x-umkm.data-display.summary-card title="Akun" :value="$data['users'] ?? 0" />
         </div>
         <div class="col-md-6 col-xl-3">
-            <x-umkm.data-display.summary-card title="Role" :value="$data['roles'] ?? 0" />
+            <x-umkm.data-display.summary-card title="Peran" :value="$data['roles'] ?? 0" />
         </div>
         <div class="col-md-6 col-xl-3">
-            <x-umkm.data-display.summary-card title="Permission" :value="$data['permissions'] ?? 0" />
+            <x-umkm.data-display.summary-card title="Izin Akses" :value="$data['permissions'] ?? 0" />
         </div>
         <div class="col-md-6 col-xl-3">
-            <x-umkm.data-display.summary-card title="Security Event" :value="$data['security_events'] ?? 0" />
+            <x-umkm.data-display.summary-card title="Aktivitas Keamanan" :value="$data['security_events'] ?? 0" />
         </div>
     </div>
 
@@ -49,12 +48,12 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-column flex-md-row gap-2 justify-content-between align-items-md-center mb-3">
                         <div>
-                            <h2 class="h5 mb-1">Menu Skeleton Admin Utama</h2>
+                            <h2 class="h5 mb-1">Modul Admin Utama</h2>
                             <p class="text-muted small mb-0">
                                 Struktur menu mengikuti ruang kerja Admin Utama: akses, referensi, governance, publikasi, dan validasi.
                             </p>
                         </div>
-                        <span class="badge rounded-pill text-bg-warning">Belum CRUD</span>
+                        <span class="badge rounded-pill text-bg-warning">Belum Tersedia</span>
                     </div>
 
                     <div class="row g-3">
@@ -85,7 +84,7 @@
                                         </a>
                                     @else
                                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
-                                            Menunggu batch lanjutan
+                                            Belum Tersedia
                                         </button>
                                     @endif
                                 </div>
@@ -99,7 +98,7 @@
         <div class="col-xl-4">
             <section class="umkm-card card border-0 shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5 mb-3">Snapshot Sistem</h2>
+                    <h2 class="h5 mb-3">Ringkasan Sistem</h2>
 
                     <div class="vstack gap-3">
                         <div class="d-flex justify-content-between border-bottom pb-2">
@@ -134,10 +133,10 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-column flex-md-row gap-2 justify-content-between align-items-md-center mb-3">
                         <div>
-                            <h2 class="h5 mb-1">Kesiapan 7 Theme</h2>
+                            <h2 class="h5 mb-1">Pilihan Tema Tampilan</h2>
                             <p class="text-muted small mb-0">
-                                Theme berikut sudah tersedia sebagai CSS. Penggantian theme akan dibuat pada batch terpisah
-                                dengan permission dan audit.
+                                Tema berikut tersedia sebagai pilihan tampilan sistem. Perubahan mengikuti kewenangan pengguna
+                                dan dicatat dalam riwayat sistem.
                             </p>
                         </div>
                         <span class="badge rounded-pill text-bg-light border">7 opsi</span>
@@ -161,7 +160,7 @@
         <div class="col-xl-5">
             <section class="umkm-card card border-0 shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5 mb-3">Catatan Guard</h2>
+                    <h2 class="h5 mb-3">Catatan Keamanan</h2>
 
                     <div class="vstack gap-2">
                         @foreach ($governanceNotes as $note)
