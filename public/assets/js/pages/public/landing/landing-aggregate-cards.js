@@ -66,7 +66,7 @@
   }
   function requestJson(q) {
     if (!(window.UMKM && window.UMKM.ajax && typeof window.UMKM.ajax.get === 'function')) {
-      return Promise.reject(new Error('AJAX internal belum siap.'));
+      return Promise.reject(new Error('Informasi belum dapat dimuat. Silakan coba lagi.'));
     }
     return Promise.resolve(window.UMKM.ajax.get(API_URL + '?' + q.toString(), {
       headers: { 'X-UMKM-Preview': 'landing-public-safe', 'X-UMKM-Internal-Request': '1' }
@@ -133,7 +133,7 @@ function ensureTargets(card) {
       if (targets.badge) targets.badge.setAttribute('data-public-aggregate-badge', '');
     }
     if (!targets.label) {
-      targets.label = firstByText(card, 'Memuat agregat');
+      targets.label = firstByText(card, 'Memuat informasi');
       if (targets.label) targets.label.setAttribute('data-public-aggregate-label', '');
     }
     if (!targets.value) {
@@ -141,11 +141,11 @@ function ensureTargets(card) {
       if (targets.value) targets.value.setAttribute('data-public-aggregate-value', '');
     }
     if (!targets.context) {
-      targets.context = firstByText(card, 'Mengambil agregat publik...') || card.querySelector('p, small, .text-muted');
+      targets.context = firstByText(card, 'Mengambil informasi terbaru...') || card.querySelector('p, small, .text-muted');
       if (targets.context) targets.context.setAttribute('data-public-aggregate-context', '');
     }
     if (!targets.percent) {
-      targets.percent = firstByText(card, 'Menunggu sinkronisasi');
+      targets.percent = firstByText(card, 'Menunggu data');
       if (targets.percent) targets.percent.setAttribute('data-public-aggregate-percent', '');
     }
     if (!targets.progress) {
@@ -205,7 +205,7 @@ function mountRegionActions() {
           mount.innerHTML = [
             '<button type="button" class="btn btn-danger btn-lg landing-main-btn" data-region-open data-region-modal-open>',
             '  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>',
-            '  <span>Pilih Wilayah Preview</span>',
+            '  <span>Pilih Wilayah</span>',
             '</button>'
           ].join('');
         }
@@ -248,7 +248,7 @@ function setInitialNoData() {
       clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Belum dimuat';
       if (targets.value) targets.value.textContent = '—';
-      if (targets.context) targets.context.textContent = 'Data belum dimuat. Menunggu konteks wilayah aktif.';
+      if (targets.context) targets.context.textContent = 'Informasi belum dimuat. Menunggu pilihan wilayah.';
       if (targets.percent) targets.percent.textContent = '0,00%';
       if (targets.progress) {
         targets.progress.style.width = '0%';
@@ -274,15 +274,15 @@ function setLoading() {
       card.classList.add('is-loading');
       clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Memuat';
-      if (targets.label) targets.label.textContent = 'Memuat agregat';
+      if (targets.label) targets.label.textContent = 'Memuat informasi';
       if (targets.value) targets.value.textContent = '—';
-      if (targets.context) targets.context.textContent = 'Mengambil agregat publik...';
-      if (targets.percent) targets.percent.textContent = 'Menunggu sinkronisasi';
+      if (targets.context) targets.context.textContent = 'Mengambil informasi terbaru...';
+      if (targets.percent) targets.percent.textContent = 'Menunggu data';
       if (targets.progress) {
         targets.progress.className = (targets.progress.classList.contains('stat-progress-fill') ? 'stat-progress-fill ' : 'progress-bar ') + 'w-0';
         targets.progress.setAttribute('aria-valuenow', '0');
       }
-      if (targets.footerLabel) targets.footerLabel.textContent = 'Data agregat';
+      if (targets.footerLabel) targets.footerLabel.textContent = 'Ringkasan data';
       if (targets.footerValue) targets.footerValue.textContent = 'Memuat';
     });
   }
@@ -301,7 +301,7 @@ function setLoading() {
       card.classList.add('is-limited');
       clearCardIcon(targets.icon);
       if (targets.badge) targets.badge.textContent = 'Terbatas';
-      if (targets.context) targets.context.textContent = message || 'Agregat belum dapat dimuat.';
+      if (targets.context) targets.context.textContent = message || 'Informasi belum dapat dimuat.';
       if (targets.value) targets.value.textContent = '—';
       if (targets.percent) targets.percent.textContent = 'Menunggu data';
       if (targets.progress) {
@@ -335,13 +335,13 @@ function setLoading() {
       targets.progress.className = (targets.progress.classList.contains('stat-progress-fill') ? 'stat-progress-fill ' : 'progress-bar ') + widthClass(progress);
       targets.progress.setAttribute('aria-valuenow', String(progress));
     }
-    if (targets.footerLabel) targets.footerLabel.textContent = String(cardData.footer_label || 'Data agregat');
-    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Data agregat');
+    if (targets.footerLabel) targets.footerLabel.textContent = String(cardData.footer_label || 'Ringkasan data');
+    if (targets.footerValue) targets.footerValue.textContent = String(cardData.footer_value || 'Ringkasan data');
   }
   function applyPayload(payload) {
     var safe = normalizePayload(payload);
     if (!safe || !safe.data || !safe.data.aggregate_cards) {
-      setError('Agregat belum tersedia untuk konteks ini.');
+      setError('Informasi belum tersedia untuk konteks ini.');
       return;
     }
     state.payload = safe;
@@ -359,13 +359,13 @@ function setLoading() {
         window.setTimeout(function () { loadInitial((retry || 0) + 1); }, 250);
         return;
       }
-      setError('AJAX internal belum siap.');
+      setError('Informasi belum dapat dimuat. Silakan coba lagi.');
       return;
     }
     setLoading();
     requestJson(new URLSearchParams({ city_code: '16.73', scope: 'city' }))
       .then(applyPayload)
-      .catch(function (error) { setError(error && error.message ? error.message : 'Agregat belum dapat dimuat.'); });
+      .catch(function (error) { setError(error && error.message ? error.message : 'Informasi belum dapat dimuat.'); });
   }
 
 function createModal(cardKey) {
@@ -378,7 +378,7 @@ function createModal(cardKey) {
       '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">',
       '  <div class="modal-content border-0 shadow-lg rounded-4">',
       '    <div class="modal-header border-0 pb-2">',
-      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Rincian agregat wilayah</p><h5 class="modal-title mb-0 fw-bold" data-public-aggregate-detail-title>Rincian Agregat</h5></div>',
+      '      <div><p class="text-muted small mb-1" data-public-aggregate-detail-subtitle>Rincian wilayah</p><h5 class="modal-title mb-0 fw-bold" data-public-aggregate-detail-title>Rincian Informasi</h5></div>',
       '      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>',
       '    </div>',
       '    <div class="modal-body pt-2">',
@@ -418,8 +418,8 @@ function renderDetail(modal, detail) {
     var primaryLabel = hero.label || (summary[0] ? summary[0].label : 'Agregat');
     var primaryContext = hero.context || hero.percent_text || '';
 
-    if (title) title.textContent = detail.title || 'Rincian Agregat';
-    if (subtitle) subtitle.textContent = detail.subtitle || 'Rincian agregat wilayah';
+    if (title) title.textContent = detail.title || 'Rincian Informasi';
+    if (subtitle) subtitle.textContent = detail.subtitle || 'Rincian wilayah';
 
     if (content) {
       var summaryHtml = summary.map(function (item) {
@@ -433,7 +433,7 @@ function renderDetail(modal, detail) {
       content.innerHTML = [
         '<section class="aggregate-detail-hero">',
         '  <div><span>' + escapeHtml(primaryLabel) + '</span><strong>' + escapeHtml(primaryValue) + '</strong></div>',
-        '  <p>' + escapeHtml(primaryContext || 'Data agregat pada wilayah aktif.') + '</p>',
+        '  <p>' + escapeHtml(primaryContext || 'Ringkasan data pada wilayah aktif.') + '</p>',
         '</section>',
         '<section class="aggregate-detail-chip-grid">',
         summaryHtml || '<div class="aggregate-detail-empty">Ringkasan belum tersedia.</div>',

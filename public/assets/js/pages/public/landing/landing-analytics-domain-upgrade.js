@@ -120,7 +120,7 @@
   function qualityNoteRows() {
     var rows = arrayOf(readiness().quality_notes).map(function (row) {
       var label = t(row.label, '');
-      var group = t(row.group || row.name, 'Catatan mutu');
+      var group = t(row.group || row.name, 'Catatan kualitas');
       var severity = t(row.severity, 'info');
       return { name: label || (group + ' • ' + severity), total: n(row.total) };
     }).filter(function (row) { return row.total > 0; });
@@ -173,7 +173,7 @@
 
   function listFallback(element, rows, key) {
     if (!rows.length) {
-      element.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Data agregat belum tersedia untuk domain ini.</span></div>';
+      element.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Data belum tersedia untuk bagian ini.</span></div>';
       return;
     }
 
@@ -206,7 +206,7 @@
       + '</div></div></div>';
   }
 
-  function horizontalRanking(rows, key, unit, percentMode) {
+  function horizontalUrutan(rows, key, unit, percentMode) {
     var selected = rows.slice().sort(function (a, b) { return n(b[key]) - n(a[key]); }).slice(0, 10);
     return {
       animationDuration: 700,
@@ -524,16 +524,16 @@
     return '<div class="card border-0 public-analytics-workspace mb-4" data-domain-upgrade-workspace data-domain-upgrade-stage="simplified-tahap3">'
       + '<div class="card-body p-3 p-xl-4">'
       + '<div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3 mb-3 public-workspace-head">'
-      + '<div><span>Visual Analitik Wilayah Aktif</span><strong>Enam domain indikator dengan visual yang saling melengkapi</strong><p>Struktur tetap Bootstrap-first; setiap chart menjawab satu pertanyaan analitik.</p></div>'
+      + '<div><span>Informasi Wilayah yang Dipilih</span><strong>Enam domain indikator dengan visual yang saling melengkapi</strong><p>Struktur tetap Setiap grafik digunakan untuk menjawab satu pertanyaan dengan sederhana.</p></div>'
       + '<span class="badge text-bg-success rounded-pill align-self-start">Visual sederhana</span>'
       + '</div>'
       + '<ul class="nav nav-pills public-analytics-tabs mb-4" role="tablist">'
-      + tabButton('sector', 'Profil Sektor', true)
+      + tabButton('sector', 'Jenis Usaha', true)
       + tabButton('workforce', 'Tenaga Kerja')
       + tabButton('economy', 'Ekonomi Usaha')
       + tabButton('market', 'Akses Pasar')
       + tabButton('legality', 'Legalitas')
-      + tabButton('quality', 'Mutu Data')
+      + tabButton('quality', 'Kualitas Data')
       + '</ul>'
       + '<div data-domain-upgrade-pane></div>'
       + '<aside class="alert alert-light border public-analytics-narrative mt-4 mb-0" data-domain-upgrade-narrative></aside>'
@@ -574,11 +574,11 @@
       { label: 'Jenis dominan', value: t(type.name), note: type.total ? fmt(type.total) + ' UMKM • ' + pct(type.percentage) : 'Data belum tersedia.' }
     ]) + '<div class="row g-3 g-xl-4">'
       + panel('Hirarki kategori dan jenis usaha', 'Membaca struktur kategori hingga jenis usaha.', 'sector-sunburst', 'col-xl-5', 'Struktur')
-      + panel('Top 10 jenis usaha', 'Ranking jenis usaha dengan jumlah UMKM terbesar.', 'sector-ranking', 'col-xl-7', 'Ranking')
+      + panel('10 Terbanyak jenis usaha', 'Urutan jenis usaha dengan jumlah UMKM terbesar.', 'sector-ranking', 'col-xl-7', 'Urutan')
       + '</div>';
 
     chart('[data-domain-upgrade-chart="sector-sunburst"]', sunburst(sunburstRows()), sunburstRows(), 'value');
-    chart('[data-domain-upgrade-chart="sector-ranking"]', horizontalRanking(typeRows, 'total', ' UMKM', false), typeRows, 'total');
+    chart('[data-domain-upgrade-chart="sector-ranking"]', horizontalUrutan(typeRows, 'total', ' UMKM', false), typeRows, 'total');
   }
 
   function renderWorkforce(pane) {
@@ -586,20 +586,20 @@
     var top = arrayOf(data.top_sectors).slice(0, 10);
     var buckets = arrayOf(data.buckets);
     var excludedNote = n(data.excluded_total) > 0
-      ? fmt(data.excluded_total) + ' nilai di atas batas analitik dipisahkan dari agregat publik.'
-      : 'Tidak ada nilai yang dipisahkan oleh batas kewajaran.';
+      ? fmt(data.excluded_total) + ' nilai di atas batas tampilan dipisahkan dari ringkasan publik.'
+      : 'Tidak ada nilai yang dipisahkan oleh batas pemeriksaan.';
 
     pane.innerHTML = kpiGrid([
-      { label: 'Total pekerja terhitung', value: fmt(data.total_workers), note: 'Akumulasi setelah penerapan batas analitik pekerja.' },
-      { label: 'Median pekerja', value: fmtDecimal(data.median_workers), note: 'Nilai tengah pekerja per UMKM.' },
+      { label: 'Total pekerja terhitung', value: fmt(data.total_workers), note: 'Akumulasi setelah penerapan batas tampilan pekerja.' },
+      { label: 'Nilai tengah pekerja', value: fmtDecimal(data.median_workers), note: 'Nilai tengah pekerja per UMKM.' },
       { label: 'Data pekerja terpakai', value: fmt(data.valid_filled_total || data.filled_total), note: excludedNote }
     ]) + '<div class="row g-3 g-xl-4">'
-      + panel('Sektor penyerap pekerja', 'Ranking total pekerja terhitung berdasarkan jenis usaha.', 'workforce-ranking', 'col-xl-7', 'Ranking')
-      + panel('Distribusi jumlah pekerja', 'Komposisi UMKM berdasarkan rentang jumlah pekerja.', 'workforce-buckets', 'col-xl-5', 'Distribusi')
+      + panel('Sektor penyerap pekerja', 'Urutan total pekerja terhitung berdasarkan jenis usaha.', 'workforce-ranking', 'col-xl-7', 'Urutan')
+      + panel('Sebaran jumlah pekerja', 'Komposisi UMKM berdasarkan rentang jumlah pekerja.', 'workforce-buckets', 'col-xl-5', 'Sebaran')
       + '</div>';
 
-    chart('[data-domain-upgrade-chart="workforce-ranking"]', horizontalRanking(top, 'total_workers', ' pekerja', false), top, 'total_workers');
-    chart('[data-domain-upgrade-chart="workforce-buckets"]', horizontalRanking(buckets, 'total', ' UMKM', false), buckets, 'total');
+    chart('[data-domain-upgrade-chart="workforce-ranking"]', horizontalUrutan(top, 'total_workers', ' pekerja', false), top, 'total_workers');
+    chart('[data-domain-upgrade-chart="workforce-buckets"]', horizontalUrutan(buckets, 'total', ' UMKM', false), buckets, 'total');
   }
 
   function renderEconomy(pane) {
@@ -612,8 +612,8 @@
       { label: 'Penjualan terdata', value: fmt(data.annual_sales_filled), note: 'UMKM dengan nilai penjualan tahunan tersedia dari sumber.' },
       { label: 'Sumber pinjaman', value: fmt(data.loan_source_filled), note: 'UMKM dengan sumber pinjaman terdata.' }
     ]) + '<div class="row g-3 g-xl-4">'
-      + panel('Distribusi rentang modal', 'Distribusi nilai modal yang tersedia; nilai sumber tidak dikoreksi otomatis.', 'economy-capital', 'col-xl-6', 'Distribusi')
-      + panel('Distribusi rentang penjualan', 'Distribusi nilai penjualan yang tersedia; nilai sumber tidak dikoreksi otomatis.', 'economy-sales', 'col-xl-6', 'Distribusi')
+      + panel('Sebaran rentang modal', 'Sebaran nilai modal yang tersedia; nilai sumber tidak dikoreksi otomatis.', 'economy-capital', 'col-xl-6', 'Sebaran')
+      + panel('Sebaran rentang penjualan', 'Sebaran nilai penjualan yang tersedia; nilai sumber tidak dikoreksi otomatis.', 'economy-sales', 'col-xl-6', 'Sebaran')
       + '</div>';
 
     chart('[data-domain-upgrade-chart="economy-capital"]', verticalBar(capital, 'total', ' UMKM'), capital, 'total');
@@ -628,15 +628,15 @@
 
     pane.innerHTML = kpiGrid([
       { label: 'Metode dominan', value: t(dominant.name), note: dominant.total ? fmt(dominant.total) + ' UMKM • ' + pct(dominant.percentage) : 'Data belum tersedia.' },
-      { label: 'Kategori tercakup', value: fmt(categoryCount), note: 'Jumlah kategori yang memiliki relasi metode pemasaran.' },
+      { label: 'Kategori tercakup', value: fmt(categoryCount), note: 'Jumlah kategori yang memiliki hubungan metode pemasaran.' },
       { label: 'UMKM metode terdata', value: fmt(methodCoverageTotal), note: 'UMKM dengan metode pemasaran yang teridentifikasi.' }
     ]) + '<div class="row g-3 g-xl-4">'
       + panel('Struktur kategori dan metode pemasaran', 'Hirarki kategori usaha menuju metode pemasaran.', 'market-composition', 'col-xl-7', 'Sunburst')
-      + panel('Adopsi digital per kategori', 'Ranking proporsi Digital + Both pada setiap kategori.', 'market-digital', 'col-xl-5', 'Ranking')
+      + panel('Penggunaan kanal digital per kategori', 'Urutan persentase Digital + Both pada setiap kategori.', 'market-digital', 'col-xl-5', 'Urutan')
       + '</div>';
 
     chart('[data-domain-upgrade-chart="market-composition"]', marketAccessSunburst(rows), rows, 'total_umkm');
-    chart('[data-domain-upgrade-chart="market-digital"]', horizontalRanking(rows, 'digital_percentage', '', true), rows, 'digital_percentage');
+    chart('[data-domain-upgrade-chart="market-digital"]', horizontalUrutan(rows, 'digital_percentage', '', true), rows, 'digital_percentage');
   }
 
   function renderLegality(pane) {
@@ -652,7 +652,7 @@
       { label: 'NIB teridentifikasi', value: fmt(data.nib_identified_total), note: 'Jumlah UMKM dengan NIB teridentifikasi tanpa menampilkan nomornya.' },
       { label: 'Belum teridentifikasi', value: fmt(data.unidentified_total), note: 'UMKM tanpa catatan legalitas pada data agregat.' }
     ]) + '<div class="row g-3 g-xl-4">'
-      + panel('Cakupan formalisasi usaha', 'Perbandingan total UMKM, legalitas terdata, dan NIB teridentifikasi.', 'legality-funnel', 'col-xl-7', 'Tahapan')
+      + panel('Ketersediaan legalitas usaha', 'Perbandingan total UMKM, legalitas terdata, dan NIB teridentifikasi.', 'legality-funnel', 'col-xl-7', 'Tahapan')
       + panel('Status legalitas agregat', 'Proporsi legalitas terdata dan belum teridentifikasi.', 'legality-status', 'col-xl-5', 'Proporsi')
       + '</div>';
 
@@ -670,15 +670,15 @@
 
     pane.innerHTML = kpiGrid([
       { label: 'Terpetakan', value: fmt(location.mapped_total), note: pct(location.mapped_percentage) + ' dari wilayah aktif.' },
-      { label: 'Belum terpetakan', value: fmt(location.unmapped_total), note: 'Perlu pengayaan koordinat.' },
-      { label: 'Catatan mutu terbuka', value: fmt(noteTotal), note: fmt(affectedUmkm) + ' UMKM memiliki sedikitnya satu catatan mutu.' }
+      { label: 'Belum terpetakan', value: fmt(location.unmapped_total), note: 'Perlu kelengkapan titik lokasi.' },
+      { label: 'Catatan kualitas terbuka', value: fmt(noteTotal), note: fmt(affectedUmkm) + ' UMKM memiliki sedikitnya satu catatan mutu.' }
     ]) + '<div class="row g-3 g-xl-4">'
-      + panel('Kesiapan spasial per subwilayah', 'Perbandingan terpetakan dan belum terpetakan dalam persentase.', 'quality-readiness', 'col-xl-7', '100% stacked')
-      + panel('Jenis kekurangan data', 'Ranking jumlah UMKM terdampak menurut kelompok catatan mutu.', 'quality-notes', 'col-xl-5', 'Ranking')
+      + panel('Kelengkapan lokasi per wilayah', 'Perbandingan terpetakan dan belum terpetakan dalam persentase.', 'quality-readiness', 'col-xl-7', 'Perbandingan persentase')
+      + panel('Jenis kekurangan data', 'Urutan jumlah UMKM terdampak menurut kelompok catatan mutu.', 'quality-notes', 'col-xl-5', 'Urutan')
       + '</div>';
 
     chart('[data-domain-upgrade-chart="quality-readiness"]', readinessStack(areaRows), areaRows, 'total_umkm');
-    chart('[data-domain-upgrade-chart="quality-notes"]', horizontalRanking(notes, 'total', ' UMKM', false), notes, 'total');
+    chart('[data-domain-upgrade-chart="quality-notes"]', horizontalUrutan(notes, 'total', ' UMKM', false), notes, 'total');
   }
 
   function renderNarrative(key) {
@@ -695,10 +695,10 @@
     var text = '';
 
     if (key === 'workforce') {
-      text = 'Median pekerja pada data yang terpakai adalah <b>' + esc(fmtDecimal(workforceData.median_workers)) + '</b>. '
+      text = 'Nilai tengah pekerja pada data yang terpakai adalah <b>' + esc(fmtDecimal(workforceData.median_workers)) + '</b>. '
         + 'Sebanyak <b>' + esc(fmt(workforceData.valid_filled_total || workforceData.filled_total)) + '</b> UMKM memiliki data pekerja yang digunakan dalam agregat.';
       if (n(workforceData.excluded_total) > 0) {
-        text += ' Terdapat <b>' + esc(fmt(workforceData.excluded_total)) + '</b> nilai di atas batas analitik yang dipisahkan dari agregat publik dan tetap memerlukan audit.';
+        text += ' Terdapat <b>' + esc(fmt(workforceData.excluded_total)) + '</b> nilai di atas batas tampilan yang dipisahkan dari ringkasan publik dan tetap memerlukan audit.';
       }
     } else if (key === 'economy') {
       text = 'Data ekonomi yang dapat dibaca mencakup <b>' + esc(fmt(economyData.capital_filled)) + '</b> UMKM dengan modal terdata dan <b>'
@@ -707,20 +707,20 @@
       var marketRows = marketCategoryRows().slice().sort(function (a, b) { return n(b.digital_percentage) - n(a.digital_percentage); });
       var topDigital = marketRows[0] || {};
       text = 'Metode pemasaran dominan adalah <b>' + esc(t(method.name)) + '</b>. '
-        + (topDigital.name ? 'Kategori dengan proporsi adopsi digital tertinggi adalah <b>' + esc(topDigital.name) + '</b> sebesar <b>' + esc(pct(topDigital.digital_percentage)) + '</b>.' : 'Data adopsi digital per kategori belum tersedia.');
+        + (topDigital.name ? 'Kategori dengan persentase adopsi digital tertinggi adalah <b>' + esc(topDigital.name) + '</b> sebesar <b>' + esc(pct(topDigital.digital_percentage)) + '</b>.' : 'Data adopsi digital per kategori belum tersedia.');
     } else if (key === 'legality') {
       text = 'Legalitas telah teridentifikasi pada <b>' + esc(fmt(legalityData.legalities_total)) + '</b> UMKM atau <b>'
         + esc(pct(legalityData.legalities_percentage)) + '</b> dari wilayah aktif. Nomor legalitas tidak ditampilkan pada area publik.';
     } else if (key === 'quality') {
-      text = 'Keterpetaan lokasi berada pada <b>' + esc(pct(location.mapped_percentage)) + '</b>. Sebanyak <b>'
-        + esc(fmt(location.unmapped_total)) + '</b> UMKM masih memerlukan pengayaan koordinat.';
+      text = 'Ketersediaan lokasi lokasi berada pada <b>' + esc(pct(location.mapped_percentage)) + '</b>. Sebanyak <b>'
+        + esc(fmt(location.unmapped_total)) + '</b> UMKM masih memerlukan kelengkapan titik lokasi.';
     } else {
       text = 'Pada <b>' + esc(contextLabel()) + '</b>, kategori terbesar adalah <b>' + esc(t(category.name)) + '</b>'
         + (type.name ? ' dengan jenis usaha dominan <b>' + esc(t(type.name)) + '</b>.' : '.');
     }
 
     node.innerHTML = '<div class="d-flex align-items-start gap-2">'
-      + '<span class="badge text-bg-light rounded-pill">Insight</span>'
+      + '<span class="badge text-bg-light rounded-pill">Ringkasan</span>'
       + '<div><strong class="d-block mb-1">Ringkasan wilayah aktif</strong><p class="mb-0">' + text + '</p></div>'
       + '</div>';
   }

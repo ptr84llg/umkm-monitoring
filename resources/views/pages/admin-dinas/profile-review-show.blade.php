@@ -3,12 +3,27 @@
 @section('title', 'Detail Verifikasi Perubahan Data UMKM')
 
 @section('content')
+@php
+    $statusLabel = static fn (?string $status): string => match ($status) {
+        'diajukan' => 'Menunggu Pemeriksaan',
+        'disetujui' => 'Disetujui',
+        'perlu_perbaikan' => 'Perlu Perbaikan',
+        'ditolak' => 'Ditolak',
+        default => 'Status belum tersedia',
+    };
+    $decisionLabel = static fn (?string $decision): string => match ($decision) {
+        'disetujui' => 'Disetujui',
+        'perlu_perbaikan' => 'Perlu Perbaikan',
+        'ditolak' => 'Ditolak',
+        default => 'Keputusan belum tersedia',
+    };
+@endphp
 <div class="container-fluid py-3">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <p class="text-muted mb-1">Pengajuan #{{ $proposal->id }}</p>
             <h1 class="h3 mb-2">{{ $proposal->umkm?->business_name ?? 'UMKM' }}</h1>
-            <p class="mb-0">Status: <strong>{{ $proposal->status_data }}</strong></p>
+            <p class="mb-0">Status: <strong>{{ $statusLabel($proposal->status_data) }}</strong></p>
         </div>
         <a class="btn btn-outline-secondary" href="{{ route('admin-dinas.profile-reviews.index', ['status' => $proposal->status_data]) }}">Kembali</a>
     </div>
@@ -74,7 +89,7 @@
         <div class="card-body">
             @forelse($proposal->reviews->sortBy('id') as $review)
                 <div class="border-bottom pb-2 mb-2">
-                    <strong>{{ $review->decision }}</strong>
+                    <strong>{{ $decisionLabel($review->decision) }}</strong>
                     — {{ $review->reviewed_at?->format('d-m-Y H:i') ?? '-' }}
                     — {{ $review->reviewer?->name ?? 'Pemeriksa' }}
                     @if($review->review_note)<div>{{ $review->review_note }}</div>@endif

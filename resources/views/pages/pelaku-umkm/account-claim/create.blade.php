@@ -4,7 +4,7 @@
     $assetProfile = 'base';
 @endphp
 
-@section('title', 'Klaim Akun Pelaku UMKM | SISFODA')
+@section('title', 'Pengajuan Akun Pelaku UMKM | SISFODA')
 
 @section('content')
 <div class="container py-5" style="max-width: 760px;">
@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="alert alert-info mb-0">
-                    Password dibuat sendiri oleh Pelaku saat mengaktifkan akun setelah pengajuan disetujui Dinas.
+                    Kata sandi dibuat sendiri oleh Pelaku saat mengaktifkan akun setelah pengajuan disetujui Dinas.
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 justify-content-between">

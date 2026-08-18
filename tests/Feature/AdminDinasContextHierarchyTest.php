@@ -28,7 +28,7 @@ class AdminDinasContextHierarchyTest extends TestCase
             $this->actingAs($user)
                 ->get($uri)
                 ->assertOk()
-                ->assertSee('Konteks Aktif')
+                ->assertSee('Pilihan Saat Ini')
                 ->assertSee('Seluruh Kota Lubuk Linggau');
         }
     }
@@ -122,7 +122,7 @@ class AdminDinasContextHierarchyTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/umkm?quality_status=lengkap_terpetakan')
             ->assertOk()
-            ->assertSee('Mutu: Lengkap Terpetakan')
+            ->assertSee('Kualitas Data: Lengkap Terpetakan')
             ->assertSee('quality_status=lengkap_terpetakan', false);
     }
 

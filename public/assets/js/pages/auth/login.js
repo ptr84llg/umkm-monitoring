@@ -93,7 +93,7 @@
         }
 
         document.querySelectorAll('[data-auth-password-toggle]').forEach(function (button) {
-            button.setAttribute('aria-label', 'Tampilkan password');
+            button.setAttribute('aria-label', 'Tampilkan kata sandi');
             button.setAttribute('data-auth-password-visible', 'false');
         });
     }
@@ -166,18 +166,18 @@
         setReadingCopy(
             elements,
             'Sedang membaca lokasi perangkat',
-            'Sistem sedang memastikan lokasi aktif sebelum form login ditampilkan.',
+            'Sistem sedang memastikan lokasi aktif sebelum halaman masuk digunakan.',
             attemptText || ''
         );
     }
 
     function unlockLoginAfterLocationGranted(elements, locationState) {
         fillLocationInputs(elements, locationState);
-        setLocationStatus(elements, 'granted', 'Lokasi aktif. Form login siap digunakan.');
+        setLocationStatus(elements, 'granted', 'Lokasi aktif. Halaman masuk siap digunakan.');
         setReadingCopy(
             elements,
             'Lokasi berhasil dibaca',
-            'Form login telah dibuka karena lokasi perangkat aktif.',
+            'Halaman masuk siap digunakan karena lokasi perangkat aktif.',
             ''
         );
         setReadingVisible(elements, true);
@@ -203,7 +203,7 @@
         setReadingCopy(
             elements,
             'Lokasi belum aktif',
-            'Sistem tidak dapat melanjutkan halaman login karena lokasi gagal dibaca sebanyak 3 kali.',
+            'Halaman masuk belum dapat digunakan karena lokasi belum berhasil dibaca setelah 3 kali percobaan.',
             'Mengalihkan ke halaman awal...'
         );
 
@@ -245,7 +245,7 @@
         setReadingCopy(
             elements,
             'Lokasi belum terbaca',
-            'Aktifkan izin lokasi pada browser/perangkat. Sistem akan mencoba membaca ulang secara otomatis.',
+            'Aktifkan izin lokasi pada perangkat. Sistem akan mencoba kembali secara otomatis.',
             attemptText
         );
 
@@ -262,8 +262,8 @@
         if (UMKM.modal && typeof UMKM.modal.showLoading === 'function') {
             UMKM.modal.showLoading({
                 kicker: 'Login',
-                title: 'Memproses Login',
-                message: 'Sistem sedang memvalidasi akun dan kesiapan akses Anda.',
+                title: 'Memproses Masuk',
+                message: 'Sistem sedang memeriksa akun dan akses Anda.',
                 caption: 'Mohon tunggu, jangan menutup halaman sampai proses selesai.'
             });
         }
@@ -279,8 +279,8 @@
 
     function showLoginSuccess(elements, redirectUrl, options) {
         const settings = Object.assign({
-            title: 'Login berhasil',
-            message: 'Mengalihkan ke dashboard.',
+            title: 'Berhasil masuk',
+            message: 'Membuka ruang kerja.',
             delay: 1150
         }, options || {});
 
@@ -318,7 +318,7 @@
                 const isPassword = field.getAttribute('type') === 'password';
 
                 field.setAttribute('type', isPassword ? 'text' : 'password');
-                button.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
+                button.setAttribute('aria-label', isPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
                 button.setAttribute('data-auth-password-visible', isPassword ? 'true' : 'false');
                 field.focus({ preventScroll: true });
             });
@@ -342,14 +342,14 @@
         lockLoginForLocationCheck(
             elements,
             settings.reason === 'initial'
-                ? 'Membaca lokasi perangkat sebelum form login ditampilkan...'
+                ? 'Membaca lokasi perangkat sebelum halaman masuk ditampilkan...'
                 : 'Memeriksa ulang lokasi perangkat...',
             'Percobaan ' + nextAttempt + ' dari ' + maxFailures
         );
 
         if (!UMKM.location || typeof UMKM.location.check !== 'function') {
             elements.checking = false;
-            handleLocationFailure(elements, 'Modul lokasi belum siap. Sistem mencoba membaca ulang lokasi.');
+            handleLocationFailure(elements, 'Lokasi belum dapat diperiksa. Sistem akan mencoba kembali.');
             return false;
         }
 
@@ -492,8 +492,8 @@
                 if (errors.length) {
                     if (typeof UMKM.forms.showValidationModal === 'function') {
                         UMKM.forms.showValidationModal(errors, {
-                            title: 'Login belum lengkap',
-                            message: 'Lengkapi atau perbaiki isian berikut sebelum masuk ke sistem.'
+                            title: 'Data masuk belum lengkap',
+                            message: 'Lengkapi atau perbaiki isian berikut sebelum masuk.'
                         });
                     }
 
@@ -505,7 +505,7 @@
             const originalSubmitText = submitText ? submitText.textContent : 'Masuk ke Sistem';
 
             setSubmitState(elements, false);
-            setText(submitText, 'Memproses login...');
+            setText(submitText, 'Memproses masuk...');
             showLoginLoading();
 
             if (!UMKM.forms || typeof UMKM.forms.ajaxSubmit !== 'function') {
@@ -517,12 +517,12 @@
                     UMKM.forms.showValidationModal([
                         {
                             field: elements.identifier,
-                            label: 'Sistem login',
-                            message: 'Core form belum siap. Muat ulang halaman sebelum login.'
+                            label: 'Akses akun',
+                            message: 'Halaman belum siap. Muat ulang halaman lalu coba masuk kembali.'
                         }
                     ], {
-                        title: 'Login belum dapat diproses',
-                        message: 'Sistem belum siap memproses login melalui AJAX.'
+                        title: 'Belum dapat masuk',
+                        message: 'Sistem belum siap memproses permintaan. Muat ulang halaman lalu coba kembali.'
                     });
                 }
 
@@ -548,8 +548,8 @@
 
                             if (backendErrors.length && typeof UMKM.forms.showValidationModal === 'function') {
                                 UMKM.forms.showValidationModal(backendErrors, {
-                                    title: 'Login belum berhasil',
-                                    message: payload.message || 'Periksa kembali data login Anda.'
+                                    title: 'Belum berhasil masuk',
+                                    message: payload.message || 'Periksa kembali data akun Anda.'
                                 });
                             }
                         }
@@ -562,7 +562,7 @@
                     if (payload.requires_otp) {
                         showLoginSuccess(elements, redirectUrl, {
                             title: 'Verifikasi diperlukan',
-                            message: payload.message || 'Masukkan kode OTP untuk menyelesaikan login.',
+                            message: payload.message || 'Masukkan kode verifikasi untuk menyelesaikan proses masuk.',
                             delay: 950
                         });
                         return;
@@ -572,7 +572,7 @@
                 },
                 onError: function (response, backendErrors) {
                     const payload = response && response.payload ? response.payload : {};
-                    const message = payload.message || 'Login belum berhasil. Periksa kembali data dan kesiapan lokasi.';
+                    const message = payload.message || 'Belum berhasil masuk. Periksa kembali data akun dan lokasi perangkat.';
 
                     setText(submitText, originalSubmitText);
                     hideLoginLoading();
@@ -585,12 +585,12 @@
                             UMKM.forms.showValidationModal([
                                 {
                                     field: elements.identifier,
-                                    label: 'Akses login',
+                                    label: 'Akses akun',
                                     message: message
                                 }
                             ], {
-                                title: 'Akses login memerlukan lokasi',
-                                message: 'Anda akan diarahkan kembali ke halaman awal untuk memvalidasi lokasi.'
+                                title: 'Lokasi diperlukan untuk masuk',
+                                message: 'Anda akan diarahkan ke halaman awal untuk memeriksa lokasi.'
                             });
                         }
 
@@ -609,8 +609,8 @@
                                 message: message
                             }
                         ], {
-                            title: 'Login belum berhasil',
-                            message: 'Periksa kembali data login Anda.'
+                            title: 'Belum berhasil masuk',
+                            message: 'Periksa kembali data akun Anda.'
                         });
                     }
                 }

@@ -11,12 +11,12 @@
 <div class="d-flex flex-column gap-4">
     <section class="card border shadow-sm"><div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
         <div><span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Hanya Dapat Dilihat</span><h1 class="h3 mb-1">{{ $u['business_name'] }}</h1><div class="text-body-secondary">{{ $u['umkm_code'] }}</div></div>
-        <div class="d-flex gap-2 align-self-lg-start"><a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary">Data UMKM</a><a href="{{ route('admin-dinas.analytics.index') }}" class="btn btn-primary">Analitik</a></div>
+        <div class="d-flex gap-2 align-self-lg-start"><a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary">Data UMKM</a><a href="{{ route('admin-dinas.analytics.index') }}" class="btn btn-primary">Ringkasan Data</a></div>
     </div></section>
 
     <section class="row g-4">
         <div class="col-xl-6"><div class="card border shadow-sm h-100"><div class="card-body p-4">
-            <h2 class="h5">Identitas & Klasifikasi</h2><dl class="row mb-0">
+            <h2 class="h5">Informasi Usaha</h2><dl class="row mb-0">
                 <dt class="col-sm-5">Status Data</dt><dd class="col-sm-7">{{ $label($u['status_data']) }}</dd>
                 <dt class="col-sm-5">Kualitas Data</dt><dd class="col-sm-7">{{ $label($u['quality_status']) }}</dd>
                 <dt class="col-sm-5">Kategori</dt><dd class="col-sm-7">{{ $display($c['category']) }}</dd>
@@ -26,21 +26,21 @@
             </dl>
         </div></div></div>
         <div class="col-xl-6"><div class="card border shadow-sm h-100"><div class="card-body p-4">
-            <h2 class="h5">Wilayah & Sumber Data</h2><dl class="row mb-0">
+            <h2 class="h5">Wilayah & Asal Data</h2><dl class="row mb-0">
                 <dt class="col-sm-5">Kecamatan</dt><dd class="col-sm-7">{{ $display($l['district']) }}</dd>
                 <dt class="col-sm-5">Kelurahan</dt><dd class="col-sm-7">{{ $display($l['village']) }}</dd>
                 <dt class="col-sm-5">Alamat</dt><dd class="col-sm-7">{{ $display($l['address_detail']) }}</dd>
-                <dt class="col-sm-5">Sumber Data</dt><dd class="col-sm-7">{{ $display($s['system']) }}</dd>
-                <dt class="col-sm-5">ID Data Sumber</dt><dd class="col-sm-7">{{ $display($s['record_id']) }}</dd>
-                <dt class="col-sm-5">Terakhir Terlihat</dt><dd class="col-sm-7">{{ $display($s['last_seen_at']) }}</dd>
+                <dt class="col-sm-5">Asal Data</dt><dd class="col-sm-7">{{ $display($s['system']) }}</dd>
+                <dt class="col-sm-5">Nomor Referensi Data</dt><dd class="col-sm-7">{{ $display($s['record_id']) }}</dd>
+                <dt class="col-sm-5">Terakhir Diperbarui</dt><dd class="col-sm-7">{{ $display($s['last_seen_at']) }}</dd>
             </dl>
         </div></div></div>
     </section>
 
     @if($f !== null)
     <section class="card border shadow-sm"><div class="card-body p-4">
-        <span class="badge text-bg-warning-subtle text-warning-emphasis mb-2">Nilai Sumber</span><h2 class="h5">Informasi Keuangan</h2>
-        <p class="text-body-secondary">Nilai ditampilkan sesuai sumber. Sistem tidak memperbaiki satuan atau nominal berdasarkan asumsi.</p>
+        <span class="badge text-bg-warning-subtle text-warning-emphasis mb-2">Nilai yang Tercatat</span><h2 class="h5">Informasi Keuangan</h2>
+        <p class="text-body-secondary">Nilai ditampilkan apa adanya sesuai data yang tersimpan.</p>
         <div class="row g-3">
             @foreach([['Modal',$f['capital_amount']],['Penjualan Tahunan',$f['annual_sales_amount']],['Omzet Bulanan',$f['baseline_monthly_revenue']],['Pinjaman',$f['loan_amount']]] as $item)
                 <div class="col-md-6 col-xl-3"><div class="border rounded-3 p-3 h-100"><div class="small text-body-secondary">{{ $item[0] }}</div><div class="h5 mb-0">{{ $money($item[1]) }}</div></div></div>
@@ -51,9 +51,9 @@
 
     <section class="row g-4">
         <div class="col-xl-6"><div class="card border shadow-sm h-100"><div class="card-body p-4">
-            <h2 class="h5">Legalitas</h2><p class="text-body-secondary">“Teridentifikasi” bukan validasi legal formal.</p>
+            <h2 class="h5">Legalitas</h2><p class="text-body-secondary">Status NIB menunjukkan apakah nomor NIB tercatat pada data; ini bukan pemeriksaan keabsahan dokumen.</p>
             @forelse($data['legalities'] as $item)
-                <div class="border rounded-3 p-3 mb-2"><strong>NIB:</strong> {{ $item['identified'] ? 'Teridentifikasi' : 'Belum teridentifikasi' }}
+                <div class="border rounded-3 p-3 mb-2"><strong>NIB:</strong> {{ $item['identified'] ? 'Tercatat' : 'Belum tercatat' }}
                     @if($data['legality_detail_visible'])<div>Nomor: {{ $display($item['nib_number']) }}</div><div>Risiko OSS: {{ $display($item['oss_risk_level']) }}</div>@endif
                 </div>
             @empty<p class="text-body-secondary">Belum ada data legalitas.</p>@endforelse
@@ -69,8 +69,8 @@
 
     <section class="card border shadow-sm"><div class="card-body p-4">
         <h2 class="h5">Catatan Kualitas Data</h2><p class="text-body-secondary">Catatan kualitas adalah hasil pemeriksaan data dan bukan koreksi otomatis.</p>
-        <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Kode</th><th>Kelompok</th><th>Tingkat</th><th>Deskripsi</th><th>Nilai</th><th>Status</th></tr></thead><tbody>
-        @forelse($data['quality_flags'] as $flag)<tr><td>{{ $display($flag['code']) }}</td><td>{{ $label($flag['group']) }}</td><td>{{ $label($flag['severity']) }}</td><td>{{ $display($flag['description']) }}</td><td>{{ $display($flag['detected_value']) }}</td><td>{{ $label($flag['status']) }}</td></tr>
+        <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Catatan</th><th>Kelompok</th><th>Tingkat</th><th>Keterangan</th><th>Nilai</th><th>Status</th></tr></thead><tbody>
+        @forelse($data['quality_flags'] as $flag)<tr><td>Catatan {{ $loop->iteration }}</td><td>{{ $label($flag['group']) }}</td><td>{{ $label($flag['severity']) }}</td><td>{{ $display($flag['description']) }}</td><td>{{ $display($flag['detected_value']) }}</td><td>{{ $label($flag['status']) }}</td></tr>
         @empty<tr><td colspan="6" class="text-body-secondary">Tidak ada catatan kualitas.</td></tr>@endforelse
         </tbody></table></div>
     </div></section>

@@ -43,7 +43,7 @@
                                 <span class="auth-card-eyebrow">Konfirmasi Google</span>
                                 <h1 class="h3 fw-bold auth-card-title mt-2 mb-1">Tautkan Google ke Akun Terdaftar?</h1>
                                 <p class="auth-card-subtitle mb-0">
-                                    Email Google ini cocok dengan akun internal yang sudah terdaftar. Tautkan hanya jika akun Google tersebut milik Anda.
+                                    Email Google ini cocok dengan akun yang sudah terdaftar. Tautkan hanya jika akun Google tersebut milik Anda.
                                 </p>
                             </div>
                             <span class="badge rounded-pill auth-card-badge">Aman</span>
@@ -59,7 +59,7 @@
 
                         <div class="rounded-4 p-3 mt-3 auth-form-note">
                             <strong>Catatan keamanan:</strong>
-                            setelah ditautkan, login manual untuk akun ini akan dinonaktifkan dan akses berikutnya dilakukan melalui Google.
+                            setelah ditautkan, setelah akun terhubung, proses masuk berikutnya dilakukan melalui Google.
                         </div>
 
                         <div class="d-grid gap-3 mt-4">
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="text-center mt-3 auth-footer-note">
-                            <a href="{{ route('login') }}">Kembali ke login</a>
+                            <a href="{{ route('login') }}">Kembali ke halaman masuk</a>
                         </div>
                     </div>
                 </div>

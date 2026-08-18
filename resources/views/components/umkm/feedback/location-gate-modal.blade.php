@@ -25,7 +25,7 @@
                     </p>
 
                     <div class="location-gate-permission" data-location-permission-state hidden>
-                        Status izin lokasi: <strong data-location-permission-label>memeriksa</strong>
+                        Izin lokasi: <strong data-location-permission-label>memeriksa</strong>
                     </div>
                 </div>
 
@@ -71,15 +71,15 @@
                             <div class="card-body">
                                 <div class="location-technical-list">
                                     <div>
-                                        <span>Koordinat</span>
+                                        <span>Posisi perangkat</span>
                                         <strong data-location-info-coordinate>Belum tersedia</strong>
                                     </div>
                                     <div>
-                                        <span>IP</span>
+                                        <span>Koneksi</span>
                                         <strong data-location-info-ip>Belum tersedia</strong>
                                     </div>
                                     <div>
-                                        <span>Perangkat</span>
+                                        <span>Perangkat yang digunakan</span>
                                         <strong data-location-info-device>Belum tersedia</strong>
                                     </div>
                                 </div>
@@ -99,7 +99,7 @@
                             <div class="card border-0 location-guide-step">
                                 <div class="card-body d-flex align-items-start gap-3">
                                     <span>01</span>
-                                    <p>Klik ikon kunci, ikon informasi, atau ikon pengaturan di sebelah kiri alamat website.</p>
+                                    <p>Klik ikon kunci atau ikon pengaturan di sebelah kiri alamat situs.</p>
                                 </div>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                             <div class="card border-0 location-guide-step">
                                 <div class="card-body d-flex align-items-start gap-3">
                                     <span>02</span>
-                                    <p>Pilih <strong>Site settings</strong> atau <strong>Setelan situs</strong>.</p>
+                                    <p>Pilih <strong>Setelan situs</strong>.</p>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                             <div class="card border-0 location-guide-step">
                                 <div class="card-body d-flex align-items-start gap-3">
                                     <span>03</span>
-                                    <p>Cari bagian <strong>Location</strong> atau <strong>Lokasi</strong>.</p>
+                                    <p>Cari bagian <strong>Lokasi</strong>.</p>
                                 </div>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                             <div class="card border-0 location-guide-step">
                                 <div class="card-body d-flex align-items-start gap-3">
                                     <span>04</span>
-                                    <p>Ubah menjadi <strong>Allow</strong>, <strong>Izinkan</strong>, atau <strong>Ask</strong>.</p>
+                                    <p>Pilih <strong>Izinkan</strong> atau <strong>Tanyakan</strong>.</p>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                             <div class="card border-0 location-guide-step">
                                 <div class="card-body d-flex align-items-start gap-3">
                                     <span>05</span>
-                                    <p>Refresh halaman, lalu klik <strong>Cek ulang lokasi</strong>.</p>
+                                    <p>Muat ulang halaman, lalu klik <strong>Cek ulang lokasi</strong>.</p>
                                 </div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                         data-bs-target="#landingLocationTechnicalDetail"
                         aria-expanded="false"
                         aria-controls="landingLocationTechnicalDetail">
-                    <span>Detail perangkat</span>
+                    <span>Informasi perangkat</span>
                 </button>
 
                 <button type="button" class="btn btn-outline-secondary btn-sm location-gate-guide-toggle" data-location-guide-toggle>

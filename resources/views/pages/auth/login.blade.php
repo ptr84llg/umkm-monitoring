@@ -7,7 +7,7 @@
     $pageJs = ['auth/login.js'];
 @endphp
 
-@section('title', 'Login Internal | Monitoring UMKM')
+@section('title', 'Masuk | SISFODA UMKM')
 
 @section('content')
 <section class="auth-login-page auth-login-premium"
@@ -35,18 +35,17 @@
                             </span>
                             <span class="auth-brand-text">
                                 <strong class="d-block">Monitoring UMKM</strong>
-                                <small class="d-block">Visual Analitik Interaktif</small>
+                                <small class="d-block">Informasi UMKM</small>
                             </span>
                         </a>
 
                         <div class="mb-4">
-                            <span class="umkm-kicker">Akses Internal Terbatas</span>
+                            <span class="umkm-kicker">Akses Pengguna</span>
                             <h1 class="display-5 fw-bold auth-hero-title mt-3 mb-3">
                                 Masuk ke Sistem Monitoring UMKM
                             </h1>
                             <p class="lead auth-hero-text mb-0">
-                                Akses ini digunakan untuk pengelolaan data, validasi, pemantauan indikator,
-                                visual analitik, dan dukungan pengambilan keputusan UMKM sesuai kewenangan pengguna.
+                                Gunakan akun yang sudah terdaftar untuk mengelola data UMKM dan membuka informasi sesuai kewenangan Anda.
                             </p>
                         </div>
 
@@ -85,8 +84,8 @@
                             <div class="card-body p-4 p-xl-5">
                                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                     <div>
-                                        <span class="auth-card-eyebrow">Login Internal</span>
-                                        <h2 class="h3 fw-bold auth-card-title mt-2 mb-1">Masuk ke Akun</h2><p class="auth-card-subtitle mb-0">Validasi akses dilakukan secara aman sebelum masuk ke dashboard.</p>
+                                        <span class="auth-card-eyebrow">Masuk</span>
+                                        <h2 class="h3 fw-bold auth-card-title mt-2 mb-1">Masuk ke Akun</h2><p class="auth-card-subtitle mb-0">Akses diperiksa sebelum ruang kerja dibuka.</p>
                                     </div>
                                     <span class="badge rounded-pill auth-card-badge">Akses Aman</span>
                                 </div>
@@ -116,8 +115,8 @@
                                      aria-hidden="false">
                                     @if ($errors->any())
                                         <div class="alert alert-danger d-grid gap-1" role="alert">
-                                            <strong>Login belum berhasil.</strong>
-                                            <span>Periksa kembali kredensial dan kesiapan perangkat Anda.</span>
+                                            <strong>Belum berhasil masuk.</strong>
+                                            <span>Periksa kembali email atau nama pengguna dan kata sandi Anda.</span>
                                         </div>
                                     @endif
 
@@ -132,7 +131,7 @@
                                             <span class="auth-google-icon" aria-hidden="true">G</span>
                                             <span class="auth-google-copy">
                                                 <strong>Masuk dengan Google</strong>
-                                                <small>Tautkan atau gunakan akun Google terverifikasi</small>
+                                                <small>Gunakan akun Google yang sudah terhubung</small>
                                             </span>
                                             <span class="auth-google-arrow" aria-hidden="true">
                                                 <svg viewBox="0 0 24 24"><path d="M13.2 5.2 20 12l-6.8 6.8-1.4-1.4 4.4-4.4H4v-2h12.2l-4.4-4.4 1.4-1.4Z"/></svg>
@@ -173,7 +172,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="identifier" class="form-label">Email / Username / NIK</label>
+                                            <label for="identifier" class="form-label">Email / Nama Pengguna / NIK</label>
                                             <div class="input-group auth-input-group">
                                                 <span class="input-group-text">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>
@@ -200,7 +199,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="password" class="form-label">Password</label>
+                                            <label for="password" class="form-label">Kata Sandi</label>
                                             <div class="input-group auth-input-group">
                                                 <span class="input-group-text">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8V7a5 5 0 0 0-10 0v1H5v14h14V8h-2Zm-8 0V7a3 3 0 0 1 6 0v1H9Zm4 9.73V19h-2v-1.27A2 2 0 1 1 13 17.73Z"/></svg>
@@ -215,7 +214,7 @@
                                                     required
                                                     data-auth-password
                                                 >
-                                                <button type="button" class="btn btn-light auth-password-toggle" data-auth-password-toggle aria-label="Tampilkan password">
+                                                <button type="button" class="btn btn-light auth-password-toggle" data-auth-password-toggle aria-label="Tampilkan kata sandi">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9 4.5 10 7-1 2.5-5 7-10 7S3 14.5 2 12c1-2.5 5-7 10-7Zm0 2C8.6 7 5.65 9.65 4.25 12 5.65 14.35 8.6 17 12 17s6.35-2.65 7.75-5C18.35 9.65 15.4 7 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>
                                                 </button>
                                             </div>
@@ -234,7 +233,7 @@
                                                     <svg viewBox="0 0 24 24"><path d="M17 8h1a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3h1V7a3.5 3.5 0 1 1 7 0v1Zm-5 0h3V7a1.5 1.5 0 0 0-3 0v1Zm2.5 8.75V18h-2v-1.25a2 2 0 1 1 2 0ZM5.45 4.4 3.6 2.55 2.2 3.95l1.85 1.85-1.85 1.85 1.4 1.4 1.85-1.85L7.3 9.05l1.4-1.4L6.85 5.8 8.7 3.95l-1.4-1.4L5.45 4.4Z"/></svg>
                                                 </span>
                                                 <span class="auth-action-copy">
-                                                    <strong>Lupa password?</strong>
+                                                    <strong>Lupa kata sandi?</strong>
                                                     <small>Pulihkan akses akun</small>
                                                 </span>
                                                 <span class="auth-action-arrow" aria-hidden="true">

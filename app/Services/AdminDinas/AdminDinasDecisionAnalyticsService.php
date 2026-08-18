@@ -12,7 +12,7 @@ class AdminDinasDecisionAnalyticsService
     private const DEFAULT_MIN_GROUP_SIZE = 3;
 
     private const ECONOMIC_METRICS = [
-        'baseline_monthly_revenue' => 'Omzet bulanan baseline',
+        'baseline_monthly_revenue' => 'Omzet bulanan',
         'annual_sales_amount' => 'Penjualan tahunan',
     ];
 
@@ -580,7 +580,7 @@ class AdminDinasDecisionAnalyticsService
                 'key' => 'region_type',
                 'label' => 'Wilayah × Jenis Usaha',
                 'title' => $selectedType['name'] . ' · ' . $regionName,
-                'description' => 'Analisis spesifik jenis usaha pada wilayah aktif dengan pembanding lintas wilayah.',
+                'description' => 'Membandingkan jenis usaha terpilih pada wilayah aktif dengan wilayah lain.',
             ];
         }
 
@@ -589,7 +589,7 @@ class AdminDinasDecisionAnalyticsService
                 'key' => 'business_type',
                 'label' => 'Jenis Usaha',
                 'title' => $selectedType['name'],
-                'description' => 'Membandingkan konsentrasi jenis usaha terpilih pada seluruh wilayah yang tersedia.',
+                'description' => 'Membandingkan jumlah jenis usaha terpilih pada seluruh wilayah yang tersedia.',
             ];
         }
 
@@ -598,15 +598,15 @@ class AdminDinasDecisionAnalyticsService
                 'key' => 'region',
                 'label' => 'Wilayah',
                 'title' => $regionName,
-                'description' => 'Membaca komposisi jenis usaha dan indikasi potensi relatif pada wilayah aktif.',
+                'description' => 'Melihat susunan jenis usaha dan kondisi yang perlu ditinjau pada wilayah aktif.',
             ];
         }
 
         return [
             'key' => 'citywide',
             'label' => 'Seluruh Kota',
-            'title' => 'Gambaran Keputusan Seluruh Kota',
-            'description' => 'Membaca struktur jenis usaha, perbandingan kecamatan, kesenjangan distribusi, dan indikasi potensi relatif tanpa mewajibkan filter awal.',
+            'title' => 'Ringkasan UMKM Seluruh Kota',
+            'description' => 'Melihat susunan jenis usaha, perbandingan kecamatan, dan kondisi yang perlu ditinjau untuk seluruh kota.',
         ];
     }
 
@@ -1543,7 +1543,7 @@ class AdminDinasDecisionAnalyticsService
         }
 
         if ($businessCount < $minimumGroupSize) {
-            return 'Konsentrasi teridentifikasi; agregat ekonomi dibatasi';
+            return 'Jumlah usaha tersedia; data ekonomi kelompok dibatasi';
         }
 
         if (
@@ -1553,15 +1553,15 @@ class AdminDinasDecisionAnalyticsService
             || $referenceMedian === null
         ) {
             return 'Konsentrasi ' . mb_strtolower($density)
-                . '; sinyal ekonomi belum cukup atau tidak tersedia pada kewenangan ini';
+                . '; data ekonomi belum cukup atau tidak tersedia untuk akun ini';
         }
 
         $economicHigh = $economic['median'] >= $referenceMedian;
 
         return match (true) {
-            $density === 'Rendah' && $economicHigh => 'Indikasi potensi wilayah relatif',
-            $density === 'Tinggi' && $economicHigh => 'Pasar aktif-kompetitif',
-            $density === 'Tinggi' && ! $economicHigh => 'Indikasi tekanan persaingan relatif',
+            $density === 'Rendah' && $economicHigh => 'Kondisi wilayah perlu ditinjau',
+            $density === 'Tinggi' && $economicHigh => 'Jumlah usaha tinggi dan data ekonomi tersedia',
+            $density === 'Tinggi' && ! $economicHigh => 'Jumlah usaha tinggi; data ekonomi lebih rendah dari pembanding',
             $density === 'Rendah' && ! $economicHigh => 'Aktivitas relatif rendah',
             default => 'Kondisi menengah',
         };
@@ -1577,7 +1577,7 @@ class AdminDinasDecisionAnalyticsService
         int $minimumGroupSize
     ): string {
         if ($businessCount < $minimumGroupSize) {
-            return 'Data agregat belum cukup untuk indikasi potensi';
+            return 'Data belum cukup untuk perbandingan';
         }
 
         if (
@@ -1588,11 +1588,11 @@ class AdminDinasDecisionAnalyticsService
         ) {
             return $isLowCount
                 ? 'Jumlah usaha relatif sedikit; sinyal ekonomi belum cukup'
-                : 'Sinyal ekonomi belum cukup untuk interpretasi';
+                : 'Data ekonomi belum cukup untuk dibandingkan';
         }
 
         if ($potential) {
-            return 'Indikasi potensi relatif';
+            return 'Kondisi yang perlu ditinjau';
         }
 
         if ($isLowCount && $economic['median'] < $referenceMedian) {
@@ -1651,7 +1651,7 @@ class AdminDinasDecisionAnalyticsService
                         $dominant['type_name'],
                         (int) $dominant['business_count']
                     ),
-                    'consideration' => 'Dominasi jumlah menggambarkan struktur baseline, bukan otomatis kekuatan atau kejenuhan pasar.',
+                    'consideration' => 'Jumlah terbesar menunjukkan susunan usaha yang tercatat saat ini, bukan otomatis kekuatan atau kejenuhan pasar.',
                 ];
             }
 
@@ -1665,25 +1665,25 @@ class AdminDinasDecisionAnalyticsService
                         $largest['name'],
                         (int) $largest['business_count']
                     ),
-                    'consideration' => 'Baca bersama jumlah jenis usaha dan proporsi tiga jenis terbesar untuk memahami konsentrasi struktur wilayah.',
+                    'consideration' => 'Baca bersama jumlah jenis usaha dan bagian tiga jenis terbesar untuk memahami susunan usaha di wilayah.',
                 ];
             }
 
             if ($potentialPairs->isNotEmpty()) {
                 $insights[] = [
                     'level' => 'opportunity',
-                    'title' => 'Indikasi potensi relatif lintas wilayah',
+                    'title' => 'Kondisi lintas wilayah yang perlu ditinjau',
                     'finding' => $potentialPairs->count()
-                        . ' pasangan jenis usaha-wilayah memenuhi rule transparan pada daftar prioritas tampilan.',
-                    'consideration' => 'Label hanya menunjukkan kombinasi jumlah relatif rendah dan median indikator ekonomi tidak di bawah pembanding jenis yang sama; verifikasi lapangan tetap diperlukan.',
+                        . ' pasangan jenis usaha-wilayah memenuhi syarat perbandingan pada daftar yang perlu ditinjau.',
+                    'consideration' => 'Daftar menunjukkan jumlah usaha yang relatif sedikit dan nilai tengah data ekonomi yang tidak lebih rendah dari pembanding jenis yang sama. Pemeriksaan lapangan tetap diperlukan.',
                 ];
             } elseif ($structuralGaps->isNotEmpty()) {
                 $insights[] = [
                     'level' => 'info',
-                    'title' => 'Kesenjangan distribusi teridentifikasi',
+                    'title' => 'Perbedaan sebaran usaha',
                     'finding' => $structuralGaps->count()
-                        . ' pasangan jenis usaha-wilayah memiliki konsentrasi relatif rendah pada daftar prioritas tampilan.',
-                    'consideration' => 'Konsentrasi rendah saja tidak cukup untuk menyatakan potensi ekonomi.',
+                        . ' pasangan jenis usaha-wilayah memiliki jumlah usaha yang relatif sedikit pada daftar yang perlu ditinjau.',
+                    'consideration' => 'Jumlah usaha yang relatif sedikit saja tidak cukup untuk menyatakan adanya peluang ekonomi.',
                 ];
             }
         }
@@ -1692,23 +1692,23 @@ class AdminDinasDecisionAnalyticsService
             $highest = $competition->sortByDesc('business_count')->first();
             $insights[] = [
                 'level' => 'attention',
-                'title' => 'Konsentrasi usaha sejenis',
+                'title' => 'Jumlah usaha sejenis',
                 'finding' => sprintf(
                     '%s memiliki jumlah %s tertinggi dalam pembanding: %d usaha.',
                     $highest['name'],
                     $selectedType['name'],
                     (int) $highest['business_count']
                 ),
-                'consideration' => 'Gunakan hasil ini sebagai indikator konsentrasi, bukan bukti tunggal tingkat persaingan.',
+                'consideration' => 'Gunakan hasil ini untuk membandingkan jumlah usaha sejenis, bukan sebagai satu-satunya dasar menilai persaingan.',
             ];
 
             $potentialCount = $competition->where('potential_relative', true)->count();
             if ($potentialCount > 0) {
                 $insights[] = [
                     'level' => 'opportunity',
-                    'title' => 'Indikasi potensi wilayah relatif',
-                    'finding' => $potentialCount . ' wilayah memenuhi rule transparan potensi relatif.',
-                    'consideration' => 'Tinjau jumlah usaha, median sinyal ekonomi, mutu data, dan konteks lapangan sebelum tindak lanjut.',
+                    'title' => 'Kondisi wilayah perlu ditinjau',
+                    'finding' => $potentialCount . ' wilayah memenuhi syarat perbandingan dan perlu ditinjau.',
+                    'consideration' => 'Tinjau jumlah usaha, nilai tengah data ekonomi, kualitas data, dan kondisi lapangan sebelum tindak lanjut.',
                 ];
             }
         }
@@ -1721,18 +1721,18 @@ class AdminDinasDecisionAnalyticsService
                 'level' => $potentialTypeCount > 0 ? 'opportunity' : 'info',
                 'title' => 'Komposisi jenis usaha wilayah',
                 'finding' => $potentialTypeCount > 0
-                    ? $potentialTypeCount . ' jenis usaha menunjukkan indikasi potensi relatif pada ' . $regionName . '.'
-                    : 'Belum ada jenis usaha yang memenuhi rule indikasi potensi relatif pada ' . $regionName . '.',
-                'consideration' => 'Label didasarkan pada jumlah usaha dan sinyal ekonomi baseline, bukan prediksi keberhasilan.',
+                    ? $potentialTypeCount . ' jenis usaha menunjukkan kondisi yang perlu ditinjau pada ' . $regionName . '.'
+                    : 'Belum ada jenis usaha yang memenuhi syarat perbandingan untuk ditinjau pada ' . $regionName . '.',
+                'consideration' => 'Informasi didasarkan pada jumlah usaha dan data ekonomi yang tersedia saat ini, bukan prediksi keberhasilan.',
             ];
         }
 
         if (($payload['quality_warning'] ?? false) === true) {
             $insights[] = [
                 'level' => 'warning',
-                'title' => 'Mutu data perlu diperhatikan',
-                'finding' => 'Sebagian record dalam analisis memiliki flag mutu terbuka.',
-                'consideration' => 'Nilai sumber tetap dipertahankan apa adanya; interpretasikan hasil agregat dengan hati-hati.',
+                'title' => 'Kualitas data perlu diperhatikan',
+                'finding' => 'Sebagian data yang digunakan memiliki catatan kualitas terbuka.',
+                'consideration' => 'Nilai yang tercatat tetap dipertahankan apa adanya; baca hasil perbandingan dengan hati-hati.',
             ];
         }
 

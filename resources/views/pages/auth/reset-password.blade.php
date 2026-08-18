@@ -9,7 +9,7 @@
     $expiresAt = $expiresAt ?? null;
 @endphp
 
-@section('title', 'Reset Password | Monitoring UMKM')
+@section('title', 'Atur Ulang Kata Sandi | Monitoring UMKM')
 
 @section('content')
 <section class="auth-login-page auth-login-premium"
@@ -38,18 +38,18 @@
                             </span>
                             <span class="auth-brand-text">
                                 <strong class="d-block">Monitoring UMKM</strong>
-                                <small class="d-block">Pengaturan Ulang Password</small>
+                                <small class="d-block">Pengaturan Ulang Kata Sandi</small>
                             </span>
                         </a>
 
                         <div class="card border-0 shadow-sm auth-login-card">
                             <div class="card-body p-4 p-xl-5">
                                 @if ($linkInvalid)
-                                    <span class="auth-card-eyebrow">Reset Tidak Berlaku</span>
+                                    <span class="auth-card-eyebrow">Tautan Tidak Berlaku</span>
                                     <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">{{ $expiredTitle ?? 'Tautan Tidak Berlaku' }}</h1>
-                                    <p class="auth-card-subtitle mb-4">{{ $expiredMessage ?? 'Tautan pengaturan ulang password tidak valid atau sudah kedaluwarsa.' }}</p>
+                                    <p class="auth-card-subtitle mb-4">{{ $expiredMessage ?? 'Tautan pengaturan ulang kata sandi tidak berlaku atau sudah kedaluwarsa.' }}</p>
                                     <div class="rounded-4 p-3 mb-4 auth-form-note">
-                                        <strong>Catatan keamanan:</strong> form reset password hanya ditampilkan jika token reset masih valid dan belum melewati batas waktu.
+                                        <strong>Catatan keamanan:</strong> halaman pengaturan ulang hanya dapat digunakan selama tautan masih berlaku.
                                     </div>
                                     <a href="{{ route('password.request') }}" class="auth-return-action text-decoration-none justify-content-center">
                                         <span class="auth-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 7l5 5V8c3.31 0 6 2.69 6 6a6 6 0 0 1-9.2 5.08l-1.45 1.45A8 8 0 1 0 12 5Z"/></svg></span>
@@ -59,16 +59,16 @@
                                     <div data-auth-reset-valid-panel>
                                         <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                             <div>
-                                                <span class="auth-card-eyebrow">Reset Password</span>
-                                                <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Buat Password Baru</h1>
-                                                <p class="auth-card-subtitle mb-0">Gunakan password baru yang kuat. Penyimpanan password akan dikunci dengan verifikasi OTP email.</p>
+                                                <span class="auth-card-eyebrow">Atur Ulang Kata Sandi</span>
+                                                <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Buat Kata Sandi Baru</h1>
+                                                <p class="auth-card-subtitle mb-0">Gunakan kata sandi baru yang kuat. Perubahan akan dikonfirmasi dengan kode verifikasi yang dikirim melalui email.</p>
                                             </div>
-                                            <span class="badge rounded-pill auth-card-badge" data-auth-reset-link-status>Link Aktif</span>
+                                            <span class="badge rounded-pill auth-card-badge" data-auth-reset-link-status>Tautan Aktif</span>
                                         </div>
 
                                         <div class="auth-otp-timer-grid mb-4" role="status" aria-live="polite">
                                             <div class="auth-otp-timer-card">
-                                                <span>Link berlaku</span>
+                                                <span>Tautan berlaku</span>
                                                 <strong data-auth-reset-link-countdown>--:--</strong>
                                             </div>
                                             <div class="auth-otp-timer-card">
@@ -79,7 +79,7 @@
 
                                         @if ($errors->any())
                                             <div class="alert alert-danger" role="alert">
-                                                Permintaan belum dapat diproses. Periksa kembali email, token, dan password baru.
+                                                Permintaan belum dapat diproses. Periksa kembali email dan kata sandi baru.
                                             </div>
                                         @endif
 
@@ -101,7 +101,7 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="password" class="form-label">Password Baru</label>
+                                                <label for="password" class="form-label">Kata Sandi Baru</label>
                                                 <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" autocomplete="new-password" minlength="8" required>
                                                 @error('password')
                                                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -109,24 +109,24 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+                                                <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
                                                 <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" autocomplete="new-password" minlength="8" required>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary w-100 py-3 auth-submit" data-auth-password-reset-submit>
-                                                Simpan Password Baru
+                                                Simpan Kata Sandi Baru
                                             </button>
 
                                             <div class="rounded-4 p-3 mt-3 auth-form-note">
-                                                <strong>Catatan keamanan:</strong> password baru belum disimpan sebelum OTP email berhasil diverifikasi.
+                                                <strong>Catatan keamanan:</strong> kata sandi baru akan disimpan setelah kode verifikasi email berhasil diperiksa.
                                             </div>
                                         </form>
                                     </div>
 
                                     <div data-auth-reset-expired-panel hidden>
-                                        <span class="auth-card-eyebrow">Reset Kedaluwarsa</span>
-                                        <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Tautan Reset Berakhir</h1>
-                                        <p class="auth-card-subtitle mb-4">Batas waktu tautan reset sudah habis. Demi keamanan, form password baru tidak dapat digunakan lagi.</p>
+                                        <span class="auth-card-eyebrow">Tautan Kedaluwarsa</span>
+                                        <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Tautan Sudah Berakhir</h1>
+                                        <p class="auth-card-subtitle mb-4">Batas waktu tautan sudah habis. Demi keamanan, halaman pengaturan kata sandi tidak dapat digunakan lagi.</p>
                                         <a href="{{ route('password.request') }}" class="auth-return-action text-decoration-none justify-content-center">
                                             <span class="auth-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 7l5 5V8c3.31 0 6 2.69 6 6a6 6 0 0 1-9.2 5.08l-1.45 1.45A8 8 0 1 0 12 5Z"/></svg></span>
                                             <span>Minta tautan baru</span>

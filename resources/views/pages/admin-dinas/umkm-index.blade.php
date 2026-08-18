@@ -54,12 +54,12 @@
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Hanya Dapat Dilihat</span>
                 <h1 class="h3 mb-2">Data UMKM</h1>
                 <p class="text-body-secondary mb-0">
-                    Penelusuran data tanpa mengubah nilai sumber. Detail keuangan hanya muncul sesuai izin akses pengguna.
+                    Lihat data UMKM tanpa mengubah data yang tersimpan. Rincian keuangan hanya tersedia sesuai kewenangan pengguna.
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
                 <a href="{{ route('admin-dinas.dashboard', $baseFilter) }}" class="btn btn-outline-secondary">Dashboard</a>
-                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-primary">Buka Analitik</a>
+                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-primary">Buka Ringkasan Data</a>
             </div>
         </div>
     </section>
@@ -69,7 +69,7 @@
             <form method="GET" action="{{ route('admin-dinas.umkm.index') }}" class="row g-3">
                 <div class="col-12 col-xl-4">
                     <label class="form-label" for="search">Cari UMKM</label>
-                    <input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Nama, kode, atau ID data sumber">
+                    <input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Nama atau kode UMKM">
                 </div>
                 <div class="col-md-6 col-xl-2">
                     <label class="form-label" for="district_id">Kecamatan</label>
@@ -98,8 +98,8 @@
                     </select>
                 </div>
                 <div class="col-md-6 col-xl-2 d-flex align-items-end gap-2">
-                    <a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary flex-fill">Reset</a>
-                    <button class="btn btn-primary flex-fill" type="submit">Terapkan</button>
+                    <a href="{{ route('admin-dinas.umkm.index') }}" class="btn btn-outline-secondary flex-fill">Hapus Pilihan</a>
+                    <button class="btn btn-primary flex-fill" type="submit">Tampilkan</button>
                 </div>
                 @foreach([
                     ['category_id', 'Kategori', $options['categories'] ?? []],
@@ -183,7 +183,7 @@
                                     <div class="small text-body-secondary">{{ $row->umkm_code }}</div>
                                 </td>
                                 <td>
-                                    <div>{{ $row->district_name ?: 'Belum terasosiasi' }}</div>
+                                    <div>{{ $row->district_name ?: 'Wilayah belum tercatat' }}</div>
                                     <div class="small text-body-secondary">{{ $row->village_name ?: 'Kelurahan belum tersedia' }}</div>
                                 </td>
                                 <td>
@@ -204,7 +204,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="{{ $canFinancial ? 8 : 6 }}" class="text-body-secondary">Tidak ada data pada filter aktif.</td></tr>
+                            <tr><td colspan="{{ $canFinancial ? 8 : 6 }}" class="text-body-secondary">Tidak ada data untuk pilihan saat ini.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

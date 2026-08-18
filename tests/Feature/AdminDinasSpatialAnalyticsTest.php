@@ -114,11 +114,11 @@ class AdminDinasSpatialAnalyticsTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/analytics/spatial')
             ->assertOk()
-            ->assertSeeText('Peta dan Analisis Wilayah', false)
-            ->assertSee('Peta Administratif Interaktif')
-            ->assertSee('Keterkaitan wilayah administrasi berbeda dari titik lokasi')
-            ->assertSee('Titik individual disembunyikan')
-            ->assertDontSee('Tampilkan titik koordinat');
+            ->assertSeeText('Peta Sebaran UMKM', false)
+            ->assertSee('Peta Wilayah')
+            ->assertSee('Data wilayah dan titik lokasi adalah informasi yang berbeda')
+            ->assertSee('Titik lokasi masing-masing usaha disembunyikan')
+            ->assertDontSee('Tampilkan titik lokasi');
     }
 
     public function test_coordinate_permission_enables_point_layer_control(): void
@@ -131,7 +131,7 @@ class AdminDinasSpatialAnalyticsTest extends TestCase
         $this->actingAs($user)
             ->get('/admin-dinas/analytics/spatial')
             ->assertOk()
-            ->assertSee('Tampilkan titik koordinat')
+            ->assertSee('Tampilkan titik lokasi')
             ->assertSee(
                 'Titik biru = UMKM yang memiliki titik lokasi lengkap'
             );

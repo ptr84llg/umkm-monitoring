@@ -1,5 +1,5 @@
 @php
-    // DOM awal hanya memuat kontrol, loader, dan wadah target. Konten analitik penuh dirender setelah tombol Tampilkan Analitik diklik.
+    // DOM awal hanya memuat kontrol, loader, dan wadah target. Konten analitik penuh dirender setelah tombol Tampilkan Informasi diklik.
 @endphp
 
 <div class="container-fluid px-3 px-lg-4" data-public-analytics-insight-root>
@@ -7,11 +7,11 @@
         <div class="row align-items-end g-3">
             <div class="col-12 col-xl-8">
                 <span class="landing-eyebrow">Pusat data publik</span>
-                <h2 class="display-6 fw-bold mt-2 mb-2">Pusat Analitik & Wawasan Interaktif</h2>
-                <p class="lead mb-0">Baca profil sektor, tenaga kerja, kapasitas ekonomi, akses pasar, legalitas, serta mutu data UMKM berdasarkan wilayah aktif.</p>
+                <h2 class="display-6 fw-bold mt-2 mb-2">Ringkasan & Perbandingan UMKM</h2>
+                <p class="lead mb-0">Baca jenis usaha, tenaga kerja, kondisi ekonomi, akses pasar, legalitas, serta kualitas data UMKM berdasarkan wilayah aktif.</p>
             </div>
             <div class="col-12 col-xl-4 text-xl-end">
-                <span class="public-analytics-badge">Ringkasan agregat wilayah</span>
+                <span class="public-analytics-badge">Ringkasan wilayah</span>
             </div>
         </div>
     </div>
@@ -24,8 +24,8 @@
                         <svg viewBox="0 0 24 24"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/></svg>
                     </span>
                     <div class="filter-sync-title">
-                        <strong>Konteks Wilayah Aktif</strong>
-                        <p class="mb-0">Wilayah utama mengikuti pilihan pada peta sebaran atau modal pilih wilayah.</p>
+                        <strong>Wilayah yang Dipilih</strong>
+                        <p class="mb-0">Wilayah utama mengikuti pilihan pada peta sebaran atau pilihan wilayah.</p>
                         <small class="filter-sync-context">
                             Konteks aktif: <b data-public-active-context-label data-public-analytics-context-label>Menunggu data</b>
                         </small>
@@ -42,8 +42,8 @@
             <div class="card-body p-3 p-xl-4">
                 <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
                     <div>
-                        <strong class="public-analytics-filter-title">Filter Tampilan Analitik</strong>
-                        <p class="mb-0 text-muted small">Filter membatasi grafik pada kelompok agregat yang tersedia di wilayah aktif.</p>
+                        <strong class="public-analytics-filter-title">Pilihan Tampilan</strong>
+                        <p class="mb-0 text-muted small">Filter membatasi grafik pada kelompok data yang tersedia di wilayah aktif.</p>
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-public-analytics-reset>
                         Reset
@@ -81,18 +81,18 @@
                 </form>
 
                 <div class="public-active-filter-strip mt-3" data-public-analytics-filter-strip>
-                    <span>Semua data agregat ditampilkan.</span>
+                    <span>Menampilkan seluruh data yang tersedia.</span>
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
                     <p class="public-analytics-action-note mb-0" data-public-analytics-state-note>
-                        Pilih filter bila diperlukan, lalu klik tombol untuk memuat visual analitik.
+                        Pilih filter bila diperlukan, lalu klik tombol untuk memuat informasi.
                     </p>
                     <button type="button" class="btn btn-success rounded-pill px-4 public-analytics-show-btn" data-public-analytics-show>
                         <span class="public-analytics-show-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24"><path d="M4 5h16v3H4V5Zm0 5h16v3H4v-3Zm0 5h10v3H4v-3Zm13.5 1.25L21 19.75 19.75 21l-2.25-2.25L15.25 21 14 19.75l3.5-3.5Z"/></svg>
                         </span>
-                        <span>Tampilkan Analitik</span>
+                        <span>Tampilkan Informasi</span>
                     </button>
                 </div>
             </div>
@@ -105,8 +105,8 @@
                 <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm2 2v10h12V7H6Zm2 8h2v-4H8v4Zm3 0h2V9h-2v6Zm3 0h2v-2h-2v2Z"/></svg>
             </span>
             <div>
-                <strong>Visual analitik belum ditampilkan.</strong>
-                <p>Area ini akan memuat profil sektor, tenaga kerja, ekonomi, akses pasar, legalitas, dan mutu data setelah agregat terbaru berhasil dimuat.</p>
+                <strong>Informasi belum ditampilkan.</strong>
+                <p>Area ini akan memuat jenis usaha, tenaga kerja, ekonomi, akses pasar, legalitas, dan kualitas data setelah agregat terbaru berhasil dimuat.</p>
             </div>
         </div>
 
@@ -114,17 +114,17 @@
             <div class="public-analytics-loader-card">
                 <div class="public-loader-orb" aria-hidden="true"></div>
                 <div class="public-loader-content">
-                    <span class="public-loader-kicker">Memuat Visual Analitik</span>
+                    <span class="public-loader-kicker">Memuat Informasi</span>
                     <strong data-public-analytics-loader-title>Menyiapkan data wilayah aktif</strong>
-                    <p data-public-analytics-loader-desc>Mohon tunggu sebentar, sistem sedang memuat data agregat terbaru.</p>
+                    <p data-public-analytics-loader-desc>Mohon tunggu sebentar, sistem sedang memuat data terbaru.</p>
 
                     <div class="public-loader-progress" aria-hidden="true">
                         <span data-public-loader-progress-bar></span>
                     </div>
 
                     <ol class="public-loader-steps">
-                        <li data-public-loader-step="0" class="is-running">Menyiapkan konteks wilayah</li>
-                        <li data-public-loader-step="1">Memuat data agregat</li>
+                        <li data-public-loader-step="0" class="is-running">Menyiapkan wilayah</li>
+                        <li data-public-loader-step="1">Memuat data</li>
                         <li data-public-loader-step="2">Menyusun grafik</li>
                         <li data-public-loader-step="3">Menyiapkan tabel pembanding</li>
                         <li data-public-loader-step="4">Menampilkan ringkasan wawasan</li>
@@ -154,10 +154,10 @@
                             <button class="nav-link" id="analytics-marketing-tab" data-bs-toggle="pill" data-bs-target="#analytics-marketing-pane" type="button" role="tab" aria-controls="analytics-marketing-pane" aria-selected="false">Pemasaran</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="analytics-readiness-tab" data-bs-toggle="pill" data-bs-target="#analytics-readiness-pane" type="button" role="tab" aria-controls="analytics-readiness-pane" aria-selected="false">Kesiapan Data</button>
+                            <button class="nav-link" id="analytics-readiness-tab" data-bs-toggle="pill" data-bs-target="#analytics-readiness-pane" type="button" role="tab" aria-controls="analytics-readiness-pane" aria-selected="false">Kelengkapan Data</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="analytics-area-tab" data-bs-toggle="pill" data-bs-target="#analytics-area-pane" type="button" role="tab" aria-controls="analytics-area-pane" aria-selected="false">Area Pembanding</button>
+                            <button class="nav-link" id="analytics-area-tab" data-bs-toggle="pill" data-bs-target="#analytics-area-pane" type="button" role="tab" aria-controls="analytics-area-pane" aria-selected="false">Perbandingan Wilayah</button>
                         </li>
                     </ul>
 
@@ -194,7 +194,7 @@
                                         </div>
                                         <div class="public-chart-head">
                                             <strong>Sebaran Metode Pemasaran per Subwilayah</strong>
-                                            <small>Setiap bar menampilkan komposisi metode pemasaran pada subwilayah aktif.</small>
+                                            <small>Setiap bar menampilkan komposisi metode pemasaran pada wilayah di bawahnya aktif.</small>
                                         </div>
                                         <div class="public-chart-canvas public-chart-canvas-tall public-stacked-chart-canvas" data-public-analytics-chart="marketing-area"></div>
                                     </div>
@@ -203,7 +203,7 @@
                                     <div class="public-chart-panel h-100">
                                         <div class="public-chart-head">
                                             <strong>Komposisi Metode Pemasaran</strong>
-                                            <small>Distribusi metode pemasaran pada wilayah aktif.</small>
+                                            <small>Sebaran metode pemasaran pada wilayah aktif.</small>
                                         </div>
                                         <div class="public-chart-canvas public-chart-canvas-tall" data-public-analytics-chart="marketing"></div>
                                     </div>
@@ -214,12 +214,12 @@
                                 <div class="col-12 col-xl-6">
                                     <div class="public-chart-panel public-combo-analytics-card h-100">
                                         <div class="public-insight-panel public-insight-panel-plain mb-3" data-public-analytics-readiness-note>
-                                            <span>Ringkasan Kesiapan Data</span>
+                                            <span>Ringkasan Kelengkapan Data</span>
                                             <p>Menunggu data kesiapan pada wilayah aktif.</p>
                                         </div>
                                         <div class="public-chart-head">
-                                            <strong>Sebaran Kesiapan Data per Subwilayah</strong>
-                                            <small>Setiap bar membandingkan UMKM terpetakan dan belum terpetakan pada subwilayah aktif.</small>
+                                            <strong>Sebaran Kelengkapan Data per Subwilayah</strong>
+                                            <small>Setiap bar membandingkan UMKM terpetakan dan belum terpetakan pada wilayah di bawahnya aktif.</small>
                                         </div>
                                         <div class="public-chart-canvas public-chart-canvas-tall public-stacked-chart-canvas" data-public-analytics-chart="readiness-area"></div>
                                     </div>
@@ -227,7 +227,7 @@
                                 <div class="col-12 col-xl-6">
                                     <div class="public-chart-panel h-100">
                                         <div class="public-chart-head">
-                                            <strong>Komposisi Kesiapan Data</strong>
+                                            <strong>Komposisi Kelengkapan Data</strong>
                                             <small>Perbandingan kesiapan data pada wilayah aktif.</small>
                                         </div>
                                         <div class="public-chart-canvas public-chart-canvas-tall" data-public-analytics-chart="readiness"></div>
@@ -242,7 +242,7 @@
                                 <div class="col-12 col-xl-5">
                                     <div class="public-chart-panel h-100">
                                         <div class="public-chart-head">
-                                            <strong>Area Pembanding</strong>
+                                            <strong>Perbandingan Wilayah</strong>
                                             <small>Agregat pembanding sesuai level wilayah aktif.</small>
                                         </div>
                                         <div class="public-chart-canvas" data-public-analytics-chart="area"></div>

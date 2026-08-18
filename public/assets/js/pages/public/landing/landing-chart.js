@@ -74,16 +74,16 @@
 
     function normalizeChartPayload(chart) {
         return {
-            title: chart?.title || 'Preview data UMKM',
-            subtitle: chart?.subtitle || 'Ringkasan data dalam periode pemantauan',
+            title: chart?.title || 'Ringkasan data UMKM',
+            subtitle: chart?.subtitle || 'Ringkasan data yang tersedia saat ini',
             labels: Array.isArray(chart?.labels) ? chart.labels : [],
             unitLabel: chart?.unit_label || 'Jumlah UMKM',
             percentLabel: chart?.percent_label || 'Persentase (%)',
             unitData: Array.isArray(chart?.unit_data) ? chart.unit_data : [],
             percentData: Array.isArray(chart?.percent_data) ? chart.percent_data : [],
-            summaryOne: chart?.summary_one || 'Wilayah, bidang usaha, periode',
-            summaryTwo: chart?.summary_two || 'Grafik, indikator, dan ringkasan',
-            summaryThree: chart?.summary_three || 'Perkembangan UMKM'
+            summaryOne: chart?.summary_one || 'Wilayah dan jenis usaha',
+            summaryTwo: chart?.summary_two || 'Grafik dan ringkasan',
+            summaryThree: chart?.summary_three || 'Kondisi UMKM'
         };
     }
 

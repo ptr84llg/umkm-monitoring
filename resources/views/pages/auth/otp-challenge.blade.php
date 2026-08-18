@@ -11,21 +11,21 @@
     $resendAction = $resendAction ?? route('login.otp.resend');
     $returnUrl = $returnUrl ?? route('login');
     $returnLabel = $returnLabel ?? 'Kembali ke login';
-    $brandSubtitle = $brandSubtitle ?? 'Verifikasi Akses Internal';
-    $eyebrow = $eyebrow ?? 'Verifikasi OTP';
-    $title = $title ?? 'Masukkan Kode OTP';
-    $subtitle = $subtitle ?? ('Kode OTP dikirim ke '.$maskedEmail.'. Gunakan kode terbaru untuk menyelesaikan login.');
+    $brandSubtitle = $brandSubtitle ?? 'Pemeriksaan Akses';
+    $eyebrow = $eyebrow ?? 'Verifikasi Akun';
+    $title = $title ?? 'Masukkan Kode Verifikasi';
+    $subtitle = $subtitle ?? ('Kode verifikasi dikirim ke '.$maskedEmail.'. Gunakan kode terbaru untuk menyelesaikan proses masuk.');
     $submitLabel = $submitLabel ?? 'Verifikasi dan Masuk';
     $successTitle = $successTitle ?? 'Verifikasi berhasil';
-    $successMessage = $successMessage ?? 'Mengalihkan ke dashboard.';
-    $loadingTitle = $loadingTitle ?? 'Memverifikasi OTP';
-    $loadingMessage = $loadingMessage ?? 'Sistem sedang memvalidasi kode OTP.';
-    $resendLoadingTitle = $resendLoadingTitle ?? 'Mengirim OTP Baru';
-    $resendLoadingMessage = $resendLoadingMessage ?? 'Sistem sedang mengirim ulang kode OTP.';
-    $note = $note ?? 'Verifikasi OTP hanya aktif setelah proses membutuhkan perlindungan tambahan. Jika halaman ini dibuka tanpa sesi verifikasi, sistem akan mengarahkan kembali ke proses yang sesuai.';
+    $successMessage = $successMessage ?? 'Membuka ruang kerja.';
+    $loadingTitle = $loadingTitle ?? 'Memeriksa Kode';
+    $loadingMessage = $loadingMessage ?? 'Sistem sedang memeriksa kode verifikasi.';
+    $resendLoadingTitle = $resendLoadingTitle ?? 'Mengirim Kode Baru';
+    $resendLoadingMessage = $resendLoadingMessage ?? 'Sistem sedang mengirim ulang kode verifikasi.';
+    $note = $note ?? 'Verifikasi Akun hanya aktif setelah proses membutuhkan perlindungan tambahan. Jika halaman ini dibuka tanpa sesi verifikasi, sistem akan mengarahkan kembali ke proses yang sesuai.';
 @endphp
 
-@section('title', 'Verifikasi OTP | Monitoring UMKM')
+@section('title', 'Verifikasi Akun | Monitoring UMKM')
 
 @section('content')
 <section class="auth-login-page auth-login-premium"
@@ -73,7 +73,7 @@
                                         <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">{{ $title }}</h1>
                                         <p class="auth-card-subtitle mb-0">{{ $subtitle }}</p>
                                     </div>
-                                    <span class="badge rounded-pill auth-card-badge" data-auth-otp-status-badge>OTP Aktif</span>
+                                    <span class="badge rounded-pill auth-card-badge" data-auth-otp-status-badge>Kode Aktif</span>
                                 </div>
 
                                 <div class="auth-otp-timer-grid" role="status" aria-live="polite">
@@ -93,7 +93,7 @@
 
                                 @if ($errors->any())
                                     <div class="alert alert-danger" role="alert">
-                                        Verifikasi belum berhasil. Periksa kembali kode OTP yang dikirim.
+                                        Verifikasi belum berhasil. Periksa kembali kode yang dikirim.
                                     </div>
                                 @endif
 
@@ -108,20 +108,20 @@
                                     <input type="hidden" name="tts" value="0" data-umkm-login-tts>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Kode OTP 6 Digit</label>
-                                        <div class="auth-otp-code-grid" role="group" aria-label="Kode OTP 6 digit" data-auth-otp-digit-group>
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 1" autofocus>
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 2">
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 3">
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 4">
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 5">
-                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit OTP 6">
+                                        <label class="form-label">Kode Verifikasi 6 Digit</label>
+                                        <div class="auth-otp-code-grid" role="group" aria-label="Kode verifikasi 6 digit" data-auth-otp-digit-group>
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 1" autofocus>
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 2">
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 3">
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 4">
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 5">
+                                            <input type="text" class="auth-otp-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" data-auth-otp-digit aria-label="Digit kode 6">
                                         </div>
                                         @error('otp_code')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                         <div class="form-text auth-field-hint" data-auth-otp-helper>
-                                            Masukkan 6 digit kode OTP. Jangan membagikan kode kepada pihak lain.
+                                            Masukkan 6 digit kode verifikasi. Jangan membagikan kode kepada pihak lain.
                                         </div>
                                     </div>
 

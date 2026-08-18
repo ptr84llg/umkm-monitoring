@@ -13,8 +13,8 @@
             <span class="badge text-bg-success mb-3">Pengajuan Disetujui Dinas</span>
             <h1 class="h3 mb-2">Aktifkan Akun Pelaku UMKM</h1>
             <p class="text-body-secondary">
-                Kode OTP dikirim ke {{ $activationContext['masked_email'] }}.
-                Password dibuat sendiri oleh Pelaku dan tidak diketahui oleh Dinas.
+                Kode verifikasi dikirim ke {{ $activationContext['masked_email'] }}.
+                Kata sandi dibuat sendiri oleh Pelaku dan tidak diketahui oleh Dinas.
             </p>
 
             @if ($errors->any())
@@ -34,7 +34,7 @@
                 <input type="hidden" name="activation_token" value="{{ $activationToken }}">
 
                 <div>
-                    <label class="form-label" for="otp">Kode OTP</label>
+                    <label class="form-label" for="otp">Kode Verifikasi</label>
                     <input class="form-control"
                            id="otp"
                            name="otp"
@@ -47,7 +47,7 @@
 
                 @if ($activationContext['requires_password'])
                     <div>
-                        <label class="form-label" for="password">Buat Password</label>
+                        <label class="form-label" for="password">Buat Kata Sandi</label>
                         <input type="password"
                                class="form-control"
                                id="password"
@@ -55,11 +55,11 @@
                                autocomplete="new-password"
                                minlength="12"
                                required>
-                        <div class="form-text">Minimal 12 karakter. Password dibuat langsung oleh Pelaku.</div>
+                        <div class="form-text">Minimal 12 karakter. Kata sandi dibuat langsung oleh Pelaku.</div>
                     </div>
 
                     <div>
-                        <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
+                        <label class="form-label" for="password_confirmation">Konfirmasi Kata Sandi</label>
                         <input type="password"
                                class="form-control"
                                id="password_confirmation"
@@ -70,11 +70,11 @@
                     </div>
                 @else
                     <div class="alert alert-info mb-0">
-                        Email ini sudah terhubung dengan akun Pelaku aktif. Password akun yang sudah ada tidak diubah.
+                        Email ini sudah terhubung dengan akun Pelaku aktif. Kata sandi akun yang sudah ada tidak diubah.
                     </div>
                 @endif
 
-                <button class="btn btn-primary" type="submit">Verifikasi OTP dan Aktifkan</button>
+                <button class="btn btn-primary" type="submit">Verifikasi Kode dan Aktifkan</button>
             </form>
         </div>
     </div>

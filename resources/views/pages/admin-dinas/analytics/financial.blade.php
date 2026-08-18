@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik Ekonomi & Keuangan')
+@section('title', 'Ringkasan Ekonomi & Keuangan')
 
 @section('content')
 @php
@@ -44,13 +44,13 @@
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
                 <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Data Keuangan Terbatas</span>
-                <h1 class="h3 mb-2">Analitik Ekonomi & Keuangan</h1>
+                <h1 class="h3 mb-2">Ringkasan Ekonomi & Keuangan</h1>
                 <p class="text-body-secondary mb-0">
-                    Analitik berfokus pada cakupan dan sebaran nilai yang tercatat. Nilai sumber tetap ditampilkan apa adanya dan tidak diubah berdasarkan asumsi.
+                    Halaman ini menunjukkan ketersediaan dan sebaran data ekonomi yang tercatat. Nilai yang tercatat tetap ditampilkan apa adanya.
                 </p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
-                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-outline-primary">Analitik Umum</a>
+                <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-outline-primary">Ringkasan Data</a>
                 <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-secondary">Data UMKM</a>
             </div>
         </div>
@@ -109,7 +109,7 @@
 
     <section class="alert alert-warning mb-0">
         <strong>0 berbeda dari belum tersedia.</strong>
-        Cakupan menunjukkan jumlah data yang memiliki nilai pada sumber. Nilai kecil atau tidak lazim tetap dipertahankan sesuai sumber sampai ada verifikasi.
+        Ketersediaan menunjukkan jumlah data yang memiliki nilai. Nilai kecil atau tidak lazim tetap dipertahankan apa adanya sampai ada pemeriksaan.
     </section>
 
     <section class="row g-3">
@@ -129,7 +129,7 @@
                     <div class="card-body">
                         <div class="small text-body-secondary">{{ $metric[0] }} terdata</div>
                         <div class="h2 mb-0">{{ number_format($filled, 0, ',', '.') }}</div>
-                        <div class="small text-body-secondary">{{ $pctCoverage($filled, $total) }} dari konteks aktif</div>
+                        <div class="small text-body-secondary">{{ $pctCoverage($filled, $total) }} dari data yang ditampilkan</div>
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
 
     <section class="card border shadow-sm">
         <div class="card-body p-4">
-            <h2 class="h5">Cakupan Keuangan per Kecamatan</h2>
+            <h2 class="h5">Ketersediaan Data Keuangan per Kecamatan</h2>
             <p class="text-body-secondary">Tabel menunjukkan jumlah UMKM dengan nilai terdata pada masing-masing unsur keuangan.</p>
 
             <div class="table-responsive">
@@ -176,8 +176,8 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Sumber Pinjaman Teridentifikasi</h2>
-                    <p class="text-body-secondary">Nilai sumber ditampilkan apa adanya dan tidak dinormalisasi menjadi kategori lain.</p>
+                    <h2 class="h5">Sumber Pinjaman yang Tercatat</h2>
+                    <p class="text-body-secondary">Nilai yang tercatat ditampilkan apa adanya dan tidak diubah menjadi kategori lain.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($analysis['identified'] ?? [] as $row)
@@ -216,7 +216,7 @@
                                 <div class="progress" style="height: 8px;"><div class="progress-bar bg-warning" style="width: {{ $barPct((int)$row['total_umkm'], $maxIssue) }}%"></div></div>
                             </div>
                         @empty
-                            <p class="text-body-secondary">Tidak ada penanda tersebut pada konteks aktif.</p>
+                            <p class="text-body-secondary">Tidak ada catatan tersebut pada pilihan saat ini.</p>
                         @endforelse
                     </div>
                 </div>
@@ -232,10 +232,10 @@
                     @if($financialRows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
                         <p class="text-body-secondary mb-0">
                             Menampilkan {{ number_format($financialRows->firstItem() ?? 0, 0, ',', '.') }}–{{ number_format($financialRows->lastItem() ?? 0, 0, ',', '.') }}
-                            dari {{ number_format($financialRows->total(), 0, ',', '.') }} data. Nilai sumber tidak dikoreksi.
+                            dari {{ number_format($financialRows->total(), 0, ',', '.') }} data. Nilai yang tercatat tidak diubah.
                         </p>
                     @else
-                        <p class="text-body-secondary mb-0">Nilai sumber ditampilkan tanpa koreksi.</p>
+                        <p class="text-body-secondary mb-0">Nilai yang tercatat ditampilkan apa adanya.</p>
                     @endif
                 </div>
                 <a href="{{ route('admin-dinas.umkm.index', array_filter($filters, static fn ($value) => $value !== null && $value !== '')) }}" class="btn btn-outline-primary align-self-lg-start">Lihat Data UMKM</a>
@@ -262,7 +262,7 @@
                                     <div class="fw-semibold">{{ $row['business_name'] }}</div>
                                     <div class="small text-body-secondary">{{ $row['umkm_code'] }}</div>
                                 </td>
-                                <td>{{ $row['district_name'] ?? 'Belum terasosiasi' }}</td>
+                                <td>{{ $row['district_name'] ?? 'Wilayah belum tercatat' }}</td>
                                 <td class="text-end">{{ $money($row['capital_amount']) }}</td>
                                 <td class="text-end">{{ $money($row['annual_sales_amount']) }}</td>
                                 <td class="text-end">{{ $money($row['loan_amount']) }}</td>

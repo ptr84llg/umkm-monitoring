@@ -11,7 +11,7 @@
     [$statusLabel, $statusClass] = $labels[$claim->status] ?? [$claim->status, 'secondary'];
 @endphp
 
-@section('title', 'Status Klaim Pelaku UMKM | SISFODA')
+@section('title', 'Status Pengajuan Akun Pelaku UMKM | SISFODA')
 
 @section('content')
 <div class="container py-5" style="max-width: 760px;">
@@ -28,7 +28,7 @@
                 <dt class="col-sm-4">Referensi</dt>
                 <dd class="col-sm-8"><code>{{ $claim->claim_reference }}</code></dd>
                 <dt class="col-sm-4">Jenis</dt>
-                <dd class="col-sm-8">{{ $claim->claim_type === 'dinas_invite' ? 'Undangan Dinas' : 'Klaim Mandiri' }}</dd>
+                <dd class="col-sm-8">{{ $claim->claim_type === 'dinas_invite' ? 'Undangan Dinas' : 'Pengajuan Mandiri' }}</dd>
                 <dt class="col-sm-4">Diajukan</dt>
                 <dd class="col-sm-8">{{ optional($claim->submitted_at)->format('d-m-Y H:i') }}</dd>
             </dl>
@@ -36,7 +36,7 @@
             @if ($claim->status === 'pending_review')
                 <p class="text-body-secondary">Dinas akan memverifikasi keterkaitan Anda dengan UMKM sebelum akun dapat diaktifkan.</p>
             @elseif ($claim->status === 'approved_pending_activation')
-                <p class="text-body-secondary">Buka tautan aktivasi yang dikirim ke email pemohon dan masukkan OTP pada masa berlaku yang tersedia.</p>
+                <p class="text-body-secondary">Buka tautan aktivasi yang dikirim ke email pemohon dan masukkan kode verifikasi selama masih berlaku.</p>
             @elseif ($claim->status === 'rejected')
                 <p class="text-body-secondary">Pengajuan belum disetujui. Riwayat pengajuan tetap tersimpan dan Anda dapat membuat pengajuan baru.</p>
             @elseif ($claim->status === 'activated')

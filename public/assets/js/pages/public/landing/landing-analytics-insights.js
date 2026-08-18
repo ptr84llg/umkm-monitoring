@@ -282,7 +282,7 @@
 
   function requestJson() {
     if (!(window.UMKM && window.UMKM.ajax && typeof window.UMKM.ajax.get === 'function')) {
-      return Promise.reject(new Error('AJAX internal belum siap.'));
+      return Promise.reject(new Error('Informasi belum dapat dimuat. Silakan coba lagi.'));
     }
 
     var url = API_URL + '?' + queryParams().toString();
@@ -297,7 +297,7 @@
     }).then(function (payload) {
       var safe = normalizePayload(payload);
       if (!safe || !safe.data || !safe.data.analytics) {
-        throw new Error('Data analitik belum tersedia.');
+        throw new Error('Informasi belum tersedia.');
       }
 
       state.payload = safe;
@@ -375,7 +375,7 @@
     if (state.filters.marketing) active.push('Pemasaran: ' + state.filters.marketing);
 
     if (active.length < 1) {
-      strip.innerHTML = '<span>Semua data agregat ditampilkan.</span>';
+      strip.innerHTML = '<span>Menampilkan seluruh data yang tersedia.</span>';
       return;
     }
 
@@ -431,7 +431,7 @@
       if (paragraph && message) paragraph.textContent = message;
     }
 
-    setStateNote('Pilih filter bila diperlukan, lalu klik tombol untuk memuat visual analitik.');
+    setStateNote('Pilih data bila diperlukan, lalu klik tombol untuk menampilkan informasi.');
   }
 
   function setLoaderStep(index, title, desc) {
@@ -444,7 +444,7 @@
     var steps = all('[data-public-loader-step]', loader);
     var percent = Math.max(0, Math.min(100, ((index + 1) / 5) * 100));
 
-    if (titleNode) titleNode.textContent = title || 'Memuat visual analitik';
+    if (titleNode) titleNode.textContent = title || 'Memuat informasi';
     if (descNode) descNode.textContent = desc || 'Mohon tunggu sebentar.';
     if (bar) bar.style.width = percent + '%';
 
@@ -469,8 +469,8 @@
     if (placeholder) placeholder.hidden = true;
     if (loader) loader.hidden = false;
 
-    setLoaderStep(0, 'Menyiapkan konteks wilayah', 'Membaca wilayah dan filter aktif.');
-    setStateNote('Memuat visual analitik terbaru...');
+    setLoaderStep(0, 'Menyiapkan wilayah', 'Membaca wilayah dan pilihan yang digunakan.');
+    setStateNote('Memuat informasi terbaru...');
   }
 
   function hideLoader() {
@@ -489,7 +489,7 @@
     var loader = document.createElement('div');
     loader.className = 'public-tab-lazy-loader';
     loader.setAttribute('data-public-tab-loader', key);
-    loader.innerHTML = '<span class="public-tab-lazy-orb" aria-hidden="true"></span><div><strong>Menyusun visual</strong><p>' + escapeHtml(message || 'Grafik sedang disiapkan dari data agregat terbaru.') + '</p></div>';
+    loader.innerHTML = '<span class="public-tab-lazy-orb" aria-hidden="true"></span><div><strong>Menyiapkan tampilan</strong><p>' + escapeHtml(message || 'Grafik sedang disiapkan dari data terbaru.') + '</p></div>';
     pane.prepend(loader);
   }
 
@@ -506,7 +506,7 @@
     var target = one('[data-public-analytics-render-target]');
     var placeholder = one('[data-public-analytics-placeholder]');
 
-    if (!template || !target) throw new Error('Template visual analitik belum tersedia.');
+    if (!template || !target) throw new Error('Tampilan informasi belum tersedia.');
 
     target.innerHTML = '';
     target.appendChild(template.content.cloneNode(true));
@@ -521,7 +521,7 @@
     if (!container) return;
 
     if (!rows.length) {
-      container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Data agregat pada wilayah ini belum cukup untuk divisualisasikan.</span></div>';
+      container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Data pada wilayah ini belum cukup untuk ditampilkan.</span></div>';
       return;
     }
 
@@ -877,7 +877,7 @@
     var notes = qualityNotes().reduce(function (sum, item) { return sum + numberValue(item.total, 0); }, 0);
     var mappedPercent = numberValue(location.mapped_percentage, 0);
 
-    node.innerHTML = '<span>Ringkasan Kesiapan Data</span>'
+    node.innerHTML = '<span>Ringkasan Kelengkapan Data</span>'
       + '<p><b>' + escapeHtml(formatNumber(mapped)) + '</b> UMKM sudah memiliki titik lokasi atau <b>' + escapeHtml(formatPercent(mappedPercent)) + '</b> dari wilayah aktif.</p>'
       + '<p><b>' + escapeHtml(formatNumber(unmapped)) + '</b> UMKM belum memiliki titik lokasi.</p>'
       + (notes > 0
@@ -896,14 +896,14 @@
   function tablePriority(row) {
     if (row.mapped_percentage < 10 || row.open_quality_notes > 0) return 'Perlu perhatian';
     if (row.mapped_percentage < 50) return 'Perlu dilengkapi';
-    return 'Relatif siap';
+    return 'Cukup lengkap';
   }
 
   function fallbackAreaTable(container, rows) {
     if (!container) return;
 
     if (!rows.length) {
-      container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Area pembanding belum tersedia pada wilayah aktif.</span></div>';
+      container.innerHTML = '<div class="public-chart-empty"><strong>Data belum cukup</strong><span>Wilayah pembanding belum tersedia pada wilayah aktif.</span></div>';
       return;
     }
 
@@ -945,7 +945,7 @@
         layout: 'fitColumns',
         height: '310px',
         data: rows,
-        placeholder: 'Area pembanding belum tersedia.',
+        placeholder: 'Wilayah pembanding belum tersedia.',
         columns: [
           { title: 'Area', field: 'name', minWidth: 150 },
           { title: 'UMKM', field: 'total_umkm', hozAlign: 'right', width: 100, formatter: function (cell) { return formatNumber(cell.getValue()); } },
@@ -1049,7 +1049,7 @@
     var notes = decisionNotes();
     var mappedPercent = numberValue(location.mapped_percentage, 0);
 
-    var narrative = '<span>Ringkasan Wawasan</span><p>'
+    var narrative = '<span>Ringkasan Informasi</span><p>'
       + 'Pada <b>' + escapeHtml(label) + '</b>, kategori terbesar adalah <b>' + escapeHtml(category ? category.name : 'Belum tersedia') + '</b>'
       + (type ? ' dengan jenis usaha dominan <b>' + escapeHtml(type.name) + '</b>' : '')
       + (marketing ? '. Metode pemasaran dominan adalah <b>' + escapeHtml(marketing.name) + '</b>' : '')
@@ -1115,15 +1115,15 @@
   }
 
   function renderAnalyticsContent() {
-    if (!analyticsData()) throw new Error('Data analitik belum tersedia.');
+    if (!analyticsData()) throw new Error('Informasi belum tersedia.');
 
-    setLoaderStep(2, 'Menyiapkan wadah grafik', 'Membuat ruang visual dan ringkasan agregat.');
+    setLoaderStep(2, 'Menyiapkan tampilan grafik', 'Membuat ruang visual dan ringkasan data.');
     renderTemplate();
 
-    setLoaderStep(3, 'Menyusun grafik awal', 'Menampilkan struktur usaha sebagai tab utama.');
+    setLoaderStep(3, 'Menyiapkan grafik awal', 'Menampilkan struktur usaha sebagai bagian utama.');
     renderTab('business');
 
-    setLoaderStep(4, 'Menampilkan ringkasan wawasan', 'Menyelesaikan narasi ringkasan agregat.');
+    setLoaderStep(4, 'Menampilkan ringkasan informasi', 'Menyelesaikan narasi ringkasan data.');
     updateNarrative();
 
     window.setTimeout(resizeVisuals, 300);
@@ -1141,11 +1141,11 @@
     var target = one('[data-public-analytics-render-target]');
     var placeholder = one('[data-public-analytics-placeholder]');
     if (target) {
-      target.innerHTML = '<div class="public-analytics-error"><strong>Visual analitik belum dapat dimuat.</strong><p>' + escapeHtml(message || 'Terjadi kendala saat memuat data agregat.') + '</p></div>';
+      target.innerHTML = '<div class="public-analytics-error"><strong>Informasi belum dapat dimuat.</strong><p>' + escapeHtml(message || 'Terjadi kendala saat memuat data.') + '</p></div>';
     }
     if (placeholder) placeholder.hidden = true;
 
-    setStateNote('Visual analitik belum dapat dimuat. Silakan ulangi.');
+    setStateNote('Informasi belum dapat dimuat. Silakan ulangi.');
   }
 
   function showAnalytics() {
@@ -1155,7 +1155,7 @@
 
     Promise.resolve()
       .then(function () {
-        setLoaderStep(1, 'Memuat data agregat', 'Mengambil data terbaru dari wilayah dan filter aktif.');
+        setLoaderStep(1, 'Memuat data', 'Mengambil data terbaru dari wilayah dan filter aktif.');
         return requestJson();
       })
       .then(function () {
@@ -1165,16 +1165,16 @@
       .then(function () {
         window.setTimeout(function () {
           hideLoader();
-          setStateNote('Visual analitik sudah dimuat berdasarkan wilayah dan filter aktif.');
+          setStateNote('Informasi sudah dimuat berdasarkan wilayah dan filter aktif.');
         }, 280);
       })
       .catch(function (error) {
-        showError(error && error.message ? error.message : 'Visual analitik gagal dimuat.');
+        showError(error && error.message ? error.message : 'Informasi gagal dimuat.');
       });
   }
 
   function invalidateAnalytics(reason) {
-    showPlaceholder(reason || 'Wilayah atau filter berubah. Klik Tampilkan Analitik untuk memuat data terbaru.');
+    showPlaceholder(reason || 'Wilayah atau filter berubah. Klik Tampilkan Informasi untuk memuat data terbaru.');
   }
 
   function handleFilterChange(select) {
@@ -1184,7 +1184,7 @@
     if (key === 'category') state.filters.type = '';
 
     updateFilters();
-    invalidateAnalytics('Filter berubah. Klik Tampilkan Analitik untuk memuat ulang grafik dan tabel.');
+    invalidateAnalytics('Filter berubah. Klik Tampilkan Informasi untuk memuat ulang grafik dan tabel.');
   }
 
   function bind() {
@@ -1201,7 +1201,7 @@
         event.preventDefault();
         state.filters = { category: '', type: '', marketing: '' };
         updateFilters();
-        invalidateAnalytics('Filter direset. Klik Tampilkan Analitik untuk memuat ulang grafik dan tabel.');
+        invalidateAnalytics('Filter direset. Klik Tampilkan Informasi untuk memuat ulang grafik dan tabel.');
       }
     });
 
@@ -1231,7 +1231,7 @@
       if (safe) {
         state.payload = safe;
         renderControlOnly();
-        invalidateAnalytics('Data wilayah berubah. Klik Tampilkan Analitik untuk memuat visual terbaru.');
+        invalidateAnalytics('Data wilayah berubah. Klik Tampilkan Informasi untuk memuat visual terbaru.');
       }
     });
 
@@ -1242,7 +1242,7 @@
         state.payload = safe;
         renderControlOnly();
       }
-      invalidateAnalytics('Wilayah aktif berubah. Klik Tampilkan Analitik untuk memuat visual terbaru.');
+      invalidateAnalytics('Wilayah aktif berubah. Klik Tampilkan Informasi untuk memuat visual terbaru.');
     });
 
     window.addEventListener('resize', function () {
@@ -1265,7 +1265,7 @@
 
   function boot() {
     bind();
-    showPlaceholder('Area ini akan memuat grafik, tabel, dan ringkasan setelah data agregat terbaru berhasil dimuat.');
+    showPlaceholder('Area ini akan memuat grafik, tabel, dan ringkasan setelah data terbaru berhasil dimuat.');
     waitForInitialPayload(0);
   }
 

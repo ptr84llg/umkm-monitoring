@@ -43,7 +43,7 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'dashboard',
                 'title' => 'Dashboard Kendali',
-                'description' => 'Ringkasan sistem, keamanan, konfigurasi, kualitas data, user, dan modul.',
+                'description' => 'Ringkasan kondisi sistem, keamanan, kualitas data, pengguna, dan layanan.',
                 'status' => 'Aktif',
                 'route_name' => 'admin-utama.dashboard',
                 'permission' => 'dashboard.view.executive',
@@ -52,8 +52,8 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'access',
                 'title' => 'Akses',
-                'description' => 'Akun, role, permission, sesi, dan pembatasan akses pengguna.',
-                'status' => 'Foundation',
+                'description' => 'Akun, peran, izin akses, sesi, dan pembatasan akses pengguna.',
+                'status' => 'Tersedia',
                 'route_name' => 'admin-utama.access.index',
                 'permission' => 'access.manage',
                 'icon' => 'shield',
@@ -62,16 +62,16 @@ class AdminUtamaController extends Controller
                 'key' => 'reference',
                 'title' => 'Referensi',
                 'description' => 'Wilayah, kategori usaha lokal, jenis usaha lokal, dan referensi pendukung data UMKM.',
-                'status' => 'Skeleton',
+                'status' => 'Belum tersedia',
                 'route_name' => null,
                 'permission' => 'reference.manage',
                 'icon' => 'database',
             ],
             [
                 'key' => 'governance',
-                'title' => 'Governance',
-                'description' => 'Pengaturan sistem, keamanan, audit, theme, dan kesiapan tata kelola.',
-                'status' => 'Theme Aktif',
+                'title' => 'Tata Kelola',
+                'description' => 'Pengaturan sistem, keamanan, riwayat perubahan, tampilan, dan tata kelola.',
+                'status' => 'Tersedia',
                 'route_name' => 'admin-utama.governance.settings',
                 'permission' => 'system.manage',
                 'icon' => 'settings',
@@ -79,8 +79,8 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'publication',
                 'title' => 'Publikasi',
-                'description' => 'Pengumuman, narasi sistem, dan konten publik yang tersanitasi.',
-                'status' => 'Skeleton',
+                'description' => 'Pengumuman dan informasi publik yang sudah diperiksa.',
+                'status' => 'Belum tersedia',
                 'route_name' => null,
                 'permission' => 'content.manage',
                 'icon' => 'megaphone',
@@ -88,8 +88,8 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'validation',
                 'title' => 'Validasi',
-                'description' => 'Instrumen survei, validasi ahli, dan hasil penilaian terkontrol.',
-                'status' => 'Skeleton',
+                'description' => 'Formulir penilaian, pemeriksaan ahli, dan hasil penilaian.',
+                'status' => 'Belum tersedia',
                 'route_name' => null,
                 'permission' => 'validation.manage',
                 'icon' => 'check',
@@ -99,10 +99,10 @@ class AdminUtamaController extends Controller
         $themeOptions = $themeService->options();
 
         $governanceNotes = [
-            'Menu Admin Utama mengikuti role dan permission; UI bukan pengunci akhir.',
-            'Backend guard tetap menjadi otoritas final untuk semua akses.',
-            'Perubahan konfigurasi, konten, ekspor, dan akses sensitif wajib diaudit.',
-            'Theme management aktif melalui Governance / Pengaturan Sistem dengan allowlist backend.',
+            'Menu Admin Utama ditampilkan sesuai peran dan kewenangan pengguna.',
+            'Setiap akses tetap diperiksa oleh sistem.',
+            'Perubahan pengaturan, konten, ekspor, dan akses penting dicatat dalam riwayat sistem.',
+            'Pilihan tampilan dapat diatur melalui Tata Kelola / Pengaturan Sistem.',
         ];
 
         return view('pages.admin-utama.dashboard', compact(
@@ -239,38 +239,38 @@ class AdminUtamaController extends Controller
             [
                 'key' => 'accounts',
                 'title' => 'Akun Pengguna',
-                'status' => 'Read-only detail',
-                'description' => 'Melihat daftar akun, role terhubung, status aktif, Google-linked, dan login terakhir tanpa membuka aksi perubahan.',
+                'status' => 'Lihat saja',
+                'description' => 'Melihat daftar akun, peran yang terhubung, status aktif, akun Google, dan waktu masuk terakhir tanpa mengubah data.',
             ],
             [
                 'key' => 'roles',
-                'title' => 'Role',
-                'status' => 'Read-only matrix',
-                'description' => 'Melihat role resmi sistem dan jumlah permission yang terhubung.',
+                'title' => 'Peran',
+                'status' => 'Lihat saja',
+                'description' => 'Melihat peran pengguna dan jumlah izin akses yang terhubung.',
             ],
             [
                 'key' => 'permissions',
-                'title' => 'Permission',
-                'status' => 'Read-only grouping',
-                'description' => 'Melihat permission berdasarkan modul sebagai dasar PBAC.',
+                'title' => 'Izin Akses',
+                'status' => 'Lihat saja',
+                'description' => 'Melihat izin akses berdasarkan bagian sistem.',
             ],
             [
                 'key' => 'assignment',
-                'title' => 'Assignment',
-                'status' => 'Coming next',
-                'description' => 'Assignment user-role dan role-permission belum dibuka. Tahap ini hanya menampilkan relasi akun-role.',
+                'title' => 'Penetapan Akses',
+                'status' => 'Belum tersedia',
+                'description' => 'Penetapan peran dan izin akses belum tersedia. Saat ini sistem hanya menampilkan keterkaitan akun dan peran.',
             ],
             [
                 'key' => 'sessions',
                 'title' => 'Sesi & Perangkat',
-                'status' => 'Coming next',
-                'description' => 'Pemantauan sesi, perangkat, revoke session, dan riwayat login dibuat setelah detail akun read-only aman.',
+                'status' => 'Belum tersedia',
+                'description' => 'Pemantauan sesi, perangkat, penutupan sesi, dan riwayat masuk belum tersedia.',
             ],
             [
                 'key' => 'audit',
-                'title' => 'Audit Akses',
-                'status' => 'Read-only preview',
-                'description' => 'Melihat jejak event keamanan dan audit akses sebagai dasar tata kelola.',
+                'title' => 'Riwayat Akses',
+                'status' => 'Ringkasan',
+                'description' => 'Melihat riwayat keamanan dan perubahan akses.',
             ],
         ];
 
@@ -357,12 +357,12 @@ class AdminUtamaController extends Controller
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Theme sistem berhasil diperbarui.',
+                'message' => 'Tampilan sistem berhasil diperbarui.',
                 'theme_key' => $result['after'],
             ]);
         }
 
-        return back()->with('status', 'Theme sistem berhasil diperbarui.');
+        return back()->with('status', 'Tampilan sistem berhasil diperbarui.');
     }
 
     public function regions()
@@ -428,6 +428,6 @@ class AdminUtamaController extends Controller
             ]
         );
 
-        return back()->with('status', 'Konten berhasil disanitasi dan dicatat audit.');
+        return back()->with('status', 'Konten berhasil diperiksa dan dicatat dalam riwayat sistem.');
     }
 }

@@ -8,10 +8,10 @@
         <div>
             <p class="text-muted mb-1">Ruang usaha Anda</p>
             <h1 class="h3 mb-2">Dashboard Pelaku UMKM</h1>
-            <p class="mb-0">Lihat data usaha, ajukan perubahan jika ada informasi yang perlu diperbarui, dan gunakan analitik untuk memahami kondisi usaha berdasarkan data yang tersedia saat ini.</p>
+            <p class="mb-0">Lihat data usaha, ajukan perubahan jika ada informasi yang perlu diperbarui, dan gunakan perbandingan untuk memahami kondisi usaha berdasarkan data yang tersedia saat ini.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-primary" href="{{ route('pelaku-umkm.analytics.index') }}">Buka Analitik Keputusan</a>
+            <a class="btn btn-primary" href="{{ route('pelaku-umkm.analytics.index') }}">Buka Perbandingan</a>
             <a class="btn btn-outline-primary" href="{{ route('pelaku-umkm.umkm.index') }}">Lihat Data Usaha</a>
         </div>
     </div>

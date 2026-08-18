@@ -76,7 +76,7 @@ class ProfileOverrideController extends Controller
 
         return redirect()
             ->route('pelaku-umkm.profile-proposals.show', $proposal)
-            ->with('status', 'Usulan perubahan profil berhasil diajukan tanpa mengubah data sumber.');
+            ->with('status', 'Usulan perubahan berhasil diajukan. Data awal usaha tetap tersimpan.');
     }
 
     public function show(Request $request, UmkmUpdateSubmission $proposal)

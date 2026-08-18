@@ -11,7 +11,7 @@
             <p class="mb-0">Data awal tetap dipertahankan. Perubahan hanya menjadi data saat ini setelah disetujui.</p>
         </div>
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" href="{{ route('pelaku-umkm.analytics.index', ['umkm_id' => $umkm->id]) }}">Buka Analitik</a>
+            <a class="btn btn-outline-primary" href="{{ route('pelaku-umkm.analytics.index', ['umkm_id' => $umkm->id]) }}">Buka Perbandingan</a>
             @if(auth()->user()?->hasPermission('umkm.profile.propose'))
                 <a class="btn btn-primary" href="{{ route('pelaku-umkm.profile-change.create', $umkm) }}">Ajukan Perubahan</a>
             @endif
@@ -35,7 +35,7 @@
                                 @if(in_array($field, $effectiveProfile['overridden_fields'], true))
                                     <span class="badge text-bg-primary">Perubahan disetujui</span>
                                 @else
-                                    <span class="badge text-bg-secondary">Sumber</span>
+                                    <span class="badge text-bg-secondary">Data awal</span>
                                 @endif
                             </td>
                         </tr>
@@ -47,21 +47,21 @@
     </div>
 
     <div class="card">
-        <div class="card-header"><strong>Informasi sistem — tidak dapat diajukan untuk diubah</strong></div>
+        <div class="card-header"><strong>Informasi yang dikelola sistem</strong></div>
         <div class="card-body">
             <dl class="row mb-0">
                 <dt class="col-sm-4">Kode UMKM</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.umkm_code') ?? '-' }}</dd>
                 <dt class="col-sm-4">Status Data</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.status_data') ?? '-' }}</dd>
                 <dt class="col-sm-4">Kualitas Data</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.quality_status') ?? '-' }}</dd>
-                <dt class="col-sm-4">Sumber Data</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.source_system') ?? '-' }}</dd>
-                <dt class="col-sm-4">ID Data Sumber</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.source_record_id') ?? '-' }}</dd>
+                <dt class="col-sm-4">Asal Data</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.source_system') ?? '-' }}</dd>
+                <dt class="col-sm-4">Nomor Referensi Data</dt><dd class="col-sm-8">{{ data_get($effectiveProfile, 'system_metadata.source_record_id') ?? '-' }}</dd>
             </dl>
         </div>
     </div>
 
     @if($effectiveProfile['provenance'])
         <div class="alert alert-success mt-3 mb-0">
-            Data saat ini memuat perubahan yang telah disetujui pada pengajuan #{{ $effectiveProfile['provenance']['source_submission_id'] }} dan tetap terpisah dari data awal.
+            Data saat ini mencakup perubahan yang telah disetujui pada pengajuan #{{ $effectiveProfile['provenance']['source_submission_id'] }} dan data awal tetap tersimpan.
         </div>
     @endif
 </div>

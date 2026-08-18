@@ -177,7 +177,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         );
 
         $this->assertSame('citywide', $citywide['analysis_mode']['key']);
-        $this->assertSame('Gambaran Keputusan Seluruh Kota', $citywide['analysis_mode']['title']);
+        $this->assertSame('Ringkasan UMKM Seluruh Kota', $citywide['analysis_mode']['title']);
         $this->assertNotEmpty($citywide['citywide']['type_ranking']);
         $this->assertNotEmpty($citywide['citywide']['district_ranking']);
         $this->assertNotEmpty($citywide['citywide']['distribution_matrix']['rows']);
@@ -198,7 +198,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
 
         $citywideResponse
             ->assertOk()
-            ->assertSee('Gambaran Keputusan Seluruh Kota')
+            ->assertSee('Ringkasan UMKM Seluruh Kota')
             ->assertSee('Jenis Usaha dengan Jumlah Terbesar')
             ->assertSee('Jenis Usaha × Kecamatan')
             ->assertSee('Pasangan Jenis Usaha–Kecamatan yang Perlu Ditinjau')
@@ -227,7 +227,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $this->assertSame('Rendah', $districtTwo['density_level']);
         $this->assertTrue($districtTwo['potential_relative']);
         $this->assertSame(
-            'Indikasi potensi wilayah relatif',
+            'Kondisi wilayah perlu ditinjau',
             $districtTwo['context_label']
         );
 
@@ -238,7 +238,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
         $this->assertTrue($typeOpportunity['low_count_group']);
         $this->assertTrue($typeOpportunity['potential_relative']);
         $this->assertSame(
-            'Indikasi potensi relatif',
+            'Kondisi yang perlu ditinjau',
             $typeOpportunity['context_label']
         );
 
@@ -272,14 +272,14 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('Analitik Keputusan Admin Dinas')
-            ->assertSee('Persaingan & Konsentrasi', false)
-            ->assertSee('Potensi Relatif')
-            ->assertSee('Informasi Spasial Pendukung')
-            ->assertSee('tidak digunakan sebagai filter atau penentu label Analitik Keputusan')
+            ->assertSee('Perbandingan & Potensi UMKM')
+            ->assertSee('Perbandingan Usaha Sejenis')
+            ->assertSee('Kondisi Wilayah yang Perlu Ditinjau')
+            ->assertSee('Informasi Lokasi Pendukung')
+            ->assertSee('hanya digunakan sebagai pelengkap dan tidak menentukan hasil perbandingan')
             ->assertDontSee('Radius Spasial')
             ->assertDontSee('Radius aktif')
-            ->assertSee('Indikasi potensi relatif')
+            ->assertSee('Kondisi yang perlu ditinjau')
             ->assertSee('Kuliner D2 1');
 
         $html = $response->getContent();
@@ -291,7 +291,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
 
         $this->assertStringContainsString('<strong>Dasbor</strong>', $offcanvas);
         $this->assertStringContainsString(
-            '<strong>Analitik Keputusan</strong>',
+            '<strong>Perbandingan &amp; Potensi</strong>',
             $offcanvas
         );
         $this->assertStringContainsString(
@@ -299,7 +299,7 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
             $offcanvas
         );
         $this->assertStringContainsString(
-            'data-dashboard-mega-submenu-title>Analitik Keputusan</small>',
+            'data-dashboard-mega-submenu-title>Perbandingan &amp; Potensi</small>',
             $html
         );
     }
@@ -353,8 +353,8 @@ class AdminDinasDecisionAnalyticsTest extends TestCase
                 'district_id' => $this->districts[0]->id,
             ]))
             ->assertOk()
-            ->assertSee('memerlukan izin')
-            ->assertDontSee('Omzet bulanan baseline');
+            ->assertSee('hanya tersedia bagi pengguna yang berwenang melihat lokasi')
+            ->assertDontSee('Omzet bulanan');
     }
 
     public function test_citywide_economic_metric_prefers_the_available_metric_with_higher_numeric_coverage(): void

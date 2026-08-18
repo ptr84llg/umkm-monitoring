@@ -66,9 +66,9 @@
     <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-start gap-3 mb-4">
         <div>
             <p class="text-muted mb-1">Berdasarkan data UMKM yang tersedia saat ini</p>
-            <h1 class="h3 mb-2">Analitik Keputusan Pelaku UMKM</h1>
+            <h1 class="h3 mb-2">Perbandingan Usaha dan Kondisi Wilayah</h1>
             <p class="mb-0">
-                Membantu membaca posisi usaha, jumlah usaha sejenis antarwilayah, dan indikasi potensi jenis usaha sebagai bahan pertimbangan.
+                Membantu melihat posisi usaha, jumlah usaha sejenis antarwilayah, dan kondisi yang perlu ditinjau sebagai bahan pertimbangan.
             </p>
         </div>
         <a class="btn btn-outline-secondary" href="{{ route('pelaku-umkm.dashboard') }}">Kembali ke Dashboard</a>
@@ -76,13 +76,13 @@
 
     <div class="alert alert-primary">
         <strong>Cara menggunakan informasi ini:</strong>
-        Informasi ini menggunakan data UMKM yang tersedia saat ini. Hasil perbandingan dan indikasi potensi digunakan sebagai bahan pertimbangan, bukan prediksi keberhasilan usaha atau jaminan keputusan.
+        Informasi ini menggunakan data UMKM yang tersedia saat ini. Hasil perbandingan digunakan sebagai bahan pertimbangan, bukan prediksi keberhasilan usaha atau jaminan keputusan.
     </div>
 
     @if($data['quality_warning'] ?? false)
         <div class="alert alert-warning">
             <strong>Perhatian kualitas data.</strong>
-            Terdapat catatan kualitas pada sebagian data yang digunakan. Nilai sumber tetap dipertahankan dan tidak dinormalisasi atau dibuang; baca hasil kelompok dengan hati-hati.
+            Terdapat catatan kualitas pada sebagian data yang digunakan. Nilai yang tercatat tetap dipertahankan apa adanya. Catatan kualitas ditampilkan terpisah agar informasi dapat dibaca dengan hati-hati.
         </div>
     @endif
 
@@ -90,10 +90,10 @@
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
-                    <h2 class="h5 mb-1">Konteks Analisis</h2>
+                    <h2 class="h5 mb-1">Pilih Data yang Ingin Dilihat</h2>
                     <p class="text-body-secondary mb-0">Pilih usaha milik Anda, jenis usaha utama, dan wilayah yang ingin dibandingkan.</p>
                 </div>
-                <a class="btn btn-sm btn-outline-secondary" href="{{ route('pelaku-umkm.analytics.index') }}">Reset</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ route('pelaku-umkm.analytics.index') }}">Hapus Pilihan</a>
             </div>
 
             <form method="GET" action="{{ route('pelaku-umkm.analytics.index') }}" class="row g-3">
@@ -118,7 +118,7 @@
                         @endforeach
                     </select>
                     @if($selectedUmkm && empty($data['available_types']))
-                        <div class="form-text text-warning">Belum ada klasifikasi jenis usaha primer yang eksplisit pada sumber.</div>
+                        <div class="form-text text-warning">Jenis usaha utama belum tercatat pada data yang tersedia.</div>
                     @endif
                 </div>
 
@@ -133,7 +133,7 @@
                 </div>
 
                 <div class="col-12 d-flex justify-content-end">
-                    <button class="btn btn-primary px-4" type="submit">Terapkan Analisis</button>
+                    <button class="btn btn-primary px-4" type="submit">Tampilkan Informasi</button>
                 </div>
             </form>
         </div>
@@ -142,7 +142,7 @@
     @if(!$selectedUmkm)
         <div class="card border shadow-sm">
             <div class="card-body p-5 text-center text-body-secondary">
-                Pilih salah satu UMKM yang memiliki binding kepemilikan aktif dan terverifikasi untuk memulai analisis.
+                Pilih salah satu usaha Anda yang sudah terverifikasi untuk melihat informasi perbandingan.
             </div>
         </div>
     @else
@@ -154,14 +154,14 @@
                         <h2 class="h5 mb-1">{{ $selectedUmkm['business_name'] }}</h2>
                         <p class="text-body-secondary mb-0">
                             @if($selectedType)
-                                Dibandingkan dengan UMKM lain yang memiliki jenis usaha primer <strong>{{ $selectedType['name'] }}</strong> di seluruh Kota Lubuk Linggau.
+                                Dibandingkan dengan UMKM lain yang memiliki jenis usaha utama <strong>{{ $selectedType['name'] }}</strong> di seluruh Kota Lubuk Linggau.
                             @else
-                                Pilih jenis usaha primer untuk membandingkan posisi usaha.
+                                Pilih jenis usaha utama untuk membandingkan posisi usaha.
                             @endif
                         </p>
                     </div>
                     <div class="small text-body-secondary">
-                        Versi data: {{ data_get($data, 'freshness.snapshot_id') ?: 'Belum tersedia' }}
+                        Informasi menggunakan data terbaru yang tersedia.
                     </div>
                 </div>
 
@@ -189,7 +189,7 @@
                         @endforeach
                     </div>
                     <div class="small text-body-secondary mt-3">
-                        Kelompok pembanding mengecualikan seluruh UMKM yang dimiliki akun ini. Nilai kelompok hanya ditampilkan jika minimal {{ $minimumGroupSize }} usaha memiliki data yang cukup sesuai ketentuan perlindungan data.
+                        Usaha pembanding tidak mencakup usaha lain yang dimiliki akun ini. Nilai perbandingan hanya ditampilkan jika sedikitnya {{ $minimumGroupSize }} usaha memiliki data yang cukup untuk melindungi kerahasiaan masing-masing usaha.
                     </div>
                 @else
                     <div class="alert alert-light border mb-0">Jenis usaha primer belum dipilih atau data pembanding belum tersedia.</div>
@@ -203,7 +203,7 @@
                     <span class="badge text-bg-info-subtle text-info-emphasis mb-2">Persaingan Usaha Sejenis</span>
                     <h2 class="h5 mb-1">Perbandingan Antarwilayah</h2>
                     <p class="text-body-secondary mb-0">
-                        Jumlah usaha membantu melihat tingkat persaingan relatif. Modal dan indikator ekonomi memberi konteks tambahan; keduanya tidak digunakan untuk membuktikan penyebab persaingan.
+                        Jumlah usaha membantu membandingkan banyaknya usaha sejenis antarwilayah. Modal dan data ekonomi digunakan sebagai informasi tambahan.
                     </p>
                 </div>
 
@@ -214,10 +214,10 @@
                                 <tr>
                                     <th>Kecamatan</th>
                                     <th>Usaha Sejenis</th>
-                                    <th>Kepadatan</th>
+                                    <th>Jumlah di Wilayah</th>
                                     <th>Modal (Total / Nilai Tengah)</th>
-                                    <th>{{ $competitionSummary['economic_metric_label'] ?? 'Indikator Ekonomi' }} (Total / Median)</th>
-                                    <th>Mutu</th>
+                                    <th>{{ $competitionSummary['economic_metric_label'] ?? 'Data Ekonomi' }} (Total / Nilai Tengah)</th>
+                                    <th>Kualitas Data</th>
                                     <th>Interpretasi</th>
                                 </tr>
                             </thead>
@@ -234,29 +234,29 @@
                                             <div class="d-flex justify-content-between gap-2 mb-1">
                                                 <strong>{{ number_format((int)$row['business_count'], 0, ',', '.') }}</strong>
                                             </div>
-                                            <div class="progress" role="progressbar" aria-label="Kepadatan {{ $row['name'] }}" aria-valuenow="{{ (int)$row['business_count'] }}" aria-valuemin="0" aria-valuemax="{{ $maxCompetitionCount }}" style="height: 7px;">
+                                            <div class="progress" role="progressbar" aria-label="Jumlah usaha {{ $row['name'] }}" aria-valuenow="{{ (int)$row['business_count'] }}" aria-valuemin="0" aria-valuemax="{{ $maxCompetitionCount }}" style="height: 7px;">
                                                 <div class="progress-bar" style="width: {{ $barPercent((int)$row['business_count'], $maxCompetitionCount) }}%"></div>
                                             </div>
                                         </td>
                                         <td><span class="badge {{ $densityBadge($row['density_level']) }}">{{ $row['density_level'] }}</span></td>
                                         <td>
                                             <div>Total: <strong>{{ $aggregateValue($row['capital'] ?? null, $money, 'total') }}</strong></div>
-                                            <div class="small">Median: {{ $aggregateValue($row['capital'] ?? null, $money, 'median') }}</div>
-                                            <div class="small text-body-secondary">n={{ (int)data_get($row, 'capital.sample_count', 0) }}</div>
+                                            <div class="small">Nilai tengah: {{ $aggregateValue($row['capital'] ?? null, $money, 'median') }}</div>
+                                            <div class="small text-body-secondary">Berdasarkan data {{ (int)data_get($row, 'capital.sample_count', 0) }} usaha</div>
                                         </td>
                                         <td>
                                             @php
                                                 $economicKey = ($row['economic_metric'] ?? null) === 'annual_sales_amount' ? 'annual_sales' : 'monthly_revenue';
                                             @endphp
                                             <div>Total: <strong>{{ $aggregateValue($row[$economicKey] ?? null, $money, 'total') }}</strong></div>
-                                            <div class="small">Median: {{ $aggregateValue($row[$economicKey] ?? null, $money, 'median') }}</div>
-                                            <div class="small text-body-secondary">n={{ (int)data_get($row, $economicKey.'.sample_count', 0) }}</div>
+                                            <div class="small">Nilai tengah: {{ $aggregateValue($row[$economicKey] ?? null, $money, 'median') }}</div>
+                                            <div class="small text-body-secondary">Berdasarkan data {{ (int)data_get($row, $economicKey.'.sample_count', 0) }} usaha</div>
                                         </td>
                                         <td>
                                             @if($row['quality_warning'])
-                                                <span class="badge text-bg-warning">Ada flag mutu</span>
+                                                <span class="badge text-bg-warning">Ada catatan</span>
                                             @else
-                                                <span class="badge text-bg-success">Tanpa flag terbuka</span>
+                                                <span class="badge text-bg-success">Tidak ada catatan</span>
                                             @endif
                                         </td>
                                         <td>{{ $row['context_label'] }}</td>
@@ -265,13 +265,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="small text-body-secondary">
-                        Batas kelompok rendah: {{ $competitionSummary['business_count_q1'] !== null ? number_format((float)$competitionSummary['business_count_q1'], 1, ',', '.') : '-' }} ·
-                        Batas kelompok tinggi: {{ $competitionSummary['business_count_q3'] !== null ? number_format((float)$competitionSummary['business_count_q3'], 1, ',', '.') : '-' }} ·
-                        Referensi ekonomi: {{ $competitionSummary['economic_metric_label'] ?? 'Belum cukup data' }}.
-                    </div>
+                    <div class="small text-body-secondary">Perbandingan menggunakan data usaha sejenis yang tersedia pada setiap wilayah.</div>
                 @else
-                    <div class="alert alert-light border mb-0">Pilih jenis usaha primer untuk melihat perbandingan wilayah.</div>
+                    <div class="alert alert-light border mb-0">Pilih jenis usaha utama untuk melihat perbandingan wilayah.</div>
                 @endif
             </div>
         </section>
@@ -279,23 +275,23 @@
         <section class="card border shadow-sm mb-4">
             <div class="card-body p-4">
                 <div class="mb-3">
-                    <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Potensi Jenis Usaha</span>
-                    <h2 class="h5 mb-1">Jenis Usaha yang Relatif Sedikit tetapi Menunjukkan Sinyal Ekonomi</h2>
+                    <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Kondisi yang Perlu Ditinjau</span>
+                    <h2 class="h5 mb-1">Jenis Usaha yang Jumlahnya Relatif Sedikit</h2>
                     <p class="text-body-secondary mb-0">
-                        Cara membaca: jumlah usaha termasuk kelompok relatif sedikit dan nilai tengah indikator ekonomi tidak lebih rendah dari nilai tengah pembanding wilayah. Tidak ada skor penilaian otomatis.
+                        Daftar ini membantu melihat jenis usaha yang jumlahnya relatif sedikit dan memiliki data ekonomi yang cukup untuk dibandingkan. Hasilnya bukan jaminan peluang usaha.
                     </p>
                 </div>
 
                 @if(!$selectedDistrict)
-                    <div class="alert alert-light border mb-0">Pilih kecamatan untuk menganalisis indikasi potensi jenis usaha.</div>
+                    <div class="alert alert-light border mb-0">Pilih kecamatan untuk melihat kondisi jenis usaha pada wilayah tersebut.</div>
                 @elseif($opportunities->isEmpty())
                     <div class="alert alert-light border mb-0">Belum ada data yang cukup pada {{ $selectedDistrict['name'] }}.</div>
                 @else
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <span class="badge text-bg-light border">Wilayah: {{ $selectedDistrict['name'] }}</span>
-                        <span class="badge text-bg-light border">Batas kelompok rendah: {{ $opportunitySummary['business_count_q1'] !== null ? number_format((float)$opportunitySummary['business_count_q1'], 1, ',', '.') : '-' }}</span>
-                        <span class="badge text-bg-light border">Indikator: {{ $opportunitySummary['economic_metric_label'] ?? 'Belum cukup data' }}</span>
-                        <span class="badge text-bg-light border">Indikasi potensi: {{ (int)($opportunitySummary['potential_count'] ?? 0) }}</span>
+                        
+                        <span class="badge text-bg-light border">Data ekonomi: {{ $opportunitySummary['economic_metric_label'] ?? 'Belum cukup data' }}</span>
+                        <span class="badge text-bg-light border">Perlu ditinjau: {{ (int)($opportunitySummary['potential_count'] ?? 0) }}</span>
                     </div>
 
                     <div class="table-responsive">
@@ -305,8 +301,8 @@
                                     <th>Jenis Usaha</th>
                                     <th>Jumlah</th>
                                     <th>Modal (Total / Nilai Tengah)</th>
-                                    <th>Indikator Ekonomi (Total / Median)</th>
-                                    <th>Mutu</th>
+                                    <th>Data Ekonomi (Total / Nilai Tengah)</th>
+                                    <th>Kualitas Data</th>
                                     <th>Interpretasi</th>
                                 </tr>
                             </thead>
@@ -319,7 +315,7 @@
                                         <td>
                                             <div class="fw-semibold">{{ $row['type_name'] }}</div>
                                             @if($row['potential_relative'])
-                                                <span class="badge text-bg-success">Indikasi potensi relatif</span>
+                                                <span class="badge text-bg-success">Perlu ditinjau</span>
                                             @elseif($row['low_count_group'])
                                                 <span class="badge text-bg-light border">Jumlah relatif sedikit</span>
                                             @endif
@@ -334,19 +330,19 @@
                                         </td>
                                         <td>
                                             <div>Total: <strong>{{ $aggregateValue($row['capital'] ?? null, $money, 'total') }}</strong></div>
-                                            <div class="small">Median: {{ $aggregateValue($row['capital'] ?? null, $money, 'median') }}</div>
-                                            <div class="small text-body-secondary">n={{ (int)data_get($row, 'capital.sample_count', 0) }}</div>
+                                            <div class="small">Nilai tengah: {{ $aggregateValue($row['capital'] ?? null, $money, 'median') }}</div>
+                                            <div class="small text-body-secondary">Berdasarkan data {{ (int)data_get($row, 'capital.sample_count', 0) }} usaha</div>
                                         </td>
                                         <td>
                                             <div>Total: <strong>{{ $aggregateValue($row[$economicKey] ?? null, $money, 'total') }}</strong></div>
-                                            <div class="small">Median: {{ $aggregateValue($row[$economicKey] ?? null, $money, 'median') }}</div>
-                                            <div class="small text-body-secondary">n={{ (int)data_get($row, $economicKey.'.sample_count', 0) }}</div>
+                                            <div class="small">Nilai tengah: {{ $aggregateValue($row[$economicKey] ?? null, $money, 'median') }}</div>
+                                            <div class="small text-body-secondary">Berdasarkan data {{ (int)data_get($row, $economicKey.'.sample_count', 0) }} usaha</div>
                                         </td>
                                         <td>
                                             @if($row['quality_warning'])
-                                                <span class="badge text-bg-warning">Ada flag mutu</span>
+                                                <span class="badge text-bg-warning">Ada catatan</span>
                                             @else
-                                                <span class="badge text-bg-success">Tanpa flag terbuka</span>
+                                                <span class="badge text-bg-success">Tidak ada catatan</span>
                                             @endif
                                         </td>
                                         <td>{{ $row['context_label'] }}</td>
@@ -365,20 +361,20 @@
                 <div class="row g-3">
                     <div class="col-lg-4">
                         <div class="border rounded-3 p-3 h-100">
-                            <strong>Kepadatan usaha</strong>
-                            <p class="small text-body-secondary mb-0">Dihitung dari jumlah UMKM dengan jenis usaha primer yang sama pada asosiasi kecamatan sumber. Bukan ukuran permintaan pasar.</p>
+                            <strong>Jumlah usaha sejenis</strong>
+                            <p class="small text-body-secondary mb-0">Menunjukkan banyaknya usaha sejenis yang tercatat pada kecamatan. Jumlah ini tidak menunjukkan besar kecilnya permintaan pasar.</p>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="border rounded-3 p-3 h-100">
-                            <strong>Indikasi potensi relatif</strong>
-                            <p class="small text-body-secondary mb-0">Hanya diberikan saat jumlah usaha relatif rendah dan indikator ekonomi kelompok memenuhi rule pembanding baseline. Bukan rekomendasi membuka usaha/cabang.</p>
+                            <strong>Kondisi yang perlu ditinjau</strong>
+                            <p class="small text-body-secondary mb-0">Ditampilkan ketika jumlah usaha relatif sedikit dan data ekonomi yang tersedia memenuhi syarat perbandingan. Informasi ini bukan rekomendasi untuk membuka usaha atau cabang.</p>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="border rounded-3 p-3 h-100">
-                            <strong>Privasi & mutu</strong>
-                            <p class="small text-body-secondary mb-0">Nominal agregat kelompok di bawah n={{ $minimumGroupSize }} disembunyikan. Flag mutu tidak mengubah nilai sumber; hanya memberi peringatan interpretasi.</p>
+                            <strong>Perlindungan dan kualitas data</strong>
+                            <p class="small text-body-secondary mb-0">Nilai keuangan kelompok hanya ditampilkan jika tersedia data dari sedikitnya {{ $minimumGroupSize }} usaha. Catatan kualitas data ditampilkan tanpa mengubah data yang tersimpan.</p>
                         </div>
                     </div>
                 </div>

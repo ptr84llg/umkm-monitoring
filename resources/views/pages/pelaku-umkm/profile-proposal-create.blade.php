@@ -36,7 +36,7 @@
             </div>
 
             <div class="alert alert-warning">
-                Status administrasi, catatan kualitas data, sumber data, dan informasi sistem tidak dapat diubah melalui formulir ini.
+                Status data, catatan kualitas, data awal, dan informasi yang dikelola sistem tidak dapat diubah melalui formulir ini.
             </div>
         </div>
         <div class="card-footer d-flex gap-2">

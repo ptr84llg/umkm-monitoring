@@ -23,7 +23,7 @@
     ];
 @endphp
 
-@section('title', 'SISFODA UMKM Visual Analitik Interaktif | Kota Lubuklinggau')
+@section('title', 'SISFODA UMKM | Kota Lubuklinggau')
 
 @php
     use Illuminate\Support\Facades\Route;
@@ -54,22 +54,22 @@
         return array_merge($card, [
             'key' => $aggregateKey,
             'aggregate_key' => $aggregateKey,
-            'label' => 'Memuat agregat',
-            'title' => 'Memuat agregat',
-            'name' => 'Memuat agregat',
+            'label' => 'Memuat informasi',
+            'title' => 'Memuat informasi',
+            'name' => 'Memuat informasi',
             'value' => '—',
             'value_text' => '—',
             'metric' => '—',
             'count' => '—',
             'total' => '—',
             'number' => '—',
-            'description' => 'Mengambil agregat publik...',
-            'context' => 'Mengambil agregat publik...',
-            'caption' => 'Mengambil agregat publik...',
-            'meta' => 'Menunggu sinkronisasi',
+            'description' => 'Mengambil informasi terbaru...',
+            'context' => 'Mengambil informasi terbaru...',
+            'caption' => 'Mengambil informasi terbaru...',
+            'meta' => 'Menunggu data',
             'badge' => 'Menunggu data',
-            'percent' => 'Menunggu sinkronisasi',
-            'percent_text' => 'Menunggu sinkronisasi',
+            'percent' => 'Menunggu data',
+            'percent_text' => 'Menunggu data',
             'footer_label' => '',
             'footer_value' => '',
             'trend' => '',
@@ -208,7 +208,7 @@
         <div class="container-fluid px-3 px-lg-4">
             <div class="row align-items-center g-2 w-100 landing-header-row">
                 <div class="col-8 col-xl-4">
-                    <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="SISFODA UMKM Visual Analitik Interaktif">
+                    <a class="navbar-brand landing-brand d-inline-flex align-items-center gap-3 m-0" href="{{ url('/') }}" aria-label="SISFODA UMKM">
                         <span class="landing-brand-mark system-brand-mark" aria-hidden="true">
                             <img class="system-brand-image landing-brand-image"
                                  src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
@@ -219,7 +219,7 @@
                         </span>
                         <span class="landing-brand-text">
                             <strong>SISFODA UMKM</strong>
-                            <small>Visual Analitik Interaktif</small>
+                            <small>Informasi UMKM</small>
                         </span>
                     </a>
                 </div>
@@ -312,7 +312,7 @@
                             </span>
                             <div>
                                 <p class="mb-1">Akses publik Google aktif</p>
-                                <h2 class="modal-title" id="landingGooglePublicModalTitle">Akun belum tertaut ke pengguna internal</h2>
+                                <h2 class="modal-title" id="landingGooglePublicModalTitle">Akun belum terhubung ke pengguna terdaftar</h2>
                             </div>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
@@ -323,13 +323,10 @@
                             <span>{{ $googlePublicMaskedEmail }}</span>
                         </div>
                         <p class="mb-0">
-                            Akun Google ini hanya membuka akses publik terbatas pada halaman landing. Dashboard internal,
-                            ruang kerja, dan fitur pengelolaan data belum tersedia karena akun Google tersebut belum
-                            tertaut dengan akun internal sistem.
+                            Akun Google ini dapat digunakan untuk melihat informasi publik. Ruang kerja dan pengelolaan data belum tersedia karena akun Google ini belum terhubung dengan akun pengguna yang terdaftar.
                         </p>
                         <div class="landing-google-public-modal-note" role="note">
-                            Untuk masuk ke ruang kerja, gunakan akun internal yang sudah terdaftar atau minta admin
-                            menautkan akun Google dengan pengguna internal yang sesuai.
+                            Untuk masuk ke ruang kerja, gunakan akun yang sudah terdaftar atau minta pengelola sistem menghubungkan akun Google Anda.
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
@@ -360,7 +357,7 @@
             <a class="landing-brand mobile-canvas-brand d-inline-flex align-items-center gap-2 text-decoration-none"
                href="{{ url('/') }}"
                data-menu-link
-               aria-label="SISFODA UMKM Visual Analitik Interaktif">
+               aria-label="SISFODA UMKM">
                 <span class="landing-brand-mark system-brand-mark" aria-hidden="true">
                     <img class="system-brand-image landing-brand-image"
                          src="{{ asset('assets/img/brand/umkm-monitoring-icon-64.png') }}"
@@ -371,7 +368,7 @@
                 </span>
                 <span class="landing-brand-text">
                     <strong id="landingMobileOffcanvasLabel">SISFODA UMKM</strong>
-                    <small>Visual Analitik Interaktif</small>
+                    <small>Informasi UMKM</small>
                 </span>
             </a>
 
@@ -432,13 +429,13 @@
 								<div class="hero-brand-copy">
 									<span class="landing-eyebrow hero-eyebrow">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 6.5v7.2c0 4-3.1 7.2-8 8.3-4.9-1.1-8-4.3-8-8.3V6.5L12 2Zm0 2.3L6 7.7v6c0 2.9 2.2 5.4 6 6.3 3.8-.9 6-3.4 6-6.3v-6l-6-3.4Z"/></svg>
-                                        <span>Sistem Informasi berbasis Data</span>
+                                        <span>Informasi UMKM Kota Lubuk Linggau</span>
                                     </span>
                                     <h1 class="display-3 fw-bold mt-2 mb-3">SISFODA UMKM</h1>
 								</div>
                             </div>
 							<p class="lead mb-0">
-								SISFODA UMKM merupakan portal visual analitik berbasis data yang menyajikan informasi sebaran, kategori, dan perkembangan UMKM secara agregat. Informasi ditampilkan secara ringkas, terstruktur, dan aman untuk publik guna mendukung pemantauan potensi usaha daerah serta pengambilan keputusan berbasis data.
+								SISFODA UMKM menyediakan informasi mengenai jumlah, jenis usaha, lokasi, dan kondisi UMKM di Kota Lubuk Linggau. Informasi disajikan secara ringkas untuk membantu masyarakat memahami sebaran dan kondisi usaha di setiap wilayah.
 							</p>
 							<div class="d-flex flex-wrap gap-3 mt-4 hero-action-row">
 								<span class="public-region-action-mount" data-public-region-action-mount="hero-primary" hidden aria-hidden="true"></span>
@@ -489,10 +486,10 @@
                                                 <small data-public-aggregate-label>{{ $card['label'] ?? 'Ringkasan' }}</small>
                                                 <strong data-public-aggregate-value>{{ $card['value'] ?? '—' }}</strong>
                                                 <span data-public-aggregate-context>{{ $card['context'] ?? '' }}</span>
-                                                <span data-public-aggregate-percent>{{ $card['percent_text'] ?? $card['percent'] ?? 'Menunggu sinkronisasi' }}</span>
+                                                <span data-public-aggregate-percent>{{ $card['percent_text'] ?? $card['percent'] ?? 'Menunggu data' }}</span>
                                                 <div class="stat-progress"><i class="stat-progress-fill {{ $card['progress_class'] ?? 'w-0' }}" data-public-aggregate-progress></i></div>
                                                 <div class="stat-card-foot">
-                                                    <span data-public-aggregate-footer-label>{{ $card['foot_label'] ?? 'Data agregat' }}</span>
+                                                    <span data-public-aggregate-footer-label>{{ $card['foot_label'] ?? 'Ringkasan data' }}</span>
                                                     <b data-public-aggregate-footer-value>{{ $card['foot_value'] ?? '' }}</b>
                                                 </div>
                                             </div>
@@ -524,13 +521,13 @@
                      data-umkm-component="landing-hero-preview-board"
                      data-umkm-component-url="{{ route('public.landing-components.hero-preview-board') }}"
                      data-umkm-component-load-on="readiness-hidden"
-                     data-umkm-component-loading-text="Memuat peta dashboard publik..."
+                     data-umkm-component-loading-text="Memuat peta UMKM..."
                      aria-live="polite">
                     <div class="card border-0 board-window landing-component-skeleton">
                         <div class="card-body p-4">
                             <div class="umkm-inline-loader">
                                 <span class="umkm-inline-spinner" aria-hidden="true"></span>
-                                <span class="umkm-inline-loader-text">Menyiapkan peta dashboard publik...</span>
+                                <span class="umkm-inline-loader-text">Menyiapkan peta UMKM...</span>
                             </div>
                         </div>
                     </div>
@@ -543,14 +540,14 @@
                  data-umkm-component="landing-dashboard-preview"
                  data-umkm-component-url="{{ route('public.landing-components.dashboard-preview') }}"
                  data-umkm-component-load-on="readiness-hidden"
-                 data-umkm-component-loading-text="Memuat pusat analitik publik..."
+                 data-umkm-component-loading-text="Memuat ringkasan informasi UMKM..."
                  aria-live="polite">
             <div class="container-fluid px-3 px-lg-4">
                 <div class="card border-0 landing-component-skeleton">
                     <div class="card-body p-4 p-xl-5">
                         <div class="umkm-inline-loader">
                             <span class="umkm-inline-spinner" aria-hidden="true"></span>
-                            <span class="umkm-inline-loader-text">Memuat pusat analitik publik...</span>
+                            <span class="umkm-inline-loader-text">Memuat ringkasan informasi UMKM...</span>
                         </div>
                     </div>
                 </div>
@@ -592,7 +589,7 @@
                                         </span>
                                         <div>
                                             <strong>SISFODA UMKM</strong>
-                                            <small>Visual Analitik Interaktif</small>
+                                            <small>Informasi UMKM</small>
                                         </div>
                                     </div>
                                     <p class="mb-0">
@@ -619,7 +616,7 @@
                                 <div class="landing-footer-column footer-link-panel">
                                     <h3>Akses</h3>
                                     <a href="#cta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0H4Zm15.5-8 1.5 1.5-4.5 4.5-2.5-2.5 1.5-1.5 1 1 3-3Z"/></svg><span>Aktivasi Akun UMKM</span></a>
-                                    <a href="#peta-umkm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Z"/></svg><span>Preview Wilayah</span></a>
+                                    <a href="#peta-umkm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Z"/></svg><span>Pilihan Wilayah</span></a>
                                     <a href="#statistik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5V3Zm3 4h8V5H8v2Zm0 4h8V9H8v2Zm0 4h5v-2H8v2Z"/></svg><span>Ringkasan Data</span></a>
                                 </div>
                             </div>
@@ -628,13 +625,13 @@
                                 <div class="landing-footer-info-panel footer-coverage-panel">
                                     <h3>Cakupan Portal</h3>
                                     <p class="mb-0">
-                                        Portal menampilkan peta sebaran, statistik agregat, komposisi skala usaha,
-                                        tren pertumbuhan, dan ringkasan wilayah dalam mode aman untuk publik serta mendukung
+                                        Portal menampilkan peta sebaran, ringkasan data, komposisi skala usaha,
+                                        perbandingan kondisi, dan ringkasan wilayah dalam mode aman untuk publik serta mendukung
                                         literasi data UMKM.
                                     </p>
                                     <div class="footer-coverage-metrics">
                                         @foreach ($publicLandingFooterMetrics as $metric)
-                                            <span><b>{{ $metric['value'] ?? '—' }}</b><small>{{ $metric['label'] ?? 'Data agregat' }}</small></span>
+                                            <span><b>{{ $metric['value'] ?? '—' }}</b><small>{{ $metric['label'] ?? 'Ringkasan data' }}</small></span>
                                         @endforeach
                                     </div>
                                 </div>
@@ -644,7 +641,7 @@
                 </div>
                 <div class="landing-footer-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-2 mt-3">
                     <span>© 2026 SISFODA UMKM.</span>
-                    <span>Visual Analitik Interaktif</span>
+                    <span>Informasi UMKM</span>
                 </div>
             </div>
         </footer>

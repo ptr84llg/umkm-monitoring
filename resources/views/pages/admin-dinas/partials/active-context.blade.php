@@ -36,14 +36,14 @@
 
     $regionSubtitle = $villageName && $districtName
         ? 'Kecamatan ' . $districtName
-        : ($districtName ? 'Cakupan kecamatan terpilih' : 'Cakupan administratif Kota Lubuk Linggau');
+        : ($districtName ? 'Wilayah kecamatan yang dipilih' : 'Seluruh wilayah Kota Lubuk Linggau');
 
     $contextBadges = [];
 
     if ($categoryName) $contextBadges[] = 'Kategori: ' . $categoryName;
     if ($typeName) $contextBadges[] = 'Jenis: ' . $typeName;
     if ($marketingName) $contextBadges[] = 'Pemasaran: ' . $marketingName;
-    if ($qualityName) $contextBadges[] = 'Mutu: ' . $qualityName;
+    if ($qualityName) $contextBadges[] = 'Kualitas Data: ' . $qualityName;
     if ($contextSearch !== '') $contextBadges[] = 'Pencarian: "' . $contextSearch . '"';
 @endphp
 
@@ -52,9 +52,9 @@
         <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
             <div>
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                    <span class="badge rounded-pill text-bg-primary">Konteks Aktif</span>
+                    <span class="badge rounded-pill text-bg-primary">Pilihan Saat Ini</span>
                     @if($contextCount !== null)
-                        <span class="small text-body-secondary">{{ number_format((int)$contextCount, 0, ',', '.') }} record</span>
+                        <span class="small text-body-secondary">{{ number_format((int)$contextCount, 0, ',', '.') }} data</span>
                     @endif
                 </div>
                 <h2 class="h4 mb-1">{{ $regionTitle }}</h2>
@@ -65,7 +65,7 @@
                 @forelse($contextBadges as $contextBadge)
                     <span class="badge rounded-pill text-bg-light border text-body">{{ $contextBadge }}</span>
                 @empty
-                    <span class="badge rounded-pill text-bg-light border text-body-secondary">Tanpa filter tambahan</span>
+                    <span class="badge rounded-pill text-bg-light border text-body-secondary">Tanpa pilihan tambahan</span>
                 @endforelse
             </div>
         </div>

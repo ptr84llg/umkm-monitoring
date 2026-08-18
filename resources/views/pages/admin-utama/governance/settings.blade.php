@@ -23,13 +23,13 @@
                 <div class="row g-3 align-items-center">
                     <div class="col-12 col-xl-8">
                         <span class="d-inline-flex align-items-center badge rounded-pill text-bg-light border mb-2 umkm-theme-kicker">Tata Kelola Tampilan</span>
-                        <h2 class="h4 fw-bold mb-2">Manajemen Theme Sistem</h2>
-                        <p class="text-muted mb-0">Pilih salah satu theme untuk melihat preview langsung. Setelah pilihan dibuat, sistem akan menampilkan konfirmasi sebelum theme disimpan ke backend.</p>
+                        <h2 class="h4 fw-bold mb-2">Pengaturan Tampilan Sistem</h2>
+                        <p class="text-muted mb-0">Pilih salah satu tampilan untuk melihat contoh langsung. Setelah dipilih, sistem akan meminta konfirmasi sebelum perubahan disimpan.</p>
                     </div>
                     <div class="col-12 col-xl-4">
                         <div class="card border-0 shadow-sm h-100 umkm-theme-active-badge">
                             <div class="card-body p-3">
-                                <span class="d-block small text-muted text-uppercase fw-bold">Theme Aktif</span>
+                                <span class="d-block small text-muted text-uppercase fw-bold">Tampilan Aktif</span>
                                 <strong class="d-block fs-5 mt-1" data-theme-active-label>{{ $activeThemeLabel ?? 'Green' }}</strong>
                             </div>
                         </div>
@@ -43,7 +43,7 @@
                 @csrf
                 <div class="alert border-0 shadow-sm d-none" role="alert" data-theme-feedback></div>
 
-                <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3" role="radiogroup" aria-label="Pilihan theme sistem">
+                <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3" role="radiogroup" aria-label="Pilihan tampilan sistem">
                     @foreach ($themeOptions as $theme)
                         <div class="col" data-theme-option="{{ $theme['key'] }}">
                             <div class="form-check p-0 h-100">
@@ -65,7 +65,7 @@
 
                 <div class="alert alert-light border shadow-sm mt-4 mb-0 umkm-theme-security-note" role="note">
                     <strong>Catatan keamanan</strong>
-                    <span>Preview terjadi di browser, tetapi penyimpanan tetap melalui request internal yang membawa CSRF, header internal, validasi role/permission, allowlist backend, dan audit log.</span>
+                    <span>Perubahan tampilan tetap diperiksa sesuai kewenangan pengguna dan dicatat dalam riwayat sistem.</span>
                 </div>
             </form>
         </x-umkm.data-display.table-card>
@@ -74,11 +74,11 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content umkm-theme-confirm-modal">
                     <div class="modal-header">
-                        <div><span class="d-inline-flex badge rounded-pill text-bg-light border mb-2 umkm-theme-preview-kicker">Konfirmasi Theme</span><h5 class="modal-title" id="themeConfirmModalLabel">Gunakan theme ini?</h5></div>
+                        <div><span class="d-inline-flex badge rounded-pill text-bg-light border mb-2 umkm-theme-preview-kicker">Konfirmasi Tampilan</span><h5 class="modal-title" id="themeConfirmModalLabel">Gunakan tampilan ini?</h5></div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" data-theme-cancel></button>
                     </div>
-                    <div class="modal-body"><p class="mb-0">Theme <strong data-theme-pending-label>terpilih</strong> sudah ditampilkan sebagai preview. Pilih <strong>Gunakan Theme</strong> untuk menyimpan perubahan ke sistem.</p></div>
-                    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-theme-cancel>Batalkan</button><button type="button" class="btn btn-primary" data-theme-confirm-save>Gunakan Theme</button></div>
+                    <div class="modal-body"><p class="mb-0">Tampilan <strong data-theme-pending-label>terpilih</strong> sudah diperlihatkan. Pilih <strong>Gunakan Tampilan</strong> untuk menyimpan perubahan.</p></div>
+                    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-theme-cancel>Batalkan</button><button type="button" class="btn btn-primary" data-theme-confirm-save>Gunakan Tampilan</button></div>
                 </div>
             </div>
         </div>

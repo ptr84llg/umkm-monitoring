@@ -36,15 +36,15 @@
     } elseif ($dashboardUser?->hasRole('kepala_dinas')) {
         $dashboardRoleKey = 'kepala_dinas';
         $dashboardRoleLabel = 'Kepala Dinas';
-        $dashboardRoleHint = 'Monitoring eksekutif';
+        $dashboardRoleHint = 'Ringkasan untuk pimpinan';
     } elseif ($dashboardUser?->hasRole('pelaku_umkm')) {
         $dashboardRoleKey = 'pelaku_umkm';
         $dashboardRoleLabel = 'Pelaku UMKM';
         $dashboardRoleHint = 'Data usaha dan pelaporan';
     } elseif ($dashboardUser?->hasRole('validator_ahli')) {
         $dashboardRoleKey = 'validator_ahli';
-        $dashboardRoleLabel = 'Validator Ahli';
-        $dashboardRoleHint = 'Validasi instrumen dan artefak';
+        $dashboardRoleLabel = 'Penilai Ahli';
+        $dashboardRoleHint = 'Penilaian dan hasil pemeriksaan';
     }
 
     $dashboardHomeCandidates = [
@@ -70,7 +70,7 @@
                     [
                         'title' => 'Dashboard',
                         'description' => 'Kendali sistem',
-                        'detail' => 'Ringkasan sistem, keamanan, konfigurasi, kualitas data, pengguna, dan kesiapan modul.',
+                        'detail' => 'Ringkasan kondisi sistem, keamanan, kualitas data, pengguna, dan layanan yang tersedia.',
                         'route' => 'admin-utama.dashboard',
                         'permission' => 'dashboard.view.executive',
                         'icon' => 'dashboard',
@@ -79,7 +79,7 @@
             ],
             [
                 'label' => 'Tata Kelola',
-                'summary' => 'Modul pengelolaan inti untuk Admin Utama.',
+                'summary' => 'Pilihan pengelolaan utama untuk Admin Utama.',
                 'items' => [
                     [
                         'title' => 'Akses',
@@ -91,16 +91,16 @@
                     ],
                     [
                         'title' => 'Referensi',
-                        'description' => 'Wilayah, klasifikasi lokal, master data',
-                        'detail' => 'Pengaturan referensi wilayah, kategori/jenis usaha lokal, dan data dasar pendukung sistem monitoring UMKM.',
+                        'description' => 'Wilayah, kategori usaha, dan data pendukung',
+                        'detail' => 'Mengatur wilayah, kategori dan jenis usaha, serta data pendukung Monitoring UMKM.',
                         'route' => null,
                         'permission' => 'reference.manage',
                         'icon' => 'database',
                     ],
                     [
-                        'title' => 'Governance',
-                        'description' => 'Pengaturan, tema tampilan, keamanan, dan audit',
-                        'detail' => 'Pengaturan sistem, tema tampilan, keamanan, riwayat audit, dan tata kelola operasional.',
+                        'title' => 'Tata Kelola',
+                        'description' => 'Pengaturan, tampilan, keamanan, dan riwayat perubahan',
+                        'detail' => 'Mengatur sistem, tampilan, keamanan, riwayat perubahan, dan pengelolaan operasional.',
                         'route' => 'admin-utama.governance.settings',
                         'permission' => 'system.manage',
                         'icon' => 'settings',
@@ -108,15 +108,15 @@
                     [
                         'title' => 'Publikasi',
                         'description' => 'Pengumuman dan konten',
-                        'detail' => 'Pengelolaan informasi publik, pengumuman, dan narasi sistem yang telah disanitasi.',
+                        'detail' => 'Mengelola informasi dan pengumuman yang ditampilkan kepada masyarakat.',
                         'route' => null,
                         'permission' => 'content.manage',
                         'icon' => 'megaphone',
                     ],
                     [
                         'title' => 'Validasi',
-                        'description' => 'Survei dan ahli',
-                        'detail' => 'Pengaturan instrumen survei, validasi ahli, dan status penilaian terkontrol.',
+                        'description' => 'Penilaian dan pemeriksaan',
+                        'detail' => 'Mengatur formulir penilaian, pemeriksaan ahli, dan status hasil penilaian.',
                         'route' => null,
                         'permission' => 'validation.manage',
                         'icon' => 'check',
@@ -132,7 +132,7 @@
                     [
                         'title' => 'Dashboard',
                         'description' => 'Ringkasan pembinaan',
-                        'detail' => 'Ikhtisar pembinaan, validasi, dan perkembangan data UMKM pada wilayah kerja.',
+                        'detail' => 'Ikhtisar pembinaan, pemeriksaan, dan kondisi data UMKM pada wilayah kerja.',
                         'route' => 'admin-dinas.dashboard',
                         'permission' => null,
                         'icon' => 'dashboard',
@@ -154,9 +154,9 @@
                         'icon' => 'shield',
                     ],
                     [
-                        'title' => 'Review Perubahan Profil',
+                        'title' => 'Pemeriksaan Perubahan Profil',
                         'description' => 'Verifikasi perubahan data',
-                        'detail' => 'Menilai usulan perubahan data Pelaku dan mengaktifkan perubahan yang disetujui tanpa menimpa nilai sumber/LSS.',
+                        'detail' => 'Memeriksa usulan perubahan data Pelaku UMKM dan menerapkan perubahan yang disetujui tanpa mengubah data awal yang tersimpan.',
                         'route' => 'admin-dinas.profile-reviews.index',
                         'permission' => 'umkm.profile.review',
                         'icon' => 'check',
@@ -164,37 +164,37 @@
                 ],
             ],
             [
-                'label' => 'Analitik & Keputusan',
-                'summary' => 'Analisis data, dukungan keputusan, wilayah, dan ekonomi.',
+                'label' => 'Informasi & Perbandingan',
+                'summary' => 'Ringkasan data, perbandingan usaha, wilayah, dan informasi ekonomi.',
                 'items' => [
                     [
-                        'title' => 'Analitik',
-                        'description' => 'Analisis data UMKM',
-                        'detail' => 'Analisis wilayah, sektor, tenaga kerja, akses pasar, legalitas, dan mutu data sesuai kewenangan.',
+                        'title' => 'Ringkasan Data',
+                        'description' => 'Ringkasan kondisi UMKM',
+                        'detail' => 'Ringkasan wilayah, jenis usaha, tenaga kerja, pemasaran, legalitas, dan kualitas data sesuai kewenangan.',
                         'route' => 'admin-dinas.analytics.index',
                         'permission' => 'umkm.read.official',
                         'icon' => 'chart',
                     ],
                     [
-                        'title' => 'Analitik Keputusan',
-                        'description' => 'Persaingan, potensi relatif, dan konteks wilayah',
-                        'detail' => 'Menghubungkan konsentrasi usaha, komposisi jenis usaha, sinyal ekonomi dari data yang tersedia, dan kualitas data sebagai bahan pertimbangan pembinaan; informasi lokasi tersedia sebagai konteks pendukung opsional.',
+                        'title' => 'Perbandingan & Potensi',
+                        'description' => 'Perbandingan usaha dan kondisi wilayah',
+                        'detail' => 'Membandingkan jumlah dan jenis usaha antarwilayah, data ekonomi yang tersedia, serta kualitas data sebagai bahan pertimbangan pembinaan. Informasi lokasi tersedia sebagai pelengkap.',
                         'route' => 'admin-dinas.analytics.decision',
                         'permission' => 'umkm.read.official',
                         'icon' => 'chart',
                     ],
                     [
                         'title' => 'Peta Wilayah',
-                        'description' => 'Analitik spasial administratif',
-                        'detail' => 'Peta administratif interaktif untuk membaca distribusi UMKM, tenaga kerja, kualitas data, dan titik lokasi yang tersedia sesuai izin.',
+                        'description' => 'Sebaran UMKM per wilayah',
+                        'detail' => 'Peta wilayah untuk melihat sebaran UMKM, tenaga kerja, kualitas data, dan titik lokasi yang tersedia sesuai kewenangan.',
                         'route' => 'admin-dinas.analytics.spatial',
                         'permission' => 'umkm.read.official',
                         'icon' => 'map',
                     ],
                     [
                         'title' => 'Ekonomi & Keuangan',
-                        'description' => 'Analitik data keuangan internal',
-                        'detail' => 'Cakupan modal, penjualan, omzet, pinjaman, sumber pinjaman, dan catatan kualitas data keuangan dengan tetap mempertahankan nilai sumber.',
+                        'description' => 'Ringkasan data ekonomi dan keuangan',
+                        'detail' => 'Ringkasan modal, penjualan, omzet, pinjaman, sumber pinjaman, dan catatan kualitas data keuangan tanpa mengubah data yang tersimpan.',
                         'route' => 'admin-dinas.analytics.financial',
                         'permission' => 'umkm.sensitive.financial',
                         'icon' => 'wallet',
@@ -203,21 +203,21 @@
             ],
         ],        'kepala_dinas' => [
             [
-                'label' => 'Eksekutif',
-                'summary' => 'Monitoring keputusan dan laporan strategis.',
+                'label' => 'Pimpinan',
+                'summary' => 'Ringkasan informasi dan laporan untuk pimpinan.',
                 'items' => [
                     [
                         'title' => 'Dashboard',
-                        'description' => 'Monitoring keputusan',
-                        'detail' => 'Ringkasan eksekutif untuk pemantauan kinerja, wilayah, dan pengambilan keputusan.',
+                        'description' => 'Ringkasan kondisi UMKM',
+                        'detail' => 'Ringkasan untuk melihat kondisi UMKM dan wilayah sebagai bahan pertimbangan.',
                         'route' => 'kepala-dinas.dashboard',
                         'permission' => null,
                         'icon' => 'dashboard',
                     ],
                     [
                         'title' => 'Laporan',
-                        'description' => 'Ringkasan strategis',
-                        'detail' => 'Laporan ringkas untuk evaluasi program dan kebutuhan pengambilan keputusan pimpinan.',
+                        'description' => 'Ringkasan untuk pimpinan',
+                        'detail' => 'Laporan ringkas untuk melihat kondisi UMKM dan mendukung evaluasi program.',
                         'route' => null,
                         'permission' => 'report.view.executive',
                         'icon' => 'document',
@@ -239,9 +239,9 @@
                         'icon' => 'dashboard',
                     ],
                     [
-                        'title' => 'Analitik Keputusan',
-                        'description' => 'Posisi, persaingan, dan potensi relatif',
-                        'detail' => 'Membandingkan posisi usaha, jumlah usaha sejenis antarwilayah, dan indikasi potensi jenis usaha berdasarkan data yang tersedia saat ini.',
+                        'title' => 'Perbandingan & Potensi',
+                        'description' => 'Posisi usaha, perbandingan, dan kondisi wilayah',
+                        'detail' => 'Membandingkan posisi usaha, jumlah usaha sejenis antarwilayah, dan kondisi yang perlu ditinjau berdasarkan data yang tersedia saat ini.',
                         'route' => 'pelaku-umkm.analytics.index',
                         'permission' => 'umkm.workspace.access',
                         'icon' => 'chart',
@@ -267,13 +267,13 @@
         ],
         'validator_ahli' => [
             [
-                'label' => 'Validasi Ahli',
-                'summary' => 'Penilaian instrumen dan artefak validasi.',
+                'label' => 'Penilaian Ahli',
+                'summary' => 'Penilaian dan hasil pemeriksaan.',
                 'items' => [
                     [
-                        'title' => 'Instrumen',
-                        'description' => 'Daftar validasi',
-                        'detail' => 'Daftar instrumen penilaian yang diberikan kepada validator ahli.',
+                        'title' => 'Daftar Penilaian',
+                        'description' => 'Daftar yang perlu dinilai',
+                        'detail' => 'Daftar penilaian yang diberikan kepada Penilai Ahli.',
                         'route' => 'expert.validator.list',
                         'permission' => 'validation.expert.fill',
                         'icon' => 'check',
@@ -281,7 +281,7 @@
                     [
                         'title' => 'Riwayat',
                         'description' => 'Penilaian tersimpan',
-                        'detail' => 'Riwayat hasil penilaian yang sudah tersimpan dan dikunci sesuai status submit.',
+                        'detail' => 'Riwayat hasil penilaian yang sudah tersimpan sesuai status pengiriman.',
                         'route' => null,
                         'permission' => 'validation.expert.fill',
                         'icon' => 'document',
@@ -294,12 +294,12 @@
     $dashboardMenuSections = $internalMenuBlueprint[$dashboardRoleKey] ?? [
         [
             'label' => 'Ruang Kerja',
-            'summary' => 'Menu internal belum dikonfigurasi.',
+            'summary' => 'Menu belum tersedia untuk akun ini.',
             'items' => [
                 [
                     'title' => 'Dashboard',
                     'description' => 'Menu belum dikonfigurasi',
-                    'detail' => 'Menu dashboard akan mengikuti role pengguna setelah konfigurasi modul tersedia.',
+                    'detail' => 'Menu akan ditampilkan sesuai kewenangan akun ketika layanan tersedia.',
                     'route' => $dashboardHomeRoute,
                     'permission' => null,
                     'icon' => 'dashboard',
@@ -325,80 +325,80 @@
         $submenuMap = [
             'dashboard' => [
                 ['title' => 'Ringkasan Kendali', 'description' => 'Ikhtisar kondisi utama sesuai ruang kerja pengguna.', 'state' => 'Aktif'],
-                ['title' => 'Status Kesiapan', 'description' => 'Informasi ringkas kesiapan data, modul, dan aktivitas penting.', 'state' => 'Ringkasan'],
-                ['title' => 'Arah Tindak Lanjut', 'description' => 'Petunjuk awal untuk masuk ke modul pengelolaan berikutnya.', 'state' => 'Navigasi'],
+                ['title' => 'Status Kesiapan', 'description' => 'Informasi ringkas mengenai data, layanan, dan aktivitas penting.', 'state' => 'Ringkasan'],
+                ['title' => 'Arah Tindak Lanjut', 'description' => 'Petunjuk awal untuk membuka bagian pengelolaan berikutnya.', 'state' => 'Navigasi'],
             ],
             'akses' => [
-                ['title' => 'Akun Pengguna', 'description' => 'Identitas akun, status akses, dan koneksi login pengguna.', 'state' => 'Read-only'],
-                ['title' => 'Peran', 'description' => 'Kelompok kewenangan yang membedakan cakupan kerja pengguna.', 'state' => 'Matriks'],
-                ['title' => 'Izin Akses', 'description' => 'Izin tindakan per modul yang menjadi dasar pembatasan akses.', 'state' => 'PBAC'],
-                ['title' => 'Penetapan Akses', 'description' => 'Keterkaitan akun, peran, dan izin akses untuk pengaturan akses bertingkat.', 'state' => 'Terjadwal'],
-                ['title' => 'Sesi & Perangkat', 'description' => 'Pemantauan akses perangkat dan sesi login pengguna.', 'state' => 'Terjadwal'],
-                ['title' => 'Audit Akses', 'description' => 'Jejak aktivitas penting yang terkait dengan akses pengguna.', 'state' => 'Pratinjau'],
+                ['title' => 'Akun Pengguna', 'description' => 'Identitas akun, status akses, dan koneksi login pengguna.', 'state' => 'Lihat saja'],
+                ['title' => 'Peran', 'description' => 'Kelompok kewenangan yang membedakan cakupan kerja pengguna.', 'state' => 'Daftar'],
+                ['title' => 'Izin Akses', 'description' => 'Izin tindakan per modul yang menjadi dasar pembatasan akses.', 'state' => 'Aturan akses'],
+                ['title' => 'Penetapan Akses', 'description' => 'Keterkaitan akun, peran, dan izin akses untuk pengaturan akses bertingkat.', 'state' => 'Belum tersedia'],
+                ['title' => 'Sesi & Perangkat', 'description' => 'Pemantauan akses perangkat dan sesi login pengguna.', 'state' => 'Belum tersedia'],
+                ['title' => 'Riwayat Akses', 'description' => 'Riwayat aktivitas penting yang terkait dengan akses pengguna.', 'state' => 'Ringkasan'],
             ],
             'referensi' => [
-                ['title' => 'Wilayah', 'description' => 'Provinsi, kabupaten/kota, kecamatan, dan kelurahan/desa.', 'state' => 'Terjadwal'],
+                ['title' => 'Wilayah', 'description' => 'Provinsi, kabupaten/kota, kecamatan, dan kelurahan/desa.', 'state' => 'Belum tersedia'],
                 ['title' => 'Klasifikasi Lokal', 'description' => 'Kategori dan jenis usaha lokal sesuai data Dinas.', 'state' => 'Aktif sebagai sumber data'],
-                ['title' => 'Kategori Usaha', 'description' => 'Referensi pendukung untuk segmentasi dan pelaporan.', 'state' => 'Terjadwal'],
+                ['title' => 'Kategori Usaha', 'description' => 'Referensi pendukung untuk segmentasi dan pelaporan.', 'state' => 'Belum tersedia'],
             ],
             'governance' => [
                 ['title' => 'Pengaturan Sistem', 'description' => 'Konfigurasi umum dan kebijakan operasional sistem.', 'state' => 'Aktif'],
                 ['title' => 'Tema Sistem', 'description' => 'Pemilihan tampilan visual yang berlaku pada ruang kerja internal.', 'state' => 'Aktif'],
                 ['title' => 'Keamanan', 'description' => 'Pengaturan pembatasan akses dan pengamanan akses.', 'state' => 'Terjaga'],
-                ['title' => 'Audit Tata Kelola', 'description' => 'Jejak perubahan konfigurasi penting.', 'state' => 'Terkontrol'],
+                ['title' => 'Riwayat Perubahan', 'description' => 'Riwayat perubahan pengaturan penting.', 'state' => 'Terkontrol'],
             ],
             'publikasi' => [
-                ['title' => 'Pengumuman', 'description' => 'Informasi resmi yang dapat ditampilkan kepada publik.', 'state' => 'Terjadwal'],
-                ['title' => 'Narasi Sistem', 'description' => 'Konten penjelasan sistem yang aman untuk pengguna umum.', 'state' => 'Terjadwal'],
-                ['title' => 'Konten Terpublikasi', 'description' => 'Materi yang sudah melalui sanitasi dan persetujuan.', 'state' => 'Terjadwal'],
+                ['title' => 'Pengumuman', 'description' => 'Informasi resmi yang dapat ditampilkan kepada publik.', 'state' => 'Belum tersedia'],
+                ['title' => 'Penjelasan Sistem', 'description' => 'Penjelasan sistem yang mudah dipahami pengguna.', 'state' => 'Belum tersedia'],
+                ['title' => 'Konten Terpublikasi', 'description' => 'Materi yang sudah diperiksa dan disetujui.', 'state' => 'Belum tersedia'],
             ],
             'validasi' => [
-                ['title' => 'Instrumen Survei', 'description' => 'Daftar instrumen pengumpulan penilaian dan masukan.', 'state' => 'Terjadwal'],
-                ['title' => 'Validator Ahli', 'description' => 'Akses validasi untuk ahli sistem informasi, visualisasi, dan keamanan.', 'state' => 'Terjadwal'],
-                ['title' => 'Hasil Validasi', 'description' => 'Ringkasan hasil penilaian yang sudah dikirim.', 'state' => 'Terjadwal'],
+                ['title' => 'Formulir Penilaian', 'description' => 'Daftar formulir untuk mengumpulkan penilaian dan masukan.', 'state' => 'Belum tersedia'],
+                ['title' => 'Penilai Ahli', 'description' => 'Akses penilaian untuk ahli sistem informasi, penyajian data, dan keamanan.', 'state' => 'Belum tersedia'],
+                ['title' => 'Hasil Validasi', 'description' => 'Ringkasan hasil penilaian yang sudah dikirim.', 'state' => 'Belum tersedia'],
             ],
             'data umkm' => [
-                ['title' => 'Profil UMKM', 'description' => 'Identitas, wilayah, klasifikasi, dan status mutu data.', 'state' => 'Aktif'],
-                ['title' => 'Rincian Data', 'description' => 'Filter, pencarian, halaman data, dan rincian yang hanya dapat dilihat.', 'state' => 'Aktif'],
+                ['title' => 'Profil UMKM', 'description' => 'Identitas, wilayah, jenis usaha, dan status kualitas data.', 'state' => 'Aktif'],
+                ['title' => 'Rincian Data', 'description' => 'Pencarian, pilihan tampilan, dan rincian data yang hanya dapat dilihat.', 'state' => 'Aktif'],
                 ['title' => 'Validasi Perubahan', 'description' => 'Perubahan data belum tersedia.', 'state' => 'Belum aktif'],
             ],
-            'analitik' => [
-                ['title' => 'Profil Sektor', 'description' => 'Distribusi wilayah, kategori, dan jenis usaha.', 'state' => 'Aktif'],
+            'ringkasan data' => [
+                ['title' => 'Sebaran Usaha', 'description' => 'Sebaran berdasarkan wilayah, kategori, dan jenis usaha.', 'state' => 'Aktif'],
                 ['title' => 'Tenaga Kerja & Pasar', 'description' => 'Tenaga kerja tercatat dan metode pemasaran.', 'state' => 'Aktif'],
-                ['title' => 'Mutu Data', 'description' => 'Kelompok catatan kualitas dan cakupan data yang terdampak.', 'state' => 'Aktif'],
+                ['title' => 'Kualitas Data', 'description' => 'Kelompok catatan kualitas dan jumlah data yang perlu diperhatikan.', 'state' => 'Aktif'],
             ],
-            'analitik keputusan' => [
-                ['title' => 'Ringkasan Keputusan', 'description' => 'Temuan dan pertimbangan berbasis indikator dari data saat ini.', 'state' => 'Aktif'],
-                ['title' => 'Persaingan & Konsentrasi', 'description' => 'Perbandingan usaha sejenis antarwilayah tanpa klaim kausal.', 'state' => 'Aktif'],
-                ['title' => 'Potensi Relatif', 'description' => 'Kriteria yang jelas berdasarkan jumlah usaha dan sinyal ekonomi dari data saat ini.', 'state' => 'Aktif'],
-                ['title' => 'Informasi Spasial Pendukung', 'description' => 'Kedekatan titik lokasi sebagai konteks tambahan, bukan filter keputusan.', 'state' => 'Opsional'],
+            'perbandingan & potensi' => [
+                ['title' => 'Hal yang Perlu Diperhatikan', 'description' => 'Temuan dan pertimbangan berdasarkan data yang tersedia saat ini.', 'state' => 'Aktif'],
+                ['title' => 'Perbandingan Usaha Sejenis', 'description' => 'Perbandingan jumlah usaha sejenis antarwilayah.', 'state' => 'Aktif'],
+                ['title' => 'Kondisi yang Perlu Ditinjau', 'description' => 'Kondisi yang perlu ditinjau berdasarkan jumlah usaha dan data ekonomi yang tersedia.', 'state' => 'Aktif'],
+                ['title' => 'Informasi Lokasi Pendukung', 'description' => 'Jarak antartitik usaha sebagai informasi tambahan.', 'state' => 'Opsional'],
             ],
             'peta wilayah' => [
-                ['title' => 'Peta Administratif', 'description' => 'Peta tematik kecamatan dan kelurahan berdasarkan batas administrasi wilayah.', 'state' => 'Aktif'],
+                ['title' => 'Peta Wilayah', 'description' => 'Peta kecamatan dan kelurahan berdasarkan batas wilayah.', 'state' => 'Aktif'],
                 ['title' => 'Rincian Wilayah', 'description' => 'Klik wilayah untuk membuka ringkasan dan Data UMKM terkait.', 'state' => 'Aktif'],
-                ['title' => 'Titik Lokasi', 'description' => 'Titik presisi hanya ditampilkan jika izin koordinat sensitif aktif.', 'state' => 'Terbatas'],
+                ['title' => 'Titik Lokasi', 'description' => 'Titik lokasi hanya ditampilkan kepada pengguna yang berwenang.', 'state' => 'Terbatas'],
             ],
             'ekonomi & keuangan' => [
-                ['title' => 'Cakupan Keuangan', 'description' => 'Ketersediaan modal, penjualan, omzet, pinjaman, dan sumber pinjaman.', 'state' => 'Aktif'],
+                ['title' => 'Ketersediaan Data Keuangan', 'description' => 'Ketersediaan modal, penjualan, omzet, pinjaman, dan sumber pinjaman.', 'state' => 'Aktif'],
                 ['title' => 'Sumber Pinjaman', 'description' => 'Nilai sumber pinjaman teridentifikasi ditampilkan apa adanya.', 'state' => 'Aktif'],
                 ['title' => 'Catatan Kualitas Keuangan', 'description' => 'Penanda kualitas data dipisahkan tanpa mengubah nilai sumber secara otomatis.', 'state' => 'Aktif'],
             ],
             'laporan' => [
-                ['title' => 'Ringkasan Eksekutif', 'description' => 'Laporan singkat untuk pimpinan dan evaluasi program.', 'state' => 'Terjadwal'],
-                ['title' => 'Tren Wilayah', 'description' => 'Perkembangan data berdasarkan wilayah dan kategori.', 'state' => 'Terjadwal'],
+                ['title' => 'Ringkasan Eksekutif', 'description' => 'Laporan singkat untuk pimpinan dan evaluasi program.', 'state' => 'Belum tersedia'],
+                ['title' => 'Perbandingan Wilayah', 'description' => 'Perbandingan kondisi data berdasarkan wilayah dan kategori pada data yang tersedia saat ini.', 'state' => 'Belum tersedia'],
             ],
             'profil usaha' => [
-                ['title' => 'Identitas Usaha', 'description' => 'Data dasar usaha yang dapat diajukan untuk validasi.', 'state' => 'Terjadwal'],
-                ['title' => 'Lokasi Usaha', 'description' => 'Wilayah dan titik lokasi sesuai ketentuan validasi.', 'state' => 'Terjadwal'],
-                ['title' => 'Legalitas', 'description' => 'Nomor dan dokumen pendukung usaha.', 'state' => 'Terjadwal'],
+                ['title' => 'Identitas Usaha', 'description' => 'Data dasar usaha yang dapat diajukan untuk validasi.', 'state' => 'Belum tersedia'],
+                ['title' => 'Lokasi Usaha', 'description' => 'Wilayah dan titik lokasi sesuai ketentuan validasi.', 'state' => 'Belum tersedia'],
+                ['title' => 'Legalitas', 'description' => 'Nomor dan dokumen pendukung usaha.', 'state' => 'Belum tersedia'],
             ],
             'pelaporan' => [
-                ['title' => 'Kinerja Usaha', 'description' => 'Pelaporan perkembangan usaha secara berkala.', 'state' => 'Terjadwal'],
-                ['title' => 'Transaksi', 'description' => 'Informasi transaksi sesuai format yang disediakan.', 'state' => 'Terjadwal'],
+                ['title' => 'Kinerja Usaha', 'description' => 'Informasi kondisi usaha sesuai data yang tersedia.', 'state' => 'Belum tersedia'],
+                ['title' => 'Transaksi', 'description' => 'Informasi transaksi sesuai format yang disediakan.', 'state' => 'Belum tersedia'],
             ],
-            'instrumen' => [
-                ['title' => 'Daftar Instrumen', 'description' => 'Instrumen penilaian yang ditugaskan kepada validator.', 'state' => 'Aktif'],
-                ['title' => 'Form Penilaian', 'description' => 'Pengisian penilaian sesuai bidang keahlian.', 'state' => 'Terkontrol'],
+            'daftar penilaian' => [
+                ['title' => 'Daftar Instrumen', 'description' => 'Daftar penilaian yang ditugaskan kepada Penilai Ahli.', 'state' => 'Aktif'],
+                ['title' => 'Isi Penilaian', 'description' => 'Pengisian penilaian sesuai bidang keahlian.', 'state' => 'Terkontrol'],
             ],
             'riwayat' => [
                 ['title' => 'Penilaian Tersimpan', 'description' => 'Riwayat hasil validasi yang sudah dikirim.', 'state' => 'Tersimpan'],
@@ -407,7 +407,7 @@
         ];
 
         return $submenuMap[$title] ?? [
-            ['title' => 'Ringkasan Menu', 'description' => (string) ($menuItem['detail'] ?? $menuItem['description'] ?? 'Cakupan menu mengikuti kewenangan pengguna.'), 'state' => 'Info'],
+            ['title' => 'Ringkasan Menu', 'description' => (string) ($menuItem['detail'] ?? $menuItem['description'] ?? 'Cakupan menu mengikuti kewenangan pengguna.'), 'state' => 'Ringkasan'],
         ];
     };
 
@@ -466,7 +466,7 @@
             'validasi' => 'Instrumen survei, validator ahli, dan hasil penilaian.',
             'data umkm' => 'Profil, legalitas, lokasi, dan status data UMKM.',
             'analitik' => 'Indikator sektor, tenaga kerja, pasar, dan mutu data.',
-            'peta wilayah' => 'Peta administratif, drill-down wilayah, dan titik coordinate-mapped.',
+            'peta wilayah' => 'Peta wilayah, rincian wilayah, dan titik lokasi yang tersedia.',
             'ekonomi & keuangan' => 'Cakupan dan mutu data ekonomi-keuangan internal.',
             'laporan' => 'Laporan ringkas dan informasi evaluasi sesuai kewenangan.',
             'profil usaha' => 'Identitas, lokasi, legalitas, dan data usaha.',
@@ -562,7 +562,7 @@
                             </svg>
                         </span>
                         <span class="dashboard-mega-trigger-copy">
-                            <strong>Menu Sistem</strong>
+                            <strong>Menu Utama</strong>
                             <small>{{ $dashboardRoleLabel }}</small>
                         </span>
                         <svg class="dashboard-mega-trigger-caret" viewBox="0 0 24 24" aria-hidden="true">
@@ -615,7 +615,7 @@
                                 <span>Ringkas</span>
                             </div>
                             <div class="dashboard-floating-panel-body">
-                                <p>Panel aktivitas internal disiapkan sebagai shell. Data detail akan dimuat melalui modul terotorisasi pada batch berikutnya.</p>
+                                <p>Belum ada aktivitas terbaru yang perlu ditampilkan.</p>
                             </div>
                         </div>
                     </div>
@@ -673,7 +673,7 @@
 
                                     <div class="rounded-4 p-3 dashboard-mega-clock-card dashboard-mega-clock-card-compact">
                                         <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-                                            <span class="dashboard-mega-clock-kicker">Waktu Server</span>
+                                            <span class="dashboard-mega-clock-kicker">Waktu Sistem</span>
                                             <span class="badge rounded-pill dashboard-mega-soft-badge">Aktif</span>
                                         </div>
                                         <strong class="dashboard-mega-clock d-block" data-dashboard-server-clock>{{ $dashboardServerTimeLabel }}</strong>
@@ -682,9 +682,9 @@
                                         <div class="row g-2 mt-2 dashboard-mega-clock-meta">
                                             <div class="col-12">
                                                 <div class="border rounded-3 p-2 bg-white bg-opacity-50">
-                                                    <span class="d-block">Server</span>
+                                                    <span class="d-block">Zona waktu sistem</span>
                                                     <strong class="d-block">{{ $dashboardServerTimezone }}</strong>
-                                                    <small>UTC{{ $dashboardServerOffset }}</small>
+                                                    <small>Waktu acuan aplikasi</small>
                                                 </div>
                                             </div>
                                             <div class="col-12">
@@ -745,7 +745,7 @@
                                                         <small class="d-block text-muted text-truncate">{{ $menuDisplay['description'] ?? 'Belum tersedia' }}</small>
                                                     </span>
                                                     @if (! $menuEnabled)
-                                                        <span class="badge rounded-pill dashboard-mega-soft-badge flex-shrink-0">Soon</span>
+                                                        <span class="badge rounded-pill dashboard-mega-soft-badge flex-shrink-0">Belum tersedia</span>
                                                     @endif
                                                 </div>
                                             </a>
@@ -759,7 +759,7 @@
                             <section class="card h-100 border-0 shadow-sm dashboard-mega-card" aria-label="Submenu dari menu terpilih">
                                 <div class="card-body p-3">
                                     <div class="mb-3">
-                                        <span class="dashboard-mega-section-label">Submenu</span>
+                                        <span class="dashboard-mega-section-label">Pilihan</span>
                                         <small class="text-muted d-block mt-1" data-dashboard-mega-submenu-title>{{ $dashboardFeaturedDisplay['title'] ?? 'Ruang Kerja' }}</small>
                                     </div>
 
@@ -786,7 +786,7 @@
                         <div class="col-12 col-xl-3">
                             <aside class="card h-100 border-0 shadow-sm dashboard-mega-card dashboard-mega-preview-card">
                                 <div class="card-body p-3">
-                                    <span class="dashboard-mega-section-label">Konteks Menu</span>
+                                    <span class="dashboard-mega-section-label">Tentang Menu</span>
                                     <h3 class="h4 fw-bold mt-3 mb-3" data-dashboard-mega-preview-title>{{ $dashboardFeaturedDisplay['title'] ?? 'Ruang Kerja' }}</h3>
                                     <p class="text-muted mb-3" data-dashboard-mega-preview-description>
                                         {{ $dashboardFeaturedDisplay['detail'] ?? $dashboardFeaturedDisplay['description'] ?? 'Pilih menu untuk melihat cakupan kerja dan informasi singkat.' }}
@@ -833,7 +833,7 @@
                     </button>
                 </div>
 
-                <nav class="dashboard-offcanvas-menu" aria-label="Navigasi internal">
+                <nav class="dashboard-offcanvas-menu" aria-label="Navigasi ruang kerja">
                     @foreach ($dashboardMenuSections as $section)
                         <section class="dashboard-offcanvas-section">
                             <div class="dashboard-menu-cluster-label">{{ $section['label'] ?? 'Menu' }}</div>
@@ -861,7 +861,7 @@
                                             <small>{{ $menuDisplay['description'] ?? 'Belum tersedia' }}</small>
                                         </span>
                                         @if (! $menuEnabled)
-                                            <span class="dashboard-menu-state">Soon</span>
+                                            <span class="dashboard-menu-state">Belum tersedia</span>
                                         @endif
                                     </a>
                                 @endforeach
@@ -896,7 +896,7 @@
 
                 <footer class="dashboard-footer">
                     <span>Monitoring UMKM</span>
-                    <span>Internal layout core · backend guard tetap otoritas final</span>
+                    <span>Akses dan informasi disesuaikan dengan kewenangan pengguna.</span>
                 </footer>
             </div>
         </main>

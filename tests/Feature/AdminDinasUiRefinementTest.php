@@ -22,7 +22,7 @@ class AdminDinasUiRefinementTest extends TestCase
             ->assertOk()
             ->assertSee('Ringkasan Pembinaan UMKM')
             ->assertSee('Buka Data UMKM')
-            ->assertSee('Buka Analitik')
+            ->assertSee('Buka Ringkasan Data')
             ->assertSee('Cakupan Keuangan')
             ->assertDontSee('Detail Nilai Keuangan Terdata')
             ->assertDontSee('Sumber Pinjaman yang Terdata');
@@ -43,7 +43,7 @@ class AdminDinasUiRefinementTest extends TestCase
             ->get('/admin-dinas/umkm')
             ->assertOk()
             ->assertDontSee('Filter Lanjutan')
-            ->assertSee('Konteks Aktif')
+            ->assertSee('Pilihan Saat Ini')
             ->assertSee('Cari UMKM')
             ->assertSee('Kecamatan')
             ->assertSee('Kelurahan')
@@ -87,7 +87,7 @@ class AdminDinasUiRefinementTest extends TestCase
             ->get('/admin-dinas/analytics/financial')
             ->assertOk()
             ->assertSee('0 berbeda dari belum tersedia')
-            ->assertSee('Sumber Pinjaman Teridentifikasi')
+            ->assertSee('Sumber Pinjaman yang Tercatat')
             ->assertSee('Catatan Kualitas Sumber Pinjaman')
             ->assertSee('tidak diubah menjadi Mekaar, KUR, atau kategori lain')
             ->assertSee('Rincian Nilai Keuangan yang Tercatat');

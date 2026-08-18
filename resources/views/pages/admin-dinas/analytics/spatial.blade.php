@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Peta dan Analisis Wilayah')
+@section('title', 'Peta Sebaran UMKM')
 
 @section('content')
 @php
@@ -38,10 +38,9 @@
                 <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">
                     Informasi Wilayah dan Lokasi
                 </span>
-                <h1 class="h3 mb-2">Peta dan Analisis Wilayah</h1>
+                <h1 class="h3 mb-2">Peta Sebaran UMKM</h1>
                 <p class="text-body-secondary mb-0">
-                    Peta administratif memperlihatkan distribusi UMKM berdasarkan wilayah.
-                    Titik koordinat individual hanya tersedia jika pengguna memiliki izin koordinat sensitif.
+                    Peta memperlihatkan sebaran UMKM berdasarkan wilayah. Titik lokasi masing-masing usaha hanya tersedia bagi pengguna yang berwenang.
                 </p>
             </div>
 
@@ -68,13 +67,13 @@
         <div class="card-body p-4">
             <div class="d-flex justify-content-between gap-3 mb-3">
                 <div>
-                    <h2 class="h5 mb-1">Konteks Peta</h2>
+                    <h2 class="h5 mb-1">Pilihan Peta</h2>
                     <p class="text-body-secondary mb-0">
-                        Peta dan tabel wilayah mengikuti filter analitik yang sama.
+                        Peta dan tabel wilayah mengikuti pilihan yang sama.
                     </p>
                 </div>
                 <a href="{{ route('admin-dinas.analytics.spatial') }}" class="btn btn-sm btn-outline-secondary align-self-start">
-                    Reset Filter
+                    Hapus Pilihan
                 </a>
             </div>
 
@@ -166,11 +165,11 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM dalam konteks', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai filter'],
-            ['Wilayah administrasi teridentifikasi', $summary['administrative_associated'] ?? 0, 'Memiliki kecamatan yang tercatat'],
-            ['Wilayah belum teridentifikasi', $summary['administrative_unassociated'] ?? 0, 'Tidak dipaksakan ke wilayah'],
-            ['Memiliki titik lokasi', $summary['coordinate_mapped'] ?? 0, 'Status terpetakan dengan koordinat lokasi lengkap'],
-            ['Cakupan titik lokasi', number_format((float)($summary['coordinate_mapped_percent'] ?? 0), 2, ',', '.') . '%', 'Berbeda dari cakupan wilayah administrasi'],
+            ['UMKM yang ditampilkan', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai pilihan'],
+            ['Memiliki data wilayah', $summary['administrative_associated'] ?? 0, 'Memiliki kecamatan yang tercatat'],
+            ['Wilayah belum tercatat', $summary['administrative_unassociated'] ?? 0, 'Belum memiliki kecamatan yang tercatat'],
+            ['Memiliki titik lokasi', $summary['coordinate_mapped'] ?? 0, 'Titik lokasi tersedia'],
+            ['Ketersediaan titik lokasi', number_format((float)($summary['coordinate_mapped_percent'] ?? 0), 2, ',', '.') . '%', 'Persentase UMKM yang memiliki titik lokasi'],
         ] as $metric)
             <div class="col-md-6 col-xl">
                 <div class="card border shadow-sm h-100">
@@ -191,10 +190,7 @@
     </section>
 
     <section class="alert alert-info mb-0">
-        <strong>Keterkaitan wilayah administrasi berbeda dari titik lokasi.</strong>
-        UMKM yang terhubung ke kecamatan atau kelurahan tidak otomatis dianggap mempunyai titik lokasi presisi.
-        Titik individual hanya ditampilkan jika <code>status lokasi = terpetakan</code>,
-        lintang terisi, dan bujur terisi.
+        <strong>Data wilayah dan titik lokasi adalah informasi yang berbeda.</strong> UMKM yang memiliki data kecamatan atau kelurahan belum tentu memiliki titik lokasi. Titik masing-masing usaha hanya ditampilkan jika datanya tersedia dan pengguna berwenang melihatnya.
     </section>
 
     <section class="row g-4">
@@ -203,15 +199,15 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
                         <div>
-                            <h2 class="h5 mb-1">Peta Administratif Interaktif</h2>
+                            <h2 class="h5 mb-1">Peta Wilayah</h2>
                             <p class="text-body-secondary mb-0">
-                                Warna wilayah mengikuti indikator yang dipilih. Klik wilayah untuk melihat detail ringkas dan membuka Data UMKM.
+                                Warna wilayah mengikuti data yang dipilih. Klik wilayah untuk melihat ringkasan dan membuka Data UMKM.
                             </p>
                         </div>
 
                         <div class="d-flex flex-wrap gap-2 align-items-end">
                             <div>
-                                <label class="form-label small mb-1" for="spatialMetric">Indikator</label>
+                                <label class="form-label small mb-1" for="spatialMetric">Data yang Ditampilkan</label>
                                 <select class="form-select form-select-sm" id="spatialMetric">
                                     <option value="umkm_total">Jumlah UMKM</option>
                                     <option value="workers_total">Tenaga Kerja</option>
@@ -226,7 +222,7 @@
                                 <div class="form-check mb-1">
                                     <input class="form-check-input" type="checkbox" value="1" id="spatialPointToggle">
                                     <label class="form-check-label small" for="spatialPointToggle">
-                                        Tampilkan titik koordinat
+                                        Tampilkan titik lokasi
                                     </label>
                                 </div>
                             @endif
@@ -244,12 +240,12 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-3 mt-3 small text-body-secondary">
-                        <span><strong>Lebih gelap</strong> = nilai indikator lebih tinggi</span>
+                        <span><strong>Lebih gelap</strong> = nilai lebih tinggi</span>
                         <span>Peta menggunakan batas administrasi wilayah</span>
                         @if($data['can_view_coordinates'] ?? false)
                             <span>Titik biru = UMKM yang memiliki titik lokasi lengkap</span>
                         @else
-                            <span><strong>Titik individual disembunyikan</strong> karena izin koordinat sensitif tidak aktif</span>
+                            <span><strong>Titik lokasi masing-masing usaha disembunyikan</strong> karena akun ini tidak memiliki kewenangan melihatnya</span>
                         @endif
                     </div>
                 </div>
@@ -296,8 +292,8 @@
 
                     <div class="small text-body-secondary">
                         <div><strong>Tingkat wilayah:</strong> {{ $label($map['visible_level'] ?? 'district') }}</div>
-                        <div><strong>Versi data:</strong> {{ $freshness['snapshot_id'] ?? 'Belum tersedia' }}</div>
-                        <div><strong>Terakhir sinkron:</strong> {{ $freshness['label'] ?? 'Belum tersedia' }}</div>
+                        <div><strong>Status data:</strong> Data terbaru yang tersedia</div>
+                        <div><strong>Terakhir diperbarui:</strong> {{ $freshness['label'] ?? 'Belum tersedia' }}</div>
                     </div>
                 </div>
             </div>

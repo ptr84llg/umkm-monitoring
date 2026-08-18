@@ -9,9 +9,9 @@
                         </span>
                         <div>
                             <span class="landing-eyebrow">Dukung UMKM lokal</span>
-                            <h2 class="h2 fw-bold mt-2 mb-2">Wujudkan ekonomi tangguh berbasis data</h2>
+                            <h2 class="h2 fw-bold mt-2 mb-2">Kenali kondisi UMKM di sekitar Anda</h2>
                             <p class="lead mb-0">
-                                Aktifkan akun UMKM, jelajahi peta publik, dan manfaatkan informasi agregat untuk melihat peluang pembinaan UMKM.
+                                Aktifkan akun UMKM, jelajahi peta publik, dan gunakan informasi yang tersedia untuk memahami kondisi usaha di setiap wilayah.
                             </p>
                         </div>
                     </div>

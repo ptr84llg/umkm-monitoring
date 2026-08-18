@@ -3,6 +3,36 @@
 @section('title', 'Detail Pengajuan Akun Pelaku UMKM')
 
 @section('content')
+@php
+    $claimStatusLabel = static fn (?string $status): string => match ($status) {
+        'pending_review' => 'Menunggu Verifikasi',
+        'approved_pending_activation' => 'Disetujui, Menunggu Aktivasi',
+        'rejected' => 'Ditolak',
+        'activated' => 'Akun Aktif',
+        default => 'Status belum tersedia',
+    };
+    $claimTypeLabel = static fn (?string $type): string => match ($type) {
+        'dinas_invite' => 'Undangan Dinas',
+        'self_claim' => 'Pengajuan Mandiri',
+        default => 'Pengajuan Akun',
+    };
+    $relationshipLabel = static fn (?string $type): string => match ($type) {
+        'owner' => 'Pemilik',
+        'manager' => 'Pengelola',
+        'family' => 'Keluarga',
+        'representative' => 'Perwakilan',
+        default => 'Keterkaitan belum dijelaskan',
+    };
+    $claimEventLabel = static fn (?string $event): string => match ($event) {
+        'submitted' => 'Pengajuan dikirim',
+        'invited' => 'Undangan dibuat',
+        'approved' => 'Pengajuan disetujui',
+        'rejected' => 'Pengajuan ditolak',
+        'activation_resent' => 'Aktivasi dikirim ulang',
+        'activated' => 'Akun diaktifkan',
+        default => 'Aktivitas akun',
+    };
+@endphp
 <div class="d-flex flex-column gap-4">
     @if (session('status'))
         <div class="alert alert-success mb-0">{{ session('status') }}</div>
@@ -22,7 +52,7 @@
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
                 <div>
-                    <span class="badge text-bg-secondary mb-2">{{ $claim->status }}</span>
+                    <span class="badge text-bg-secondary mb-2">{{ $claimStatusLabel($claim->status) }}</span>
                     <h1 class="h3 mb-1">Pengajuan {{ $claim->claim_reference }}</h1>
                     <p class="text-body-secondary mb-0">
                         {{ $claim->umkm?->business_name }} · {{ $claim->umkm?->umkm_code }}
@@ -36,9 +66,9 @@
                 <dt class="col-md-3">Pemohon</dt>
                 <dd class="col-md-9">{{ $claim->applicant_name }} · {{ $claim->applicant_email }}</dd>
                 <dt class="col-md-3">Keterkaitan</dt>
-                <dd class="col-md-9">{{ $claim->relationship_type }}</dd>
+                <dd class="col-md-9">{{ $relationshipLabel($claim->relationship_type) }}</dd>
                 <dt class="col-md-3">Jenis Pengajuan</dt>
-                <dd class="col-md-9">{{ $claim->claim_type }}</dd>
+                <dd class="col-md-9">{{ $claimTypeLabel($claim->claim_type) }}</dd>
                 <dt class="col-md-3">Pemeriksaan Dinas</dt>
                 <dd class="col-md-9">{{ $claim->reviewedBy?->name ?? 'Belum diperiksa' }}</dd>
                 <dt class="col-md-3">Catatan</dt>
@@ -80,7 +110,7 @@
             <div class="card-body p-4">
                 <h2 class="h5 mb-2">Aktivasi Belum Selesai</h2>
                 <p class="text-body-secondary">
-                    Dinas hanya mengirim ulang kode aktivasi. Pelaku membuat password sendiri, dan keterkaitan akun dengan usaha dibentuk setelah aktivasi berhasil.
+                    Dinas hanya mengirim ulang kode aktivasi. Pelaku membuat kata sandi sendiri, dan akun akan terhubung dengan usaha setelah aktivasi berhasil.
                 </p>
                 <form method="POST" action="{{ route('admin-dinas.account-claims.resend', $claim) }}">
                     @csrf
@@ -107,8 +137,8 @@
                     @forelse ($claim->events as $event)
                         <tr>
                             <td>{{ optional($event->event_time)->format('d-m-Y H:i:s') }}</td>
-                            <td>{{ $event->event_type }}</td>
-                            <td>{{ $event->from_status ?: '-' }} → {{ $event->to_status ?: '-' }}</td>
+                            <td>{{ $claimEventLabel($event->event_type) }}</td>
+                            <td>{{ $event->from_status ? $claimStatusLabel($event->from_status) : '-' }} → {{ $event->to_status ? $claimStatusLabel($event->to_status) : '-' }}</td>
                             <td>{{ $event->actor?->name ?? 'Pelaku/Sistem' }}</td>
                         </tr>
                     @empty

@@ -2,14 +2,14 @@
 @section('title', 'Admin Utama - Wilayah')
 @section('content')
     <x-umkm.data-display.table-card>
-        <h2 class="h5 text-capitalize">Wilayah dari tabel regions</h2>
+        <h2 class="h5 text-capitalize">Daftar Wilayah</h2>
         <table class="table">
             <thead>
                 <tr>
                     <th>Kode</th>
                     <th>Nama</th>
-                    <th>Level</th>
-                    <th>Parent</th>
+                    <th>Tingkat</th>
+                    <th>Wilayah Induk</th>
                     <th>Status</th>
                 </tr>
             </thead>

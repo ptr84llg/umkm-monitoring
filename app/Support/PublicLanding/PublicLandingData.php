@@ -26,24 +26,24 @@ final class PublicLandingData
             [
                 'icon_class' => 'is-green',
                 'icon_path' => 'M3 21V7l7-4 7 4v14h-5v-6H8v6H3Zm16 0V9h2v12h-2Z',
-                'chip' => 'Data agregat',
+                'chip' => 'Ringkasan data',
                 'label' => 'Total UMKM',
                 'value' => $summary['total_umkm'],
                 'context' => 'Unit usaha tercatat',
                 'progress_class' => 'w-84',
                 'foot_label' => $summary['source_label'],
-                'foot_value' => $summary['total_context'] ?? 'DB-backed',
+                'foot_value' => $summary['total_context'] ?? 'Data tersedia',
             ],
             [
                 'icon_class' => 'is-blue',
                 'icon_path' => 'M12 2.75A7.25 7.25 0 0 0 4.75 10c0 5.15 7.25 11.25 7.25 11.25S19.25 15.15 19.25 10A7.25 7.25 0 0 0 12 2.75Zm0 9.65a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z',
                 'chip' => $summary['public_safe_label'],
-                'label' => 'Terpetakan',
+                'label' => 'Memiliki titik lokasi',
                 'value' => $summary['mapped_umkm'],
                 'context' => $summary['mapped_percent'] . ' dari total',
                 'progress_class' => self::progressClassFromPercent($summary['mapped_percent_value'] ?? 0),
-                'foot_label' => 'Unit terpetakan',
-                'foot_value' => 'Koordinat valid',
+                'foot_label' => 'UMKM dengan titik lokasi',
+                'foot_value' => 'Titik lokasi tersedia',
             ],
             [
                 'icon_class' => 'is-gold',
@@ -54,7 +54,7 @@ final class PublicLandingData
                 'context' => $summary['dominant_category_percent'] . ' dari total',
                 'progress_class' => self::progressClassFromPercent($summary['dominant_category_percent_value'] ?? 0),
                 'foot_label' => 'Kategori terbanyak',
-                'foot_value' => 'Insight',
+                'foot_value' => 'Ringkasan',
             ],
             [
                 'icon_class' => 'is-purple',
@@ -100,7 +100,7 @@ final class PublicLandingData
 
             return [
                 'region_label' => $summary['coverage_label'],
-                'note' => 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.',
+                'note' => 'Peta dan ringkasan data tidak menampilkan informasi pribadi. Rincian tertentu hanya tersedia bagi pengguna yang berwenang.',
                 'clusters' => [
                     [
                         'class' => 'cluster-a',
@@ -118,7 +118,7 @@ final class PublicLandingData
             ];
         }, [
             'region_label' => self::CITY_NAME,
-            'note' => 'Data agregat dan peta bersifat public-safe. Detail sensitif hanya tersedia bagi pengguna berizin.',
+            'note' => 'Peta dan ringkasan data tidak menampilkan informasi pribadi. Rincian tertentu hanya tersedia bagi pengguna yang berwenang.',
             'clusters' => [
                 ['class' => 'cluster-a', 'value' => '0'],
                 ['class' => 'cluster-b', 'value' => '0'],
@@ -182,7 +182,7 @@ final class PublicLandingData
                     'dominant' => 'Belum tersedia',
                     'fields' => [],
                     'areas' => [],
-                    'message' => 'Belum ada data agregat UMKM untuk wilayah ini.',
+                    'message' => 'Belum ada informasi UMKM untuk wilayah ini.',
                 ];
             }
 
@@ -239,7 +239,7 @@ final class PublicLandingData
             'dominant' => 'Belum tersedia',
             'fields' => [],
             'areas' => [],
-            'message' => 'Data agregat UMKM belum dapat dimuat.',
+            'message' => 'Informasi UMKM belum dapat dimuat.',
         ]);
     }
 
@@ -264,7 +264,7 @@ final class PublicLandingData
         return [
             'coverage_label' => self::configuredCityName(),
             'updated_at_label' => $freshness['label'],
-            'public_safe_label' => 'Public-safe',
+            'public_safe_label' => 'Aman untuk publik',
             'total_umkm' => self::formatNumber($total),
             'mapped_umkm' => self::formatNumber($mapped),
             'mapped_percent' => self::percentageLabel($mapped, $total),
@@ -275,8 +275,8 @@ final class PublicLandingData
             'active_regions' => self::formatNumber($activeRegions),
             'coverage_percent' => $coverageValue . '%',
             'coverage_percent_value' => $coverageValue,
-            'source_label' => 'Data agregat database',
-            'total_context' => 'Public-safe',
+            'source_label' => 'Ringkasan data',
+            'total_context' => 'Aman untuk publik',
         ];
     }
 
@@ -653,17 +653,17 @@ final class PublicLandingData
                 'label' => 'Total UMKM',
                 'value' => self::formatNumber($total),
                 'context' => 'Unit usaha tercatat',
-                'foot_label' => 'Data agregat database',
-                'foot_value' => 'Public-safe',
+                'foot_label' => 'Ringkasan data',
+                'foot_value' => 'Aman untuk publik',
                 'progress_percent' => $total > 0 ? 100 : 0,
             ],
             [
                 'key' => 'mapped_umkm',
-                'label' => 'Terpetakan',
+                'label' => 'Memiliki titik lokasi',
                 'value' => self::formatNumber($mapped),
                 'context' => self::percentageLabel($mapped, $total) . ' dari total',
-                'foot_label' => 'Unit terpetakan',
-                'foot_value' => 'Koordinat valid',
+                'foot_label' => 'UMKM dengan titik lokasi',
+                'foot_value' => 'Titik lokasi tersedia',
                 'progress_percent' => $mappedValue,
             ],
             [
@@ -672,7 +672,7 @@ final class PublicLandingData
                 'value' => $dominantName,
                 'context' => self::percentageLabel($dominantCount, $total) . ' dari total',
                 'foot_label' => 'Kategori terbanyak',
-                'foot_value' => 'Insight',
+                'foot_value' => 'Ringkasan',
                 'progress_percent' => $dominantPercentValue,
             ],
             [
@@ -913,7 +913,7 @@ final class PublicLandingData
         if ($items === []) {
             return [
                 ['class' => 'is-mikro', 'label' => 'Data tersedia', 'percent' => '0%'],
-                ['class' => 'is-kecil', 'label' => 'Perlu validasi', 'percent' => '0%'],
+                ['class' => 'is-kecil', 'label' => 'Perlu diperiksa', 'percent' => '0%'],
                 ['class' => 'is-menengah', 'label' => 'Belum lengkap', 'percent' => '0%'],
             ];
         }
@@ -957,7 +957,7 @@ final class PublicLandingData
         return [
             'coverage_label' => self::CITY_NAME,
             'updated_at_label' => 'Belum tersedia',
-            'public_safe_label' => 'Public-safe',
+            'public_safe_label' => 'Aman untuk publik',
             'total_umkm' => '0',
             'mapped_umkm' => '0',
             'mapped_percent' => '0%',
@@ -968,8 +968,8 @@ final class PublicLandingData
             'active_regions' => '0',
             'coverage_percent' => '0%',
             'coverage_percent_value' => 0,
-            'source_label' => 'Data agregat database',
-            'total_context' => 'Public-safe',
+            'source_label' => 'Ringkasan data',
+            'total_context' => 'Aman untuk publik',
         ];
     }
 
@@ -981,7 +981,7 @@ final class PublicLandingData
                 'total' => '0',
                 'items' => [
                     ['class' => 'is-mikro', 'label' => 'Data tersedia', 'percent' => '0%'],
-                    ['class' => 'is-kecil', 'label' => 'Perlu validasi', 'percent' => '0%'],
+                    ['class' => 'is-kecil', 'label' => 'Perlu diperiksa', 'percent' => '0%'],
                     ['class' => 'is-menengah', 'label' => 'Belum lengkap', 'percent' => '0%'],
                 ],
             ],

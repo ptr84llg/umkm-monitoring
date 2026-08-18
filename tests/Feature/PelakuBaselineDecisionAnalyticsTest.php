@@ -210,13 +210,13 @@ class PelakuBaselineDecisionAnalyticsTest extends TestCase
         $this->assertNotNull($districtTwo);
         $this->assertSame(3, $districtTwo['business_count']);
         $this->assertSame('Rendah', $districtTwo['density_level']);
-        $this->assertSame('Indikasi potensi wilayah relatif', $districtTwo['context_label']);
+        $this->assertSame('Kondisi wilayah perlu ditinjau', $districtTwo['context_label']);
 
         $typeOpportunity = collect($data['opportunity_types'])->firstWhere('type_id', $typeA->id);
         $this->assertNotNull($typeOpportunity);
         $this->assertTrue($typeOpportunity['low_count_group']);
         $this->assertTrue($typeOpportunity['potential_relative']);
-        $this->assertSame('Indikasi potensi relatif', $typeOpportunity['context_label']);
+        $this->assertSame('Kondisi yang perlu ditinjau', $typeOpportunity['context_label']);
 
         $lowActivity = collect($data['opportunity_types'])->firstWhere('type_id', $typeD->id);
         $this->assertNotNull($lowActivity);
@@ -231,10 +231,10 @@ class PelakuBaselineDecisionAnalyticsTest extends TestCase
                 'district_id' => $this->districts[1]->id,
             ]))
             ->assertOk()
-            ->assertSee('Analitik Keputusan Pelaku UMKM')
+            ->assertSee('Perbandingan Usaha dan Kondisi Wilayah')
             ->assertSee('Persaingan Usaha Sejenis')
-            ->assertSee('Potensi Jenis Usaha')
-            ->assertSee('Indikasi potensi relatif')
+            ->assertSee('Kondisi yang Perlu Ditinjau')
+            ->assertSee('Kondisi yang perlu ditinjau')
             ->assertDontSee('Peer Rahasia D1 1')
             ->assertDontSee('Peer Rahasia D2 1');
 
@@ -286,7 +286,7 @@ class PelakuBaselineDecisionAnalyticsTest extends TestCase
         $this->assertTrue($district['privacy_suppressed']);
         $this->assertFalse($district['capital']['visible']);
         $this->assertNull($district['capital']['median']);
-        $this->assertSame('Kepadatan teridentifikasi; agregat ekonomi dibatasi', $district['context_label']);
+        $this->assertSame('Jumlah usaha tersedia; data ekonomi kelompok dibatasi', $district['context_label']);
     }
 
     public function test_quality_flag_preserves_raw_value_inside_aggregate_and_marks_warning(): void

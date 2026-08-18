@@ -11,8 +11,7 @@
                     <span class="badge text-bg-primary mb-2">Verifikasi Akun Pelaku</span>
                     <h1 class="h3 mb-2">Verifikasi dan Aktivasi Akun Pelaku</h1>
                     <p class="text-body-secondary mb-0">
-                        Verifikasi keterkaitan pemohon dengan UMKM. Persetujuan tidak mengubah data sumber LSS
-                        dan keterkaitan akun dengan usaha dibentuk setelah aktivasi berhasil.
+                        Periksa keterkaitan pemohon dengan UMKM. Persetujuan tidak mengubah data awal UMKM yang tersimpan, dan akun akan terhubung dengan usaha setelah aktivasi berhasil.
                     </p>
                 </div>
                 <a class="btn btn-primary align-self-lg-start"
@@ -74,7 +73,13 @@
                                 <div class="small text-body-secondary">{{ $claim->applicant_email }}</div>
                             </td>
                             <td>{{ $claim->claim_type === 'dinas_invite' ? 'Undangan Dinas' : 'Pengajuan Mandiri' }}</td>
-                            <td><span class="badge text-bg-secondary">{{ $claim->status }}</span></td>
+                            <td><span class="badge text-bg-secondary">{{ match($claim->status) {
+                                'pending_review' => 'Menunggu Verifikasi',
+                                'approved_pending_activation' => 'Disetujui, Menunggu Aktivasi',
+                                'rejected' => 'Ditolak',
+                                'activated' => 'Akun Aktif',
+                                default => 'Status belum tersedia',
+                            } }}</span></td>
                             <td>{{ optional($claim->submitted_at)->format('d-m-Y H:i') }}</td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary"
@@ -83,7 +88,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-body-secondary py-4">Belum ada pengajuan akun pada konteks ini.</td>
+                            <td colspan="7" class="text-center text-body-secondary py-4">Belum ada pengajuan akun pada pilihan saat ini.</td>
                         </tr>
                     @endforelse
                     </tbody>

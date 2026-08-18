@@ -7,7 +7,7 @@
     $pageJs = ['auth/password-reset.js', 'auth-login-anti-bot.js'];
 @endphp
 
-@section('title', 'Lupa Password | Monitoring UMKM')
+@section('title', 'Lupa Kata Sandi | Monitoring UMKM')
 
 @section('content')
 <section class="auth-login-page auth-login-premium" data-auth-password-page data-auth-landing-url="{{ url('/') }}">
@@ -32,14 +32,14 @@
                             </span>
                             <span class="auth-brand-text">
                                 <strong class="d-block">Monitoring UMKM</strong>
-                                <small class="d-block">Pemulihan Akses Internal</small>
+                                <small class="d-block">Pemulihan Akses</small>
                             </span>
                         </a>
 
                         <div class="card border-0 shadow-sm auth-login-card">
                             <div class="card-body p-4 p-xl-5">
                                 <span class="auth-card-eyebrow">Pemulihan Akun</span>
-                                <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Lupa Password</h1>
+                                <h1 class="h3 fw-bold auth-card-title mt-2 mb-2">Lupa Kata Sandi</h1>
                                 <p class="auth-card-subtitle mb-4">
                                     Masukkan email akun. Jika akun terdaftar dan aktif, sistem akan mengirim tautan pengaturan ulang password.
                                 </p>
@@ -72,11 +72,11 @@
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100 py-3 auth-submit" data-auth-password-reset-submit>
-                                        Kirim Tautan Reset
+                                        Kirim Tautan Pengaturan Ulang
                                     </button>
 
                                     <div class="rounded-4 p-3 mt-3 auth-form-note">
-                                        <strong>Catatan keamanan:</strong> tautan reset hanya berlaku terbatas dan tidak menampilkan status akun secara terbuka.
+                                        <strong>Catatan keamanan:</strong> tautan pengaturan ulang hanya berlaku terbatas dan tidak menampilkan status akun secara terbuka.
                                     </div>
                                 </form>
 
@@ -85,7 +85,7 @@
                                         <span class="auth-action-icon" aria-hidden="true">
                                             <svg viewBox="0 0 24 24"><path d="M10.8 5.2 4 12l6.8 6.8 1.4-1.4L7.8 13H20v-2H7.8l4.4-4.4-1.4-1.4Z"/></svg>
                                         </span>
-                                        <span>Kembali ke login</span>
+                                        <span>Kembali ke halaman masuk</span>
                                     </a>
                                 </div>
                             </div>

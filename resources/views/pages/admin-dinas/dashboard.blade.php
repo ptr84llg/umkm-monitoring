@@ -51,26 +51,26 @@
                     <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Ringkasan Pembinaan UMKM</span>
                     <h1 class="h3 mb-2">Monitoring UMKM Admin Dinas</h1>
                     <p class="text-body-secondary mb-0">
-                        Dashboard menampilkan indikator utama pembinaan. Penelusuran data dan analisis rinci tersedia pada modul Data UMKM dan Analitik.
+                        Halaman ini menampilkan ringkasan utama pembinaan. Rincian data dan perbandingan tersedia pada bagian Data UMKM dan Ringkasan Data.
                     </p>
                 </div>
                 <div class="d-flex flex-wrap gap-2 align-self-xl-start">
                     <a class="btn btn-outline-primary" href="{{ route('admin-dinas.umkm.index', $baseFilter) }}">Buka Data UMKM</a>
-                    <a class="btn btn-primary" href="{{ route('admin-dinas.analytics.index', $baseFilter) }}">Buka Analitik</a>
+                    <a class="btn btn-primary" href="{{ route('admin-dinas.analytics.index', $baseFilter) }}">Buka Ringkasan Data</a>
                 </div>
             </div>
 
             <div class="row g-3 mt-2">
                 <div class="col-md-4">
                     <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
-                        <div class="small text-body-secondary">Sumber aktif</div>
+                        <div class="small text-body-secondary">Asal data</div>
                         <strong>{{ $data['freshness']['source_system'] ?? 'LSS' }}</strong>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="border rounded-3 p-3 h-100 bg-body-tertiary">
-                        <div class="small text-body-secondary">Versi data</div>
-                        <strong class="text-break">{{ $snapshot ?: 'Belum tersedia' }}</strong>
+                        <div class="small text-body-secondary">Status data</div>
+                        <strong>Data terbaru yang tersedia</strong>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -87,10 +87,10 @@
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
-                    <h2 class="h5 mb-1">Konteks Pemantauan</h2>
-                    <p class="text-body-secondary mb-0">Indikator utama dan ringkasan di bawah mengikuti filter yang sama.</p>
+                    <h2 class="h5 mb-1">Pilihan Pemantauan</h2>
+                    <p class="text-body-secondary mb-0">Ringkasan di bawah mengikuti pilihan yang sama.</p>
                 </div>
-                <a href="{{ route('admin-dinas.dashboard') }}" class="btn btn-outline-secondary btn-sm">Reset Filter</a>
+                <a href="{{ route('admin-dinas.dashboard') }}" class="btn btn-outline-secondary btn-sm">Hapus Pilihan</a>
             </div>
 
             <form method="GET" action="{{ route('admin-dinas.dashboard') }}" class="row g-3">
@@ -136,10 +136,10 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM dalam konteks aktif', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai filter'],
-            ['Tenaga kerja tercatat', $summary['workforce_recorded'] ?? 0, 'Akumulasi nilai sumber yang tercatat'],
-            ['Terasosiasi wilayah', $summary['spatial_associated'] ?? 0, 'Wilayah belum teridentifikasi: ' . number_format((int)($summary['spatial_unassociated'] ?? 0), 0, ',', '.')],
-            ['UMKM dengan catatan kualitas', $summary['quality_affected'] ?? 0, 'Catatan kualitas tidak otomatis berarti nilai sumber salah'],
+            ['UMKM yang ditampilkan', $summary['total_umkm'] ?? 0, 'Data UMKM sesuai pilihan'],
+            ['Tenaga kerja tercatat', $summary['workforce_recorded'] ?? 0, 'Jumlah tenaga kerja yang tercatat'],
+            ['Memiliki data wilayah', $summary['spatial_associated'] ?? 0, 'Wilayah belum tercatat: ' . number_format((int)($summary['spatial_unassociated'] ?? 0), 0, ',', '.')],
+            ['UMKM dengan catatan kualitas', $summary['quality_affected'] ?? 0, 'Catatan kualitas tidak otomatis berarti data yang tercatat salah'],
         ] as $metric)
             <div class="col-md-6 col-xl-3">
                 <div class="card border shadow-sm h-100">
@@ -160,9 +160,9 @@
                     <div class="d-flex justify-content-between gap-3 mb-3">
                         <div>
                             <h2 class="h5 mb-1">Fokus Wilayah</h2>
-                            <p class="text-body-secondary mb-0">Lima kecamatan dengan jumlah UMKM terbesar pada konteks aktif.</p>
+                            <p class="text-body-secondary mb-0">Lima kecamatan dengan jumlah UMKM terbesar pada pilihan saat ini.</p>
                         </div>
-                        <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-sm btn-outline-primary align-self-start">Lihat Analitik</a>
+                        <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="btn btn-sm btn-outline-primary align-self-start">Lihat Ringkasan</a>
                     </div>
 
                     <div class="d-flex flex-column gap-3">
@@ -177,7 +177,7 @@
                                 </div>
                             </a>
                         @empty
-                            <p class="text-body-secondary mb-0">Belum tersedia pada konteks aktif.</p>
+                            <p class="text-body-secondary mb-0">Belum tersedia untuk pilihan saat ini.</p>
                         @endforelse
                     </div>
                 </div>
@@ -187,8 +187,8 @@
         <div class="col-xl-5">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5 mb-1">Fokus Sektor</h2>
-                    <p class="text-body-secondary mb-3">Lima kategori dengan jumlah UMKM terbesar pada konteks aktif.</p>
+                    <h2 class="h5 mb-1">Kategori Usaha Terbanyak</h2>
+                    <p class="text-body-secondary mb-3">Lima kategori dengan jumlah UMKM terbesar pada pilihan saat ini.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($categories as $row)
@@ -202,7 +202,7 @@
                                 </div>
                             </a>
                         @empty
-                            <p class="text-body-secondary mb-0">Belum tersedia pada konteks aktif.</p>
+                            <p class="text-body-secondary mb-0">Belum tersedia untuk pilihan saat ini.</p>
                         @endforelse
                     </div>
                 </div>
@@ -218,14 +218,14 @@
                         <span class="badge rounded-pill text-bg-warning-subtle text-warning-emphasis mb-2">Data Keuangan Terbatas</span>
                         <h2 class="h5 mb-1">Cakupan Keuangan</h2>
                         <p class="text-body-secondary mb-0">
-                            Ringkasan hanya menunjukkan ketersediaan nilai. Nominal rinci dan catatan kualitas data dianalisis pada halaman Ekonomi & Keuangan.
+                            Ringkasan hanya menunjukkan ketersediaan nilai. Nilai rinci dan catatan kualitas data dapat dilihat pada halaman Ekonomi & Keuangan.
                         </p>
                     </div>
                     <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="btn btn-warning align-self-lg-start">Buka Ekonomi & Keuangan</a>
                 </div>
 
                 <div class="alert alert-warning py-2">
-                    <strong>0 berbeda dari belum tersedia.</strong> Cakupan menunjukkan jumlah data yang memiliki nilai pada sumber. Nilai yang tidak lazim tetap dipertahankan sesuai sumber dan diberi catatan kualitas data.
+                    <strong>0 berbeda dari belum tersedia.</strong> Ketersediaan menunjukkan jumlah data yang memiliki nilai. Nilai yang tidak lazim tetap dipertahankan apa adanya dan diberi catatan kualitas data.
                 </div>
 
                 <div class="row g-3">
@@ -267,8 +267,8 @@
             <a href="{{ route('admin-dinas.analytics.index', $baseFilter) }}" class="card border shadow-sm h-100 text-decoration-none text-body">
                 <div class="card-body p-4">
                     <span class="badge text-bg-success-subtle text-success-emphasis mb-2">Eksplorasi</span>
-                    <h2 class="h5">Analitik UMKM</h2>
-                    <p class="text-body-secondary mb-0">Bandingkan wilayah, sektor, tenaga kerja, pemasaran, legalitas, dan mutu data.</p>
+                    <h2 class="h5">Ringkasan Data UMKM</h2>
+                    <p class="text-body-secondary mb-0">Bandingkan wilayah, jenis usaha, tenaga kerja, pemasaran, legalitas, dan kualitas data.</p>
                 </div>
             </a>
         </div>

@@ -31,21 +31,21 @@
             ],
             [
                 'icon' => 'key',
-                'label' => 'Google Linked',
+                'label' => 'Akun Google Terhubung',
                 'value' => number_format($accessStats['users_google_linked']),
-                'description' => number_format($accessStats['users_google_required']).' wajib Google',
+                'description' => number_format($accessStats['users_google_required']).' menggunakan Google',
             ],
             [
                 'icon' => 'roles',
-                'label' => 'Permission',
+                'label' => 'Izin Akses',
                 'value' => number_format($accessStats['permissions_total']),
-                'description' => number_format($accessStats['role_permissions']).' role-permission',
+                'description' => number_format($accessStats['role_permissions']).' izin pada peran',
             ],
             [
                 'icon' => 'audit',
-                'label' => 'Audit & Security',
+                'label' => 'Riwayat Keamanan',
                 'value' => number_format($accessStats['security_events']),
-                'description' => number_format($accessStats['audit_logs']).' audit log',
+                'description' => number_format($accessStats['audit_logs']).' riwayat perubahan',
             ],
         ];
     @endphp
@@ -61,9 +61,7 @@
                                 <span class="umkm-access-kicker">Tata Kelola Akses</span>
                                 <h2 class="h4 fw-bold mb-2">Manajemen Akses Sistem</h2>
                                 <p class="text-muted mb-0">
-                                    Modul ini menjadi pusat pemantauan akun, peran, izin akses, sesi perangkat, dan jejak aktivitas
-                                    akses. Pada tahap ini, data ditampilkan secara read-only agar struktur kewenangan dapat diperiksa
-                                    tanpa membuka aksi perubahan.
+                                    Halaman ini digunakan untuk melihat akun, peran, izin akses, sesi perangkat, dan riwayat aktivitas akses. Data pada halaman ini hanya dapat dilihat dan tidak dapat diubah.
                                 </p>
                             </div>
                         </div>
@@ -75,9 +73,9 @@
                                     <span class="umkm-access-icon umkm-access-icon-sm flex-shrink-0" aria-hidden="true">{!! $accessIcon('lock') !!}</span>
                                     <div>
                                         <span class="d-block small text-muted">Kendali akses</span>
-                                        <strong class="d-block">Role, permission, dan audit</strong>
+                                        <strong class="d-block">Peran, izin akses, dan riwayat</strong>
                                         <small class="text-muted d-block mt-1">
-                                            Menu mengikuti kewenangan pengguna, sedangkan backend tetap menjadi pengunci akhir.
+                                            Menu dan data yang tersedia mengikuti kewenangan pengguna.
                                         </small>
                                     </div>
                                 </div>
@@ -96,10 +94,10 @@
                         <div>
                             <span class="umkm-access-kicker">Ringkasan</span>
                             <h3 class="h5 fw-bold mb-1">Status Akses Sistem</h3>
-                            <p class="text-muted mb-0">Ikhtisar kondisi akun, autentikasi, permission, dan jejak keamanan.</p>
+                            <p class="text-muted mb-0">Ikhtisar kondisi akun, cara masuk, izin akses, dan riwayat keamanan.</p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Read-only</span>
+                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Lihat saja</span>
                 </div>
 
                 <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-4" aria-label="Ringkasan akses">
@@ -129,12 +127,12 @@
                     <div class="d-flex align-items-start gap-3">
                         <span class="umkm-access-icon flex-shrink-0" aria-hidden="true">{!! $accessIcon('grid') !!}</span>
                         <div>
-                            <span class="umkm-access-kicker">Peta Modul</span>
+                            <span class="umkm-access-kicker">Daftar Bagian</span>
                             <h3 class="h5 fw-bold mb-1">Area Kendali Akses</h3>
                             <p class="text-muted mb-0">Setiap area dipisahkan agar struktur pengelolaan akses mudah dibaca.</p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">Module map</span>
+                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">Daftar bagian</span>
                 </div>
 
                 <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3">
@@ -176,11 +174,11 @@
                             <span class="umkm-access-kicker">Akun</span>
                             <h3 class="h5 fw-bold mb-1">Akun Pengguna</h3>
                             <p class="text-muted mb-0">
-                                Filter membaca data minimal akun tanpa membuka aksi tambah, edit, hapus, assign role, atau revoke session.
+                                Pencarian menampilkan data akun tanpa menyediakan tindakan tambah, ubah, hapus, menetapkan peran, atau menutup sesi.
                             </p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Read-only detail</span>
+                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Lihat saja detail</span>
                 </div>
 
                 <x-umkm.data-display.table-card>
@@ -196,7 +194,7 @@
                                 name="q"
                                 value="{{ $filters['q'] }}"
                                 class="form-control"
-                                placeholder="Nama, email, atau username"
+                                placeholder="Nama, email, atau nama pengguna"
                             >
                         </div>
 
@@ -222,11 +220,11 @@
                         </div>
 
                         <div class="col-12 col-md-6 col-xl-2">
-                            <label for="filter-auth" class="form-label">Login</label>
+                            <label for="filter-auth" class="form-label">Cara Masuk</label>
                             <select id="filter-auth" name="auth" class="form-select">
-                                <option value="all" @selected($filters['auth'] === 'all')>Semua login</option>
-                                <option value="google_linked" @selected($filters['auth'] === 'google_linked')>Google linked</option>
-                                <option value="manual_only" @selected($filters['auth'] === 'manual_only')>Manual only</option>
+                                <option value="all" @selected($filters['auth'] === 'all')>Semua cara masuk</option>
+                                <option value="google_linked" @selected($filters['auth'] === 'google_linked')>Google terhubung</option>
+                                <option value="manual_only" @selected($filters['auth'] === 'manual_only')>Kata sandi saja</option>
                             </select>
                         </div>
 
@@ -243,10 +241,10 @@
                             <thead>
                                 <tr>
                                     <th>Akun</th>
-                                    <th>Role</th>
+                                    <th>Peran</th>
                                     <th>Status</th>
-                                    <th>Login</th>
-                                    <th>Login Terakhir</th>
+                                    <th>Cara Masuk</th>
+                                    <th>Terakhir Masuk</th>
                                     <th>Detail</th>
                                 </tr>
                             </thead>
@@ -273,7 +271,7 @@
                                                 @forelse ($roleLabels as $roleLabel)
                                                     <span class="badge rounded-pill umkm-access-status is-info">{{ $roleLabel }}</span>
                                                 @empty
-                                                    <span class="badge rounded-pill umkm-access-status is-muted">Belum ada role</span>
+                                                    <span class="badge rounded-pill umkm-access-status is-muted">Belum ada peran</span>
                                                 @endforelse
                                             </div>
                                         </td>
@@ -285,10 +283,10 @@
                                         <td>
                                             <div class="d-flex flex-wrap gap-1">
                                                 <span class="badge rounded-pill umkm-access-status {{ $isGoogleLinked ? 'is-info' : 'is-muted' }}">
-                                                    {{ $isGoogleLinked ? 'Google linked' : 'Belum linked' }}
+                                                    {{ $isGoogleLinked ? 'Google terhubung' : 'Belum terhubung' }}
                                                 </span>
                                                 @if ($isGoogleRequired)
-                                                    <span class="badge rounded-pill umkm-access-status is-warning">Wajib Google</span>
+                                                    <span class="badge rounded-pill umkm-access-status is-warning">Menggunakan Google</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -307,7 +305,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-muted">Tidak ada akun yang sesuai filter.</td>
+                                        <td colspan="6" class="text-muted">Tidak ada akun yang sesuai pilihan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -326,7 +324,7 @@
                                         <div class="d-flex align-items-start gap-3">
                                             <span class="umkm-access-icon flex-shrink-0" aria-hidden="true">{!! $accessIcon('users') !!}</span>
                                             <div>
-                                                <span class="umkm-access-kicker">Detail Akun Read-only</span>
+                                                <span class="umkm-access-kicker">Detail Akun Lihat saja</span>
                                                 <h5 class="modal-title" id="accountDetailModalLabel{{ $account->id }}">{{ $account->name }}</h5>
                                             </div>
                                         </div>
@@ -348,7 +346,7 @@
                                             </div>
                                             <div class="col-12 col-md-6">
                                                 <div class="border rounded-3 p-3 h-100 bg-white bg-opacity-75 umkm-access-detail-field">
-                                                    <span>Username</span>
+                                                    <span>Nama Pengguna</span>
                                                     <strong>{{ $account->username ?? '-' }}</strong>
                                                 </div>
                                             </div>
@@ -360,19 +358,19 @@
                                             </div>
                                             <div class="col-12 col-md-6">
                                                 <div class="border rounded-3 p-3 h-100 bg-white bg-opacity-75 umkm-access-detail-field">
-                                                    <span>Google linked</span>
-                                                    <strong>{{ $isGoogleLinked ? $account->google_linked_at?->format('d M Y H:i') : 'Belum linked' }}</strong>
+                                                    <span>Akun Google</span>
+                                                    <strong>{{ $isGoogleLinked ? $account->google_linked_at?->format('d M Y H:i') : 'Belum terhubung' }}</strong>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6">
                                                 <div class="border rounded-3 p-3 h-100 bg-white bg-opacity-75 umkm-access-detail-field">
-                                                    <span>Manual login</span>
+                                                    <span>Masuk dengan Kata Sandi</span>
                                                     <strong>{{ $account->manual_login_disabled_at ? 'Dinonaktifkan' : 'Diizinkan' }}</strong>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6">
                                                 <div class="border rounded-3 p-3 h-100 bg-white bg-opacity-75 umkm-access-detail-field">
-                                                    <span>Login terakhir</span>
+                                                    <span>Terakhir Masuk</span>
                                                     <strong>{{ $account->last_login_at?->format('d M Y H:i') ?? '-' }}</strong>
                                                 </div>
                                             </div>
@@ -385,21 +383,20 @@
                                         </div>
 
                                         <div class="border rounded-3 p-3 bg-white bg-opacity-75 mt-3 umkm-access-detail-field">
-                                            <span>Role terhubung</span>
+                                            <span>Peran Pengguna</span>
                                             <div class="d-flex flex-wrap gap-1 mt-2">
                                                 @forelse ($roleLabels as $roleLabel)
                                                     <span class="badge rounded-pill umkm-access-status is-info">{{ $roleLabel }}</span>
                                                 @empty
-                                                    <span class="badge rounded-pill umkm-access-status is-muted">Belum ada role</span>
+                                                    <span class="badge rounded-pill umkm-access-status is-muted">Belum ada peran</span>
                                                 @endforelse
                                             </div>
                                         </div>
 
                                         <div class="alert alert-light border mt-3 mb-0 umkm-access-security-note" role="note">
-                                            <strong>Batas Access-1B</strong>
+                                            <strong>Keterangan</strong>
                                             <span>
-                                                Modal ini hanya membaca data minimal akun. Perubahan status, role, permission,
-                                                session revoke, dan assignment belum dibuka pada tahap ini.
+                                                Halaman ini hanya menampilkan informasi akun. Perubahan status, peran, izin akses, dan sesi pengguna belum tersedia.
                                             </span>
                                         </div>
                                     </div>
@@ -421,12 +418,12 @@
                     <div class="d-flex align-items-start gap-3">
                         <span class="umkm-access-icon flex-shrink-0" aria-hidden="true">{!! $accessIcon('roles') !!}</span>
                         <div>
-                            <span class="umkm-access-kicker">Matriks</span>
-                            <h3 class="h5 fw-bold mb-1">Matriks Role & Permission</h3>
-                            <p class="text-muted mb-0">Role dan permission diberi zona tersendiri agar hubungan kewenangan lebih mudah dibaca.</p>
+                            <span class="umkm-access-kicker">Peran dan Izin</span>
+                            <h3 class="h5 fw-bold mb-1">Matriks Role & Izin Akses</h3>
+                            <p class="text-muted mb-0">Peran dan izin akses ditampilkan terpisah agar kewenangan setiap pengguna lebih mudah dipahami.</p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">RBAC / PBAC</span>
+                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">Pengaturan Akses</span>
                 </div>
 
                 <div class="row g-3">
@@ -434,10 +431,10 @@
                         <x-umkm.data-display.table-card>
                             <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
                                 <div>
-                                    <span class="umkm-access-kicker">Role</span>
-                                    <h3 class="h6 fw-bold mb-0">Role Sistem</h3>
+                                    <span class="umkm-access-kicker">Peran</span>
+                                    <h3 class="h6 fw-bold mb-0">Peran Pengguna</h3>
                                 </div>
-                                <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Matrix awal</span>
+                                <span class="badge rounded-pill text-bg-light border umkm-access-status is-muted">Ringkasan</span>
                             </div>
 
                             <div class="list-group list-group-flush">
@@ -445,19 +442,19 @@
                                     <div class="list-group-item px-0 d-flex align-items-center justify-content-between gap-3">
                                         <div class="min-w-0">
                                             <strong class="d-block">{{ $role->name }}</strong>
-                                            <span class="text-muted small">{{ $role->code }}</span>
+                                            <span class="text-muted small">Peran pengguna</span>
                                         </div>
                                         <div class="d-flex flex-wrap justify-content-end gap-1">
                                             <span class="badge rounded-pill umkm-access-status {{ $role->is_active ? 'is-success' : 'is-muted' }}">
                                                 {{ $role->is_active ? 'Aktif' : 'Nonaktif' }}
                                             </span>
                                             <span class="badge rounded-pill umkm-access-status is-info">
-                                                {{ $role->permissions_count }} permission
+                                                {{ $role->permissions_count }} izin akses
                                             </span>
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="text-muted mb-0">Belum ada role.</p>
+                                    <p class="text-muted mb-0">Belum ada peran.</p>
                                 @endforelse
                             </div>
                         </x-umkm.data-display.table-card>
@@ -467,20 +464,20 @@
                         <x-umkm.data-display.table-card>
                             <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
                                 <div>
-                                    <span class="umkm-access-kicker">Permission</span>
-                                    <h3 class="h6 fw-bold mb-0">Kelompok Permission</h3>
+                                    <span class="umkm-access-kicker">Izin Akses</span>
+                                    <h3 class="h6 fw-bold mb-0">Kelompok Izin Akses</h3>
                                 </div>
-                                <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">PBAC</span>
+                                <span class="badge rounded-pill text-bg-light border umkm-access-status is-info">Pengaturan Akses</span>
                             </div>
 
                             <div class="list-group list-group-flush">
                                 @forelse ($permissionModules as $module)
                                     <div class="list-group-item px-0 d-flex align-items-center justify-content-between gap-3">
-                                        <span class="text-muted fw-bold">{{ $module->module ?? 'general' }}</span>
+                                        <span class="text-muted fw-bold">Bagian {{ \Illuminate\Support\Str::headline((string) ($module->module ?? 'umum')) }}</span>
                                         <strong>{{ number_format($module->total) }}</strong>
                                     </div>
                                 @empty
-                                    <p class="text-muted mb-0">Belum ada permission.</p>
+                                    <p class="text-muted mb-0">Belum ada izin akses.</p>
                                 @endforelse
                             </div>
                         </x-umkm.data-display.table-card>
@@ -495,12 +492,12 @@
                     <div class="d-flex align-items-start gap-3">
                         <span class="umkm-access-icon flex-shrink-0" aria-hidden="true">{!! $accessIcon('audit') !!}</span>
                         <div>
-                            <span class="umkm-access-kicker">Audit</span>
+                            <span class="umkm-access-kicker">Riwayat</span>
                             <h3 class="h5 fw-bold mb-1">Aktivitas Akses Terbaru</h3>
-                            <p class="text-muted mb-0">Jejak event keamanan ditampilkan sebagai pratinjau read-only untuk tata kelola akses.</p>
+                            <p class="text-muted mb-0">Riwayat aktivitas keamanan ditampilkan untuk membantu pemeriksaan akses pengguna.</p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-warning">Security trail</span>
+                    <span class="badge rounded-pill text-bg-light border umkm-access-status is-warning">Keamanan</span>
                 </div>
 
                 <x-umkm.data-display.table-card>
@@ -514,7 +511,7 @@
                                 </div>
                             </div>
                         @empty
-                            <p class="text-muted mb-0">Belum ada security event.</p>
+                            <p class="text-muted mb-0">Belum ada aktivitas keamanan.</p>
                         @endforelse
                     </div>
                 </x-umkm.data-display.table-card>
@@ -522,10 +519,9 @@
         </section>
 
         <div class="alert alert-light border shadow-sm mb-0 umkm-access-security-note" role="note">
-            <strong>Catatan batch AccessUI-BootstrapFirst-1A</strong>
+            <strong>Keterangan</strong>
             <span>
-                Pembaruan ini hanya mengembalikan struktur visual Manajemen Akses ke prinsip Bootstrap-first.
-                Aksi tambah, edit, assign role, revoke session, dan perubahan permission tetap belum dibuka.
+                Halaman ini hanya menampilkan informasi akses. Penambahan, perubahan, penetapan peran, penutupan sesi, dan perubahan izin akses belum tersedia.
             </span>
         </div>
     </div>

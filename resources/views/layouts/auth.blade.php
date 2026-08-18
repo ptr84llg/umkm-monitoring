@@ -11,7 +11,7 @@
     <meta name="umkm-client" content="auth">
     <meta name="umkm-security-profile" content="{{ $assetProfile ?? 'auth' }}">
     <meta name="umkm-active-theme" content="{{ $activeTheme }}">
-    <title>@yield('title', 'Login Internal | Monitoring UMKM')</title>
+    <title>@yield('title', 'Masuk | SISFODA UMKM')</title>
     @include('partials.system.brand-icons')
     @include('partials.system.asset-loader')
 </head>

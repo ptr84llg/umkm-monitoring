@@ -7,11 +7,10 @@
         <div class="card-body p-4">
             <div class="row g-4 align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge rounded-pill text-bg-light border mb-3">Admin Utama · Super Admin</span>
+                    <span class="badge rounded-pill text-bg-light border mb-3">Admin Utama</span>
                     <h1 class="h3 mb-3">Pusat Kendali Sistem Monitoring UMKM</h1>
                     <p class="text-muted mb-0">
-                        Dashboard ini digunakan untuk memantau sistem, keamanan, konfigurasi, kualitas data,
-                        pengguna, dan ketersediaan modul sesuai kewenangan.
+                        Halaman ini digunakan untuk memantau keamanan, kualitas data, pengguna, pengaturan, dan layanan yang tersedia sesuai kewenangan.
                     </p>
                 </div>
                 <div class="col-lg-4">
@@ -48,9 +47,9 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-column flex-md-row gap-2 justify-content-between align-items-md-center mb-3">
                         <div>
-                            <h2 class="h5 mb-1">Modul Admin Utama</h2>
+                            <h2 class="h5 mb-1">Bagian Pengelolaan Admin Utama</h2>
                             <p class="text-muted small mb-0">
-                                Struktur menu mengikuti ruang kerja Admin Utama: akses, referensi, governance, publikasi, dan validasi.
+                                Menu mencakup pengelolaan akses, data referensi, tata kelola, publikasi, dan penilaian.
                             </p>
                         </div>
                         <span class="badge rounded-pill text-bg-warning">Belum Tersedia</span>
@@ -69,7 +68,7 @@
                                     <div class="d-flex justify-content-between gap-3 mb-2">
                                         <div>
                                             <h3 class="h6 mb-1">{{ $menu['title'] }}</h3>
-                                            <span class="small text-muted">{{ $menu['permission'] }}</span>
+                                            <span class="small text-muted">Akses sesuai kewenangan</span>
                                         </div>
                                         <span class="badge rounded-pill {{ $isActive ? 'text-bg-success' : 'text-bg-secondary' }}">
                                             {{ $menu['status'] }}
@@ -80,7 +79,7 @@
 
                                     @if ($isActive)
                                         <a href="{{ $href }}" class="btn btn-sm btn-outline-primary">
-                                            Buka modul aktif
+                                            Buka
                                         </a>
                                     @else
                                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
@@ -102,11 +101,11 @@
 
                     <div class="vstack gap-3">
                         <div class="d-flex justify-content-between border-bottom pb-2">
-                            <span class="text-muted">API log</span>
+                            <span class="text-muted">Permintaan layanan</span>
                             <strong>{{ number_format($systemSnapshot['api_logs'] ?? 0) }}</strong>
                         </div>
                         <div class="d-flex justify-content-between border-bottom pb-2">
-                            <span class="text-muted">Audit log</span>
+                            <span class="text-muted">Riwayat perubahan</span>
                             <strong>{{ number_format($systemSnapshot['audit_logs'] ?? 0) }}</strong>
                         </div>
                         <div class="d-flex justify-content-between border-bottom pb-2">
@@ -147,8 +146,8 @@
                             <div class="col-sm-6 col-lg-4">
                                 <div class="border rounded-4 p-3 h-100">
                                     <div class="fw-semibold">{{ $theme['label'] }}</div>
-                                    <div class="small text-muted">{{ $theme['key'] }}</div>
-                                    <div class="small text-muted mt-2">{{ $theme['file'] }}</div>
+                                    <div class="small text-muted">Pilihan tampilan</div>
+                                    <div class="small text-muted mt-2">Tampilan siap digunakan</div>
                                 </div>
                             </div>
                         @endforeach

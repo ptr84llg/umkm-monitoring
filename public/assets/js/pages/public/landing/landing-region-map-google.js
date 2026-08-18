@@ -120,7 +120,7 @@
 
         const key = apiKey();
         if (!key) {
-            return Promise.reject(new Error('Kunci Google Maps belum tersedia.'));
+            return Promise.reject(new Error('Peta belum dapat digunakan saat ini.'));
         }
 
         state.googleReady = new Promise(function (resolve, reject) {
@@ -390,7 +390,7 @@
             + '<div class="umkm-map-info-context" data-map-control-active-context hidden></div>'
             + '<div class="umkm-map-info-title" data-map-control-active-title>Kota Lubuklinggau</div>'
             + '<div class="umkm-map-info-meta">'
-            + '<span data-map-control-active-layer>Layer Kota</span>'
+            + '<span data-map-control-active-layer>Tampilan Kota</span>'
             + '<span data-map-control-active-total>0 UMKM</span>'
             + '</div>';
 
@@ -541,7 +541,7 @@
         }
 
         setPanelText(panel, '[data-map-control-active-title]', hierarchy.title);
-        setPanelText(panel, '[data-map-control-active-layer]', 'Layer ' + layerLabelFromSelection(safe));
+        setPanelText(panel, '[data-map-control-active-layer]', 'Tampilan ' + layerLabelFromSelection(safe));
         setPanelText(panel, '[data-map-control-active-total]', umkmText(totalText));
 
         panel.hidden = false;
@@ -592,9 +592,9 @@
     function densityLabel(level) {
         const value = String(level || 'empty');
 
-        if (value === 'high') return 'kepadatan tinggi';
-        if (value === 'medium') return 'kepadatan sedang';
-        if (value === 'low') return 'kepadatan rendah';
+        if (value === 'high') return 'jumlah banyak';
+        if (value === 'medium') return 'jumlah sedang';
+        if (value === 'low') return 'jumlah sedikit';
 
         return 'tanpa UMKM';
     }
@@ -806,7 +806,7 @@
 
     function requestGeometry(selection) {
         if (!(window.UMKM && window.UMKM.ajax && typeof window.UMKM.ajax.get === 'function')) {
-            return Promise.reject(new Error('AJAX internal belum siap.'));
+            return Promise.reject(new Error('Informasi peta belum dapat dimuat. Silakan coba lagi.'));
         }
 
         const url = endpoint() + '?' + queryFromSelection(selection).toString();
@@ -829,7 +829,7 @@
                 return payload;
             }
 
-            throw new Error('Geometri wilayah belum dapat dimuat.');
+            throw new Error('Bentuk wilayah pada peta belum dapat dimuat.');
         });
     }
 
@@ -1191,7 +1191,7 @@
 
         return !state.map && !state.loading && (
             text.indexOf('Menunggu') >= 0 ||
-            text.indexOf('AJAX internal belum siap') >= 0 ||
+            text.indexOf('Informasi peta belum dapat dimuat') >= 0 ||
             text.indexOf('belum dapat dimuat') >= 0
         );
     }

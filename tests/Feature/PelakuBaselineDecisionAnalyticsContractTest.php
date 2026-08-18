@@ -61,12 +61,12 @@ class PelakuBaselineDecisionAnalyticsContractTest extends TestCase
 
         $this->assertStringNotContainsString('Tahun Pertama', $view);
         $this->assertStringContainsString('Berdasarkan data UMKM yang tersedia saat ini', $view);
-        $this->assertStringContainsString('Indikasi potensi relatif', $view);
+        $this->assertStringContainsString('Kondisi yang perlu ditinjau', $view);
         $this->assertStringContainsString('Modal (Total / Nilai Tengah)', $view);
         $this->assertStringContainsString('role="progressbar"', $view);
         $this->assertStringContainsString('bukan prediksi keberhasilan usaha', $view);
-        $this->assertStringContainsString('Nominal agregat kelompok', $view);
-        $this->assertStringContainsString('Nilai sumber tetap dipertahankan dan tidak dinormalisasi atau dibuang', $view);
+        $this->assertStringContainsString('Nilai keuangan kelompok', $view);
+        $this->assertStringContainsString('Nilai yang tercatat tetap dipertahankan apa adanya', $view);
     }
 
     public function test_peer_financial_analytics_is_aggregate_only_and_periodic_reporting_remains_deferred(): void

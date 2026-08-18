@@ -167,7 +167,7 @@
         );
 
         setModalCurrent(Landing.regionState.applied.label || 'Kota Lubuklinggau');
-        setRegionAlert('Mode pratinjau wilayah aktif. Daftar kecamatan menggunakan data ringkas sementara karena konteks wilayah belum dapat dimuat penuh.');
+        setRegionAlert('Daftar kecamatan sementara digunakan karena informasi wilayah belum dapat dimuat sepenuhnya.');
 
         Landing.log('warn', 'landing region context fallback applied', {
             message: error && error.message ? error.message : 'region context fallback'
@@ -286,7 +286,7 @@
 
     Landing.ensureRegionContext = async function () {
         if (!Landing.ajaxReady()) {
-            setRegionAlert('Modul AJAX sistem belum siap. Muat ulang halaman lalu coba kembali.');
+            setRegionAlert('Informasi wilayah belum dapat dimuat. Muat ulang halaman lalu coba kembali.');
             return;
         }
 
@@ -302,7 +302,7 @@
             const payload = Landing.unwrap(result);
 
             if (!Landing.resultOk(result) || !payload || !payload.data) {
-                throw new Error(payload && payload.message ? payload.message : 'Konteks wilayah tidak dapat dimuat.');
+                throw new Error(payload && payload.message ? payload.message : 'Informasi wilayah tidak dapat dimuat.');
             }
 
             Landing.regionState.context = {
@@ -374,7 +374,7 @@
         } catch (error) {
             fillVillages(villageSelect, Landing.regionState.context.options?.village_all, [], true);
             setModalCurrent(district.name);
-            setRegionAlert('Kelurahan rinci belum tersedia. Preview kecamatan tetap dapat diterapkan.');
+            setRegionAlert('Rincian kelurahan belum tersedia. Kecamatan tetap dapat dipilih.');
             Landing.log('warn', 'landing village fallback applied', {
                 message: error.message || 'village children failed'
             });
@@ -517,7 +517,7 @@
             Landing.regionState.villages = [];
             fillVillages(villageSelect, allVillage, [], true);
             setModalCurrent(district.name || safeSelection.label || 'Kecamatan terpilih');
-            setRegionAlert('Kelurahan rinci belum tersedia. Preview kecamatan tetap dapat diterapkan.');
+            setRegionAlert('Rincian kelurahan belum tersedia. Kecamatan tetap dapat dipilih.');
             Landing.log('warn', 'landing modal selection sync fallback applied', {
                 message: error && error.message ? error.message : 'modal selection sync failed'
             });
@@ -1045,7 +1045,7 @@
             }
 
             container.classList.add('is-loading');
-            container.innerHTML = '<div class="preview-empty-inline is-loading"><strong>Memuat agregat wilayah</strong><small>Menyiapkan ringkasan agregat untuk wilayah terpilih.</small></div>';
+            container.innerHTML = '<div class="preview-empty-inline is-loading"><strong>Memuat informasi wilayah</strong><small>Menyiapkan ringkasan informasi untuk wilayah yang dipilih.</small></div>';
         });
 
         Landing.qsa('[data-public-map-cluster-value]').forEach(function (element) {
@@ -1343,7 +1343,7 @@ Landing.initRegionModal = function () {
                     return;
                 }
 
-                setRegionAlert(error && error.message ? error.message : 'Konteks wilayah tidak dapat dimuat.');
+                setRegionAlert(error && error.message ? error.message : 'Informasi wilayah tidak dapat dimuat.');
             })
             .finally(function () {
                 setRegionLoading(false);
@@ -1411,7 +1411,7 @@ Landing.initRegionModal = function () {
                     return syncRegionModalControlsFromAppliedSelection(Landing.regionState.applied || Landing.DEFAULT_SELECTION);
                 }
 
-                setRegionAlert(error && error.message ? error.message : 'Konteks wilayah tidak dapat dimuat.');
+                setRegionAlert(error && error.message ? error.message : 'Informasi wilayah tidak dapat dimuat.');
                 return null;
             })
             .finally(function () {

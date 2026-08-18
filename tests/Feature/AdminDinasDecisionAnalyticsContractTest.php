@@ -83,23 +83,23 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
             $this->assertStringNotContainsString($forbidden, $service);
         }
 
-        $this->assertStringContainsString('Analitik Keputusan Admin Dinas', $view);
-        $this->assertStringContainsString('Opsi <strong>Semua</strong> tetap menghasilkan analitik keputusan tingkat kota', $view);
+        $this->assertStringContainsString('Perbandingan & Potensi UMKM', $view);
+        $this->assertStringContainsString('Jika memilih <strong>Semua</strong>, sistem menampilkan ringkasan tingkat kota', $view);
         $this->assertStringContainsString('Jenis Usaha dengan Jumlah Terbesar', $view);
         $this->assertStringContainsString('Jenis Usaha × Kecamatan', $view);
         $this->assertStringContainsString('Pasangan Jenis Usaha–Kecamatan yang Perlu Ditinjau', $view);
-        $this->assertStringContainsString('Visual bar hanya membantu membandingkan besaran', $view);
+        $this->assertStringContainsString('Batang perbandingan membantu melihat perbedaan jumlah', $view);
         $this->assertStringNotContainsString('Pilih <strong>Jenis Usaha</strong> untuk membandingkan', $view);
-        $this->assertStringContainsString('Indikasi potensi relatif', $view);
-        $this->assertStringContainsString('Informasi Spasial Pendukung', $view);
-        $this->assertStringContainsString('tidak digunakan sebagai filter atau penentu label Analitik Keputusan', $view);
-        $this->assertStringContainsString('bukan prediksi keberhasilan', $view);
+        $this->assertStringContainsString('Kondisi yang perlu ditinjau', $view);
+        $this->assertStringContainsString('Informasi Lokasi Pendukung', $view);
+        $this->assertStringContainsString('hanya digunakan sebagai pelengkap dan tidak menentukan hasil perbandingan', $view);
+        $this->assertStringContainsString('bukan jaminan keberhasilan', $view);
         $this->assertStringContainsString(
-            'Nilai sumber tetap dipertahankan apa adanya dan tidak dinormalisasi',
+            'Nilai yang tercatat tetap dipertahankan apa adanya',
             $view
         );
 
-        foreach (['radius_meters', 'Radius Spasial', 'Radius aktif', 'Kepadatan Radius Aktif'] as $removedRadiusContract) {
+        foreach (['radius_meters', 'Radius Spasial', 'Radius aktif', 'Jumlah usaha Radius Aktif'] as $removedRadiusContract) {
             $this->assertStringNotContainsString($removedRadiusContract, $view);
         }
 
@@ -128,8 +128,8 @@ class AdminDinasDecisionAnalyticsContractTest extends TestCase
 
         $this->assertIsString($layout);
         $this->assertStringContainsString("'label' => 'Operasional'", $layout);
-        $this->assertStringContainsString("'label' => 'Analitik & Keputusan'", $layout);
-        $this->assertStringContainsString("'title' => 'Analitik Keputusan'", $layout);
+        $this->assertStringContainsString("'label' => 'Informasi & Perbandingan'", $layout);
+        $this->assertStringContainsString("'title' => 'Perbandingan & Potensi'", $layout);
         $this->assertStringContainsString(
             "'route' => 'admin-dinas.analytics.decision'",
             $layout

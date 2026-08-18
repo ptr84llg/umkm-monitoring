@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Analitik UMKM Admin Dinas')
+@section('title', 'Ringkasan Data UMKM')
 
 @section('content')
 @php
@@ -30,13 +30,13 @@
     <section class="card border shadow-sm">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
             <div>
-                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Ringkasan dan Analisis Data</span>
-                <h1 class="h3 mb-2">Analitik UMKM Admin Dinas</h1>
-                <p class="text-body-secondary mb-0">Klik bagian analisis untuk melihat rincian Data UMKM dengan konteks yang sama.</p>
+                <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis mb-2">Ringkasan Data</span>
+                <h1 class="h3 mb-2">Ringkasan Data UMKM</h1>
+                <p class="text-body-secondary mb-0">Pilih bagian untuk melihat rincian Data UMKM dengan pilihan yang sama.</p>
             </div>
             <div class="d-flex gap-2 align-self-lg-start">
                 <a href="{{ route('admin-dinas.umkm.index', $baseFilter) }}" class="btn btn-outline-primary">Data UMKM</a>
-                <a href="{{ route('admin-dinas.analytics.decision', $baseFilter) }}" class="btn btn-dark">Analitik Keputusan</a>
+                <a href="{{ route('admin-dinas.analytics.decision', $baseFilter) }}" class="btn btn-dark">Perbandingan & Potensi</a>
                 <a href="{{ route('admin-dinas.analytics.spatial', $baseFilter) }}" class="btn btn-success">Peta Wilayah</a>
                 @if($data['can_view_financial'] ?? false)
                     <a href="{{ route('admin-dinas.analytics.financial', $baseFilter) }}" class="btn btn-warning">Ekonomi & Keuangan</a>
@@ -90,10 +90,10 @@
 
     <section class="row g-3">
         @foreach([
-            ['UMKM', $summary['total_umkm'] ?? 0, 'Data UMKM dalam analisis'],
-            ['Tenaga Kerja', $summary['workforce_recorded'] ?? 0, 'Nilai sumber yang tercatat'],
-            ['Wilayah Teridentifikasi', $summary['spatial_associated'] ?? 0, 'Keterkaitan wilayah administrasi'],
-            ['NIB Teridentifikasi', $data['legality_identified'] ?? 0, 'Bukan validasi legal formal'],
+            ['UMKM', $summary['total_umkm'] ?? 0, 'Data UMKM yang ditampilkan'],
+            ['Tenaga Kerja', $summary['workforce_recorded'] ?? 0, 'Jumlah tenaga kerja yang tercatat'],
+            ['Wilayah Teridentifikasi', $summary['spatial_associated'] ?? 0, 'Data yang memiliki wilayah'],
+            ['NIB Teridentifikasi', $data['legality_identified'] ?? 0, 'NIB tercatat pada data'],
             ['UMKM dengan Catatan Kualitas', $summary['quality_affected'] ?? 0, 'Catatan terbuka'],
         ] as $metric)
             <div class="col-md-6 col-xl">
@@ -112,7 +112,7 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Profil Sektor · Kecamatan</h2>
+                    <h2 class="h5">Sebaran UMKM · Kecamatan</h2>
                     <p class="text-body-secondary">Sebaran UMKM yang tercatat pada kecamatan.</p>
 
                     <div class="d-flex flex-column gap-3">
@@ -132,8 +132,8 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Profil Sektor · Kategori</h2>
-                    <p class="text-body-secondary">Kategori berasal dari klasifikasi yang tersimpan.</p>
+                    <h2 class="h5">Sebaran UMKM · Kategori</h2>
+                    <p class="text-body-secondary">Kategori berasal dari data yang tersimpan.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($data['categories'] as $row)
@@ -173,7 +173,7 @@
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
                     <h2 class="h5">Tenaga Kerja per Kecamatan</h2>
-                    <p class="text-body-secondary">Akumulasi jumlah tenaga kerja yang tercatat pada sumber.</p>
+                    <p class="text-body-secondary">Jumlah tenaga kerja yang tercatat.</p>
 
                     <div class="d-flex flex-column gap-3">
                         @forelse($data['workforce_by_district'] as $row)
@@ -194,7 +194,7 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Akses Pasar · Metode Pemasaran</h2>
+                    <h2 class="h5">Metode Pemasaran</h2>
                     <div class="d-flex flex-column gap-3">
                         @forelse($data['marketing_methods'] as $row)
                             <a class="text-decoration-none text-body" href="{{ route('admin-dinas.umkm.index', array_merge($baseFilter, ['marketing_method_id' => $row['id']])) }}">
@@ -212,8 +212,8 @@
         <div class="col-xl-6">
             <div class="card border shadow-sm h-100">
                 <div class="card-body p-4">
-                    <h2 class="h5">Kualitas Data · Kelompok Catatan</h2>
-                    <p class="text-body-secondary mb-2">Catatan kualitas merupakan hasil pemeriksaan data dan bukan koreksi otomatis.</p>
+                    <h2 class="h5">Catatan Kualitas Data</h2>
+                    <p class="text-body-secondary mb-2">Catatan kualitas menunjukkan data yang perlu diperhatikan. Data yang tersimpan tidak diubah secara otomatis.</p>
                     <div class="alert alert-info py-2 small">
                         Satu UMKM dapat memiliki lebih dari satu kelompok catatan kualitas. Jumlah antarkelompok tidak dijumlahkan sebagai total UMKM.
                     </div>

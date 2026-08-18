@@ -2,8 +2,8 @@
     'id' => 'landingRegionModal',
     'titleId' => 'landingRegionModalTitle',
     'mode' => 'analytics',
-    'title' => 'Pilih Wilayah Preview',
-    'description' => 'Wilayah pada landing dikunci untuk Sumatera Selatan dan Kota Lubuklinggau. Data yang tampil bersifat agregat/preview dan tidak menampilkan data sensitif.',
+    'title' => 'Pilih Wilayah',
+    'description' => 'Pilihan wilayah tersedia untuk Kota Lubuk Linggau. Informasi yang ditampilkan berupa ringkasan dan tidak menampilkan data pribadi atau informasi sensitif.',
     'currentLabel' => 'Kota Lubuklinggau',
     'applyLabel' => 'Terapkan Wilayah',
     'cancelLabel' => 'Batal',
@@ -93,7 +93,7 @@
 
                 <div class="card border-0 landing-region-current">
                     <div class="card-body">
-                        <span>Konteks saat ini</span>
+                        <span>Wilayah saat ini</span>
                         <strong data-region-current data-region-modal-current>{{ $currentLabel }}</strong>
                     </div>
                 </div>

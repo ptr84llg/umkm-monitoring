@@ -11,9 +11,7 @@
                             </a>
 
                             <p class="mb-0 mt-3">
-                                Monitoring UMKM menyajikan pengelolaan data, pemantauan perkembangan,
-                                visualisasi sebaran, dan ringkasan pendukung keputusan melalui tampilan
-                                Visual Analitik Interaktif.
+                                Monitoring UMKM menyajikan informasi usaha, peta sebaran, dan ringkasan kondisi UMKM melalui tampilan yang mudah dipahami.
                             </p>
                         </div>
                     </div>
@@ -31,7 +29,7 @@
                             </div>
 
                             <div class="col-12 col-sm-4">
-                                <x-umkm.navigation.footer-feature title="Analitik" description="Grafik dan indikator">
+                                <x-umkm.navigation.footer-feature title="Informasi" description="Grafik dan ringkasan">
                                     <x-slot:icon>
                                         <svg viewBox="0 0 24 24">
                                             <path d="M4 19h16v2H4v-2Zm2-2V9h3v8H6Zm5 0V4h3v13h-3Zm5 0v-6h3v6h-3Z"/>
@@ -80,7 +78,7 @@
                                     <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z"/>
                                 </svg>
                             </x-slot:icon>
-                            Preview Visual
+                            Lihat Ringkasan
                         </x-umkm.navigation.footer-link>
 
                         <x-umkm.navigation.footer-link :href="url('/#ringkasan')">
@@ -89,7 +87,7 @@
                                     <path d="M5 4h14v2H5V4Zm0 5h14v2H5V9Zm0 5h10v2H5v-2Zm0 5h7v2H5v-2Z"/>
                                 </svg>
                             </x-slot:icon>
-                            Ringkasan Sistem
+                            Ringkasan UMKM
                         </x-umkm.navigation.footer-link>
                     </div>
                 </x-umkm.navigation.footer-column>
@@ -132,8 +130,7 @@
                     </x-slot:icon>
 
                     <p class="mb-0">
-                        Tampilan publik ini menyediakan gambaran umum sistem. Akses data dan ruang kerja internal
-                        dilakukan melalui akun yang terdaftar agar pemantauan tetap terkontrol dan aman.
+                        Tampilan publik ini menyediakan informasi umum UMKM. Akses pengelolaan data dilakukan melalui akun yang terdaftar agar informasi tetap aman.
                     </p>
                 </x-umkm.navigation.footer-column>
             </div>
@@ -141,7 +138,7 @@
 
         <div class="footer-bottom d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-md-between gap-2 mt-4">
             <span>&copy; {{ date('Y') }} Monitoring UMKM.</span>
-            <span>Visual Analitik Interaktif</span>
+            <span>Informasi UMKM</span>
         </div>
     </div>
 </footer>

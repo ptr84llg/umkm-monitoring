@@ -3,12 +3,20 @@
 @section('title', 'Verifikasi Perubahan Data UMKM')
 
 @section('content')
+@php
+    $statusLabels = [
+        'diajukan' => 'Menunggu Pemeriksaan',
+        'disetujui' => 'Disetujui',
+        'perlu_perbaikan' => 'Perlu Perbaikan',
+        'ditolak' => 'Ditolak',
+    ];
+@endphp
 <div class="container-fluid py-3">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
             <p class="text-muted mb-1">Verifikasi Perubahan Data</p>
             <h1 class="h3 mb-2">Verifikasi Perubahan Data UMKM</h1>
-            <p class="mb-0">Persetujuan hanya mengaktifkan perubahan yang disetujui. Data sumber/LSS tetap dipertahankan.</p>
+            <p class="mb-0">Persetujuan hanya menerapkan perubahan yang disetujui. Data awal UMKM yang tersimpan tetap dipertahankan.</p>
         </div>
     </div>
 
@@ -18,7 +26,7 @@
                 <label class="form-label" for="status">Status</label>
                 <select class="form-select" id="status" name="status">
                     @foreach($statuses as $item)
-                        <option value="{{ $item }}" @selected($status === $item)>{{ str_replace('_', ' ', ucfirst($item)) }}</option>
+                        <option value="{{ $item }}" @selected($status === $item)>{{ $statusLabels[$item] ?? 'Status belum tersedia' }}</option>
                     @endforeach
                 </select>
             </div>
@@ -33,7 +41,7 @@
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No.</th>
                         <th>UMKM</th>
                         <th>Pelaku</th>
                         <th>Diajukan</th>
@@ -54,7 +62,7 @@
                                 <div class="small text-muted">{{ $proposal->submittedBy?->email ?? '-' }}</div>
                             </td>
                             <td>{{ $proposal->submitted_at?->format('d-m-Y H:i') ?? '-' }}</td>
-                            <td>{{ $proposal->status_data }}</td>
+                            <td>{{ $statusLabels[$proposal->status_data] ?? 'Status belum tersedia' }}</td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('admin-dinas.profile-reviews.show', $proposal) }}">Detail</a>
                             </td>

@@ -14,7 +14,7 @@ class PelakuBaselineDecisionAnalyticsService
     private const DEFAULT_MIN_GROUP_SIZE = 3;
 
     private const ECONOMIC_METRICS = [
-        'baseline_monthly_revenue' => 'Omzet bulanan baseline',
+        'baseline_monthly_revenue' => 'Omzet bulanan',
         'annual_sales_amount' => 'Penjualan tahunan',
     ];
 
@@ -657,7 +657,7 @@ class PelakuBaselineDecisionAnalyticsService
         return [
             'capital' => ['column' => 'capital_amount', 'label' => 'Modal'],
             'annual_sales' => ['column' => 'annual_sales_amount', 'label' => 'Penjualan tahunan'],
-            'monthly_revenue' => ['column' => 'baseline_monthly_revenue', 'label' => 'Omzet bulanan baseline'],
+            'monthly_revenue' => ['column' => 'baseline_monthly_revenue', 'label' => 'Omzet bulanan'],
             'employees' => ['column' => 'employee_count', 'label' => 'Tenaga kerja'],
         ];
     }
@@ -779,7 +779,7 @@ class PelakuBaselineDecisionAnalyticsService
         }
 
         if ($businessCount < $minimumGroupSize) {
-            return 'Kepadatan teridentifikasi; agregat ekonomi dibatasi';
+            return 'Jumlah usaha tersedia; data ekonomi kelompok dibatasi';
         }
 
         if (
@@ -788,15 +788,15 @@ class PelakuBaselineDecisionAnalyticsService
             || $economicPayload['median'] === null
             || $referenceMedian === null
         ) {
-            return 'Kepadatan ' . mb_strtolower($density) . '; data ekonomi belum cukup';
+            return 'Jumlah usaha ' . mb_strtolower($density) . '; data ekonomi belum cukup';
         }
 
         $economicHigh = $economicPayload['median'] >= $referenceMedian;
 
         return match (true) {
-            $density === 'Rendah' && $economicHigh => 'Indikasi potensi wilayah relatif',
-            $density === 'Tinggi' && $economicHigh => 'Pasar aktif-kompetitif',
-            $density === 'Tinggi' && ! $economicHigh => 'Indikasi tekanan persaingan relatif',
+            $density === 'Rendah' && $economicHigh => 'Kondisi wilayah perlu ditinjau',
+            $density === 'Tinggi' && $economicHigh => 'Jumlah usaha tinggi dan data ekonomi tersedia',
+            $density === 'Tinggi' && ! $economicHigh => 'Jumlah usaha tinggi; data ekonomi lebih rendah dari pembanding',
             $density === 'Rendah' && ! $economicHigh => 'Aktivitas relatif rendah',
             default => 'Kondisi menengah',
         };
@@ -811,7 +811,7 @@ class PelakuBaselineDecisionAnalyticsService
         int $minimumGroupSize
     ): string {
         if ($businessCount < $minimumGroupSize) {
-            return 'Data agregat belum cukup untuk indikasi potensi';
+            return 'Data belum cukup untuk perbandingan';
         }
 
         if (
@@ -822,11 +822,11 @@ class PelakuBaselineDecisionAnalyticsService
         ) {
             return $isLowCount
                 ? 'Jumlah usaha relatif sedikit; data ekonomi belum cukup'
-                : 'Data ekonomi belum cukup untuk interpretasi';
+                : 'Data ekonomi belum cukup untuk dibandingkan';
         }
 
         if ($potential) {
-            return 'Indikasi potensi relatif';
+            return 'Kondisi yang perlu ditinjau';
         }
 
         if ($isLowCount && $economicPayload['median'] < $referenceMedian) {
@@ -845,12 +845,12 @@ class PelakuBaselineDecisionAnalyticsService
         }
 
         if (abs($own - $peerMedian) < 0.000001) {
-            return 'Sama dengan median kelompok';
+            return 'Sama dengan nilai tengah usaha sejenis';
         }
 
         return $own > $peerMedian
-            ? 'Di atas median kelompok'
-            : 'Di bawah median kelompok';
+            ? 'Di atas nilai tengah usaha sejenis'
+            : 'Di bawah nilai tengah usaha sejenis';
     }
 
     private function qualityAffectedIds(array $umkmIds): Collection

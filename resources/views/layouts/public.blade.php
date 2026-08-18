@@ -11,7 +11,7 @@
     <meta name="umkm-client" content="public">
     <meta name="umkm-security-profile" content="{{ $assetProfile ?? 'public' }}">
     <meta name="umkm-active-theme" content="{{ $activeTheme }}">
-    <title>@yield('title', 'Monitoring UMKM | Visual Analitik Interaktif')</title>
+    <title>@yield('title', 'SISFODA UMKM | Informasi UMKM')</title>
     @include('partials.system.brand-icons')
     @include('partials.system.asset-loader')
 </head>
